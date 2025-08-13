@@ -1,0 +1,24 @@
+# Robots.txt para FRIOCAS Web
+# Este archivo controla el acceso de los buscadores
+
+User-agent: *
+Disallow: /
+
+# Bloquear acceso a archivos sensibles
+Disallow: /admin/
+Disallow: /assets/
+Disallow: /config/
+Disallow: /.git/
+Disallow: /.htaccess
+Disallow: /script.js
+Disallow: /styles.css
+
+# Permitir acceso solo a la página principal (opcional)
+# Allow: /index.html
+# Allow: /
+
+# Sitemap (opcional - si quieres indexación limitada)
+# Sitemap: https://friocas.com/sitemap.xml
+
+# Crawl-delay para limitar la frecuencia de acceso
+Crawl-delay: 10

@@ -40,9 +40,13 @@ FRIOCAS-Web/
 
 ## 🚀 Instalación y Uso
 
+### **🌐 Sitio en línea:**
+**https://friocas.netlify.app**
+
+### **💻 Desarrollo local:**
 1. **Clona el repositorio:**
    ```bash
-   git clone https://github.com/TU-USUARIO/friocas-web.git
+   git clone https://github.com/carlaj4r4/friocas-web.git
    ```
 
 2. **Abre el archivo:**

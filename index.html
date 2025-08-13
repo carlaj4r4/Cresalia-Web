@@ -20,11 +20,13 @@
     <!-- Favicon -->
     <link rel="icon" type="image/png" href="./assets/Imagen de WhatsApp 2025-08-07 a las 17.57.01_44e6f86e.jpg">
     
-    <!-- Seguridad -->
+    <!-- Seguridad y Protección -->
     <meta http-equiv="Content-Security-Policy" content="default-src 'self' https: data: 'unsafe-inline' 'unsafe-eval'; img-src 'self' https: data: blob:;">
     <meta http-equiv="X-Content-Type-Options" content="nosniff">
     <meta http-equiv="X-XSS-Protection" content="1; mode=block">
-    <meta name="referrer" content="strict-origin-when-cross-origin">
+    <meta name="referrer" content="no-referrer">
+    <meta name="robots" content="noindex, nofollow">
+    <meta name="X-Robots-Tag" content="noindex, nofollow">
     <link rel="stylesheet" href="styles.css">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
@@ -265,6 +267,57 @@
                         <label>Nombre del Titular</label>
                         <input type="text" id="cardholderName" placeholder="Nombre Apellido">
                     </div>
+                    <div class="test-cards-info">
+                        <button type="button" onclick="mostrarTarjetasPrueba()" class="btn-test-cards">
+                            <i class="fas fa-info-circle"></i> Ver Tarjetas de Prueba
+                        </button>
+                    </div>
+                </div>
+
+                <div class="transfer-details" id="transferDetails" style="display: none;">
+                    <h3>Información Bancaria</h3>
+                    <div class="bank-info">
+                        <div class="bank-card">
+                            <div class="bank-header">
+                                <i class="fas fa-university"></i>
+                                <span>Datos de Transferencia</span>
+                            </div>
+                            <div class="bank-data">
+                                <div class="bank-row">
+                                    <span class="bank-label">Banco:</span>
+                                    <span class="bank-value">Banco de la Nación Argentina</span>
+                                </div>
+                                <div class="bank-row">
+                                    <span class="bank-label">Titular:</span>
+                                    <span class="bank-value">FRIOCAS - Servicios Automotrices</span>
+                                </div>
+                                <div class="bank-row">
+                                    <span class="bank-label">Tipo de Cuenta:</span>
+                                    <span class="bank-value">Cuenta Corriente</span>
+                                </div>
+                                <div class="bank-row">
+                                    <span class="bank-label">Número de Cuenta:</span>
+                                    <span class="bank-value">1234567890</span>
+                                </div>
+                                <div class="bank-row">
+                                    <span class="bank-label">CBU:</span>
+                                    <span class="bank-value">0110123456789012345678</span>
+                                </div>
+                                <div class="bank-row">
+                                    <span class="bank-label">Alias:</span>
+                                    <span class="bank-value">FRIOCAS.AUTOS</span>
+                                </div>
+                                <div class="bank-row">
+                                    <span class="bank-label">CUIT:</span>
+                                    <span class="bank-value">20-12345678-9</span>
+                                </div>
+                            </div>
+                            <div class="transfer-notice">
+                                <i class="fas fa-info-circle"></i>
+                                <p><strong>Importante:</strong> Una vez realizada la transferencia, envía el comprobante por WhatsApp al +54 9 379 501-5712 para confirmar el pago.</p>
+                            </div>
+                        </div>
+                    </div>
                 </div>
 
                 <div class="shipping-info">
@@ -272,6 +325,10 @@
                     <div class="shipping-notice">
                         <i class="fas fa-info-circle"></i>
                         <p><strong>Importante:</strong> Los envíos a Resistencia, interior de la provincia u otras provincias quedan a cargo del comprador.</p>
+                    </div>
+                    <div class="shipping-notice">
+                        <i class="fas fa-clock"></i>
+                        <p><strong>Horario de Envíos:</strong> Solo en horario comercial (Lunes a Viernes 8:00-12:00 y 16:00-20:00, Sábados 8:00-12:00).</p>
                     </div>
                     <div class="form-group">
                         <label>Ciudad de Destino</label>
@@ -576,6 +633,10 @@
             <div class="support-header">
                 <h2><i class="fas fa-headset"></i> Atención al Cliente</h2>
                 <p>¿Necesitas ayuda? Estamos aquí para asistirte</p>
+                <div class="horario-info">
+                    <i class="fas fa-clock"></i>
+                    <span><strong>Horario de Atención:</strong> Lunes a Viernes 8:00-12:00 y 16:00-20:00, Sábados 8:00-12:00</span>
+                </div>
             </div>
             <div class="support-options">
                 <div class="support-option" onclick="contactSupport('whatsapp')">
@@ -622,13 +683,795 @@
         </div>
     </div>
 
+    <!-- Chat de Soporte (versión compacta) -->
+    <div id="supportChat" class="support-chat" style="display: none;">
+        <div class="chat-header">
+            <div class="chat-title">
+                <i class="fas fa-headset"></i>
+                <span>Soporte FRIOCAS</span>
+            </div>
+            <button class="chat-close" onclick="cerrarChatSoporte()">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+        <div class="chat-messages" id="supportChatMessages">
+            <div class="message bot">
+                <div class="message-content">
+                    <i class="fas fa-robot"></i>
+                    <p>¡Hola! Soy el asistente de FRIOCAS. ¿En qué puedo ayudarte hoy?<br><br>⏰ <strong>Horario de Atención:</strong><br>• Lunes a Viernes: 8:00 - 12:00 y 16:00 - 20:00<br>• Sábados: 8:00 - 12:00<br>• Domingos: Cerrado</p>
+                </div>
+            </div>
+        </div>
+        <div class="chat-input">
+            <input type="text" id="supportChatInput" placeholder="Escribe tu consulta..." onkeypress="if(event.key === 'Enter') enviarMensajeChat()">
+            <button onclick="enviarMensajeChat()">
+                <i class="fas fa-paper-plane"></i>
+            </button>
+        </div>
+    </div>
+
+    <!-- Modal de Administración -->
+    <div id="adminModal" class="modal">
+        <div class="modal-content admin-modal">
+            <span class="close" onclick="cerrarModalAdmin()">&times;</span>
+            <div id="adminContent">
+                <!-- Login de Administrador -->
+                <div id="adminLogin" class="admin-section">
+                    <h2><i class="fas fa-lock"></i> Acceso Administrativo</h2>
+                    <div class="admin-login-form">
+                        <div class="form-group">
+                            <label><i class="fas fa-user"></i> Usuario</label>
+                            <input type="text" id="adminUsername" placeholder="Usuario administrador">
+                        </div>
+                        <div class="form-group">
+                            <label><i class="fas fa-key"></i> Contraseña</label>
+                            <input type="password" id="adminPassword" placeholder="Contraseña">
+                        </div>
+                        <button onclick="loginAdmin()" class="btn btn-primary">
+                            <i class="fas fa-sign-in-alt"></i> Ingresar
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Panel de Administración -->
+                <div id="adminPanel" class="admin-section" style="display: none;">
+                    <h2><i class="fas fa-cogs"></i> Panel de Administración FRIOCAS</h2>
+                    
+                    <!-- Navegación del Panel -->
+                    <div class="admin-nav">
+                        <button class="nav-btn active" onclick="mostrarSeccion('dashboard')">
+                            <i class="fas fa-tachometer-alt"></i> Dashboard
+                        </button>
+                        <button class="nav-btn" onclick="mostrarSeccion('productos')">
+                            <i class="fas fa-box"></i> Productos
+                        </button>
+                        <button class="nav-btn" onclick="mostrarSeccion('ofertas')">
+                            <i class="fas fa-tags"></i> Ofertas
+                        </button>
+                        <button class="nav-btn" onclick="mostrarSeccion('servicios')">
+                            <i class="fas fa-tools"></i> Servicios
+                        </button>
+                        <button class="nav-btn" onclick="mostrarSeccion('configuracion')">
+                            <i class="fas fa-cog"></i> Configuración
+                        </button>
+                        <button class="nav-btn" onclick="mostrarSeccion('empresa')">
+                            <i class="fas fa-building"></i> Datos Empresa
+                        </button>
+                        <button class="nav-btn" onclick="mostrarSeccion('estadisticas')">
+                            <i class="fas fa-chart-bar"></i> Estadísticas
+                        </button>
+                    </div>
+
+                    <!-- Dashboard -->
+                    <div id="dashboard" class="admin-content active">
+                        <div class="dashboard-grid">
+                            <div class="dashboard-card">
+                                <div class="card-icon">
+                                    <i class="fas fa-box"></i>
+                                </div>
+                                <div class="card-info">
+                                    <h3>Total Productos</h3>
+                                    <p id="totalProductos">0</p>
+                                </div>
+                            </div>
+                            <div class="dashboard-card">
+                                <div class="card-icon">
+                                    <i class="fas fa-tags"></i>
+                                </div>
+                                <div class="card-info">
+                                    <h3>Ofertas Activas</h3>
+                                    <p id="totalOfertas">0</p>
+                                </div>
+                            </div>
+                            <div class="dashboard-card">
+                                <div class="card-icon">
+                                    <i class="fas fa-shopping-cart"></i>
+                                </div>
+                                <div class="card-info">
+                                    <h3>Ventas Hoy</h3>
+                                    <p id="ventasHoy">0</p>
+                                </div>
+                            </div>
+                            <div class="dashboard-card">
+                                <div class="card-icon">
+                                    <i class="fas fa-users"></i>
+                                </div>
+                                <div class="card-info">
+                                    <h3>Clientes</h3>
+                                    <p id="totalClientes">0</p>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="quick-actions">
+                            <h3>Acciones Rápidas</h3>
+                            <div class="actions-grid">
+                                <button onclick="mostrarSeccion('productos')" class="action-btn">
+                                    <i class="fas fa-plus"></i>
+                                    <span>Agregar Producto</span>
+                                </button>
+                                <button onclick="mostrarSeccion('ofertas')" class="action-btn">
+                                    <i class="fas fa-percentage"></i>
+                                    <span>Crear Oferta</span>
+                                </button>
+                                <button onclick="mostrarSeccion('servicios')" class="action-btn">
+                                    <i class="fas fa-tools"></i>
+                                    <span>Gestionar Servicios</span>
+                                </button>
+                                <button onclick="exportarDatos()" class="action-btn">
+                                    <i class="fas fa-download"></i>
+                                    <span>Exportar Datos</span>
+                                </button>
+                                <button onclick="refrescarPaginaPrincipal()" class="action-btn">
+                                    <i class="fas fa-sync-alt"></i>
+                                    <span>Refrescar Página</span>
+                                </button>
+                                <button onclick="probarSistema()" class="action-btn">
+                                    <i class="fas fa-bug"></i>
+                                    <span>Probar Sistema</span>
+                                </button>
+                                <button onclick="reinicializarSistemaCompleto()" class="action-btn">
+                                    <i class="fas fa-redo"></i>
+                                    <span>Reinicializar Todo</span>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Sección Productos -->
+                    <div id="productos" class="admin-content">
+                        <div class="section-header">
+                            <h3><i class="fas fa-box"></i> Gestión de Productos</h3>
+                            <button onclick="toggleFormulario('producto')" class="btn btn-primary">
+                                <i class="fas fa-plus"></i> Nuevo Producto
+                            </button>
+                        </div>
+
+                        <!-- Formulario de Producto (oculto por defecto) -->
+                        <div id="formularioProducto" class="admin-form-container" style="display: none;">
+                            <div class="admin-card">
+                                <h4><i class="fas fa-plus"></i> Agregar/Editar Producto</h4>
+                                <form id="addProductForm" class="admin-form">
+                                    <div class="form-row">
+                                        <div class="form-group">
+                                            <label>Nombre del Producto</label>
+                                            <input type="text" id="productName" required>
+                                        </div>
+                                        <div class="form-group">
+                                            <label>Categoría</label>
+                                            <select id="productCategory" required>
+                                                <option value="">Seleccionar categoría</option>
+                                                <option value="interiores">Interiores</option>
+                                                <option value="frenos">Frenos</option>
+                                                <option value="suspension">Suspensión</option>
+                                                <option value="electrico">Eléctrico</option>
+                                                <option value="motor">Motor</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div class="form-row">
+                                        <div class="form-group">
+                                            <label>Precio ($)</label>
+                                            <input type="number" id="productPrice" min="0" step="0.01" required>
+                                        </div>
+                                        <div class="form-group">
+                                            <label>Stock</label>
+                                            <input type="number" id="productStock" min="0" required>
+                                        </div>
+                                    </div>
+                                    <div class="form-row">
+                                        <div class="form-group">
+                                            <label>Marca</label>
+                                            <input type="text" id="productBrand" required>
+                                        </div>
+                                        <div class="form-group">
+                                            <label>Estado</label>
+                                            <select id="productStatus" required>
+                                                <option value="nuevo">Nuevo</option>
+                                                <option value="usado">Usado</option>
+                                                <option value="reacondicionado">Reacondicionado</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div class="form-group">
+                                        <label>Descripción</label>
+                                        <textarea id="productDescription" rows="3" required></textarea>
+                                    </div>
+                                    <div class="form-group">
+                                        <label>Imágenes del Producto</label>
+                                        <input type="file" id="productImage" accept="image/*" multiple>
+                                        <small class="form-help">Puedes seleccionar múltiples imágenes. La primera será la principal.</small>
+                                        <div class="image-preview" id="productImagePreview"></div>
+                                    </div>
+                                    <div class="form-actions">
+                                        <button type="submit" class="btn btn-success">
+                                            <i class="fas fa-save"></i> Guardar Producto
+                                        </button>
+                                        <button type="button" onclick="cancelarEdicion('producto')" class="btn btn-secondary">
+                                            <i class="fas fa-times"></i> Cancelar
+                                        </button>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+
+                        <!-- Lista de Productos -->
+                        <div class="admin-card">
+                            <div class="list-header">
+                                <h4><i class="fas fa-list"></i> Productos Actuales</h4>
+                                <div class="list-actions">
+                                    <input type="text" id="buscarProductos" placeholder="Buscar productos..." class="search-input">
+                                    <select id="filtrarCategoria" class="filter-select">
+                                        <option value="">Todas las categorías</option>
+                                        <option value="interiores">Interiores</option>
+                                        <option value="frenos">Frenos</option>
+                                        <option value="suspension">Suspensión</option>
+                                        <option value="electrico">Eléctrico</option>
+                                        <option value="motor">Motor</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="products-list" id="currentProductsList">
+                                <!-- Se llenará dinámicamente -->
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Sección Ofertas -->
+                    <div id="ofertas" class="admin-content">
+                        <div class="section-header">
+                            <h3><i class="fas fa-tags"></i> Gestión de Ofertas</h3>
+                            <button onclick="toggleFormulario('oferta')" class="btn btn-primary">
+                                <i class="fas fa-plus"></i> Nueva Oferta
+                            </button>
+                        </div>
+
+                        <!-- Formulario de Oferta (oculto por defecto) -->
+                        <div id="formularioOferta" class="admin-form-container" style="display: none;">
+                            <div class="admin-card">
+                                <h4><i class="fas fa-tags"></i> Agregar/Editar Oferta</h4>
+                                <form id="addOfferForm" class="admin-form">
+                                    <div class="form-row">
+                                        <div class="form-group">
+                                            <label>Nombre de la Oferta</label>
+                                            <input type="text" id="offerName" required>
+                                        </div>
+                                        <div class="form-group">
+                                            <label>Precio Original ($)</label>
+                                            <input type="number" id="offerOriginalPrice" min="0" step="0.01" required>
+                                        </div>
+                                    </div>
+                                    <div class="form-row">
+                                        <div class="form-group">
+                                            <label>Precio con Descuento ($)</label>
+                                            <input type="number" id="offerDiscountedPrice" min="0" step="0.01" required>
+                                        </div>
+                                        <div class="form-group">
+                                            <label>Stock</label>
+                                            <input type="number" id="offerStock" min="0" required>
+                                        </div>
+                                    </div>
+                                    <div class="form-group">
+                                        <label>Descripción</label>
+                                        <textarea id="offerDescription" rows="3" required></textarea>
+                                    </div>
+                                    <div class="form-group">
+                                        <label>Imágenes de la Oferta</label>
+                                        <input type="file" id="offerImage" accept="image/*" multiple>
+                                        <small class="form-help">Puedes seleccionar múltiples imágenes. La primera será la principal.</small>
+                                        <div class="image-preview" id="offerImagePreview"></div>
+                                    </div>
+                                    <div class="form-actions">
+                                        <button type="submit" class="btn btn-success">
+                                            <i class="fas fa-save"></i> Guardar Oferta
+                                        </button>
+                                        <button type="button" onclick="cancelarEdicion('oferta')" class="btn btn-secondary">
+                                            <i class="fas fa-times"></i> Cancelar
+                                        </button>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+
+                        <!-- Lista de Ofertas -->
+                        <div class="admin-card">
+                            <div class="list-header">
+                                <h4><i class="fas fa-percentage"></i> Ofertas Actuales</h4>
+                                <div class="list-actions">
+                                    <input type="text" id="buscarOfertas" placeholder="Buscar ofertas..." class="search-input">
+                                </div>
+                            </div>
+                            <div class="offers-list" id="currentOffersList">
+                                <!-- Se llenará dinámicamente -->
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Sección Servicios -->
+                    <div id="servicios" class="admin-content">
+                        <div class="section-header">
+                            <h3><i class="fas fa-tools"></i> Gestión de Servicios</h3>
+                            <div class="section-actions">
+                                <button onclick="verificarServicios()" class="btn btn-info">
+                                    <i class="fas fa-eye"></i> Verificar
+                                </button>
+                                <button onclick="reinicializarServicios()" class="btn btn-warning">
+                                    <i class="fas fa-sync-alt"></i> Reinicializar
+                                </button>
+                                <button onclick="toggleFormulario('servicio')" class="btn btn-primary">
+                                    <i class="fas fa-plus"></i> Nuevo Servicio
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Formulario de Servicio (oculto por defecto) -->
+                        <div id="formularioServicio" class="admin-form-container" style="display: none;">
+                            <div class="admin-card">
+                                <h4><i class="fas fa-tools"></i> Agregar/Editar Servicio</h4>
+                                <form id="addServiceForm" class="admin-form">
+                                    <div class="form-row">
+                                        <div class="form-group">
+                                            <label>Nombre del Servicio</label>
+                                            <input type="text" id="serviceName" required>
+                                        </div>
+                                        <div class="form-group">
+                                            <label>Icono (FontAwesome)</label>
+                                            <select id="serviceIcon" required>
+                                                <option value="fas fa-wrench">🔧 Taller</option>
+                                                <option value="fas fa-oil-can">🛢️ Lubricentro</option>
+                                                <option value="fas fa-car">🚗 Detailing</option>
+                                                <option value="fas fa-truck">🚛 Traslados</option>
+                                                <option value="fas fa-snowflake">❄️ Aire Acondicionado</option>
+                                                <option value="fas fa-file-alt">📄 Gestión</option>
+                                                <option value="fas fa-cog">⚙️ Otro</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div class="form-group">
+                                        <label>Descripción</label>
+                                        <textarea id="serviceDescription" rows="3" required></textarea>
+                                    </div>
+                                    <div class="form-row">
+                                        <div class="form-group">
+                                            <label>Estado</label>
+                                            <select id="serviceStatus" required>
+                                                <option value="active">Activo</option>
+                                                <option value="inactive">Inactivo</option>
+                                            </select>
+                                        </div>
+                                        <div class="form-group">
+                                            <label>Precio Base ($)</label>
+                                            <input type="number" id="serviceBasePrice" min="0" step="0.01" required>
+                                        </div>
+                                    </div>
+                                    <div class="form-actions">
+                                        <button type="submit" class="btn btn-success">
+                                            <i class="fas fa-save"></i> Guardar Servicio
+                                        </button>
+                                        <button type="button" onclick="cancelarEdicion('servicio')" class="btn btn-secondary">
+                                            <i class="fas fa-times"></i> Cancelar
+                                        </button>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+
+                        <!-- Gestión de Servicios Específicos -->
+                        <div class="services-management">
+                            <!-- Taller Mecánico -->
+                            <div class="service-section">
+                                <div class="service-section-header">
+                                    <h4><i class="fas fa-wrench"></i> Taller Mecánico</h4>
+                                    <button onclick="editarServicioEspecifico('taller')" class="btn btn-sm btn-primary">
+                                        <i class="fas fa-edit"></i> Editar
+                                    </button>
+                                </div>
+                                <div class="service-details" id="taller-details">
+                                    <div class="service-info">
+                                        <p><strong>Descripción:</strong> Servicios de reparación y mantenimiento automotriz</p>
+                                        <p><strong>Estado:</strong> <span class="status-active">Activo</span></p>
+                                        <p><strong>Precio Base:</strong> $<span id="taller-precio">5000</span></p>
+                                    </div>
+                                    <div class="service-prices">
+                                        <h5>Servicios Específicos:</h5>
+                                        <div class="price-list" id="taller-prices">
+                                            <div class="price-item">
+                                                <span>Cambio de Aceite</span>
+                                                <span>$3,500</span>
+                                            </div>
+                                            <div class="price-item">
+                                                <span>Frenos</span>
+                                                <span>$8,000</span>
+                                            </div>
+                                            <div class="price-item">
+                                                <span>Suspensión</span>
+                                                <span>$12,000</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Aire Acondicionado -->
+                            <div class="service-section">
+                                <div class="service-section-header">
+                                    <h4><i class="fas fa-snowflake"></i> Reparación de Aires Acondicionados</h4>
+                                    <button onclick="editarServicioEspecifico('aire')" class="btn btn-sm btn-primary">
+                                        <i class="fas fa-edit"></i> Editar
+                                    </button>
+                                </div>
+                                <div class="service-details" id="aire-details">
+                                    <div class="service-info">
+                                        <p><strong>Descripción:</strong> Reparación y mantenimiento de sistemas de aire acondicionado</p>
+                                        <p><strong>Estado:</strong> <span class="status-active">Activo</span></p>
+                                        <p><strong>Precio Base:</strong> $<span id="aire-precio">8000</span></p>
+                                    </div>
+                                    <div class="service-prices">
+                                        <h5>Servicios Específicos:</h5>
+                                        <div class="price-list" id="aire-prices">
+                                            <div class="price-item">
+                                                <span>Recarga de Gas</span>
+                                                <span>$5,000</span>
+                                            </div>
+                                            <div class="price-item">
+                                                <span>Limpieza de Evaporador</span>
+                                                <span>$4,500</span>
+                                            </div>
+                                            <div class="price-item">
+                                                <span>Reparación de Compresor</span>
+                                                <span>$15,000</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Lubricentro -->
+                            <div class="service-section">
+                                <div class="service-section-header">
+                                    <h4><i class="fas fa-oil-can"></i> Lubricentro</h4>
+                                    <button onclick="editarServicioEspecifico('lubricentro')" class="btn btn-sm btn-primary">
+                                        <i class="fas fa-edit"></i> Editar
+                                    </button>
+                                </div>
+                                <div class="service-details" id="lubricentro-details">
+                                    <div class="service-info">
+                                        <p><strong>Descripción:</strong> Cambio de aceite y lubricantes</p>
+                                        <p><strong>Estado:</strong> <span class="status-active">Activo</span></p>
+                                        <p><strong>Precio Base:</strong> $<span id="lubricentro-precio">2500</span></p>
+                                    </div>
+                                    <div class="service-prices">
+                                        <h5>Servicios Específicos:</h5>
+                                        <div class="price-list" id="lubricentro-prices">
+                                            <div class="price-item">
+                                                <span>Aceite Sintético</span>
+                                                <span>$4,500</span>
+                                            </div>
+                                            <div class="price-item">
+                                                <span>Aceite Mineral</span>
+                                                <span>$3,200</span>
+                                            </div>
+                                            <div class="price-item">
+                                                <span>Cambio de Filtros</span>
+                                                <span>$2,800</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Detailing -->
+                            <div class="service-section">
+                                <div class="service-section-header">
+                                    <h4><i class="fas fa-car"></i> Detailing</h4>
+                                    <button onclick="editarServicioEspecifico('detailing')" class="btn btn-sm btn-primary">
+                                        <i class="fas fa-edit"></i> Editar
+                                    </button>
+                                </div>
+                                <div class="service-details" id="detailing-details">
+                                    <div class="service-info">
+                                        <p><strong>Descripción:</strong> Limpieza y embellecimiento de vehículos</p>
+                                        <p><strong>Estado:</strong> <span class="status-active">Activo</span></p>
+                                        <p><strong>Precio Base:</strong> $<span id="detailing-precio">6000</span></p>
+                                    </div>
+                                    <div class="service-prices">
+                                        <h5>Servicios Específicos:</h5>
+                                        <div class="price-list" id="detailing-prices">
+                                            <div class="price-item">
+                                                <span>Lavado Completo</span>
+                                                <span>$3,500</span>
+                                            </div>
+                                            <div class="price-item">
+                                                <span>Encerado</span>
+                                                <span>$4,000</span>
+                                            </div>
+                                            <div class="price-item">
+                                                <span>Limpieza de Interiores</span>
+                                                <span>$5,500</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Traslados -->
+                            <div class="service-section">
+                                <div class="service-section-header">
+                                    <h4><i class="fas fa-truck"></i> Traslados (CRECER)</h4>
+                                    <button onclick="editarServicioEspecifico('traslados')" class="btn btn-sm btn-primary">
+                                        <i class="fas fa-edit"></i> Editar
+                                    </button>
+                                </div>
+                                <div class="service-details" id="traslados-details">
+                                    <div class="service-info">
+                                        <p><strong>Descripción:</strong> Servicio de transporte con empresa CRECER</p>
+                                        <p><strong>Estado:</strong> <span class="status-active">Activo</span></p>
+                                        <p><strong>Precio Base:</strong> $<span id="traslados-precio">2000</span></p>
+                                    </div>
+                                    <div class="service-prices">
+                                        <h5>Tarifas por Distancia:</h5>
+                                        <div class="price-list" id="traslados-prices">
+                                            <div class="price-item">
+                                                <span>Hasta 5 km</span>
+                                                <span>$2,000</span>
+                                            </div>
+                                            <div class="price-item">
+                                                <span>5-10 km</span>
+                                                <span>$3,500</span>
+                                            </div>
+                                            <div class="price-item">
+                                                <span>10+ km</span>
+                                                <span>$5,000</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Gestoría -->
+                            <div class="service-section">
+                                <div class="service-section-header">
+                                    <h4><i class="fas fa-file-alt"></i> Gestión Automotriz</h4>
+                                    <button onclick="editarServicioEspecifico('gestoria')" class="btn btn-sm btn-primary">
+                                        <i class="fas fa-edit"></i> Editar
+                                    </button>
+                                </div>
+                                <div class="service-details" id="gestoria-details">
+                                    <div class="service-info">
+                                        <p><strong>Descripción:</strong> Trámites y documentación automotriz</p>
+                                        <p><strong>Estado:</strong> <span class="status-active">Activo</span></p>
+                                        <p><strong>Precio Base:</strong> $<span id="gestoria-precio">3500</span></p>
+                                    </div>
+                                    <div class="service-prices">
+                                        <h5>Servicios Específicos:</h5>
+                                        <div class="price-list" id="gestoria-prices">
+                                            <div class="price-item">
+                                                <span>Transferencia</span>
+                                                <span>$8,000</span>
+                                            </div>
+                                            <div class="price-item">
+                                                <span>Inscripción</span>
+                                                <span>$6,500</span>
+                                            </div>
+                                            <div class="price-item">
+                                                <span>Certificado</span>
+                                                <span>$2,500</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Sección Configuración -->
+                    <div id="configuracion" class="admin-content">
+                        <div class="section-header">
+                            <h3><i class="fas fa-cog"></i> Configuración del Sistema</h3>
+                        </div>
+                        
+                        <div class="config-grid">
+                            <div class="admin-card">
+                                <h4><i class="fas fa-building"></i> Información de la Empresa</h4>
+                                <form class="admin-form">
+                                    <div class="form-group">
+                                        <label>Nombre de la Empresa</label>
+                                        <input type="text" value="FRIOCAS - Servicios Automotrices" readonly>
+                                    </div>
+                                    <div class="form-group">
+                                        <label>Teléfono</label>
+                                        <input type="text" value="+5493795015712" readonly>
+                                    </div>
+                                    <div class="form-group">
+                                        <label>Email</label>
+                                        <input type="email" value="carla.crimi.95@gmail.com" readonly>
+                                    </div>
+                                    <div class="form-group">
+                                        <label>Dirección</label>
+                                        <input type="text" value="Moreno 2242, Corrientes Capital, Argentina" readonly>
+                                    </div>
+                                </form>
+                            </div>
+                            
+                            <div class="admin-card">
+                                <h4><i class="fas fa-shield-alt"></i> Seguridad</h4>
+                                <div class="security-info">
+                                    <p><strong>Usuario Admin:</strong> friocas_admin</p>
+                                    <p><strong>Último Acceso:</strong> <span id="ultimoAcceso">Hoy</span></p>
+                                    <p><strong>Estado:</strong> <span class="status-active">Activo</span></p>
+                                </div>
+                                <button onclick="cambiarPassword()" class="btn btn-warning">
+                                    <i class="fas fa-key"></i> Cambiar Contraseña
+                                </button>
+                            </div>
+                            
+                            <div class="admin-card">
+                                <h4><i class="fas fa-database"></i> Respaldo de Datos</h4>
+                                <div class="backup-actions">
+                                    <button onclick="exportarDatos()" class="btn btn-primary">
+                                        <i class="fas fa-download"></i> Exportar Datos
+                                    </button>
+                                    <button onclick="importarDatos()" class="btn btn-secondary">
+                                        <i class="fas fa-upload"></i> Importar Datos
+                                    </button>
+                                </div>
+                                <div class="backup-actions">
+                                    <button onclick="verificarDatosGuardados()" class="btn btn-info">
+                                        <i class="fas fa-eye"></i> Verificar Datos
+                                    </button>
+                                    <button onclick="limpiarDatosGuardados()" class="btn btn-danger">
+                                        <i class="fas fa-trash"></i> Limpiar Datos
+                                    </button>
+                                </div>
+                                <p class="backup-info">Último respaldo: <span id="ultimoRespaldo">Hoy 15:30</span></p>
+                                <p class="backup-info">Estado: <span id="datosGuardadosStatus">Verificando...</span></p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Sección Datos de Empresa -->
+                    <div id="empresa" class="admin-content">
+                        <div class="section-header">
+                            <h3><i class="fas fa-building"></i> Datos Fiscales de la Empresa</h3>
+                        </div>
+                        
+                        <div class="config-grid">
+                            <div class="admin-card">
+                                <h4><i class="fas fa-file-invoice"></i> Información Fiscal</h4>
+                                <form class="admin-form">
+                                    <div class="form-group">
+                                        <label>CUIT de la Empresa</label>
+                                        <input type="text" id="cuitEmpresa" placeholder="20-12345678-9" pattern="[0-9]{2}-[0-9]{8}-[0-9]{1}">
+                                        <small class="form-help">Formato: XX-XXXXXXXX-X</small>
+                                    </div>
+                                    <div class="form-group">
+                                        <label>Razón Social</label>
+                                        <input type="text" id="razonSocial" value="FRIOCAS - Servicios Automotrices">
+                                    </div>
+                                    <div class="form-group">
+                                        <label>Condición Fiscal</label>
+                                        <select id="condicionFiscal">
+                                            <option value="RI">Responsable Inscripto</option>
+                                            <option value="MT">Monotributista</option>
+                                            <option value="EX">Exento</option>
+                                        </select>
+                                    </div>
+                                    <div class="form-group">
+                                        <label>Domicilio Fiscal</label>
+                                        <input type="text" id="domicilioFiscal" value="Moreno 2242, Corrientes Capital">
+                                    </div>
+                                    <button onclick="guardarDatosEmpresa()" class="btn btn-primary">
+                                        <i class="fas fa-save"></i> Guardar Datos Fiscales
+                                    </button>
+                                </form>
+                            </div>
+                            
+                            <div class="admin-card">
+                                <h4><i class="fas fa-university"></i> Datos Bancarios</h4>
+                                <form class="admin-form">
+                                    <div class="form-group">
+                                        <label>Banco</label>
+                                        <input type="text" id="bancoEmpresa" value="Banco de la Nación Argentina">
+                                    </div>
+                                    <div class="form-group">
+                                        <label>Tipo de Cuenta</label>
+                                        <input type="text" id="tipoCuenta" value="Cuenta Corriente">
+                                    </div>
+                                    <div class="form-group">
+                                        <label>Número de Cuenta</label>
+                                        <input type="text" id="numeroCuenta" value="1234567890">
+                                    </div>
+                                    <div class="form-group">
+                                        <label>CBU</label>
+                                        <input type="text" id="cbuEmpresa" value="0110123456789012345678">
+                                    </div>
+                                    <div class="form-group">
+                                        <label>Alias</label>
+                                        <input type="text" id="aliasEmpresa" value="FRIOCAS.AUTOS">
+                                    </div>
+                                    <button onclick="guardarDatosBancarios()" class="btn btn-primary">
+                                        <i class="fas fa-university"></i> Guardar Datos Bancarios
+                                    </button>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Sección Estadísticas -->
+                    <div id="estadisticas" class="admin-content">
+                        <div class="section-header">
+                            <h3><i class="fas fa-chart-bar"></i> Estadísticas y Reportes</h3>
+                        </div>
+                        
+                        <div class="stats-grid">
+                            <div class="admin-card">
+                                <h4><i class="fas fa-chart-line"></i> Ventas del Mes</h4>
+                                <div class="chart-placeholder">
+                                    <i class="fas fa-chart-line"></i>
+                                    <p>Gráfico de ventas mensuales</p>
+                                </div>
+                            </div>
+                            
+                            <div class="admin-card">
+                                <h4><i class="fas fa-chart-pie"></i> Productos Más Vendidos</h4>
+                                <div class="chart-placeholder">
+                                    <i class="fas fa-chart-pie"></i>
+                                    <p>Top 5 productos</p>
+                                </div>
+                            </div>
+                            
+                            <div class="admin-card">
+                                <h4><i class="fas fa-users"></i> Clientes Activos</h4>
+                                <div class="chart-placeholder">
+                                    <i class="fas fa-users"></i>
+                                    <p>Estadísticas de clientes</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Botón de Cerrar Sesión -->
+                    <div class="admin-actions">
+                        <button onclick="logoutAdmin()" class="btn btn-danger">
+                            <i class="fas fa-sign-out-alt"></i> Cerrar Sesión
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
             <!-- Íconos Flotantes de Ayuda -->
         <div class="floating-help">
             <button onclick="abrirModalAyuda()" class="floating-btn help-btn" title="Asistente Virtual">
                 <i class="fas fa-robot"></i>
             </button>
-            <button onclick="abrirModalSoporte()" class="floating-btn support-btn" title="Atención al Cliente">
+            <button onclick="abrirChatSoporte()" class="floating-btn support-btn" title="Chat de Soporte">
                 <i class="fas fa-headset"></i>
+            </button>
+            <!-- Botón de Admin oculto por defecto - solo visible para administradores -->
+            <button onclick="abrirModalAdmin()" class="floating-btn admin-btn" title="Panel de Administración" id="adminButton" style="display: none;">
+                <i class="fas fa-cogs"></i>
             </button>
             <!-- Botones de prueba comentados para versión final
             <button onclick="pruebaSimple()" class="floating-btn" style="
@@ -685,8 +1528,16 @@
                 <div class="footer-section">
                     <h3>Contacto</h3>
                     <p><i class="fas fa-phone"></i> +5493795015712</p>
-                    <p><i class="fas fa-envelope"></i> carla.crimi.95@gmail.com</p>
-                    <p><i class="fas fa-map-marker-alt"></i> Moreno 2242, Corrientes Capital, Argentina</p>
+                    <p><i class="fas fa-envelope"></i> info@friocas.com.ar</p>
+                    <p><i class="fas fa-map-marker-alt"></i> Moreno 2242, Corrientes Capital</p>
+                    <p><i class="fas fa-clock"></i> Lunes a Viernes: 8:00-12:00 y 16:00-20:00, Sábados: 8:00-12:00</p>
+                </div>
+                <div class="footer-section">
+                    <h3>Soporte Técnico</h3>
+                    <p><i class="fas fa-tools"></i> carla.crimi.95@gmail.com</p>
+                    <p><i class="fas fa-headset"></i> Asistencia técnica especializada</p>
+                    <p><i class="fas fa-bug"></i> Reporte de problemas</p>
+                    <p><i class="fas fa-cog"></i> Configuración del sistema</p>
                 </div>
                 <div class="footer-section">
                     <h3>Síguenos</h3>

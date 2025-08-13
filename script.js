@@ -4,6 +4,76 @@ console.log('=== FRIOCAS SCRIPT.JS CARGADO ===');
 // Variables globales
 let carrito = [];
 
+// Datos de servicios (simulación de base de datos)
+let serviciosData = {
+    taller: {
+        nombre: "Taller Mecánico",
+        descripcion: "Servicios de reparación y mantenimiento automotriz",
+        estado: "active",
+        precioBase: 5000,
+        servicios: [
+            { nombre: "Cambio de Aceite", precio: 3500 },
+            { nombre: "Frenos", precio: 8000 },
+            { nombre: "Suspensión", precio: 12000 }
+        ]
+    },
+    aire: {
+        nombre: "Reparación de Aires Acondicionados",
+        descripcion: "Reparación y mantenimiento de sistemas de aire acondicionado",
+        estado: "active",
+        precioBase: 8000,
+        servicios: [
+            { nombre: "Recarga de Gas", precio: 5000 },
+            { nombre: "Limpieza de Evaporador", precio: 4500 },
+            { nombre: "Reparación de Compresor", precio: 15000 }
+        ]
+    },
+    lubricentro: {
+        nombre: "Lubricentro",
+        descripcion: "Cambio de aceite y lubricantes",
+        estado: "active",
+        precioBase: 2500,
+        servicios: [
+            { nombre: "Aceite Sintético", precio: 4500 },
+            { nombre: "Aceite Mineral", precio: 3200 },
+            { nombre: "Cambio de Filtros", precio: 2800 }
+        ]
+    },
+    detailing: {
+        nombre: "Detailing",
+        descripcion: "Limpieza y embellecimiento de vehículos",
+        estado: "active",
+        precioBase: 6000,
+        servicios: [
+            { nombre: "Lavado Completo", precio: 3500 },
+            { nombre: "Encerado", precio: 4000 },
+            { nombre: "Limpieza de Interiores", precio: 5500 }
+        ]
+    },
+    traslados: {
+        nombre: "Traslados (CRECER)",
+        descripcion: "Servicio de transporte con empresa CRECER",
+        estado: "active",
+        precioBase: 2000,
+        servicios: [
+            { nombre: "Hasta 5 km", precio: 2000 },
+            { nombre: "5-10 km", precio: 3500 },
+            { nombre: "10+ km", precio: 5000 }
+        ]
+    },
+    gestoria: {
+        nombre: "Gestión Automotriz",
+        descripcion: "Trámites y documentación automotriz",
+        estado: "active",
+        precioBase: 3500,
+        servicios: [
+            { nombre: "Transferencia", precio: 8000 },
+            { nombre: "Inscripción", precio: 6500 },
+            { nombre: "Certificado", precio: 2500 }
+        ]
+    }
+};
+
 // Datos de repuestos (simulación de base de datos)
 let repuestos = [
     {
@@ -195,7 +265,7 @@ let ofertas = [
         descuento: 28,
         stock: 50,
         descripcion: "Filtro de aceite de alta calidad para motores - ¡Oferta especial!",
-        imagen: "🔧"
+        imagen: "https://images.unsplash.com/photo-1581094794329-c8112a89af12?w=400&h=300&fit=crop"
     },
     {
         id: 5,
@@ -206,7 +276,7 @@ let ofertas = [
         descuento: 30,
         stock: 100,
         descripcion: "Aceite sintético de alto rendimiento - ¡Precio increíble!",
-        imagen: "🛢️"
+        imagen: "https://images.unsplash.com/photo-1581094794329-c8112a89af12?w=400&h=300&fit=crop"
     },
     {
         id: 2,
@@ -217,7 +287,7 @@ let ofertas = [
         descuento: 26,
         stock: 30,
         descripcion: "Pastillas de freno cerámicas de alto rendimiento - ¡Oferta limitada!",
-        imagen: "🛑"
+        imagen: "https://images.unsplash.com/photo-1581094794329-c8112a89af12?w=400&h=300&fit=crop"
     },
     {
         id: 6,
@@ -228,7 +298,7 @@ let ofertas = [
         descuento: 21,
         stock: 20,
         descripcion: "Rotor de freno ventilado para mejor disipación - ¡Gran descuento!",
-        imagen: "⚙️"
+        imagen: "https://images.unsplash.com/photo-1581094794329-c8112a89af12?w=400&h=300&fit=crop"
     }
 ];
 
@@ -1401,9 +1471,32 @@ function cargarRepuestos(listaRepuestos = repuestos) {
         return;
     }
     
-    grid.innerHTML = listaRepuestos.map(repuesto => `
+    grid.innerHTML = listaRepuestos.map(repuesto => {
+        // Verificar si tiene múltiples imágenes
+        const tieneMultiplesImagenes = repuesto.imagenes && repuesto.imagenes.length > 1;
+        const imagenes = repuesto.imagenes || [repuesto.imagen];
+        
+        return `
         <div class="repuesto-card">
-            <img src="${repuesto.imagen}" alt="${repuesto.nombre}" class="repuesto-image" onerror="this.src='https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=400&h=300&fit=crop'">
+            <div class="repuesto-image-container">
+                <img src="${repuesto.imagen}" alt="${repuesto.nombre}" class="repuesto-image" onerror="this.src='https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=400&h=300&fit=crop'">
+                ${tieneMultiplesImagenes ? `
+                    <div class="image-gallery-controls">
+                        <button class="gallery-btn prev" onclick="cambiarImagenProducto(${repuesto.id}, -1)">
+                            <i class="fas fa-chevron-left"></i>
+                        </button>
+                        <div class="image-counter">1/${imagenes.length}</div>
+                        <button class="gallery-btn next" onclick="cambiarImagenProducto(${repuesto.id}, 1)">
+                            <i class="fas fa-chevron-right"></i>
+                        </button>
+                    </div>
+                    <div class="image-dots">
+                        ${imagenes.map((_, index) => `
+                            <span class="dot ${index === 0 ? 'active' : ''}" onclick="mostrarImagenProducto(${repuesto.id}, ${index})"></span>
+                        `).join('')}
+                    </div>
+                ` : ''}
+            </div>
             <div class="repuesto-content">
                 <div class="repuesto-badges">
                     <span class="repuesto-badge marca">${repuesto.marca}</span>
@@ -1434,7 +1527,109 @@ function cargarRepuestos(listaRepuestos = repuestos) {
                 </button>
             </div>
         </div>
-    `).join('');
+    `}).join('');
+}
+
+// Variables para la galería de imágenes
+let imagenActualProducto = {};
+let imagenActualOferta = {};
+
+// Función para cambiar imagen del producto
+function cambiarImagenProducto(productoId, direccion) {
+    const producto = repuestos.find(p => p.id === productoId);
+    if (!producto) return;
+    
+    const imagenes = producto.imagenes || [producto.imagen];
+    if (!imagenActualProducto[productoId]) {
+        imagenActualProducto[productoId] = 0;
+    }
+    
+    imagenActualProducto[productoId] += direccion;
+    
+    if (imagenActualProducto[productoId] >= imagenes.length) {
+        imagenActualProducto[productoId] = 0;
+    } else if (imagenActualProducto[productoId] < 0) {
+        imagenActualProducto[productoId] = imagenes.length - 1;
+    }
+    
+    mostrarImagenProducto(productoId, imagenActualProducto[productoId]);
+}
+
+// Función para mostrar imagen específica del producto
+function mostrarImagenProducto(productoId, indice) {
+    const producto = repuestos.find(p => p.id === productoId);
+    if (!producto) return;
+    
+    const imagenes = producto.imagenes || [producto.imagen];
+    if (indice < 0 || indice >= imagenes.length) return;
+    
+    imagenActualProducto[productoId] = indice;
+    
+    // Actualizar imagen
+    const card = document.querySelector(`[onclick*="cambiarImagenProducto(${productoId}"]`).closest('.repuesto-card');
+    const img = card.querySelector('.repuesto-image');
+    img.src = imagenes[indice];
+    
+    // Actualizar contador
+    const counter = card.querySelector('.image-counter');
+    if (counter) {
+        counter.textContent = `${indice + 1}/${imagenes.length}`;
+    }
+    
+    // Actualizar dots
+    const dots = card.querySelectorAll('.dot');
+    dots.forEach((dot, i) => {
+        dot.classList.toggle('active', i === indice);
+    });
+}
+
+// Función para cambiar imagen de la oferta
+function cambiarImagenOferta(ofertaId, direccion) {
+    const oferta = ofertas.find(o => o.id === ofertaId);
+    if (!oferta) return;
+    
+    const imagenes = oferta.imagenes || [oferta.imagen];
+    if (!imagenActualOferta[ofertaId]) {
+        imagenActualOferta[ofertaId] = 0;
+    }
+    
+    imagenActualOferta[ofertaId] += direccion;
+    
+    if (imagenActualOferta[ofertaId] >= imagenes.length) {
+        imagenActualOferta[ofertaId] = 0;
+    } else if (imagenActualOferta[ofertaId] < 0) {
+        imagenActualOferta[ofertaId] = imagenes.length - 1;
+    }
+    
+    mostrarImagenOferta(ofertaId, imagenActualOferta[ofertaId]);
+}
+
+// Función para mostrar imagen específica de la oferta
+function mostrarImagenOferta(ofertaId, indice) {
+    const oferta = ofertas.find(o => o.id === ofertaId);
+    if (!oferta) return;
+    
+    const imagenes = oferta.imagenes || [oferta.imagen];
+    if (indice < 0 || indice >= imagenes.length) return;
+    
+    imagenActualOferta[ofertaId] = indice;
+    
+    // Actualizar imagen
+    const card = document.querySelector(`[onclick*="cambiarImagenOferta(${ofertaId}"]`).closest('.oferta-card');
+    const img = card.querySelector('.oferta-image');
+    img.src = imagenes[indice];
+    
+    // Actualizar contador
+    const counter = card.querySelector('.image-counter');
+    if (counter) {
+        counter.textContent = `${indice + 1}/${imagenes.length}`;
+    }
+    
+    // Actualizar dots
+    const dots = card.querySelectorAll('.dot');
+    dots.forEach((dot, i) => {
+        dot.classList.toggle('active', i === indice);
+    });
 }
 
 // Sistema de autenticación
@@ -1647,13 +1842,19 @@ function actualizarResumenCarritoModal() {
 function setupPaymentMethodToggle() {
     const paymentMethods = document.querySelectorAll('input[name="paymentMethod"]');
     const cardDetails = document.getElementById('cardDetails');
+    const transferDetails = document.getElementById('transferDetails');
     
     paymentMethods.forEach(method => {
         method.addEventListener('change', function() {
             if (this.value === 'cash') {
                 cardDetails.style.display = 'none';
+                transferDetails.style.display = 'none';
+            } else if (this.value === 'transfer') {
+                cardDetails.style.display = 'none';
+                transferDetails.style.display = 'block';
             } else {
                 cardDetails.style.display = 'block';
+                transferDetails.style.display = 'none';
             }
         });
     });
@@ -1814,11 +2015,34 @@ function cargarOfertas() {
     ofertasGrid.innerHTML = '';
     
     ofertasFiltradas.forEach(oferta => {
+        // Verificar si tiene múltiples imágenes
+        const tieneMultiplesImagenes = oferta.imagenes && oferta.imagenes.length > 1;
+        const imagenes = oferta.imagenes || [oferta.imagen];
+        
         const ofertaCard = document.createElement('div');
         ofertaCard.className = 'oferta-card';
         ofertaCard.innerHTML = `
             <div class="oferta-badge">-${oferta.descuento}%</div>
-            <h3>${oferta.imagen} ${oferta.nombre}</h3>
+            <div class="oferta-image-container">
+                <img src="${oferta.imagen}" alt="${oferta.nombre}" class="oferta-image" onerror="this.src='https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=400&h=300&fit=crop'">
+                ${tieneMultiplesImagenes ? `
+                    <div class="image-gallery-controls">
+                        <button class="gallery-btn prev" onclick="cambiarImagenOferta(${oferta.id}, -1)">
+                            <i class="fas fa-chevron-left"></i>
+                        </button>
+                        <div class="image-counter">1/${imagenes.length}</div>
+                        <button class="gallery-btn next" onclick="cambiarImagenOferta(${oferta.id}, 1)">
+                            <i class="fas fa-chevron-right"></i>
+                        </button>
+                    </div>
+                    <div class="image-dots">
+                        ${imagenes.map((_, index) => `
+                            <span class="dot ${index === 0 ? 'active' : ''}" onclick="mostrarImagenOferta(${oferta.id}, ${index})"></span>
+                        `).join('')}
+                    </div>
+                ` : ''}
+            </div>
+            <h3>${oferta.nombre}</h3>
             <div class="categoria">${obtenerNombreCategoria(oferta.categoria)}</div>
             <div class="precio-container">
                 <span class="precio-original">$${oferta.precioOriginal.toFixed(2)}</span>
@@ -2368,6 +2592,157 @@ function cerrarModalSoporte() {
     document.body.style.overflow = 'auto';
 }
 
+// Función para abrir chat de soporte
+function abrirChatSoporte() {
+    document.getElementById('supportChat').style.display = 'flex';
+    document.getElementById('supportChatInput').focus();
+}
+
+// Función para cerrar chat de soporte
+function cerrarChatSoporte() {
+    document.getElementById('supportChat').style.display = 'none';
+}
+
+// Función para enviar mensaje en el chat
+function enviarMensajeChat() {
+    const input = document.getElementById('supportChatInput');
+    const message = input.value.trim();
+    
+    if (message) {
+        // Agregar mensaje del usuario
+        agregarMensajeChat(message, 'user');
+        input.value = '';
+        
+        // Simular respuesta del bot
+        setTimeout(() => {
+            const respuesta = generarRespuestaChat(message);
+            agregarMensajeChat(respuesta, 'bot');
+        }, 1000);
+    }
+}
+
+// Hacer la función global para que funcione desde el HTML
+window.enviarMensajeChat = enviarMensajeChat;
+
+// Función para agregar mensaje al chat
+function agregarMensajeChat(texto, tipo) {
+    const chatMessages = document.getElementById('supportChatMessages');
+    const messageDiv = document.createElement('div');
+    messageDiv.className = `message ${tipo}`;
+    
+    const icon = tipo === 'user' ? 'fas fa-user' : 'fas fa-robot';
+    
+    messageDiv.innerHTML = `
+        <div class="message-content">
+            <i class="${icon}"></i>
+            <p>${texto}</p>
+        </div>
+    `;
+    
+    chatMessages.appendChild(messageDiv);
+    chatMessages.scrollTop = chatMessages.scrollHeight;
+}
+
+// Función para generar respuestas del chat
+function generarRespuestaChat(mensaje) {
+    const mensajeLower = mensaje.toLowerCase();
+    
+    if (mensajeLower.includes('pago') || mensajeLower.includes('pagar')) {
+        return 'Para problemas de pago, puedes contactarnos directamente al +54 9 379 501-5712 o por WhatsApp. También puedes intentar con otro método de pago. ⏰ <strong>Atención:</strong> Solo en horario comercial (Lunes a Viernes 8:00-12:00 y 16:00-20:00, Sábados 8:00-12:00).';
+    } else if (mensajeLower.includes('carrito') || mensajeLower.includes('compra')) {
+        return 'Si tienes problemas con el carrito, intenta refrescar la página o limpiar el carrito y volver a agregar los productos. Si persiste, contacta nuestro soporte técnico. ⏰ <strong>Atención:</strong> Solo en horario comercial.';
+    } else if (mensajeLower.includes('envío') || mensajeLower.includes('entrega') || mensajeLower.includes('envio')) {
+        return 'Los envíos a Resistencia, interior u otras provincias quedan a cargo del comprador. ⏰ <strong>Envíos:</strong> Solo en horario comercial (Lunes a Viernes 8:00-12:00 y 16:00-20:00, Sábados 8:00-12:00). Para más información, contacta al +54 9 379 501-5712.';
+    } else if (mensajeLower.includes('producto') || mensajeLower.includes('repuesto')) {
+        return 'Si tienes dudas sobre productos, puedes ver nuestro catálogo completo o contactarnos para consultas específicas. ⏰ <strong>Atención:</strong> Solo en horario comercial.';
+    } else if (mensajeLower.includes('servicio') || mensajeLower.includes('taller')) {
+        return 'Ofrecemos servicios de taller mecánico, lubricentro, detailing, traslados y gestoría. ⏰ <strong>Servicios:</strong> Solo en horario comercial (Lunes a Viernes 8:00-12:00 y 16:00-20:00, Sábados 8:00-12:00). Contacta al +54 9 379 501-5712 para más información.';
+    } else if (mensajeLower.includes('horario') || mensajeLower.includes('hora') || mensajeLower.includes('cuando')) {
+        return '⏰ <strong>Horario de Atención:</strong><br>• Lunes a Viernes: 8:00 - 12:00 y 16:00 - 20:00<br>• Sábados: 8:00 - 12:00<br>• Domingos: Cerrado<br><br>Los envíos y servicios solo se realizan en horario comercial.';
+    } else if (mensajeLower.includes('domingo') || mensajeLower.includes('fin de semana')) {
+        return '⏰ <strong>Importante:</strong> Los domingos estamos cerrados. No se realizan envíos ni servicios en domingo. Para urgencias, contacta al +54 9 379 501-5712 y te responderemos el lunes.';
+    } else {
+        return 'Gracias por tu consulta. Para atención personalizada, contacta al +54 9 379 501-5712 o por WhatsApp. ⏰ <strong>Atención:</strong> Solo en horario comercial (Lunes a Viernes 8:00-12:00 y 16:00-20:00, Sábados 8:00-12:00). Estamos aquí para ayudarte.';
+    }
+}
+
+// Guardar datos fiscales de la empresa
+function guardarDatosEmpresa() {
+    const cuit = document.getElementById('cuitEmpresa').value;
+    const razonSocial = document.getElementById('razonSocial').value;
+    const condicionFiscal = document.getElementById('condicionFiscal').value;
+    const domicilioFiscal = document.getElementById('domicilioFiscal').value;
+    
+    if (!cuit || !razonSocial || !domicilioFiscal) {
+        mostrarNotificacion('Por favor completa todos los campos obligatorios', 'error');
+        return;
+    }
+    
+    // Validar formato de CUIT
+    const cuitRegex = /^[0-9]{2}-[0-9]{8}-[0-9]{1}$/;
+    if (!cuitRegex.test(cuit)) {
+        mostrarNotificacion('El CUIT debe tener el formato XX-XXXXXXXX-X', 'error');
+        return;
+    }
+    
+    // Guardar en localStorage
+    localStorage.setItem('cuitEmpresa', cuit);
+    localStorage.setItem('razonSocial', razonSocial);
+    localStorage.setItem('condicionFiscal', condicionFiscal);
+    localStorage.setItem('domicilioFiscal', domicilioFiscal);
+    
+    mostrarNotificacion('Datos fiscales guardados exitosamente', 'success');
+}
+
+// Guardar datos bancarios de la empresa
+function guardarDatosBancarios() {
+    const banco = document.getElementById('bancoEmpresa').value;
+    const tipoCuenta = document.getElementById('tipoCuenta').value;
+    const numeroCuenta = document.getElementById('numeroCuenta').value;
+    const cbu = document.getElementById('cbuEmpresa').value;
+    const alias = document.getElementById('aliasEmpresa').value;
+    
+    if (!banco || !tipoCuenta || !numeroCuenta || !cbu || !alias) {
+        mostrarNotificacion('Por favor completa todos los campos bancarios', 'error');
+        return;
+    }
+    
+    // Guardar en localStorage
+    localStorage.setItem('bancoEmpresa', banco);
+    localStorage.setItem('tipoCuenta', tipoCuenta);
+    localStorage.setItem('numeroCuenta', numeroCuenta);
+    localStorage.setItem('cbuEmpresa', cbu);
+    localStorage.setItem('aliasEmpresa', alias);
+    
+    mostrarNotificacion('Datos bancarios guardados exitosamente', 'success');
+}
+
+// Cargar datos de empresa al abrir la sección
+function cargarDatosEmpresa() {
+    const cuit = localStorage.getItem('cuitEmpresa') || '';
+    const razonSocial = localStorage.getItem('razonSocial') || 'FRIOCAS - Servicios Automotrices';
+    const condicionFiscal = localStorage.getItem('condicionFiscal') || 'RI';
+    const domicilioFiscal = localStorage.getItem('domicilioFiscal') || 'Moreno 2242, Corrientes Capital';
+    
+    const banco = localStorage.getItem('bancoEmpresa') || 'Banco de la Nación Argentina';
+    const tipoCuenta = localStorage.getItem('tipoCuenta') || 'Cuenta Corriente';
+    const numeroCuenta = localStorage.getItem('numeroCuenta') || '1234567890';
+    const cbu = localStorage.getItem('cbuEmpresa') || '0110123456789012345678';
+    const alias = localStorage.getItem('aliasEmpresa') || 'FRIOCAS.AUTOS';
+    
+    // Llenar campos
+    if (document.getElementById('cuitEmpresa')) document.getElementById('cuitEmpresa').value = cuit;
+    if (document.getElementById('razonSocial')) document.getElementById('razonSocial').value = razonSocial;
+    if (document.getElementById('condicionFiscal')) document.getElementById('condicionFiscal').value = condicionFiscal;
+    if (document.getElementById('domicilioFiscal')) document.getElementById('domicilioFiscal').value = domicilioFiscal;
+    
+    if (document.getElementById('bancoEmpresa')) document.getElementById('bancoEmpresa').value = banco;
+    if (document.getElementById('tipoCuenta')) document.getElementById('tipoCuenta').value = tipoCuenta;
+    if (document.getElementById('numeroCuenta')) document.getElementById('numeroCuenta').value = numeroCuenta;
+    if (document.getElementById('cbuEmpresa')) document.getElementById('cbuEmpresa').value = cbu;
+    if (document.getElementById('aliasEmpresa')) document.getElementById('aliasEmpresa').value = alias;
+}
+
 function contactSupport(method) {
     switch(method) {
         case 'whatsapp':
@@ -2446,9 +2821,97 @@ function showSolution(type) {
     mostrarNotificacion(`${title}: ${solution.replace(/<[^>]*>/g, '')}`, 'info');
 }
 
+// Función para capitalizar texto
+function capitalizarTexto(texto) {
+    if (!texto) return '';
+    
+    return texto.toLowerCase()
+        .split(' ')
+        .map(palabra => palabra.charAt(0).toUpperCase() + palabra.slice(1))
+        .join(' ');
+}
+
+// Función para capitalizar nombres y direcciones automáticamente
+function configurarCapitalizacion() {
+    // Capitalizar nombre del cliente
+    const customerNameInput = document.getElementById('customerName');
+    if (customerNameInput) {
+        customerNameInput.addEventListener('blur', function() {
+            this.value = capitalizarTexto(this.value);
+        });
+    }
+    
+    // Capitalizar dirección del cliente
+    const customerAddressInput = document.getElementById('customerAddress');
+    if (customerAddressInput) {
+        customerAddressInput.addEventListener('blur', function() {
+            this.value = capitalizarTexto(this.value);
+        });
+    }
+    
+    // Capitalizar nombre del titular de la tarjeta
+    const cardholderNameInput = document.getElementById('cardholderName');
+    if (cardholderNameInput) {
+        cardholderNameInput.addEventListener('blur', function() {
+            this.value = capitalizarTexto(this.value);
+        });
+    }
+}
+
+// Sistema de acceso secreto al admin
+let adminAccessAttempts = 0;
+let adminAccessSequence = '';
+
+// Función para verificar acceso secreto al admin
+function verificarAccesoSecretoAdmin(event) {
+    // Secuencia secreta: presionar Ctrl + Alt + A
+    if (event.ctrlKey && event.altKey && event.key === 'a') {
+        mostrarBotónAdmin();
+        return;
+    }
+    
+    // Secuencia alternativa: escribir "admin" en cualquier lugar
+    adminAccessSequence += event.key.toLowerCase();
+    
+    // Verificar si la secuencia contiene "admin"
+    if (adminAccessSequence.includes('admin')) {
+        mostrarBotónAdmin();
+        adminAccessSequence = ''; // Resetear secuencia
+        return;
+    }
+    
+    // Limpiar secuencia si es muy larga
+    if (adminAccessSequence.length > 10) {
+        adminAccessSequence = adminAccessSequence.slice(-5);
+    }
+}
+
+// Función para mostrar el botón de admin
+function mostrarBotónAdmin() {
+    const adminButton = document.getElementById('adminButton');
+    if (adminButton) {
+        adminButton.style.display = 'flex';
+        mostrarNotificacion('Acceso administrativo habilitado', 'success');
+        
+        // Ocultar después de 30 segundos de inactividad
+        setTimeout(() => {
+            if (!document.getElementById('adminModal') || document.getElementById('adminModal').style.display === 'none') {
+                adminButton.style.display = 'none';
+                mostrarNotificacion('Acceso administrativo deshabilitado por seguridad', 'info');
+            }
+        }, 30000);
+    }
+}
+
 // Inicializar sistema de conexión al cargar la página
 document.addEventListener('DOMContentLoaded', function() {
     // initConnectionMonitoring(); // DESACTIVADO TEMPORALMENTE PARA PRUEBAS
+    
+    // Configurar capitalización automática
+    configurarCapitalizacion();
+    
+    // Configurar acceso secreto al admin
+    document.addEventListener('keydown', verificarAccesoSecretoAdmin);
     
     // Cerrar modales al hacer clic fuera
     window.addEventListener('click', (event) => {
@@ -2461,8 +2924,194 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 });
 
+// Verificar tarjeta de crédito/débito
+function verificarTarjeta() {
+    // Verificar que el modal de pago esté abierto
+    const paymentModal = document.getElementById('paymentModal');
+    if (!paymentModal || paymentModal.style.display !== 'block') {
+        console.error('Modal de pago no está abierto');
+        mostrarNotificacion('Error: Modal de pago no disponible', 'error');
+        return false;
+    }
+    
+    const cardNumberElement = document.getElementById('cardNumber');
+    const cardNameElement = document.getElementById('cardholderName');
+    const cardExpiryElement = document.getElementById('expiryDate');
+    const cardCVVElement = document.getElementById('cvv');
+    
+    // Verificar que los elementos existan
+    if (!cardNumberElement || !cardNameElement || !cardExpiryElement || !cardCVVElement) {
+        console.error('Elementos de tarjeta no encontrados');
+        mostrarNotificacion('Error: Formulario de tarjeta no disponible', 'error');
+        return false;
+    }
+    
+    const cardNumber = cardNumberElement.value.replace(/\s/g, '');
+    const cardName = cardNameElement.value;
+    const cardExpiry = cardExpiryElement.value;
+    const cardCVV = cardCVVElement.value;
+    
+    if (!cardNumber || !cardName || !cardExpiry || !cardCVV) {
+        mostrarNotificacion('Por favor completa todos los datos de la tarjeta', 'error');
+        return false;
+    }
+    
+    // Validar número de tarjeta (algoritmo de Luhn)
+    if (!validarAlgoritmoLuhn(cardNumber)) {
+        mostrarNotificacion('Número de tarjeta inválido', 'error');
+        return false;
+    }
+    
+    // Validar fecha de expiración
+    if (!validarFechaExpiracion(cardExpiry)) {
+        mostrarNotificacion('Fecha de expiración inválida', 'error');
+        return false;
+    }
+    
+    // Validar CVV
+    if (!validarCVV(cardNumber, cardCVV)) {
+        mostrarNotificacion('CVV inválido', 'error');
+        return false;
+    }
+    
+    // Simular verificación con banco
+    const resultado = simularVerificacionBanco(cardNumber, cardName);
+    return resultado;
+}
+
+// Algoritmo de Luhn para validar números de tarjeta
+function validarAlgoritmoLuhn(numero) {
+    let suma = 0;
+    let esPar = false;
+    
+    for (let i = numero.length - 1; i >= 0; i--) {
+        let digito = parseInt(numero[i]);
+        
+        if (esPar) {
+            digito *= 2;
+            if (digito > 9) {
+                digito -= 9;
+            }
+        }
+        
+        suma += digito;
+        esPar = !esPar;
+    }
+    
+    return suma % 10 === 0;
+}
+
+// Validar fecha de expiración
+function validarFechaExpiracion(expiry) {
+    const [mes, año] = expiry.split('/');
+    const fechaActual = new Date();
+    const añoActual = fechaActual.getFullYear() % 100;
+    const mesActual = fechaActual.getMonth() + 1;
+    
+    const mesExp = parseInt(mes);
+    const añoExp = parseInt(año);
+    
+    if (añoExp < añoActual || (añoExp === añoActual && mesExp < mesActual)) {
+        return false;
+    }
+    
+    return mesExp >= 1 && mesExp <= 12;
+}
+
+// Validar CVV según tipo de tarjeta
+function validarCVV(numero, cvv) {
+    const cvvLength = cvv.length;
+    
+    // Visa, Mastercard, Discover: 3 dígitos
+    if (numero.startsWith('4') || numero.startsWith('5') || numero.startsWith('6')) {
+        return cvvLength === 3;
+    }
+    
+    // American Express: 4 dígitos
+    if (numero.startsWith('3')) {
+        return cvvLength === 4;
+    }
+    
+    return cvvLength >= 3 && cvvLength <= 4;
+}
+
+// Simular verificación con banco
+function simularVerificacionBanco(numero, nombre) {
+    // Tarjetas de prueba que simulan ser válidas
+    const tarjetasValidas = [
+        '4111111111111111', // Visa
+        '5555555555554444', // Mastercard
+        '378282246310005',  // American Express
+        '6011111111111117', // Discover
+        '4000000000000002', // Visa (declinada)
+        '4000000000009995'  // Visa (fondos insuficientes)
+    ];
+    
+    // Verificación inmediata (sin delay para evitar problemas)
+    if (tarjetasValidas.includes(numero)) {
+        if (numero === '4000000000000002') {
+            mostrarNotificacion('Tarjeta declinada por el banco', 'error');
+            return false;
+        } else if (numero === '4000000000009995') {
+            mostrarNotificacion('Fondos insuficientes', 'error');
+            return false;
+        } else {
+            mostrarNotificacion('Tarjeta verificada exitosamente', 'success');
+            return true;
+        }
+    } else {
+        mostrarNotificacion('Tarjeta no reconocida. Usa una tarjeta de prueba válida', 'error');
+        return false;
+    }
+}
+
+// Función para mostrar información de tarjetas de prueba
+function mostrarTarjetasPrueba() {
+    const info = `
+📋 <strong>TARJETAS DE PRUEBA DISPONIBLES:</strong>
+
+💳 <strong>Visa (Válida):</strong>
+• Número: 4111111111111111
+• Fecha: 12/25
+• CVV: 123
+
+💳 <strong>Mastercard (Válida):</strong>
+• Número: 5555555555554444
+• Fecha: 12/25
+• CVV: 123
+
+💳 <strong>American Express (Válida):</strong>
+• Número: 378282246310005
+• Fecha: 12/25
+• CVV: 1234
+
+💳 <strong>Visa (Declinada):</strong>
+• Número: 4000000000000002
+• Fecha: 12/25
+• CVV: 123
+
+💳 <strong>Visa (Fondos Insuficientes):</strong>
+• Número: 4000000000009995
+• Fecha: 12/25
+• CVV: 123
+    `;
+    
+    mostrarNotificacion(info, 'info');
+}
+
+// Hacer la función global
+window.mostrarTarjetasPrueba = mostrarTarjetasPrueba;
+
 // Procesar pago
 function processPayment() {
+    // Verificar que el modal de pago esté abierto
+    const paymentModal = document.getElementById('paymentModal');
+    if (!paymentModal || paymentModal.style.display !== 'block') {
+        console.error('Modal de pago no está abierto');
+        mostrarNotificacion('Error: Modal de pago no disponible', 'error');
+        return;
+    }
+    
     const customerName = document.getElementById('customerName').value;
     const customerEmail = document.getElementById('customerEmail').value;
     const customerPhone = document.getElementById('customerPhone').value;
@@ -2491,6 +3140,20 @@ function processPayment() {
         console.log('Procesando pago en efectivo...');
         // Para pagos en efectivo, mostrar modal de verificación
         mostrarModalVerificacionEfectivo(customerName, customerEmail, customerPhone, customerAddress, billingType, receiptOptions);
+    } else if (paymentMethod === 'credit' || paymentMethod === 'debit') {
+        // Verificar que el modal de pago esté abierto y los campos de tarjeta estén visibles
+        const cardDetails = document.getElementById('cardDetails');
+        if (!cardDetails || cardDetails.style.display === 'none') {
+            mostrarNotificacion('Por favor selecciona un método de pago con tarjeta y completa los datos', 'error');
+            return;
+        }
+        
+        // Verificar tarjeta antes de procesar
+        if (!verificarTarjeta()) {
+            return;
+        }
+        console.log('Procesando pago con tarjeta...');
+        procesarPagoDirecto(customerName, customerEmail, customerPhone, customerAddress, paymentMethod, billingType, receiptOptions);
     } else {
         console.log('Procesando pago con método:', paymentMethod);
         // Para otros métodos, procesar directamente
@@ -2787,19 +3450,75 @@ function verificarPagoEfectivo(nombre, email, telefono, direccion, tipoFactura, 
             // Procesar el pago
             procesarPagoDirecto(nombre, email, telefono, direccion, 'cash', tipoFactura, opcionesComprobante);
             
+            // Enviar notificaciones por email
+            enviarNotificacionEfectivo(nombre, email, telefono, direccion, tipoFactura);
+            
             // Cerrar modal
             cerrarModalVerificacion();
             
             alert('¡Pago verificado exitosamente! Comprobante generado.');
-            console.log('=== VERIFICACIÓN COMPLETADA ===');
-            
-        } catch (error) {
-            console.error('Error en verificación:', error);
-            alert('Error al procesar el pago: ' + error.message);
-        }
-    } else {
-        console.log('Código inválido');
-        alert('Código de verificación inválido. Contacta a nuestro personal.');
+                console.log('=== VERIFICACIÓN COMPLETADA ===');
+    
+} catch (error) {
+    console.error('Error en verificación:', error);
+    alert('Error al procesar el pago: ' + error.message);
+}
+} else {
+    console.log('Código inválido');
+    alert('Código de verificación inválido. Contacta a nuestro personal.');
+}
+}
+
+// Enviar notificaciones por email para pagos en efectivo
+function enviarNotificacionEfectivo(nombre, email, telefono, direccion, tipoFactura) {
+    try {
+        // Email al cliente
+        const asuntoCliente = `Pago en Efectivo Confirmado - FRIOCAS`;
+        const cuerpoCliente = `Estimado/a ${nombre},\n\n` +
+                             `Su pago en efectivo ha sido confirmado exitosamente:\n\n` +
+                             `👤 Cliente: ${nombre}\n` +
+                             `📧 Email: ${email}\n` +
+                             `📞 Teléfono: ${telefono}\n` +
+                             `📍 Dirección: ${direccion}\n` +
+                             `💳 Método de Pago: Efectivo\n` +
+                             `📅 Fecha: ${new Date().toLocaleDateString()}\n` +
+                             `🕐 Hora: ${new Date().toLocaleTimeString()}\n\n` +
+                             `🏢 FRIOCAS - Servicios Automotrices\n` +
+                             `📞 +54 9 379 501-5712\n\n` +
+                             `Gracias por confiar en FRIOCAS!\n\n` +
+                             `Saludos cordiales,\nEquipo FRIOCAS`;
+        
+        const mailtoCliente = `mailto:${email}?subject=${encodeURIComponent(asuntoCliente)}&body=${encodeURIComponent(cuerpoCliente)}`;
+        
+        // Email a la empresa
+        const asuntoEmpresa = `Pago en Efectivo Recibido - FRIOCAS`;
+        const cuerpoEmpresa = `Se ha recibido un pago en efectivo:\n\n` +
+                             `👤 Cliente: ${nombre}\n` +
+                             `📧 Email: ${email}\n` +
+                             `📞 Teléfono: ${telefono}\n` +
+                             `📍 Dirección: ${direccion}\n` +
+                             `💳 Método de Pago: Efectivo\n` +
+                             `📅 Fecha: ${new Date().toLocaleDateString()}\n` +
+                             `🕐 Hora: ${new Date().toLocaleTimeString()}\n\n` +
+                             `🏢 FRIOCAS - Servicios Automotrices\n` +
+                             `📞 +54 9 379 501-5712\n\n` +
+                             `⚠️ IMPORTANTE: Verificar la recepción del pago en efectivo.`;
+        
+        const mailtoEmpresa = `mailto:info@friocas.com.ar?subject=${encodeURIComponent(asuntoEmpresa)}&body=${encodeURIComponent(cuerpoEmpresa)}`;
+        
+        // Abrir emails en ventanas separadas
+        setTimeout(() => {
+            window.open(mailtoCliente, '_blank');
+        }, 1000);
+        
+        setTimeout(() => {
+            window.open(mailtoEmpresa, '_blank');
+        }, 2000);
+        
+        console.log('Notificaciones por email enviadas al cliente y a la empresa');
+        
+    } catch (error) {
+        console.error('Error al enviar notificaciones de efectivo:', error);
     }
 }
 
@@ -2949,20 +3668,29 @@ function calcularIVA(subtotal, tipoFactura) {
 
 // Obtener CUIT según tipo de factura
 function obtenerCUIT(tipoFactura) {
+    // Obtener CUIT desde localStorage o usar valor por defecto
+    const cuitEmpresa = localStorage.getItem('cuitEmpresa') || '20-12345678-9';
+    
     switch(tipoFactura) {
         case 'A':
-            return '20-12345678-9'; // CUIT de FRIOCAS como Responsable Inscripto
+            return cuitEmpresa; // CUIT de FRIOCAS como Responsable Inscripto
         case 'B':
-            return '20-12345678-9'; // CUIT de FRIOCAS
+            return cuitEmpresa; // CUIT de FRIOCAS
         case 'C':
-            return '20-12345678-9'; // CUIT de FRIOCAS como Monotributista
+            return cuitEmpresa; // CUIT de FRIOCAS como Monotributista
         default:
-            return '20-12345678-9';
+            return cuitEmpresa;
     }
 }
 
 // Procesar comprobantes según opciones seleccionadas
 function procesarComprobantes(factura, opciones, email, telefono) {
+    if (opciones.length === 0) {
+        // Si no hay opciones seleccionadas, descargar por defecto
+        descargarComprobante(factura);
+        return;
+    }
+    
     opciones.forEach(opcion => {
         switch(opcion) {
             case 'download':
@@ -3053,13 +3781,69 @@ function enviarPorEmail(factura, email) {
                       `Gracias por confiar en FRIOCAS!\n\n` +
                       `Saludos cordiales,\nEquipo FRIOCAS`;
         
-        const urlEmail = `mailto:${email}?subject=${encodeURIComponent(asunto)}&body=${encodeURIComponent(cuerpo)}`;
-        window.open(urlEmail);
+        // Generar el contenido HTML de la factura
+        const contenidoFactura = generarContenidoFactura(factura);
         
-        mostrarNotificacion('Enviando comprobante por Email...', 'info');
+        // Crear un blob con el contenido HTML
+        const blob = new Blob([contenidoFactura], { type: 'text/html' });
+        const url = URL.createObjectURL(blob);
+        
+        // Crear un enlace temporal para descargar la factura
+        const link = document.createElement('a');
+        link.href = url;
+        link.download = `FRIOCAS_${factura.numero}.html`;
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        
+        // Crear un enlace para abrir el cliente de email con archivo adjunto
+        const mailtoLink = `mailto:${email}?subject=${encodeURIComponent(asunto)}&body=${encodeURIComponent(cuerpo)}`;
+        
+        // Mostrar instrucciones al usuario
+        mostrarNotificacion('Factura descargada. Abriendo cliente de email...', 'info');
+        
+        // Abrir el cliente de email
+        setTimeout(() => {
+            window.open(mailtoLink);
+            mostrarNotificacion('Adjunta el archivo FRIOCAS_' + factura.numero + '.html que se descargó.', 'success');
+        }, 1000);
+        
+        // Enviar copia a la empresa
+        enviarCopiaEmpresa(factura);
+        
+        // Limpiar el URL del blob
+        setTimeout(() => URL.revokeObjectURL(url), 2000);
     } catch (error) {
         console.error('Error al enviar por Email:', error);
-        mostrarNotificacion('Error al abrir el cliente de email. Verifica tu configuración.', 'error');
+        mostrarNotificacion('Error al procesar el envío por email. Intenta descargar la factura manualmente.', 'error');
+    }
+}
+
+// Enviar copia a la empresa
+function enviarCopiaEmpresa(factura) {
+    try {
+        const asuntoEmpresa = `Nueva Venta - FRIOCAS ${factura.numero}`;
+        const cuerpoEmpresa = `Se ha realizado una nueva venta:\n\n` +
+                             `📄 Factura: ${factura.numero}\n` +
+                             `👤 Cliente: ${factura.cliente.nombre}\n` +
+                             `📧 Email: ${factura.cliente.email}\n` +
+                             `📞 Teléfono: ${factura.cliente.telefono}\n` +
+                             `💰 Total: $${factura.total.toFixed(2)}\n` +
+                             `💳 Método de Pago: ${factura.metodoPago}\n` +
+                             `📅 Fecha: ${factura.fecha}\n` +
+                             `🕐 Hora: ${factura.hora}\n\n` +
+                             `🏢 FRIOCAS - Servicios Automotrices\n` +
+                             `📞 +54 9 379 501-5712`;
+        
+        const mailtoEmpresa = `mailto:info@friocas.com.ar?subject=${encodeURIComponent(asuntoEmpresa)}&body=${encodeURIComponent(cuerpoEmpresa)}`;
+        
+        // Abrir email para la empresa en nueva ventana
+        setTimeout(() => {
+            window.open(mailtoEmpresa, '_blank');
+        }, 1500);
+        
+    } catch (error) {
+        console.error('Error al enviar copia a la empresa:', error);
     }
 }
 
@@ -3067,10 +3851,10 @@ function enviarPorEmail(factura, email) {
 function generarContenidoFactura(factura) {
     const itemsHTML = factura.items.map(item => `
         <tr>
-            <td style="padding: 12px; border-bottom: 1px solid #e0e0e0;">${item.nombre}</td>
-            <td style="text-align: center; padding: 12px; border-bottom: 1px solid #e0e0e0; font-weight: 500;">${item.cantidad}</td>
-            <td style="text-align: right; padding: 12px; border-bottom: 1px solid #e0e0e0; color: #666;">$${item.precioUnitario.toFixed(2)}</td>
-            <td style="text-align: right; padding: 12px; border-bottom: 1px solid #e0e0e0; font-weight: 600; color: #2c3e50;">$${item.subtotal.toFixed(2)}</td>
+            <td style="padding: 10px; border-bottom: 1px solid #e0e0e0; font-size: 14px;">${item.nombre}</td>
+            <td style="text-align: center; padding: 10px; border-bottom: 1px solid #e0e0e0; font-weight: 500; font-size: 14px;">${item.cantidad}</td>
+            <td style="text-align: right; padding: 10px; border-bottom: 1px solid #e0e0e0; color: #666; font-size: 14px;">$${item.precioUnitario.toFixed(2)}</td>
+            <td style="text-align: right; padding: 10px; border-bottom: 1px solid #e0e0e0; font-weight: 600; color: #2c3e50; font-size: 14px;">$${item.subtotal.toFixed(2)}</td>
         </tr>
     `).join('');
     
@@ -3101,15 +3885,15 @@ function generarContenidoFactura(factura) {
                     color: #2c3e50;
                     background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
                     min-height: 100vh;
-                    padding: 40px 20px;
+                    padding: 20px 10px;
                 }
                 
                 .invoice-container {
-                    max-width: 800px;
+                    max-width: 600px;
                     margin: 0 auto;
                     background: white;
-                    border-radius: 20px;
-                    box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+                    border-radius: 15px;
+                    box-shadow: 0 15px 30px rgba(0,0,0,0.1);
                     overflow: hidden;
                     position: relative;
                 }
@@ -3120,7 +3904,7 @@ function generarContenidoFactura(factura) {
                     top: 50%;
                     left: 50%;
                     transform: translate(-50%, -50%) rotate(-15deg);
-                    font-size: 120px;
+                    font-size: 80px;
                     font-weight: bold;
                     color: #f0f0f0;
                     z-index: 0;
@@ -3134,7 +3918,7 @@ function generarContenidoFactura(factura) {
                 .header {
                     background: linear-gradient(135deg, #007bff 0%, #0056b3 100%);
                     color: white;
-                    padding: 40px;
+                    padding: 25px;
                     text-align: center;
                     position: relative;
                     z-index: 1;
@@ -3152,15 +3936,15 @@ function generarContenidoFactura(factura) {
                 }
                 
                 .logo {
-                    font-size: 32px;
+                    font-size: 24px;
                     font-weight: 700;
-                    margin-bottom: 8px;
+                    margin-bottom: 6px;
                     position: relative;
                     z-index: 1;
                     display: flex;
                     align-items: center;
                     justify-content: center;
-                    gap: 15px;
+                    gap: 12px;
                 }
                 
                 .logo span {
@@ -3168,28 +3952,28 @@ function generarContenidoFactura(factura) {
                 }
                 
                 .logo img {
-                    width: 60px;
-                    height: 60px;
-                    border-radius: 10px;
-                    box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+                    width: 45px;
+                    height: 45px;
+                    border-radius: 8px;
+                    box-shadow: 0 3px 10px rgba(0,0,0,0.2);
                     background: white;
-                    padding: 5px;
+                    padding: 4px;
                 }
                 
                 .tagline {
-                    font-size: 16px;
+                    font-size: 14px;
                     font-weight: 300;
                     opacity: 0.9;
-                    margin-bottom: 20px;
+                    margin-bottom: 15px;
                     position: relative;
                     z-index: 1;
                 }
                 
                 .cuit {
                     background: rgba(255,255,255,0.2);
-                    padding: 8px 16px;
-                    border-radius: 20px;
-                    font-size: 14px;
+                    padding: 6px 12px;
+                    border-radius: 15px;
+                    font-size: 12px;
                     font-weight: 500;
                     display: inline-block;
                     position: relative;
@@ -3197,7 +3981,7 @@ function generarContenidoFactura(factura) {
                 }
                 
                 .content {
-                    padding: 40px;
+                    padding: 25px;
                     position: relative;
                     z-index: 1;
                 }
@@ -3206,11 +3990,11 @@ function generarContenidoFactura(factura) {
                     display: flex;
                     justify-content: space-between;
                     align-items: flex-start;
-                    margin-bottom: 40px;
-                    padding: 30px;
+                    margin-bottom: 25px;
+                    padding: 20px;
                     background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
-                    border-radius: 15px;
-                    border-left: 5px solid #007bff;
+                    border-radius: 12px;
+                    border-left: 4px solid #007bff;
                 }
                 
                 .invoice-details {
@@ -3218,17 +4002,17 @@ function generarContenidoFactura(factura) {
                 }
                 
                 .invoice-type {
-                    font-size: 24px;
+                    font-size: 20px;
                     font-weight: 700;
                     color: #007bff;
-                    margin-bottom: 10px;
+                    margin-bottom: 8px;
                 }
                 
                 .invoice-number {
-                    font-size: 18px;
+                    font-size: 16px;
                     font-weight: 600;
                     color: #2c3e50;
-                    margin-bottom: 8px;
+                    margin-bottom: 6px;
                 }
                 
                 .invoice-date {
@@ -3299,39 +4083,39 @@ function generarContenidoFactura(factura) {
                 }
                 
                 .items-section {
-                    margin-bottom: 40px;
+                    margin-bottom: 25px;
                 }
                 
                 .items-title {
-                    font-size: 20px;
+                    font-size: 18px;
                     font-weight: 600;
                     color: #2c3e50;
-                    margin-bottom: 20px;
+                    margin-bottom: 15px;
                     display: flex;
                     align-items: center;
                 }
                 
                 .items-title::before {
                     content: '🛍️';
-                    margin-right: 10px;
-                    font-size: 24px;
+                    margin-right: 8px;
+                    font-size: 20px;
                 }
                 
                 .items-table {
                     width: 100%;
                     border-collapse: collapse;
                     background: white;
-                    border-radius: 15px;
+                    border-radius: 12px;
                     overflow: hidden;
-                    box-shadow: 0 5px 15px rgba(0,0,0,0.08);
+                    box-shadow: 0 4px 12px rgba(0,0,0,0.08);
                 }
                 
                 .items-table th {
                     background: linear-gradient(135deg, #007bff 0%, #0056b3 100%);
                     color: white;
-                    padding: 15px 12px;
+                    padding: 12px 10px;
                     font-weight: 600;
-                    font-size: 14px;
+                    font-size: 13px;
                     text-transform: uppercase;
                     letter-spacing: 0.5px;
                 }
@@ -3398,20 +4182,20 @@ function generarContenidoFactura(factura) {
                 .footer {
                     background: linear-gradient(135deg, #6c757d 0%, #495057 100%);
                     color: white;
-                    padding: 30px;
+                    padding: 20px;
                     text-align: center;
                 }
                 
                 .footer-title {
-                    font-size: 18px;
+                    font-size: 16px;
                     font-weight: 600;
-                    margin-bottom: 10px;
+                    margin-bottom: 8px;
                 }
                 
                 .footer-subtitle {
-                    font-size: 14px;
+                    font-size: 13px;
                     opacity: 0.8;
-                    margin-bottom: 20px;
+                    margin-bottom: 15px;
                 }
                 
                 .footer-info {
@@ -3422,17 +4206,17 @@ function generarContenidoFactura(factura) {
                 
                 .stamp {
                     position: absolute;
-                    top: 20px;
-                    right: 20px;
-                    width: 80px;
-                    height: 80px;
+                    top: 15px;
+                    right: 15px;
+                    width: 60px;
+                    height: 60px;
                     background: rgba(255,255,255,0.1);
                     border: 2px solid rgba(255,255,255,0.3);
                     border-radius: 50%;
                     display: flex;
                     align-items: center;
                     justify-content: center;
-                    font-size: 12px;
+                    font-size: 10px;
                     font-weight: 600;
                     transform: rotate(-15deg);
                 }
@@ -3457,7 +4241,7 @@ function generarContenidoFactura(factura) {
                 <div class="header">
                     <div class="stamp">PAGADO</div>
                     <div class="logo">
-                        <img src="./assets/logo/logo-friocas.png.jpg" alt="FRIOCAS Logo" style="width: 60px; height: 60px; border-radius: 10px; box-shadow: 0 4px 15px rgba(0,0,0,0.2); object-fit: cover;" onerror="this.style.display='none'; this.nextElementSibling.style.marginLeft='0';">
+                        <img src="./assets/Imagen de WhatsApp 2025-08-07 a las 17.57.01_44e6f86e.jpg" alt="FRIOCAS Logo" style="width: 45px; height: 45px; border-radius: 8px; object-fit: cover; box-shadow: 0 3px 10px rgba(0,0,0,0.2);" onerror="this.style.display='none'; this.nextElementSibling.style.marginLeft='0';">
                         <span>FRIOCAS</span>
                     </div>
                     <div class="tagline">Servicios Automotrices de Excelencia</div>
@@ -3539,4 +4323,1432 @@ function generarContenidoFactura(factura) {
         </body>
         </html>
     `;
-} 
+}
+
+// ===== SISTEMA DE ADMINISTRACIÓN =====
+
+// Credenciales de administrador (en producción deberían estar en un servidor)
+const ADMIN_CREDENTIALS = {
+    username: 'friocas_admin',
+    password: 'FRIOCAS2025!'
+};
+
+// Variables para el panel de administración
+let isAdminLoggedIn = false;
+
+// Función para cargar datos guardados
+function cargarDatosGuardados() {
+    // Cargar productos guardados
+    const productosGuardados = localStorage.getItem('friocas_productos');
+    if (productosGuardados) {
+        adminProducts = JSON.parse(productosGuardados);
+        repuestos = [...adminProducts]; // Sincronizar con la lista principal
+    } else {
+        adminProducts = [...repuestos]; // Usar datos por defecto
+    }
+    
+    // Cargar ofertas guardadas
+    const ofertasGuardadas = localStorage.getItem('friocas_ofertas');
+    if (ofertasGuardadas) {
+        adminOffers = JSON.parse(ofertasGuardadas);
+        ofertas = [...adminOffers]; // Sincronizar con la lista principal
+    } else {
+        adminOffers = [...ofertas]; // Usar datos por defecto
+    }
+    
+    // Cargar servicios guardados
+    const serviciosGuardados = localStorage.getItem('friocas_servicios');
+    if (serviciosGuardados) {
+        serviciosData = JSON.parse(serviciosGuardados);
+    }
+    
+    console.log('Datos cargados:', {
+        productos: adminProducts.length,
+        ofertas: adminOffers.length,
+        servicios: Object.keys(serviciosData).length
+    });
+}
+
+// Función para guardar datos
+function guardarDatos() {
+    console.log('Guardando datos...');
+    console.log('Productos a guardar:', adminProducts.length);
+    console.log('Ofertas a guardar:', adminOffers.length);
+    console.log('Servicios a guardar:', Object.keys(serviciosData).length);
+    
+    try {
+        localStorage.setItem('friocas_productos', JSON.stringify(adminProducts));
+        localStorage.setItem('friocas_ofertas', JSON.stringify(adminOffers));
+        localStorage.setItem('friocas_servicios', JSON.stringify(serviciosData));
+        
+        console.log('Datos guardados exitosamente en localStorage');
+    } catch (error) {
+        console.error('Error al guardar datos:', error);
+        mostrarNotificacion('Error al guardar datos: ' + error.message, 'error');
+    }
+}
+
+// Cargar datos al iniciar
+cargarDatosGuardados();
+
+// Función para inicializar datos por primera vez
+function inicializarDatosPorPrimeraVez() {
+    const productos = localStorage.getItem('friocas_productos');
+    const ofertas = localStorage.getItem('friocas_ofertas');
+    const servicios = localStorage.getItem('friocas_servicios');
+    
+    // Si no hay datos guardados, guardar los datos por defecto
+    if (!productos || !ofertas || !servicios) {
+        console.log('Inicializando datos por primera vez...');
+        guardarDatos();
+        mostrarNotificacion('Datos inicializados correctamente.', 'success');
+    }
+    
+    // Actualizar servicios en la página principal después de cargar
+    setTimeout(() => {
+        actualizarServiciosEnPaginaPrincipal();
+        cargarServiciosEnVista();
+    }, 100);
+}
+
+// Inicializar datos al cargar la página
+document.addEventListener('DOMContentLoaded', function() {
+    inicializarDatosPorPrimeraVez();
+});
+
+// Función para abrir el modal de administración
+function abrirModalAdmin() {
+    const modal = document.getElementById('adminModal');
+    modal.style.display = 'block';
+    
+    // Mostrar login si no está autenticado
+    if (!isAdminLoggedIn) {
+        mostrarLoginAdmin();
+    } else {
+        mostrarPanelAdmin();
+    }
+}
+
+// Función para cerrar el modal de administración
+function cerrarModalAdmin() {
+    const modal = document.getElementById('adminModal');
+    modal.style.display = 'none';
+    
+    // Limpiar formularios
+    limpiarFormulariosAdmin();
+}
+
+// Función para mostrar el login de administrador
+function mostrarLoginAdmin() {
+    document.getElementById('adminLogin').style.display = 'block';
+    document.getElementById('adminPanel').style.display = 'none';
+}
+
+// Función para mostrar el panel de administración
+function mostrarPanelAdmin() {
+    document.getElementById('adminLogin').style.display = 'none';
+    document.getElementById('adminPanel').style.display = 'block';
+    
+    // Mostrar dashboard por defecto
+    mostrarSeccion('dashboard');
+    
+    // Configurar eventos de formularios
+    configurarEventosAdmin();
+    
+    // Actualizar estadísticas del dashboard
+    actualizarDashboard();
+    
+    // Actualizar configuración para mostrar estado de datos
+    actualizarConfiguracion();
+}
+
+// Función para refrescar la página principal
+function refrescarPaginaPrincipal() {
+    // Recargar los datos en las listas principales
+    cargarDatosGuardados();
+    
+    // Actualizar servicios en la página principal
+    actualizarServiciosEnPaginaPrincipal();
+    
+    // Si estamos en la página principal, actualizar las vistas
+    if (typeof mostrarRepuestos === 'function') {
+        mostrarRepuestos();
+    }
+    if (typeof mostrarOfertas === 'function') {
+        mostrarOfertas();
+    }
+    
+    mostrarNotificacion('Página principal actualizada con los nuevos datos.', 'success');
+}
+
+// Función para login de administrador
+function loginAdmin() {
+    const username = document.getElementById('adminUsername').value;
+    const password = document.getElementById('adminPassword').value;
+    
+    if (username === ADMIN_CREDENTIALS.username && password === ADMIN_CREDENTIALS.password) {
+        isAdminLoggedIn = true;
+        mostrarPanelAdmin();
+        
+        // Limpiar campos de login
+        document.getElementById('adminUsername').value = '';
+        document.getElementById('adminPassword').value = '';
+        
+        // Mostrar mensaje de éxito
+        mostrarNotificacion('¡Acceso exitoso! Panel de administración cargado.', 'success');
+    } else {
+        mostrarNotificacion('Credenciales incorrectas. Intenta nuevamente.', 'error');
+        document.getElementById('adminPassword').value = '';
+    }
+}
+
+// Función para logout de administrador
+function logoutAdmin() {
+    isAdminLoggedIn = false;
+    mostrarLoginAdmin();
+    limpiarFormulariosAdmin();
+    mostrarNotificacion('Sesión cerrada exitosamente.', 'info');
+}
+
+// Función para configurar eventos del panel de administración
+function configurarEventosAdmin() {
+    // Evento para vista previa de imagen de producto
+    document.getElementById('productImage').addEventListener('change', function(e) {
+        mostrarVistaPrevia(e.target, 'productImagePreview');
+    });
+    
+    // Evento para vista previa de imagen de oferta
+    document.getElementById('offerImage').addEventListener('change', function(e) {
+        mostrarVistaPrevia(e.target, 'offerImagePreview');
+    });
+    
+    // Evento para formulario de producto
+    document.getElementById('addProductForm').addEventListener('submit', function(e) {
+        e.preventDefault();
+        agregarNuevoProducto();
+    });
+    
+    // Evento para formulario de oferta
+    document.getElementById('addOfferForm').addEventListener('submit', function(e) {
+        e.preventDefault();
+        agregarNuevaOferta();
+    });
+    
+    // Eventos para búsqueda y filtros
+    document.getElementById('buscarProductos').addEventListener('input', function(e) {
+        filtrarProductos(e.target.value);
+    });
+    
+    document.getElementById('filtrarCategoria').addEventListener('change', function(e) {
+        filtrarProductosPorCategoria(e.target.value);
+    });
+    
+    document.getElementById('buscarOfertas').addEventListener('input', function(e) {
+        filtrarOfertas(e.target.value);
+    });
+}
+
+// Función para mostrar secciones del panel
+function mostrarSeccion(seccion) {
+    // Ocultar todas las secciones
+    const secciones = document.querySelectorAll('.admin-content');
+    secciones.forEach(s => s.classList.remove('active'));
+    
+    // Mostrar la sección seleccionada
+    document.getElementById(seccion).classList.add('active');
+    
+    // Actualizar navegación
+    const navBtns = document.querySelectorAll('.nav-btn');
+    navBtns.forEach(btn => btn.classList.remove('active'));
+    event.target.classList.add('active');
+    
+    // Cargar contenido específico de la sección
+    switch(seccion) {
+        case 'dashboard':
+            actualizarDashboard();
+            break;
+        case 'productos':
+            cargarProductosActuales();
+            break;
+        case 'ofertas':
+            cargarOfertasActuales();
+            break;
+        case 'servicios':
+            // Cargar servicios en la vista
+            cargarServiciosEnVista();
+            break;
+        case 'configuracion':
+            actualizarConfiguracion();
+            break;
+        case 'empresa':
+            cargarDatosEmpresa();
+            break;
+        case 'estadisticas':
+            // Las estadísticas son placeholders por ahora
+            break;
+    }
+}
+
+// Función para actualizar dashboard
+function actualizarDashboard() {
+    document.getElementById('totalProductos').textContent = adminProducts.length;
+    document.getElementById('totalOfertas').textContent = adminOffers.length;
+    document.getElementById('ventasHoy').textContent = Math.floor(Math.random() * 50) + 10; // Simulado
+    document.getElementById('totalClientes').textContent = Math.floor(Math.random() * 200) + 50; // Simulado
+}
+
+// Función para alternar formularios
+function toggleFormulario(tipo) {
+    const formulario = document.getElementById(`formulario${tipo.charAt(0).toUpperCase() + tipo.slice(1)}`);
+    if (formulario.style.display === 'none') {
+        formulario.style.display = 'block';
+        // Limpiar formulario
+        let formId;
+        if (tipo === 'producto') {
+            formId = 'addProductForm';
+        } else if (tipo === 'oferta') {
+            formId = 'addOfferForm';
+        } else {
+            formId = `add${tipo.charAt(0).toUpperCase() + tipo.slice(1)}Form`;
+        }
+        const form = document.getElementById(formId);
+        if (form) {
+            form.reset();
+        }
+        
+        let previewId;
+        if (tipo === 'producto') {
+            previewId = 'productImagePreview';
+        } else if (tipo === 'oferta') {
+            previewId = 'offerImagePreview';
+        } else {
+            previewId = `${tipo}ImagePreview`;
+        }
+        const preview = document.getElementById(previewId);
+        if (preview) {
+            preview.innerHTML = '';
+        }
+        resetearFormulario(tipo);
+    } else {
+        formulario.style.display = 'none';
+    }
+}
+
+// Función para cancelar edición
+function cancelarEdicion(tipo) {
+    const formulario = document.getElementById(`formulario${tipo.charAt(0).toUpperCase() + tipo.slice(1)}`);
+    formulario.style.display = 'none';
+    let formId;
+    if (tipo === 'producto') {
+        formId = 'addProductForm';
+    } else if (tipo === 'oferta') {
+        formId = 'addOfferForm';
+    } else {
+        formId = `add${tipo.charAt(0).toUpperCase() + tipo.slice(1)}Form`;
+    }
+    const form = document.getElementById(formId);
+    if (form) {
+        form.reset();
+    }
+    
+    let previewId;
+    if (tipo === 'producto') {
+        previewId = 'productImagePreview';
+    } else if (tipo === 'oferta') {
+        previewId = 'offerImagePreview';
+    } else {
+        previewId = `${tipo}ImagePreview`;
+    }
+    const preview = document.getElementById(previewId);
+    if (preview) {
+        preview.innerHTML = '';
+    }
+    resetearFormulario(tipo);
+}
+
+// Función para resetear formularios
+function resetearFormulario(tipo) {
+    let formId;
+    if (tipo === 'producto') {
+        formId = 'addProductForm';
+    } else if (tipo === 'oferta') {
+        formId = 'addOfferForm';
+    } else {
+        formId = `add${tipo.charAt(0).toUpperCase() + tipo.slice(1)}Form`;
+    }
+    const submitBtn = document.querySelector(`#${formId} button[type="submit"]`);
+    if (submitBtn) {
+        submitBtn.innerHTML = `<i class="fas fa-save"></i> Guardar ${tipo.charAt(0).toUpperCase() + tipo.slice(1)}`;
+        submitBtn.onclick = function(e) {
+            e.preventDefault();
+            if (tipo === 'producto') {
+                agregarNuevoProducto();
+            } else if (tipo === 'oferta') {
+                agregarNuevaOferta();
+            }
+        };
+    }
+}
+
+// Función para filtrar productos
+function filtrarProductos(busqueda) {
+    const productos = adminProducts.filter(producto => 
+        producto.nombre.toLowerCase().includes(busqueda.toLowerCase()) ||
+        producto.marca.toLowerCase().includes(busqueda.toLowerCase()) ||
+        producto.categoria.toLowerCase().includes(busqueda.toLowerCase())
+    );
+    mostrarProductosFiltrados(productos);
+}
+
+// Función para filtrar productos por categoría
+function filtrarProductosPorCategoria(categoria) {
+    if (!categoria) {
+        cargarProductosActuales();
+        return;
+    }
+    const productos = adminProducts.filter(producto => producto.categoria === categoria);
+    mostrarProductosFiltrados(productos);
+}
+
+// Función para mostrar productos filtrados
+function mostrarProductosFiltrados(productos) {
+    const container = document.getElementById('currentProductsList');
+    container.innerHTML = '';
+    
+    if (productos.length === 0) {
+        container.innerHTML = '<p class="no-results">No se encontraron productos</p>';
+        return;
+    }
+    
+    productos.forEach(producto => {
+        const item = document.createElement('div');
+        item.className = 'product-item';
+        item.innerHTML = `
+            <div class="product-info">
+                <img src="${producto.imagen}" alt="${producto.nombre}" class="product-image" onerror="this.src='https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=60&h=60&fit=crop'">
+                <div class="product-details">
+                    <div class="product-name">${producto.nombre}</div>
+                    <div class="product-price">$${producto.precio.toLocaleString()}</div>
+                    <div class="product-stock">Stock: ${producto.stock} | ${producto.categoria}</div>
+                </div>
+            </div>
+            <div class="product-actions">
+                <button onclick="editarProducto(${producto.id})" class="btn-edit">
+                    <i class="fas fa-edit"></i> Editar
+                </button>
+                <button onclick="eliminarProducto(${producto.id})" class="btn-delete">
+                    <i class="fas fa-trash"></i> Eliminar
+                </button>
+            </div>
+        `;
+        container.appendChild(item);
+    });
+}
+
+// Función para filtrar ofertas
+function filtrarOfertas(busqueda) {
+    const ofertas = adminOffers.filter(oferta => 
+        oferta.nombre.toLowerCase().includes(busqueda.toLowerCase())
+    );
+    mostrarOfertasFiltradas(ofertas);
+}
+
+// Función para mostrar ofertas filtradas
+function mostrarOfertasFiltradas(ofertas) {
+    const container = document.getElementById('currentOffersList');
+    container.innerHTML = '';
+    
+    if (ofertas.length === 0) {
+        container.innerHTML = '<p class="no-results">No se encontraron ofertas</p>';
+        return;
+    }
+    
+    ofertas.forEach(oferta => {
+        const item = document.createElement('div');
+        item.className = 'offer-item';
+        item.innerHTML = `
+            <div class="offer-info">
+                <img src="${oferta.imagen}" alt="${oferta.nombre}" class="offer-image" onerror="this.src='https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=60&h=60&fit=crop'">
+                <div class="offer-details">
+                    <div class="offer-name">${oferta.nombre}</div>
+                    <div class="offer-price">$${(oferta.precioDescuento || 0).toLocaleString()} <span style="text-decoration: line-through; color: #999;">$${(oferta.precioOriginal || 0).toLocaleString()}</span></div>
+                    <div class="offer-stock">Stock: ${oferta.stock || 0} | -${oferta.descuento || 0}%</div>
+                </div>
+            </div>
+            <div class="offer-actions">
+                <button onclick="editarOferta(${oferta.id})" class="btn-edit">
+                    <i class="fas fa-edit"></i> Editar
+                </button>
+                <button onclick="eliminarOferta(${oferta.id})" class="btn-delete">
+                    <i class="fas fa-trash"></i> Eliminar
+                </button>
+            </div>
+        `;
+        container.appendChild(item);
+    });
+}
+
+// Los datos de servicios ahora están definidos al principio del archivo
+
+// Función para editar servicio
+function editarServicio(tipo) {
+    mostrarNotificacion(`Función de edición de servicio ${tipo} en desarrollo.`, 'info');
+}
+
+// Función para editar servicio específico
+function editarServicioEspecifico(tipo) {
+    const servicio = serviciosData[tipo];
+    if (!servicio) {
+        mostrarNotificacion('Servicio no encontrado.', 'error');
+        return;
+    }
+
+    // Crear modal de edición
+    const modal = document.createElement('div');
+    modal.className = 'modal';
+    modal.style.display = 'block';
+    modal.innerHTML = `
+        <div class="modal-content" style="max-width: 800px;">
+            <span class="close" onclick="this.parentElement.parentElement.remove()">&times;</span>
+            <h2><i class="fas fa-edit"></i> Editar ${servicio.nombre}</h2>
+            
+            <form id="editServiceForm" class="admin-form">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Nombre del Servicio</label>
+                        <input type="text" id="editServiceName" value="${servicio.nombre}" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Estado</label>
+                        <select id="editServiceStatus" required>
+                            <option value="active" ${servicio.estado === 'active' ? 'selected' : ''}>Activo</option>
+                            <option value="inactive" ${servicio.estado === 'inactive' ? 'selected' : ''}>Inactivo</option>
+                        </select>
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label>Descripción</label>
+                    <textarea id="editServiceDescription" rows="3" required>${servicio.descripcion}</textarea>
+                </div>
+                
+                <div class="form-group">
+                    <label>Precio Base ($)</label>
+                    <input type="number" id="editServiceBasePrice" value="${servicio.precioBase}" min="0" step="0.01" required>
+                </div>
+                
+                <div class="service-prices-edit">
+                    <h4>Servicios Específicos</h4>
+                    <div id="editServicePrices">
+                        ${servicio.servicios.map((serv, index) => `
+                            <div class="price-edit-item">
+                                <input type="text" value="${serv.nombre}" placeholder="Nombre del servicio" class="service-name-input">
+                                <input type="number" value="${serv.precio}" placeholder="Precio" class="service-price-input" min="0" step="0.01">
+                                <button type="button" onclick="eliminarServicioEspecifico(this)" class="btn btn-sm btn-danger">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                            </div>
+                        `).join('')}
+                    </div>
+                    <button type="button" onclick="agregarServicioEspecifico()" class="btn btn-secondary">
+                        <i class="fas fa-plus"></i> Agregar Servicio
+                    </button>
+                </div>
+                
+                <div class="form-actions">
+                    <button type="submit" class="btn btn-success">
+                        <i class="fas fa-save"></i> Guardar Cambios
+                    </button>
+                    <button type="button" onclick="this.closest('.modal').remove()" class="btn btn-secondary">
+                        <i class="fas fa-times"></i> Cancelar
+                    </button>
+                </div>
+            </form>
+        </div>
+    `;
+
+    document.body.appendChild(modal);
+
+    // Configurar evento del formulario
+    document.getElementById('editServiceForm').addEventListener('submit', function(e) {
+        e.preventDefault();
+        guardarCambiosServicio(tipo);
+    });
+
+    // Cerrar modal al hacer clic fuera
+    modal.addEventListener('click', function(e) {
+        if (e.target === modal) {
+            modal.remove();
+        }
+    });
+}
+
+// Función para agregar servicio específico en el formulario
+function agregarServicioEspecifico() {
+    const container = document.getElementById('editServicePrices');
+    const newItem = document.createElement('div');
+    newItem.className = 'price-edit-item';
+    newItem.innerHTML = `
+        <input type="text" placeholder="Nombre del servicio" class="service-name-input">
+        <input type="number" placeholder="Precio" class="service-price-input" min="0" step="0.01">
+        <button type="button" onclick="eliminarServicioEspecifico(this)" class="btn btn-sm btn-danger">
+            <i class="fas fa-trash"></i>
+        </button>
+    `;
+    container.appendChild(newItem);
+}
+
+// Función para eliminar servicio específico del formulario
+function eliminarServicioEspecifico(button) {
+    button.closest('.price-edit-item').remove();
+}
+
+// Función para guardar cambios del servicio
+function guardarCambiosServicio(tipo) {
+    const nombre = document.getElementById('editServiceName').value;
+    const descripcion = document.getElementById('editServiceDescription').value;
+    const estado = document.getElementById('editServiceStatus').value;
+    const precioBase = parseFloat(document.getElementById('editServiceBasePrice').value);
+
+    // Recopilar servicios específicos
+    const servicios = [];
+    const priceItems = document.querySelectorAll('.price-edit-item');
+    priceItems.forEach(item => {
+        const nombreServicio = item.querySelector('.service-name-input').value;
+        const precio = parseFloat(item.querySelector('.service-price-input').value);
+        if (nombreServicio && precio) {
+            servicios.push({ nombre: nombreServicio, precio: precio });
+        }
+    });
+
+    // Actualizar datos
+    serviciosData[tipo] = {
+        nombre: nombre,
+        descripcion: descripcion,
+        estado: estado,
+        precioBase: precioBase,
+        servicios: servicios
+    };
+
+    // Guardar datos
+    guardarDatos();
+    
+    // Actualizar vista
+    actualizarVistaServicio(tipo);
+    
+    // Cerrar modal
+    document.querySelector('.modal').remove();
+    
+    mostrarNotificacion('Servicio actualizado exitosamente.', 'success');
+}
+
+// Función para actualizar vista del servicio
+function actualizarVistaServicio(tipo) {
+    const servicio = serviciosData[tipo];
+    if (!servicio) return;
+
+    // Actualizar información básica
+    const detailsContainer = document.getElementById(`${tipo}-details`);
+    if (detailsContainer) {
+        const infoDiv = detailsContainer.querySelector('.service-info');
+        infoDiv.innerHTML = `
+            <p><strong>Descripción:</strong> ${servicio.descripcion}</p>
+            <p><strong>Estado:</strong> <span class="status-${servicio.estado}">${servicio.estado === 'active' ? 'Activo' : 'Inactivo'}</span></p>
+            <p><strong>Precio Base:</strong> $<span id="${tipo}-precio">${servicio.precioBase.toLocaleString()}</span></p>
+        `;
+
+        // Actualizar lista de precios
+        const pricesDiv = detailsContainer.querySelector('.price-list');
+        if (pricesDiv) {
+            pricesDiv.innerHTML = servicio.servicios.map(serv => `
+                <div class="price-item">
+                    <span>${serv.nombre}</span>
+                    <span>$${serv.precio.toLocaleString()}</span>
+                </div>
+            `).join('');
+        }
+    }
+}
+
+// Función para cargar todos los servicios en la vista
+function cargarServiciosEnVista() {
+    Object.keys(serviciosData).forEach(tipo => {
+        actualizarVistaServicio(tipo);
+    });
+}
+
+// Función para actualizar servicios en la página principal
+function actualizarServiciosEnPaginaPrincipal() {
+    // Actualizar el objeto servicios que se usa en la página principal
+    if (typeof servicios !== 'undefined') {
+        Object.keys(serviciosData).forEach(tipo => {
+            if (serviciosData[tipo]) {
+                servicios[tipo] = {
+                    ...servicios[tipo],
+                    descripcion: serviciosData[tipo].descripcion,
+                    precio: serviciosData[tipo].precioBase,
+                    servicios: serviciosData[tipo].servicios
+                };
+            }
+        });
+    }
+}
+
+// Función para actualizar configuración
+function actualizarConfiguracion() {
+    const ahora = new Date();
+    document.getElementById('ultimoAcceso').textContent = ahora.toLocaleString('es-AR');
+    document.getElementById('ultimoRespaldo').textContent = ahora.toLocaleString('es-AR');
+    
+    // Verificar estado de datos guardados
+    const productos = localStorage.getItem('friocas_productos');
+    const ofertas = localStorage.getItem('friocas_ofertas');
+    const servicios = localStorage.getItem('friocas_servicios');
+    
+    let statusText = '';
+    if (productos && ofertas && servicios) {
+        const numProductos = JSON.parse(productos).length;
+        const numOfertas = JSON.parse(ofertas).length;
+        statusText = `✅ Datos guardados (${numProductos} productos, ${numOfertas} ofertas)`;
+    } else {
+        statusText = '⚠️ Datos por defecto (no guardados)';
+    }
+    
+    document.getElementById('datosGuardadosStatus').textContent = statusText;
+}
+
+// Función para cambiar contraseña
+function cambiarPassword() {
+    const nuevaPassword = prompt('Ingresa la nueva contraseña:');
+    if (nuevaPassword && nuevaPassword.length >= 6) {
+        ADMIN_CREDENTIALS.password = nuevaPassword;
+        mostrarNotificacion('Contraseña actualizada exitosamente.', 'success');
+    } else if (nuevaPassword) {
+        mostrarNotificacion('La contraseña debe tener al menos 6 caracteres.', 'error');
+    }
+}
+
+// Función para exportar datos
+function exportarDatos() {
+    const datos = {
+        productos: adminProducts,
+        ofertas: adminOffers,
+        fecha: new Date().toISOString()
+    };
+    
+    const blob = new Blob([JSON.stringify(datos, null, 2)], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `friocas_datos_${new Date().toISOString().split('T')[0]}.json`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+    
+    mostrarNotificacion('Datos exportados exitosamente.', 'success');
+}
+
+// Función para importar datos
+function importarDatos() {
+    const input = document.createElement('input');
+    input.type = 'file';
+    input.accept = '.json';
+    input.onchange = function(e) {
+        const file = e.target.files[0];
+        if (file) {
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                try {
+                    const datos = JSON.parse(e.target.result);
+                    if (datos.productos) {
+                        adminProducts = datos.productos;
+                        repuestos = [...datos.productos];
+                    }
+                    if (datos.ofertas) {
+                        adminOffers = datos.ofertas;
+                        ofertas = [...datos.ofertas];
+                    }
+                    if (datos.servicios) {
+                        serviciosData = datos.servicios;
+                    }
+                    
+                    // Guardar datos importados
+                    guardarDatos();
+                    
+                    mostrarNotificacion('Datos importados exitosamente.', 'success');
+                    actualizarDashboard();
+                    cargarProductosActuales();
+                    cargarOfertasActuales();
+                } catch (error) {
+                    mostrarNotificacion('Error al importar datos. Verifica el formato del archivo.', 'error');
+                }
+            };
+            reader.readAsText(file);
+        }
+    };
+    input.click();
+}
+
+// Función para limpiar todos los datos guardados
+function limpiarDatosGuardados() {
+    if (confirm('¿Estás seguro de que quieres eliminar todos los datos guardados? Esta acción no se puede deshacer.')) {
+        localStorage.removeItem('friocas_productos');
+        localStorage.removeItem('friocas_ofertas');
+        localStorage.removeItem('friocas_servicios');
+        
+        // Recargar datos por defecto
+        cargarDatosGuardados();
+        
+        mostrarNotificacion('Todos los datos han sido eliminados. Se han restaurado los valores por defecto.', 'info');
+        
+        // Actualizar vistas
+        actualizarDashboard();
+        cargarProductosActuales();
+        cargarOfertasActuales();
+    }
+}
+
+// Función para verificar datos guardados
+function verificarDatosGuardados() {
+    const productos = localStorage.getItem('friocas_productos');
+    const ofertas = localStorage.getItem('friocas_ofertas');
+    const servicios = localStorage.getItem('friocas_servicios');
+    
+    console.log('=== DATOS GUARDADOS ===');
+    console.log('Productos:', productos ? JSON.parse(productos).length : 'No guardados');
+    console.log('Ofertas:', ofertas ? JSON.parse(ofertas).length : 'No guardadas');
+    console.log('Servicios:', servicios ? 'Guardados' : 'No guardados');
+    console.log('========================');
+    
+    // Verificar servicios específicos
+    if (servicios) {
+        const serviciosData = JSON.parse(servicios);
+        console.log('Servicios disponibles:', Object.keys(serviciosData));
+        Object.keys(serviciosData).forEach(tipo => {
+            console.log(`${tipo}: ${serviciosData[tipo].servicios.length} servicios específicos`);
+        });
+    }
+    
+    mostrarNotificacion(`Productos: ${productos ? JSON.parse(productos).length : 0}, Ofertas: ${ofertas ? JSON.parse(ofertas).length : 0}, Servicios: ${servicios ? Object.keys(JSON.parse(servicios)).length : 0}`, 'info');
+}
+
+// Función para verificar servicios específicos
+function verificarServicios() {
+    console.log('=== SERVICIOS ACTUALES ===');
+    console.log('serviciosData:', serviciosData);
+    console.log('Servicios en página principal:', typeof servicios !== 'undefined' ? servicios : 'No definido');
+    console.log('==========================');
+    
+    // Forzar actualización de servicios
+    cargarServiciosEnVista();
+    actualizarServiciosEnPaginaPrincipal();
+    
+    mostrarNotificacion(`Servicios cargados: ${Object.keys(serviciosData).length}`, 'info');
+}
+
+// Función para reinicializar servicios
+function reinicializarServicios() {
+    // Recargar datos guardados
+    cargarDatosGuardados();
+    
+    // Actualizar vistas
+    cargarServiciosEnVista();
+    actualizarServiciosEnPaginaPrincipal();
+    
+    mostrarNotificacion('Servicios reinicializados correctamente.', 'success');
+}
+
+// Función para probar el sistema completo
+function probarSistema() {
+    console.log('=== PRUEBA DEL SISTEMA ===');
+    
+    // Verificar variables globales
+    console.log('adminProducts:', adminProducts ? adminProducts.length : 'No definido');
+    console.log('adminOffers:', adminOffers ? adminOffers.length : 'No definido');
+    console.log('serviciosData:', serviciosData ? Object.keys(serviciosData).length : 'No definido');
+    
+    // Verificar localStorage
+    const productos = localStorage.getItem('friocas_productos');
+    const ofertas = localStorage.getItem('friocas_ofertas');
+    const servicios = localStorage.getItem('friocas_servicios');
+    
+    console.log('localStorage productos:', productos ? JSON.parse(productos).length : 'No guardado');
+    console.log('localStorage ofertas:', ofertas ? JSON.parse(ofertas).length : 'No guardado');
+    console.log('localStorage servicios:', servicios ? 'Guardado' : 'No guardado');
+    
+    // Verificar funciones
+    console.log('Función guardarDatos:', typeof guardarDatos);
+    console.log('Función cargarDatosGuardados:', typeof cargarDatosGuardados);
+    console.log('Función eliminarProducto:', typeof eliminarProducto);
+    console.log('Función eliminarOferta:', typeof eliminarOferta);
+    
+    mostrarNotificacion('Prueba del sistema completada. Revisa la consola.', 'info');
+}
+
+// Función para reinicializar completamente el sistema
+function reinicializarSistemaCompleto() {
+    console.log('=== REINICIALIZACIÓN COMPLETA ===');
+    
+    // Limpiar localStorage
+    localStorage.removeItem('friocas_productos');
+    localStorage.removeItem('friocas_ofertas');
+    localStorage.removeItem('friocas_servicios');
+    
+    // Recargar datos por defecto
+    cargarDatosGuardados();
+    
+    // Actualizar todas las vistas
+    actualizarDashboard();
+    cargarProductosActuales();
+    cargarOfertasActuales();
+    cargarServiciosEnVista();
+    actualizarServiciosEnPaginaPrincipal();
+    
+    console.log('Sistema reinicializado completamente');
+    mostrarNotificacion('Sistema reinicializado completamente. Todos los datos han sido restaurados.', 'success');
+}
+
+// Función para mostrar vista previa de imagen
+function mostrarVistaPrevia(input, previewId) {
+    const preview = document.getElementById(previewId);
+    const files = input.files;
+    
+    if (files.length > 0) {
+        preview.innerHTML = '';
+        
+        // Mostrar todas las imágenes seleccionadas
+        Array.from(files).forEach((file, index) => {
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                const imgContainer = document.createElement('div');
+                imgContainer.style.cssText = 'display: inline-block; margin: 5px; position: relative;';
+                imgContainer.innerHTML = `
+                    <img src="${e.target.result}" alt="Vista previa ${index + 1}" style="width: 80px; height: 80px; object-fit: cover; border-radius: 8px; border: 2px solid #ddd;">
+                    <div style="position: absolute; top: -5px; right: -5px; background: #007bff; color: white; border-radius: 50%; width: 20px; height: 20px; display: flex; align-items: center; justify-content: center; font-size: 10px; font-weight: bold;">
+                        ${index + 1}
+                    </div>
+                `;
+                preview.appendChild(imgContainer);
+            };
+            reader.readAsDataURL(file);
+        });
+    } else {
+        preview.innerHTML = '';
+    }
+}
+
+// Función para agregar nuevo producto
+function agregarNuevoProducto() {
+    const formData = new FormData(document.getElementById('addProductForm'));
+    const imageFiles = document.getElementById('productImage').files;
+    
+    if (imageFiles.length === 0) {
+        mostrarNotificacion('Por favor selecciona al menos una imagen para el producto.', 'error');
+        return;
+    }
+    
+    // Convertir todas las imágenes a base64
+    const imagePromises = Array.from(imageFiles).map(file => {
+        return new Promise((resolve) => {
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                resolve(e.target.result);
+            };
+            reader.readAsDataURL(file);
+        });
+    });
+    
+    Promise.all(imagePromises).then(images => {
+        const nuevoProducto = {
+            id: adminProducts.length + 1,
+            nombre: document.getElementById('productName').value,
+            categoria: document.getElementById('productCategory').value,
+            precio: parseFloat(document.getElementById('productPrice').value),
+            stock: parseInt(document.getElementById('productStock').value),
+            descripcion: document.getElementById('productDescription').value,
+            imagen: images[0], // Primera imagen como principal
+            imagenes: images, // Todas las imágenes
+            marca: document.getElementById('productBrand').value,
+            estado: document.getElementById('productStatus').value
+        };
+        
+        // Agregar a la lista de administración
+        adminProducts.push(nuevoProducto);
+        
+        // Actualizar la lista principal
+        repuestos.push(nuevoProducto);
+        
+        // Guardar datos
+        guardarDatos();
+        
+        // Actualizar la vista
+        cargarProductosActuales();
+        limpiarFormularioProducto();
+        
+        mostrarNotificacion(`Producto agregado exitosamente con ${images.length} imagen(es).`, 'success');
+    });
+}
+
+// Función para agregar nueva oferta
+function agregarNuevaOferta() {
+    const imageFiles = document.getElementById('offerImage').files;
+    
+    if (imageFiles.length === 0) {
+        mostrarNotificacion('Por favor selecciona al menos una imagen para la oferta.', 'error');
+        return;
+    }
+    
+    // Convertir todas las imágenes a base64
+    const imagePromises = Array.from(imageFiles).map(file => {
+        return new Promise((resolve) => {
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                resolve(e.target.result);
+            };
+            reader.readAsDataURL(file);
+        });
+    });
+    
+    Promise.all(imagePromises).then(images => {
+        const nuevaOferta = {
+            id: adminOffers.length + 1,
+            nombre: document.getElementById('offerName').value,
+            precioOriginal: parseFloat(document.getElementById('offerOriginalPrice').value),
+            precioDescuento: parseFloat(document.getElementById('offerDiscountedPrice').value),
+            stock: parseInt(document.getElementById('offerStock').value),
+            descripcion: document.getElementById('offerDescription').value,
+            imagen: images[0], // Primera imagen como principal
+            imagenes: images, // Todas las imágenes
+            descuento: Math.round(((parseFloat(document.getElementById('offerOriginalPrice').value) - parseFloat(document.getElementById('offerDiscountedPrice').value)) / parseFloat(document.getElementById('offerOriginalPrice').value)) * 100)
+        };
+        
+        // Agregar a la lista de administración
+        adminOffers.push(nuevaOferta);
+        
+        // Actualizar la lista principal
+        ofertas.push(nuevaOferta);
+        
+        // Guardar datos
+        guardarDatos();
+        
+        // Actualizar la vista
+        cargarOfertasActuales();
+        limpiarFormularioOferta();
+        
+        mostrarNotificacion(`Oferta agregada exitosamente con ${images.length} imagen(es).`, 'success');
+    });
+}
+
+// Función para cargar productos actuales
+function cargarProductosActuales() {
+    const container = document.getElementById('currentProductsList');
+    container.innerHTML = '';
+    
+    adminProducts.forEach(producto => {
+        const item = document.createElement('div');
+        item.className = 'product-item';
+        item.innerHTML = `
+            <div class="product-info">
+                <img src="${producto.imagen}" alt="${producto.nombre}" class="product-image" onerror="this.src='https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=60&h=60&fit=crop'">
+                <div class="product-details">
+                    <div class="product-name">${producto.nombre}</div>
+                    <div class="product-price">$${producto.precio.toLocaleString()}</div>
+                    <div class="product-stock">Stock: ${producto.stock} | ${producto.categoria}</div>
+                </div>
+            </div>
+            <div class="product-actions">
+                <button onclick="editarProducto(${producto.id})" class="btn-edit">
+                    <i class="fas fa-edit"></i> Editar
+                </button>
+                <button onclick="eliminarProducto(${producto.id})" class="btn-delete">
+                    <i class="fas fa-trash"></i> Eliminar
+                </button>
+            </div>
+        `;
+        container.appendChild(item);
+    });
+}
+
+// Función para cargar ofertas actuales
+function cargarOfertasActuales() {
+    const container = document.getElementById('currentOffersList');
+    container.innerHTML = '';
+    
+    adminOffers.forEach(oferta => {
+        const item = document.createElement('div');
+        item.className = 'offer-item';
+        item.innerHTML = `
+            <div class="offer-info">
+                <img src="${oferta.imagen}" alt="${oferta.nombre}" class="offer-image" onerror="this.src='https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=60&h=60&fit=crop'">
+                <div class="offer-details">
+                    <div class="offer-name">${oferta.nombre}</div>
+                    <div class="offer-price">$${(oferta.precioDescuento || 0).toLocaleString()} <span style="text-decoration: line-through; color: #999;">$${(oferta.precioOriginal || 0).toLocaleString()}</span></div>
+                    <div class="offer-stock">Stock: ${oferta.stock || 0} | -${oferta.descuento || 0}%</div>
+                </div>
+            </div>
+            <div class="offer-actions">
+                <button onclick="editarOferta(${oferta.id})" class="btn-edit">
+                    <i class="fas fa-edit"></i> Editar
+                </button>
+                <button onclick="eliminarOferta(${oferta.id})" class="btn-delete">
+                    <i class="fas fa-trash"></i> Eliminar
+                </button>
+            </div>
+        `;
+        container.appendChild(item);
+    });
+}
+
+// Función para editar producto
+function editarProducto(id) {
+    const producto = adminProducts.find(p => p.id === id);
+    if (producto) {
+        // Llenar formulario con datos del producto
+        document.getElementById('productName').value = producto.nombre;
+        document.getElementById('productCategory').value = producto.categoria;
+        document.getElementById('productPrice').value = producto.precio;
+        document.getElementById('productStock').value = producto.stock;
+        document.getElementById('productDescription').value = producto.descripcion;
+        document.getElementById('productBrand').value = producto.marca;
+        document.getElementById('productStatus').value = producto.estado;
+        
+        // Mostrar imagen actual
+        document.getElementById('productImagePreview').innerHTML = `<img src="${producto.imagen}" alt="Imagen actual">`;
+        
+        // Cambiar texto del botón
+        const submitBtn = document.querySelector('#addProductForm button[type="submit"]');
+        submitBtn.innerHTML = '<i class="fas fa-save"></i> Actualizar Producto';
+        submitBtn.onclick = function(e) {
+            e.preventDefault();
+            actualizarProducto(id);
+        };
+        
+        mostrarNotificacion('Modo edición activado. Completa los cambios y guarda.', 'info');
+    }
+}
+
+// Función para actualizar producto
+function actualizarProducto(id) {
+    const index = adminProducts.findIndex(p => p.id === id);
+    if (index !== -1) {
+        const imageFile = document.getElementById('productImage').files[0];
+        
+        if (imageFile) {
+            // Nueva imagen seleccionada
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                actualizarDatosProducto(index, e.target.result);
+            };
+            reader.readAsDataURL(imageFile);
+        } else {
+            // Mantener imagen actual
+            actualizarDatosProducto(index, adminProducts[index].imagen);
+        }
+    }
+}
+
+// Función auxiliar para actualizar datos del producto
+function actualizarDatosProducto(index, imagen) {
+    adminProducts[index] = {
+        ...adminProducts[index],
+        nombre: document.getElementById('productName').value,
+        categoria: document.getElementById('productCategory').value,
+        precio: parseFloat(document.getElementById('productPrice').value),
+        stock: parseInt(document.getElementById('productStock').value),
+        descripcion: document.getElementById('productDescription').value,
+        imagen: imagen,
+        marca: document.getElementById('productBrand').value,
+        estado: document.getElementById('productStatus').value
+    };
+    
+    // Actualizar también en la lista principal
+    const mainIndex = repuestos.findIndex(p => p.id === adminProducts[index].id);
+    if (mainIndex !== -1) {
+        repuestos[mainIndex] = adminProducts[index];
+    }
+    
+    // Guardar datos
+    guardarDatos();
+    
+    cargarProductosActuales();
+    limpiarFormularioProducto();
+    resetearFormularioProducto();
+    
+    mostrarNotificacion('Producto actualizado exitosamente.', 'success');
+}
+
+// Función para eliminar producto
+function eliminarProducto(id) {
+    console.log('Intentando eliminar producto con ID:', id);
+    console.log('Productos antes de eliminar:', adminProducts.length);
+    
+    if (confirm('¿Estás seguro de que quieres eliminar este producto?')) {
+        const index = adminProducts.findIndex(p => p.id === id);
+        console.log('Índice encontrado en adminProducts:', index);
+        
+        if (index !== -1) {
+            adminProducts.splice(index, 1);
+            console.log('Producto eliminado de adminProducts');
+            
+            // Eliminar también de la lista principal
+            const mainIndex = repuestos.findIndex(p => p.id === id);
+            console.log('Índice encontrado en repuestos:', mainIndex);
+            
+            if (mainIndex !== -1) {
+                repuestos.splice(mainIndex, 1);
+                console.log('Producto eliminado de repuestos');
+            }
+            
+            // Guardar datos
+            guardarDatos();
+            console.log('Datos guardados después de eliminar');
+            
+            cargarProductosActuales();
+            mostrarNotificacion('Producto eliminado exitosamente.', 'success');
+        } else {
+            console.error('No se encontró el producto con ID:', id);
+            mostrarNotificacion('Error: No se encontró el producto para eliminar.', 'error');
+        }
+    }
+}
+
+// Función para editar oferta
+function editarOferta(id) {
+    const oferta = adminOffers.find(o => o.id === id);
+    if (oferta) {
+        // Llenar formulario con datos de la oferta
+        document.getElementById('offerName').value = oferta.nombre;
+        document.getElementById('offerOriginalPrice').value = oferta.precioOriginal;
+        document.getElementById('offerDiscountedPrice').value = oferta.precioDescuento;
+        document.getElementById('offerStock').value = oferta.stock;
+        document.getElementById('offerDescription').value = oferta.descripcion;
+        
+        // Mostrar imagen actual
+        document.getElementById('offerImagePreview').innerHTML = `<img src="${oferta.imagen}" alt="Imagen actual">`;
+        
+        // Cambiar texto del botón
+        const submitBtn = document.querySelector('#addOfferForm button[type="submit"]');
+        submitBtn.innerHTML = '<i class="fas fa-save"></i> Actualizar Oferta';
+        submitBtn.onclick = function(e) {
+            e.preventDefault();
+            actualizarOferta(id);
+        };
+        
+        mostrarNotificacion('Modo edición activado. Completa los cambios y guarda.', 'info');
+    }
+}
+
+// Función para actualizar oferta
+function actualizarOferta(id) {
+    const index = adminOffers.findIndex(o => o.id === id);
+    if (index !== -1) {
+        const imageFile = document.getElementById('offerImage').files[0];
+        
+        if (imageFile) {
+            // Nueva imagen seleccionada
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                actualizarDatosOferta(index, e.target.result);
+            };
+            reader.readAsDataURL(imageFile);
+        } else {
+            // Mantener imagen actual
+            actualizarDatosOferta(index, adminOffers[index].imagen);
+        }
+    }
+}
+
+// Función auxiliar para actualizar datos de la oferta
+function actualizarDatosOferta(index, imagen) {
+    const precioOriginal = parseFloat(document.getElementById('offerOriginalPrice').value);
+    const precioDescuento = parseFloat(document.getElementById('offerDiscountedPrice').value);
+    
+    adminOffers[index] = {
+        ...adminOffers[index],
+        nombre: document.getElementById('offerName').value,
+        precioOriginal: precioOriginal,
+        precioDescuento: precioDescuento,
+        stock: parseInt(document.getElementById('offerStock').value),
+        descripcion: document.getElementById('offerDescription').value,
+        imagen: imagen,
+        descuento: Math.round(((precioOriginal - precioDescuento) / precioOriginal) * 100)
+    };
+    
+    // Actualizar también en la lista principal
+    const mainIndex = ofertas.findIndex(o => o.id === adminOffers[index].id);
+    if (mainIndex !== -1) {
+        ofertas[mainIndex] = adminOffers[index];
+    }
+    
+    // Guardar datos
+    guardarDatos();
+    
+    cargarOfertasActuales();
+    limpiarFormularioOferta();
+    resetearFormularioOferta();
+    
+    mostrarNotificacion('Oferta actualizada exitosamente.', 'success');
+}
+
+// Función para eliminar oferta
+function eliminarOferta(id) {
+    console.log('Intentando eliminar oferta con ID:', id);
+    console.log('Ofertas antes de eliminar:', adminOffers.length);
+    
+    if (confirm('¿Estás seguro de que quieres eliminar esta oferta?')) {
+        const index = adminOffers.findIndex(o => o.id === id);
+        console.log('Índice encontrado en adminOffers:', index);
+        
+        if (index !== -1) {
+            adminOffers.splice(index, 1);
+            console.log('Oferta eliminada de adminOffers');
+            
+            // Eliminar también de la lista principal
+            const mainIndex = ofertas.findIndex(o => o.id === id);
+            console.log('Índice encontrado en ofertas:', mainIndex);
+            
+            if (mainIndex !== -1) {
+                ofertas.splice(mainIndex, 1);
+                console.log('Oferta eliminada de ofertas');
+            }
+            
+            // Guardar datos
+            guardarDatos();
+            console.log('Datos guardados después de eliminar oferta');
+            
+            cargarOfertasActuales();
+            mostrarNotificacion('Oferta eliminada exitosamente.', 'success');
+        } else {
+            console.error('No se encontró la oferta con ID:', id);
+            mostrarNotificacion('Error: No se encontró la oferta para eliminar.', 'error');
+        }
+    }
+}
+
+// Función para limpiar formularios de administración
+function limpiarFormulariosAdmin() {
+    limpiarFormularioProducto();
+    limpiarFormularioOferta();
+}
+
+// Función para limpiar formulario de producto
+function limpiarFormularioProducto() {
+    document.getElementById('addProductForm').reset();
+    document.getElementById('productImagePreview').innerHTML = '';
+    resetearFormularioProducto();
+}
+
+// Función para limpiar formulario de oferta
+function limpiarFormularioOferta() {
+    document.getElementById('addOfferForm').reset();
+    document.getElementById('offerImagePreview').innerHTML = '';
+    resetearFormularioOferta();
+}
+
+// Función para resetear formulario de producto
+function resetearFormularioProducto() {
+    const submitBtn = document.querySelector('#addProductForm button[type="submit"]');
+    submitBtn.innerHTML = '<i class="fas fa-save"></i> Guardar Producto';
+    submitBtn.onclick = function(e) {
+        e.preventDefault();
+        agregarNuevoProducto();
+    };
+}
+
+// Función para resetear formulario de oferta
+function resetearFormularioOferta() {
+    const submitBtn = document.querySelector('#addOfferForm button[type="submit"]');
+    submitBtn.innerHTML = '<i class="fas fa-save"></i> Guardar Oferta';
+    submitBtn.onclick = function(e) {
+        e.preventDefault();
+        agregarNuevaOferta();
+    };
+}
+
+// Función para mostrar notificaciones
+function mostrarNotificacion(mensaje, tipo = 'info') {
+    // Crear elemento de notificación
+    const notificacion = document.createElement('div');
+    notificacion.className = `notificacion notificacion-${tipo}`;
+    notificacion.innerHTML = `
+        <i class="fas fa-${tipo === 'success' ? 'check-circle' : tipo === 'error' ? 'exclamation-circle' : 'info-circle'}"></i>
+        <span>${mensaje}</span>
+    `;
+    
+    // Agregar estilos
+    notificacion.style.cssText = `
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        background: ${tipo === 'success' ? '#28a745' : tipo === 'error' ? '#dc3545' : '#17a2b8'};
+        color: white;
+        padding: 1rem 1.5rem;
+        border-radius: 8px;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        z-index: 10000;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        font-weight: 500;
+        max-width: 300px;
+        animation: slideInRight 0.3s ease;
+    `;
+    
+    // Agregar al DOM
+    document.body.appendChild(notificacion);
+    
+    // Remover después de 3 segundos
+    setTimeout(() => {
+        notificacion.style.animation = 'slideOutRight 0.3s ease';
+        setTimeout(() => {
+            if (notificacion.parentNode) {
+                notificacion.parentNode.removeChild(notificacion);
+            }
+        }, 300);
+    }, 3000);
+}
+
+// Agregar estilos CSS para las notificaciones
+const notificacionStyles = document.createElement('style');
+notificacionStyles.textContent = `
+    @keyframes slideInRight {
+        from {
+            transform: translateX(100%);
+            opacity: 0;
+        }
+        to {
+            transform: translateX(0);
+            opacity: 1;
+        }
+    }
+    
+    @keyframes slideOutRight {
+        from {
+            transform: translateX(0);
+            opacity: 1;
+        }
+        to {
+            transform: translateX(100%);
+            opacity: 0;
+        }
+    }
+`;
+document.head.appendChild(notificacionStyles);
+
+// Cerrar modal al hacer clic fuera de él
+window.addEventListener('click', function(event) {
+    const adminModal = document.getElementById('adminModal');
+    if (event.target === adminModal) {
+        cerrarModalAdmin();
+    }
+});
+
+// Permitir Enter para login
+document.addEventListener('keypress', function(e) {
+    if (e.key === 'Enter' && document.getElementById('adminModal').style.display === 'block') {
+        if (document.getElementById('adminLogin').style.display !== 'none') {
+            loginAdmin();
+        }
+    }
+});

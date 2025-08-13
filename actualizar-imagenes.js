@@ -69,3 +69,4 @@ const ofertasActualizadas = [
 // 2. Coloca tus imágenes reales en las carpetas correspondientes
 // 3. Asegúrate de que las imágenes tengan el formato correcto (jpg, png)
 // 4. Optimiza las imágenes para web (tamaño recomendado: 300x200px)
+
