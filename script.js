@@ -3108,9 +3108,10 @@ function generarContenidoFactura(factura) {
                     color: #f0f0f0;
                     z-index: 0;
                     pointer-events: none;
-                    opacity: 0.1;
+                    opacity: 0.15;
                     text-align: center;
                     white-space: nowrap;
+                    text-shadow: 2px 2px 4px rgba(0,0,0,0.1);
                 }
                 
                 .header {
@@ -3143,6 +3144,10 @@ function generarContenidoFactura(factura) {
                     align-items: center;
                     justify-content: center;
                     gap: 15px;
+                }
+                
+                .logo span {
+                    text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
                 }
                 
                 .logo img {
@@ -3435,7 +3440,7 @@ function generarContenidoFactura(factura) {
                 <div class="header">
                     <div class="stamp">PAGADO</div>
                     <div class="logo">
-                        <img src="data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAYEBQYFBAYGBQYHBwYIChAKCgkJChQODwwQFxQYGBcUFhYaHSUfGhsjHBYWICwgIyYnKSopGR8tMC0oMCUoKSj/2wBDAQcHBwoIChMKChMoGhYaKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCj/wAARCAABAAEDASIAAhEBAxEB/8QAFQABAQAAAAAAAAAAAAAAAAAAAAv/xAAUEAEAAAAAAAAAAAAAAAAAAAAA/8QAFQEBAQAAAAAAAAAAAAAAAAAAAAX/xAAUEQEAAAAAAAAAAAAAAAAAAAAA/9oADAMBAAIRAxEAPwCdABmX/9k=" alt="FRIOCAS Logo" style="width: 60px; height: 60px; border-radius: 10px; box-shadow: 0 4px 15px rgba(0,0,0,0.2);">
+                        <div style="width: 60px; height: 60px; border-radius: 10px; background: linear-gradient(135deg, #007bff, #0056b3); display: flex; align-items: center; justify-content: center; color: white; font-weight: bold; font-size: 24px; box-shadow: 0 4px 15px rgba(0,0,0,0.2);">F</div>
                         <span>FRIOCAS</span>
                     </div>
                     <div class="tagline">Servicios Automotrices de Excelencia</div>
