@@ -1,0 +1,33 @@
+# Archivos sensibles que NO se subirán a Git
+.env
+config.php
+database.php
+*.log
+*.tmp
+
+# Archivos del sistema
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Archivos de IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Archivos de backup
+*.bak
+*.backup
+*~
+
+# Archivos temporales
+temp/
+tmp/
+cache/
+
+# Archivos de configuración local
+local-config.js
+local-settings.json
+
+# Notas: Los archivos .htaccess y robots.txt SÍ se suben porque son necesarios para el funcionamiento
