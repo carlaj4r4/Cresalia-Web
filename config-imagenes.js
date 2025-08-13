@@ -3,7 +3,7 @@
 
 const CONFIG_IMAGENES = {
     // Logo de la empresa
-    logo: "./assets/logo/friocas-logo.jpg",
+    logo: "./assets/logo/logo-friocas.png",
     
     // Productos
     productos: {
