@@ -3440,7 +3440,7 @@ function generarContenidoFactura(factura) {
                 <div class="header">
                     <div class="stamp">PAGADO</div>
                     <div class="logo">
-                        <img src="./assets/logo/logo-friocas.png" alt="FRIOCAS Logo" style="width: 60px; height: 60px; border-radius: 10px; box-shadow: 0 4px 15px rgba(0,0,0,0.2); object-fit: cover;" onerror="this.style.display='none'; this.nextElementSibling.style.marginLeft='0';">
+                        <img src="./assets/logo/logo-friocas.png.jpg" alt="FRIOCAS Logo" style="width: 60px; height: 60px; border-radius: 10px; box-shadow: 0 4px 15px rgba(0,0,0,0.2); object-fit: cover;" onerror="this.style.display='none'; this.nextElementSibling.style.marginLeft='0';">
                         <span>FRIOCAS</span>
                     </div>
                     <div class="tagline">Servicios Automotrices de Excelencia</div>
