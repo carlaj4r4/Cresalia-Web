@@ -549,6 +549,11 @@ function abrirModalPago() {
     actualizarResumenCarrito();
     paymentModal.style.display = 'block';
     document.body.style.overflow = 'hidden';
+    
+    // Configurar actualización de dirección en tiempo real
+    setTimeout(() => {
+        actualizarDireccionDisplay();
+    }, 100);
 }
 
 // Cerrar modal de pago
@@ -2493,6 +2498,18 @@ function processPayment() {
     }
 }
 
+// Función para actualizar dirección en tiempo real
+function actualizarDireccionDisplay() {
+    const addressInput = document.getElementById('customerAddress');
+    const addressDisplay = document.getElementById('customerAddressDisplay');
+    
+    if (addressInput && addressDisplay) {
+        addressInput.addEventListener('input', function() {
+            addressDisplay.textContent = this.value || 'Ingresa tu dirección en el formulario';
+        });
+    }
+}
+
 // Mostrar modal de verificación para pagos en efectivo
 function mostrarModalVerificacionEfectivo(nombre, email, telefono, direccion, tipoFactura, opcionesComprobante) {
     console.log('Abriendo modal de verificación de efectivo...');
@@ -2613,7 +2630,7 @@ function mostrarModalVerificacionEfectivo(nombre, email, telefono, direccion, ti
                                 border-radius: 8px;
                                 margin-top: 10px;
                             ">
-                                <p style="margin: 5px 0;"><strong>📍 Dirección:</strong> Av. Principal 123, Resistencia</p>
+                                <p style="margin: 5px 0;"><strong>📍 Dirección:</strong> <span id="customerAddressDisplay">Ingresa tu dirección en el formulario</span></p>
                                 <p style="margin: 5px 0;"><strong>📞 Teléfono:</strong> +54 9 379 501-5712</p>
                                 <p style="margin: 5px 0;"><strong>📧 Email:</strong> carla.crimi.95@gmail.com</p>
                             </div>
