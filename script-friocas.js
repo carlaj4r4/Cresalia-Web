@@ -833,6 +833,9 @@ document.addEventListener('DOMContentLoaded', function() {
     cargarConfiguracionSincronizada();
     cargarProductosSincronizados();
     
+    // Cargar combos y ofertas
+    cargarCombosOfertas();
+    
     // Restaurar carrito desde backup si existe
     restaurarCarritoBackup();
     
@@ -5915,6 +5918,272 @@ function registrarError(error, contexto = '') {
         contexto: contexto,
         stack: error.stack
     });
+}
+
+// ===== GESTIÓN DE COMBOS Y OFERTAS =====
+function cargarCombosOfertas() {
+    const combos = JSON.parse(localStorage.getItem('COMBOS_DATA') || '[]');
+    const combosContainer = document.getElementById('combosContainer');
+    
+    if (!combosContainer) return;
+    
+    // Filtrar solo combos activos y no expirados
+    const combosActivos = combos.filter(combo => {
+        if (!combo.activo) return false;
+        if (combo.fechaExpiracion) {
+            return new Date(combo.fechaExpiracion) > new Date();
+        }
+        return true;
+    });
+    
+    if (combosActivos.length === 0) {
+        combosContainer.innerHTML = `
+            <div class="no-combos" style="text-align: center; padding: 3rem; color: var(--gray-500);">
+                <i class="fas fa-gift" style="font-size: 3rem; margin-bottom: 1rem; opacity: 0.5;"></i>
+                <h3>No hay ofertas activas en este momento</h3>
+                <p>¡Vuelve pronto para ver nuestras increíbles ofertas!</p>
+            </div>
+        `;
+        return;
+    }
+    
+    // Ordenar combos por tipo y fecha de creación
+    const combosOrdenados = combosActivos.sort((a, b) => {
+        // Flash sales primero
+        if (a.tipo === 'flash' && b.tipo !== 'flash') return -1;
+        if (b.tipo === 'flash' && a.tipo !== 'flash') return 1;
+        // Luego por fecha de creación
+        return new Date(b.fechaCreacion) - new Date(a.fechaCreacion);
+    });
+    
+    combosContainer.innerHTML = combosOrdenados.map(combo => `
+        <div class="combo-card ${combo.tipo}">
+            <div class="combo-header">
+                <div class="combo-badge ${combo.tipo}">
+                    <i class="fas ${getComboIcon(combo.tipo)}"></i>
+                    ${getComboTipoName(combo.tipo)}
+                </div>
+                ${combo.tipo === 'flash' ? `
+                    <div class="flash-timer" id="timer-${combo.id}">
+                        <i class="fas fa-clock"></i>
+                        <span class="countdown" data-expires="${combo.fechaExpiracion}">
+                            Cargando...
+                        </span>
+                    </div>
+                ` : ''}
+            </div>
+            
+            <div class="combo-content">
+                <h3 class="combo-title">${combo.nombre}</h3>
+                <p class="combo-description">${combo.descripcion}</p>
+                
+                <div class="combo-products">
+                    <h4>Productos incluidos:</h4>
+                    <div class="products-list">
+                        ${combo.productos.map(producto => `
+                            <div class="product-item">
+                                <i class="fas fa-check"></i>
+                                <span>${producto.nombre} (${producto.cantidad}x)</span>
+                            </div>
+                        `).join('')}
+                    </div>
+                </div>
+                
+                <div class="combo-pricing">
+                    <div class="price-comparison">
+                        <span class="original-price">$${combo.precioOriginal.toLocaleString()}</span>
+                        <span class="final-price">$${combo.precioFinal.toLocaleString()}</span>
+                        <span class="discount-badge">-${combo.descuento}%</span>
+                    </div>
+                    <div class="savings">
+                        <span>Ahorras: $${(combo.precioOriginal - combo.precioFinal).toLocaleString()}</span>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="combo-actions">
+                <button class="btn-combo-primary" onclick="agregarComboAlCarrito('${combo.id}')">
+                    <i class="fas fa-shopping-cart"></i>
+                    Agregar al Carrito
+                </button>
+                <button class="btn-combo-secondary" onclick="verDetalleCombo('${combo.id}')">
+                    <i class="fas fa-info-circle"></i>
+                    Ver Detalles
+                </button>
+            </div>
+        </div>
+    `).join('');
+    
+    // Inicializar timers para flash sales
+    combosOrdenados.filter(c => c.tipo === 'flash').forEach(combo => {
+        inicializarTimerFlashSale(combo.id, combo.fechaExpiracion);
+    });
+}
+
+function getComboIcon(tipo) {
+    const icons = {
+        'combo': 'fa-box',
+        'oferta': 'fa-percentage',
+        'flash': 'fa-bolt'
+    };
+    return icons[tipo] || 'fa-gift';
+}
+
+function getComboTipoName(tipo) {
+    const names = {
+        'combo': 'Combo',
+        'oferta': 'Oferta',
+        'flash': 'Flash Sale'
+    };
+    return names[tipo] || tipo;
+}
+
+function inicializarTimerFlashSale(comboId, fechaExpiracion) {
+    const timerElement = document.getElementById(`timer-${comboId}`);
+    if (!timerElement) return;
+    
+    const countdownElement = timerElement.querySelector('.countdown');
+    
+    function actualizarTimer() {
+        const ahora = new Date().getTime();
+        const expiracion = new Date(fechaExpiracion).getTime();
+        const diferencia = expiracion - ahora;
+        
+        if (diferencia <= 0) {
+            countdownElement.innerHTML = '¡Expirado!';
+            timerElement.classList.add('expired');
+            return;
+        }
+        
+        const dias = Math.floor(diferencia / (1000 * 60 * 60 * 24));
+        const horas = Math.floor((diferencia % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+        const minutos = Math.floor((diferencia % (1000 * 60 * 60)) / (1000 * 60));
+        const segundos = Math.floor((diferencia % (1000 * 60)) / 1000);
+        
+        countdownElement.innerHTML = `${dias}d ${horas}h ${minutos}m ${segundos}s`;
+    }
+    
+    actualizarTimer();
+    setInterval(actualizarTimer, 1000);
+}
+
+function agregarComboAlCarrito(comboId) {
+    const combos = JSON.parse(localStorage.getItem('COMBOS_DATA') || '[]');
+    const combo = combos.find(c => c.id === comboId);
+    
+    if (!combo) {
+        mostrarNotificacion('❌ Combo no encontrado', 'error');
+        return;
+    }
+    
+    // Verificar si el combo no ha expirado
+    if (combo.fechaExpiracion && new Date(combo.fechaExpiracion) <= new Date()) {
+        mostrarNotificacion('❌ Esta oferta ha expirado', 'error');
+        return;
+    }
+    
+    // Agregar cada producto del combo al carrito
+    combo.productos.forEach(producto => {
+        for (let i = 0; i < producto.cantidad; i++) {
+            agregarAlCarrito(
+                producto.id,
+                producto.nombre,
+                producto.precio,
+                1,
+                `Combo: ${combo.nombre}`
+            );
+        }
+    });
+    
+    // Registrar log de compra de combo
+    registrarLogUsuario('purchase', {
+        tipo: 'combo',
+        comboId: combo.id,
+        comboNombre: combo.nombre,
+        cantidad: 1,
+        precio: combo.precioFinal
+    });
+    
+    mostrarNotificacion(`✅ Combo "${combo.nombre}" agregado al carrito`, 'success');
+}
+
+function verDetalleCombo(comboId) {
+    const combos = JSON.parse(localStorage.getItem('COMBOS_DATA') || '[]');
+    const combo = combos.find(c => c.id === comboId);
+    
+    if (!combo) {
+        mostrarNotificacion('❌ Combo no encontrado', 'error');
+        return;
+    }
+    
+    const modal = document.createElement('div');
+    modal.className = 'modal-overlay';
+    modal.innerHTML = `
+        <div class="modal-content combo-detail-modal">
+            <div class="modal-header">
+                <h3><i class="fas fa-gift"></i> ${combo.nombre}</h3>
+                <button onclick="cerrarModal()" class="close-btn">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            
+            <div class="modal-body">
+                <div class="combo-detail-content">
+                    <div class="combo-detail-description">
+                        <p>${combo.descripcion}</p>
+                    </div>
+                    
+                    <div class="combo-detail-products">
+                        <h4>Productos incluidos:</h4>
+                        <div class="products-detail-list">
+                            ${combo.productos.map(producto => `
+                                <div class="product-detail-item">
+                                    <div class="product-detail-info">
+                                        <span class="product-name">${producto.nombre}</span>
+                                        <span class="product-quantity">Cantidad: ${producto.cantidad}</span>
+                                        <span class="product-price">$${producto.precio.toLocaleString()}</span>
+                                    </div>
+                                </div>
+                            `).join('')}
+                        </div>
+                    </div>
+                    
+                    <div class="combo-detail-pricing">
+                        <div class="pricing-summary">
+                            <div class="price-row">
+                                <span>Precio original:</span>
+                                <span class="original-price">$${combo.precioOriginal.toLocaleString()}</span>
+                            </div>
+                            <div class="price-row">
+                                <span>Descuento (${combo.descuento}%):</span>
+                                <span class="discount-amount">-$${(combo.precioOriginal - combo.precioFinal).toLocaleString()}</span>
+                            </div>
+                            <div class="price-row total">
+                                <span>Precio final:</span>
+                                <span class="final-price">$${combo.precioFinal.toLocaleString()}</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    ${combo.fechaExpiracion ? `
+                        <div class="combo-detail-expiration">
+                            <i class="fas fa-clock"></i>
+                            <span>Esta oferta expira el: ${new Date(combo.fechaExpiracion).toLocaleDateString('es-AR')}</span>
+                        </div>
+                    ` : ''}
+                </div>
+            </div>
+            
+            <div class="modal-footer">
+                <button onclick="cerrarModal()" class="btn-secondary">Cerrar</button>
+                <button onclick="agregarComboAlCarrito('${combo.id}')" class="btn-primary">
+                    <i class="fas fa-shopping-cart"></i> Agregar al Carrito
+                </button>
+            </div>
+        </div>
+    `;
+    
+    document.body.appendChild(modal);
 }
 
 // Exponer funciones del mapa de transporte al contexto global

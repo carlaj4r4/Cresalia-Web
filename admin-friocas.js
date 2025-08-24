@@ -892,6 +892,61 @@ function cargarConfiguracionGeneral() {
                 </div>
             </div>
         </div>
+        
+        <!-- Gestión de Combos y Ofertas -->
+        <div class="config-general-card">
+            <div class="config-general-header">
+                <i class="fas fa-gift"></i>
+                <h3>Combos y Ofertas</h3>
+            </div>
+            <div class="config-general-content">
+                <div class="combos-controls">
+                    <div class="search-box">
+                        <input type="text" id="searchCombos" placeholder="Buscar combos..." onkeyup="filtrarCombos()">
+                        <i class="fas fa-search"></i>
+                    </div>
+                    <div class="filter-controls">
+                        <select id="filterCombos" onchange="filtrarCombosPorTipo()">
+                            <option value="all">Todos los tipos</option>
+                            <option value="combo">Solo combos</option>
+                            <option value="oferta">Solo ofertas</option>
+                            <option value="flash">Flash sales</option>
+                        </select>
+                    </div>
+                </div>
+                
+                <div class="combos-stats">
+                    <div class="stat-item">
+                        <i class="fas fa-gift"></i>
+                        <span id="totalCombos">0</span>
+                        <label>Combos Activos</label>
+                    </div>
+                    <div class="stat-item">
+                        <i class="fas fa-percentage"></i>
+                        <span id="totalOfertas">0</span>
+                        <label>Ofertas Activas</label>
+                    </div>
+                    <div class="stat-item">
+                        <i class="fas fa-clock"></i>
+                        <span id="ofertasExpiradas">0</span>
+                        <label>Expiradas</label>
+                    </div>
+                </div>
+                
+                <div class="combos-lista" id="combosLista">
+                    <!-- Los combos se cargarán dinámicamente -->
+                </div>
+                
+                <div class="config-general-actions">
+                    <button type="button" class="add-btn" onclick="mostrarFormularioCombo()">
+                        <i class="fas fa-plus"></i> Nuevo Combo/Oferta
+                    </button>
+                    <button type="button" class="sync-btn" onclick="sincronizarCombos()">
+                        <i class="fas fa-sync"></i> Sincronizar
+                    </button>
+                </div>
+            </div>
+        </div>
     `;
     
     // Configurar eventos
@@ -902,6 +957,7 @@ function cargarConfiguracionGeneral() {
     cargarCategorias();
     cargarPreciosServicios();
     cargarLogsUsuarios();
+    cargarCombosOfertas();
 }
 
 function configurarEventosConfiguracion() {
@@ -4320,4 +4376,381 @@ function limpiarLogs() {
         cargarLogsUsuarios();
         mostrarNotificacion('✅ Logs limpiados correctamente', 'success');
     }
+}
+
+// ===== GESTIÓN DE COMBOS Y OFERTAS =====
+function cargarCombosOfertas() {
+    const combos = JSON.parse(localStorage.getItem('combosOfertas') || '[]');
+    const combosLista = document.getElementById('combosLista');
+    
+    if (!combosLista) return;
+    
+    // Actualizar estadísticas
+    actualizarEstadisticasCombos(combos);
+    
+    if (combos.length === 0) {
+        combosLista.innerHTML = `
+            <div class="no-combos" style="text-align: center; color: var(--gray-500); padding: 2rem;">
+                <i class="fas fa-gift" style="font-size: 2rem; margin-bottom: 1rem;"></i>
+                <p>No hay combos u ofertas configurados</p>
+                <p style="font-size: 0.9rem;">Crea tu primer combo para aumentar las ventas</p>
+            </div>
+        `;
+    } else {
+        // Ordenar combos por fecha de creación (más recientes primero)
+        const combosOrdenados = combos.sort((a, b) => new Date(b.fechaCreacion) - new Date(a.fechaCreacion));
+        
+        combosLista.innerHTML = combosOrdenados.map(combo => `
+            <div class="combo-item ${combo.tipo} ${combo.activo ? 'activo' : 'inactivo'}">
+                <div class="combo-header">
+                    <div class="combo-icon">
+                        <i class="fas ${getComboIcon(combo.tipo)}"></i>
+                    </div>
+                    <div class="combo-info">
+                        <h4>${combo.nombre}</h4>
+                        <span class="combo-tipo">${getComboTipoName(combo.tipo)}</span>
+                    </div>
+                    <div class="combo-status">
+                        <span class="status-badge ${combo.activo ? 'active' : 'inactive'}">
+                            ${combo.activo ? 'Activo' : 'Inactivo'}
+                        </span>
+                    </div>
+                </div>
+                
+                <div class="combo-content">
+                    <div class="combo-description">${combo.descripcion}</div>
+                    
+                    <div class="combo-products">
+                        <strong>Productos incluidos:</strong>
+                        <ul>
+                            ${combo.productos.map(p => `<li>${p.nombre} (${p.cantidad}x)</li>`).join('')}
+                        </ul>
+                    </div>
+                    
+                    <div class="combo-pricing">
+                        <div class="price-info">
+                            <span class="original-price">$${combo.precioOriginal.toLocaleString()}</span>
+                            <span class="discount-price">$${combo.precioFinal.toLocaleString()}</span>
+                            <span class="discount-percent">-${combo.descuento}%</span>
+                        </div>
+                    </div>
+                    
+                    ${combo.fechaExpiracion ? `
+                        <div class="combo-expiration">
+                            <i class="fas fa-clock"></i>
+                            <span>Expira: ${formatearFecha(combo.fechaExpiracion)}</span>
+                        </div>
+                    ` : ''}
+                </div>
+                
+                <div class="combo-actions">
+                    <button onclick="editarCombo('${combo.id}')" class="edit-btn">
+                        <i class="fas fa-edit"></i> Editar
+                    </button>
+                    <button onclick="toggleCombo('${combo.id}')" class="toggle-btn ${combo.activo ? 'deactivate' : 'activate'}">
+                        <i class="fas ${combo.activo ? 'fa-pause' : 'fa-play'}"></i>
+                        ${combo.activo ? 'Desactivar' : 'Activar'}
+                    </button>
+                    <button onclick="eliminarCombo('${combo.id}')" class="delete-btn">
+                        <i class="fas fa-trash"></i> Eliminar
+                    </button>
+                </div>
+            </div>
+        `).join('');
+    }
+}
+
+function actualizarEstadisticasCombos(combos) {
+    const combosActivos = combos.filter(c => c.activo && c.tipo === 'combo');
+    const ofertasActivas = combos.filter(c => c.activo && c.tipo === 'oferta');
+    const expiradas = combos.filter(c => {
+        if (!c.fechaExpiracion) return false;
+        return new Date(c.fechaExpiracion) < new Date();
+    });
+    
+    document.getElementById('totalCombos').textContent = combosActivos.length;
+    document.getElementById('totalOfertas').textContent = ofertasActivas.length;
+    document.getElementById('ofertasExpiradas').textContent = expiradas.length;
+}
+
+function getComboIcon(tipo) {
+    const icons = {
+        'combo': 'fa-box',
+        'oferta': 'fa-percentage',
+        'flash': 'fa-bolt'
+    };
+    return icons[tipo] || 'fa-gift';
+}
+
+function getComboTipoName(tipo) {
+    const names = {
+        'combo': 'Combo de Productos',
+        'oferta': 'Oferta Especial',
+        'flash': 'Flash Sale'
+    };
+    return names[tipo] || tipo;
+}
+
+function mostrarFormularioCombo() {
+    const modal = document.createElement('div');
+    modal.className = 'modal-overlay';
+    modal.innerHTML = `
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3><i class="fas fa-gift"></i> Nuevo Combo/Oferta</h3>
+                <button onclick="cerrarModal()" class="close-btn">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            
+            <form id="formCombo" class="modal-form">
+                <div class="form-group">
+                    <label for="comboNombre">Nombre del Combo/Oferta</label>
+                    <input type="text" id="comboNombre" required placeholder="Ej: Kit Limpieza Completo">
+                </div>
+                
+                <div class="form-group">
+                    <label for="comboTipo">Tipo</label>
+                    <select id="comboTipo" required onchange="cambiarTipoCombo()">
+                        <option value="combo">Combo de Productos</option>
+                        <option value="oferta">Oferta Especial</option>
+                        <option value="flash">Flash Sale</option>
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label for="comboDescripcion">Descripción</label>
+                    <textarea id="comboDescripcion" required placeholder="Describe el combo u oferta..."></textarea>
+                </div>
+                
+                <div class="form-group">
+                    <label for="comboDescuento">Descuento (%)</label>
+                    <input type="number" id="comboDescuento" min="1" max="90" required placeholder="20">
+                </div>
+                
+                <div class="form-group" id="fechaExpiracionGroup">
+                    <label for="comboFechaExpiracion">Fecha de Expiración</label>
+                    <input type="datetime-local" id="comboFechaExpiracion">
+                </div>
+                
+                <div class="form-group">
+                    <label>Productos Incluidos</label>
+                    <div id="productosCombo" class="productos-combo">
+                        <!-- Se cargarán dinámicamente -->
+                    </div>
+                    <button type="button" onclick="agregarProductoCombo()" class="add-product-btn">
+                        <i class="fas fa-plus"></i> Agregar Producto
+                    </button>
+                </div>
+                
+                <div class="form-actions">
+                    <button type="button" onclick="cerrarModal()" class="cancel-btn">Cancelar</button>
+                    <button type="submit" class="save-btn">Guardar Combo</button>
+                </div>
+            </form>
+        </div>
+    `;
+    
+    document.body.appendChild(modal);
+    cargarProductosParaCombo();
+    
+    // Event listener para el formulario
+    document.getElementById('formCombo').addEventListener('submit', guardarCombo);
+}
+
+function cambiarTipoCombo() {
+    const tipo = document.getElementById('comboTipo').value;
+    const fechaGroup = document.getElementById('fechaExpiracionGroup');
+    
+    if (tipo === 'flash') {
+        fechaGroup.style.display = 'block';
+        document.getElementById('comboFechaExpiracion').required = true;
+    } else {
+        fechaGroup.style.display = 'none';
+        document.getElementById('comboFechaExpiracion').required = false;
+    }
+}
+
+function cargarProductosParaCombo() {
+    const productos = JSON.parse(localStorage.getItem('PRODUCTOS_DATA') || '[]');
+    const productosCombo = document.getElementById('productosCombo');
+    
+    productosCombo.innerHTML = `
+        <div class="producto-combo-item">
+            <select class="producto-select" required>
+                <option value="">Seleccionar producto</option>
+                ${productos.map(p => `<option value="${p.id}" data-precio="${p.precio}">${p.nombre} - $${p.precio}</option>`).join('')}
+            </select>
+            <input type="number" class="producto-cantidad" min="1" value="1" placeholder="Cantidad">
+            <button type="button" onclick="removerProductoCombo(this)" class="remove-product-btn">
+                <i class="fas fa-trash"></i>
+            </button>
+        </div>
+    `;
+}
+
+function agregarProductoCombo() {
+    const productosCombo = document.getElementById('productosCombo');
+    const productos = JSON.parse(localStorage.getItem('PRODUCTOS_DATA') || '[]');
+    
+    const nuevoProducto = document.createElement('div');
+    nuevoProducto.className = 'producto-combo-item';
+    nuevoProducto.innerHTML = `
+        <select class="producto-select" required>
+            <option value="">Seleccionar producto</option>
+            ${productos.map(p => `<option value="${p.id}" data-precio="${p.precio}">${p.nombre} - $${p.precio}</option>`).join('')}
+        </select>
+        <input type="number" class="producto-cantidad" min="1" value="1" placeholder="Cantidad">
+        <button type="button" onclick="removerProductoCombo(this)" class="remove-product-btn">
+            <i class="fas fa-trash"></i>
+        </button>
+    `;
+    
+    productosCombo.appendChild(nuevoProducto);
+}
+
+function removerProductoCombo(button) {
+    const productosCombo = document.getElementById('productosCombo');
+    if (productosCombo.children.length > 1) {
+        button.parentElement.remove();
+    }
+}
+
+function guardarCombo(event) {
+    event.preventDefault();
+    
+    const nombre = document.getElementById('comboNombre').value;
+    const tipo = document.getElementById('comboTipo').value;
+    const descripcion = document.getElementById('comboDescripcion').value;
+    const descuento = parseInt(document.getElementById('comboDescuento').value);
+    const fechaExpiracion = document.getElementById('comboFechaExpiracion').value;
+    
+    // Obtener productos seleccionados
+    const productosSeleccionados = [];
+    const productosCombo = document.getElementById('productosCombo');
+    const productos = JSON.parse(localStorage.getItem('PRODUCTOS_DATA') || '[]');
+    
+    for (let item of productosCombo.children) {
+        const select = item.querySelector('.producto-select');
+        const cantidad = item.querySelector('.producto-cantidad');
+        
+        if (select.value && cantidad.value) {
+            const producto = productos.find(p => p.id === select.value);
+            if (producto) {
+                productosSeleccionados.push({
+                    id: producto.id,
+                    nombre: producto.nombre,
+                    precio: producto.precio,
+                    cantidad: parseInt(cantidad.value)
+                });
+            }
+        }
+    }
+    
+    if (productosSeleccionados.length === 0) {
+        mostrarNotificacion('❌ Debes seleccionar al menos un producto', 'error');
+        return;
+    }
+    
+    // Calcular precios
+    const precioOriginal = productosSeleccionados.reduce((total, p) => total + (p.precio * p.cantidad), 0);
+    const precioFinal = precioOriginal * (1 - descuento / 100);
+    
+    const combo = {
+        id: Date.now().toString(),
+        nombre: nombre,
+        tipo: tipo,
+        descripcion: descripcion,
+        descuento: descuento,
+        productos: productosSeleccionados,
+        precioOriginal: precioOriginal,
+        precioFinal: Math.round(precioFinal),
+        fechaCreacion: new Date().toISOString(),
+        fechaExpiracion: fechaExpiracion || null,
+        activo: true
+    };
+    
+    // Guardar combo
+    let combos = JSON.parse(localStorage.getItem('combosOfertas') || '[]');
+    combos.push(combo);
+    localStorage.setItem('combosOfertas', JSON.stringify(combos));
+    
+    cerrarModal();
+    cargarCombosOfertas();
+    mostrarNotificacion('✅ Combo guardado correctamente', 'success');
+}
+
+function editarCombo(comboId) {
+    // Implementar edición de combo
+    mostrarNotificacion('🔄 Función de edición en desarrollo', 'info');
+}
+
+function toggleCombo(comboId) {
+    let combos = JSON.parse(localStorage.getItem('combosOfertas') || '[]');
+    const comboIndex = combos.findIndex(c => c.id === comboId);
+    
+    if (comboIndex !== -1) {
+        combos[comboIndex].activo = !combos[comboIndex].activo;
+        localStorage.setItem('combosOfertas', JSON.stringify(combos));
+        cargarCombosOfertas();
+        mostrarNotificacion(`✅ Combo ${combos[comboIndex].activo ? 'activado' : 'desactivado'}`, 'success');
+    }
+}
+
+function eliminarCombo(comboId) {
+    if (confirm('¿Estás seguro de que quieres eliminar este combo? Esta acción no se puede deshacer.')) {
+        let combos = JSON.parse(localStorage.getItem('combosOfertas') || '[]');
+        combos = combos.filter(c => c.id !== comboId);
+        localStorage.setItem('combosOfertas', JSON.stringify(combos));
+        cargarCombosOfertas();
+        mostrarNotificacion('✅ Combo eliminado correctamente', 'success');
+    }
+}
+
+function filtrarCombos() {
+    const searchTerm = document.getElementById('searchCombos').value.toLowerCase();
+    const comboItems = document.querySelectorAll('.combo-item');
+    
+    comboItems.forEach(item => {
+        const nombre = item.querySelector('h4').textContent.toLowerCase();
+        const descripcion = item.querySelector('.combo-description').textContent.toLowerCase();
+        
+        if (nombre.includes(searchTerm) || descripcion.includes(searchTerm)) {
+            item.style.display = 'block';
+        } else {
+            item.style.display = 'none';
+        }
+    });
+}
+
+function filtrarCombosPorTipo() {
+    const filterType = document.getElementById('filterCombos').value;
+    const comboItems = document.querySelectorAll('.combo-item');
+    
+    comboItems.forEach(item => {
+        if (filterType === 'all' || item.classList.contains(filterType)) {
+            item.style.display = 'block';
+        } else {
+            item.style.display = 'none';
+        }
+    });
+}
+
+function sincronizarCombos() {
+    const combos = JSON.parse(localStorage.getItem('combosOfertas') || '[]');
+    
+    // Guardar en localStorage para sincronización con la página principal
+    localStorage.setItem('COMBOS_DATA', JSON.stringify(combos));
+    
+    // Intentar recargar la página principal si está abierta
+    if (window.opener && !window.opener.closed) {
+        try {
+            window.opener.location.reload();
+        } catch (e) {
+            console.log('No se pudo recargar la página principal');
+        }
+    }
+    
+    mostrarNotificacion('✅ Combos sincronizados correctamente', 'success');
+    console.log('💾 Combos sincronizados:', combos);
 }
