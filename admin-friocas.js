@@ -893,6 +893,86 @@ function cargarConfiguracionGeneral() {
             </div>
         </div>
         
+        <!-- Analytics y Métricas -->
+        <div class="config-general-card">
+            <div class="config-general-header">
+                <i class="fas fa-chart-line"></i>
+                <h3>Analytics y Métricas</h3>
+            </div>
+            <div class="config-general-content">
+                <div class="analytics-overview">
+                    <div class="metric-card">
+                        <div class="metric-icon">
+                            <i class="fas fa-shopping-cart"></i>
+                        </div>
+                        <div class="metric-info">
+                            <h4 id="totalVentas">$0</h4>
+                            <p>Ventas Totales</p>
+                            <span class="metric-change positive" id="cambioVentas">+0%</span>
+                        </div>
+                    </div>
+                    
+                    <div class="metric-card">
+                        <div class="metric-icon">
+                            <i class="fas fa-gift"></i>
+                        </div>
+                        <div class="metric-info">
+                            <h4 id="conversionCombos">0%</h4>
+                            <p>Conversión Combos</p>
+                            <span class="metric-change positive" id="cambioConversion">+0%</span>
+                        </div>
+                    </div>
+                    
+                    <div class="metric-card">
+                        <div class="metric-icon">
+                            <i class="fas fa-users"></i>
+                        </div>
+                        <div class="metric-info">
+                            <h4 id="clientesUnicos">0</h4>
+                            <p>Clientes Únicos</p>
+                            <span class="metric-change positive" id="cambioClientes">+0%</span>
+                        </div>
+                    </div>
+                    
+                    <div class="metric-card">
+                        <div class="metric-icon">
+                            <i class="fas fa-chart-bar"></i>
+                        </div>
+                        <div class="metric-info">
+                            <h4 id="ticketPromedio">$0</h4>
+                            <p>Ticket Promedio</p>
+                            <span class="metric-change positive" id="cambioTicket">+0%</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="analytics-charts">
+                    <div class="chart-container">
+                        <h4>Ventas por Día (Últimos 7 días)</h4>
+                        <div class="chart" id="ventasChart">
+                            <!-- Gráfico de ventas -->
+                        </div>
+                    </div>
+                    
+                    <div class="chart-container">
+                        <h4>Combos Más Vendidos</h4>
+                        <div class="chart" id="combosChart">
+                            <!-- Gráfico de combos -->
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="analytics-actions">
+                    <button type="button" class="export-btn" onclick="exportarAnalytics()">
+                        <i class="fas fa-download"></i> Exportar Reporte
+                    </button>
+                    <button type="button" class="refresh-btn" onclick="actualizarAnalytics()">
+                        <i class="fas fa-sync"></i> Actualizar
+                    </button>
+                </div>
+            </div>
+        </div>
+        
         <!-- Gestión de Combos y Ofertas -->
         <div class="config-general-card">
             <div class="config-general-header">
@@ -911,6 +991,9 @@ function cargarConfiguracionGeneral() {
                             <option value="combo">Solo combos</option>
                             <option value="oferta">Solo ofertas</option>
                             <option value="flash">Flash sales</option>
+                            <option value="bundle">Bundles</option>
+                            <option value="seasonal">Ofertas Estacionales</option>
+                            <option value="loyalty">Programa de Lealtad</option>
                         </select>
                     </div>
                 </div>
@@ -930,6 +1013,11 @@ function cargarConfiguracionGeneral() {
                         <i class="fas fa-clock"></i>
                         <span id="ofertasExpiradas">0</span>
                         <label>Expiradas</label>
+                    </div>
+                    <div class="stat-item">
+                        <i class="fas fa-star"></i>
+                        <span id="conversionRate">0%</span>
+                        <label>Tasa Conversión</label>
                     </div>
                 </div>
                 
@@ -958,6 +1046,7 @@ function cargarConfiguracionGeneral() {
     cargarPreciosServicios();
     cargarLogsUsuarios();
     cargarCombosOfertas();
+    cargarAnalytics();
 }
 
 function configurarEventosConfiguracion() {
@@ -4534,6 +4623,44 @@ function mostrarFormularioCombo() {
                 </div>
                 
                 <div class="form-group">
+                    <label>Segmentación de Clientes</label>
+                    <div class="segmentacion-options">
+                        <label class="checkbox-option">
+                            <input type="checkbox" value="nuevo" checked>
+                            <span class="checkmark"></span>
+                            <span class="option-label">
+                                <i class="fas fa-user-plus"></i>
+                                Clientes Nuevos
+                            </span>
+                        </label>
+                        <label class="checkbox-option">
+                            <input type="checkbox" value="ocasional" checked>
+                            <span class="checkmark"></span>
+                            <span class="option-label">
+                                <i class="fas fa-user"></i>
+                                Clientes Ocasionales
+                            </span>
+                        </label>
+                        <label class="checkbox-option">
+                            <input type="checkbox" value="regular" checked>
+                            <span class="checkmark"></span>
+                            <span class="option-label">
+                                <i class="fas fa-user-check"></i>
+                                Clientes Regulares
+                            </span>
+                        </label>
+                        <label class="checkbox-option">
+                            <input type="checkbox" value="premium" checked>
+                            <span class="checkmark"></span>
+                            <span class="option-label">
+                                <i class="fas fa-crown"></i>
+                                Clientes Premium
+                            </span>
+                        </label>
+                    </div>
+                </div>
+                
+                <div class="form-group">
                     <label>Productos Incluidos</label>
                     <div id="productosCombo" class="productos-combo">
                         <!-- Se cargarán dinámicamente -->
@@ -4625,6 +4752,10 @@ function guardarCombo(event) {
     const descuento = parseInt(document.getElementById('comboDescuento').value);
     const fechaExpiracion = document.getElementById('comboFechaExpiracion').value;
     
+    // Obtener segmentación seleccionada
+    const segmentacionCheckboxes = document.querySelectorAll('.segmentacion-options input[type="checkbox"]:checked');
+    const segmentacion = Array.from(segmentacionCheckboxes).map(cb => cb.value);
+    
     // Obtener productos seleccionados
     const productosSeleccionados = [];
     const productosCombo = document.getElementById('productosCombo');
@@ -4667,6 +4798,7 @@ function guardarCombo(event) {
         precioFinal: Math.round(precioFinal),
         fechaCreacion: new Date().toISOString(),
         fechaExpiracion: fechaExpiracion || null,
+        segmentacion: segmentacion,
         activo: true
     };
     
@@ -4753,4 +4885,211 @@ function sincronizarCombos() {
     
     mostrarNotificacion('✅ Combos sincronizados correctamente', 'success');
     console.log('💾 Combos sincronizados:', combos);
+}
+
+// ===== ANALYTICS Y MÉTRICAS =====
+function cargarAnalytics() {
+    const logs = JSON.parse(localStorage.getItem('userLogs') || '[]');
+    const combos = JSON.parse(localStorage.getItem('combosOfertas') || '[]');
+    
+    // Calcular métricas
+    const metricas = calcularMetricas(logs, combos);
+    
+    // Actualizar UI
+    actualizarMetricasUI(metricas);
+    
+    // Generar gráficos
+    generarGraficoVentas(logs);
+    generarGraficoCombos(combos, logs);
+}
+
+function calcularMetricas(logs, combos) {
+    const hoy = new Date();
+    const hace7Dias = new Date(hoy.getTime() - 7 * 24 * 60 * 60 * 1000);
+    const hace14Dias = new Date(hoy.getTime() - 14 * 24 * 60 * 60 * 1000);
+    
+    // Ventas totales
+    const ventas = logs.filter(log => log.type === 'purchase');
+    const ventasTotales = ventas.reduce((total, venta) => total + (venta.amount || 0), 0);
+    
+    // Ventas últimos 7 días
+    const ventas7Dias = ventas.filter(venta => new Date(venta.timestamp) >= hace7Dias);
+    const ventas7DiasTotal = ventas7Dias.reduce((total, venta) => total + (venta.amount || 0), 0);
+    
+    // Ventas 7 días anteriores
+    const ventas14Dias = ventas.filter(venta => {
+        const fecha = new Date(venta.timestamp);
+        return fecha >= hace14Dias && fecha < hace7Dias;
+    });
+    const ventas14DiasTotal = ventas14Dias.reduce((total, venta) => total + (venta.amount || 0), 0);
+    
+    // Cambio en ventas
+    const cambioVentas = ventas14DiasTotal > 0 ? ((ventas7DiasTotal - ventas14DiasTotal) / ventas14DiasTotal) * 100 : 0;
+    
+    // Clientes únicos
+    const clientesUnicos = new Set(ventas.map(venta => venta.email)).size;
+    const clientes7Dias = new Set(ventas7Dias.map(venta => venta.email)).size;
+    const clientes14Dias = new Set(ventas14Dias.map(venta => venta.email)).size;
+    const cambioClientes = clientes14Dias > 0 ? ((clientes7Dias - clientes14Dias) / clientes14Dias) * 100 : 0;
+    
+    // Ticket promedio
+    const ticketPromedio = ventas.length > 0 ? ventasTotales / ventas.length : 0;
+    const ticket7Dias = ventas7Dias.length > 0 ? ventas7DiasTotal / ventas7Dias.length : 0;
+    const ticket14Dias = ventas14Dias.length > 0 ? ventas14DiasTotal / ventas14Dias.length : 0;
+    const cambioTicket = ticket14Dias > 0 ? ((ticket7Dias - ticket14Dias) / ticket14Dias) * 100 : 0;
+    
+    // Conversión de combos
+    const ventasCombos = ventas.filter(venta => venta.tipo === 'combo');
+    const conversionCombos = ventas.length > 0 ? (ventasCombos.length / ventas.length) * 100 : 0;
+    
+    // Visitas a combos vs compras
+    const visitasCombos = logs.filter(log => log.type === 'view' && log.page && log.page.includes('combo')).length;
+    const conversionRate = visitasCombos > 0 ? (ventasCombos.length / visitasCombos) * 100 : 0;
+    
+    return {
+        ventasTotales: ventasTotales,
+        ventas7Dias: ventas7DiasTotal,
+        cambioVentas: cambioVentas,
+        clientesUnicos: clientesUnicos,
+        cambioClientes: cambioClientes,
+        ticketPromedio: ticketPromedio,
+        cambioTicket: cambioTicket,
+        conversionCombos: conversionCombos,
+        conversionRate: conversionRate,
+        ventas: ventas,
+        ventasCombos: ventasCombos
+    };
+}
+
+function actualizarMetricasUI(metricas) {
+    document.getElementById('totalVentas').textContent = `$${metricas.ventasTotales.toLocaleString()}`;
+    document.getElementById('clientesUnicos').textContent = metricas.clientesUnicos;
+    document.getElementById('ticketPromedio').textContent = `$${Math.round(metricas.ticketPromedio).toLocaleString()}`;
+    document.getElementById('conversionCombos').textContent = `${metricas.conversionCombos.toFixed(1)}%`;
+    document.getElementById('conversionRate').textContent = `${metricas.conversionRate.toFixed(1)}%`;
+    
+    // Actualizar cambios
+    actualizarCambio('cambioVentas', metricas.cambioVentas);
+    actualizarCambio('cambioClientes', metricas.cambioClientes);
+    actualizarCambio('cambioTicket', metricas.cambioTicket);
+    actualizarCambio('cambioConversion', metricas.conversionCombos);
+}
+
+function actualizarCambio(elementId, cambio) {
+    const element = document.getElementById(elementId);
+    if (!element) return;
+    
+    const esPositivo = cambio >= 0;
+    element.textContent = `${esPositivo ? '+' : ''}${cambio.toFixed(1)}%`;
+    element.className = `metric-change ${esPositivo ? 'positive' : 'negative'}`;
+}
+
+function generarGraficoVentas(logs) {
+    const ventasChart = document.getElementById('ventasChart');
+    if (!ventasChart) return;
+    
+    // Generar datos de los últimos 7 días
+    const datos = [];
+    const hoy = new Date();
+    
+    for (let i = 6; i >= 0; i--) {
+        const fecha = new Date(hoy.getTime() - i * 24 * 60 * 60 * 1000);
+        const fechaStr = fecha.toLocaleDateString('es-AR', { weekday: 'short' });
+        
+        const ventasDia = logs.filter(log => {
+            if (log.type !== 'purchase') return false;
+            const logFecha = new Date(log.timestamp);
+            return logFecha.toDateString() === fecha.toDateString();
+        });
+        
+        const totalDia = ventasDia.reduce((total, venta) => total + (venta.amount || 0), 0);
+        datos.push({ fecha: fechaStr, ventas: totalDia });
+    }
+    
+    // Crear gráfico simple con CSS
+    const maxVentas = Math.max(...datos.map(d => d.ventas));
+    const chartHTML = datos.map(dato => `
+        <div class="chart-bar">
+            <div class="bar" style="height: ${maxVentas > 0 ? (dato.ventas / maxVentas) * 100 : 0}%"></div>
+            <span class="bar-label">${dato.fecha}</span>
+            <span class="bar-value">$${dato.ventas.toLocaleString()}</span>
+        </div>
+    `).join('');
+    
+    ventasChart.innerHTML = `
+        <div class="chart-bars">
+            ${chartHTML}
+        </div>
+    `;
+}
+
+function generarGraficoCombos(combos, logs) {
+    const combosChart = document.getElementById('combosChart');
+    if (!combosChart) return;
+    
+    // Contar ventas por combo
+    const ventasCombos = logs.filter(log => log.type === 'purchase' && log.tipo === 'combo');
+    const estadisticasCombos = {};
+    
+    ventasCombos.forEach(venta => {
+        if (!estadisticasCombos[venta.comboNombre]) {
+            estadisticasCombos[venta.comboNombre] = 0;
+        }
+        estadisticasCombos[venta.comboNombre]++;
+    });
+    
+    // Ordenar por ventas
+    const combosOrdenados = Object.entries(estadisticasCombos)
+        .sort(([,a], [,b]) => b - a)
+        .slice(0, 5); // Top 5
+    
+    if (combosOrdenados.length === 0) {
+        combosChart.innerHTML = '<p style="text-align: center; color: var(--gray-500);">No hay datos de ventas de combos</p>';
+        return;
+    }
+    
+    const maxVentas = Math.max(...combosOrdenados.map(([, ventas]) => ventas));
+    const chartHTML = combosOrdenados.map(([nombre, ventas]) => `
+        <div class="chart-row">
+            <span class="combo-name">${nombre}</span>
+            <div class="progress-bar">
+                <div class="progress-fill" style="width: ${(ventas / maxVentas) * 100}%"></div>
+            </div>
+            <span class="combo-sales">${ventas} ventas</span>
+        </div>
+    `).join('');
+    
+    combosChart.innerHTML = chartHTML;
+}
+
+function exportarAnalytics() {
+    const logs = JSON.parse(localStorage.getItem('userLogs') || '[]');
+    const combos = JSON.parse(localStorage.getItem('combosOfertas') || '[]');
+    const metricas = calcularMetricas(logs, combos);
+    
+    const reporte = {
+        fecha: new Date().toISOString(),
+        metricas: metricas,
+        ventas: logs.filter(log => log.type === 'purchase'),
+        combos: combos
+    };
+    
+    const csvContent = "data:text/csv;charset=utf-8," 
+        + "Fecha,Total Ventas,Clientes Únicos,Ticket Promedio,Conversión Combos\n"
+        + `${new Date().toLocaleDateString()},${metricas.ventasTotales},${metricas.clientesUnicos},${metricas.ticketPromedio.toFixed(2)},${metricas.conversionCombos.toFixed(1)}%\n`;
+    
+    const encodedUri = encodeURI(csvContent);
+    const link = document.createElement("a");
+    link.setAttribute("href", encodedUri);
+    link.setAttribute("download", `analytics_friocas_${new Date().toISOString().split('T')[0]}.csv`);
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    
+    mostrarNotificacion('✅ Reporte de analytics exportado', 'success');
+}
+
+function actualizarAnalytics() {
+    cargarAnalytics();
+    mostrarNotificacion('🔄 Analytics actualizados', 'info');
 }

@@ -1,4 +1,4 @@
-// ===== FRIOCAS WEB - VERSIÓN 5.3 - CACHE FORZADO =====
+// ===== FRIOCAS WEB - VERSIÓN 5.4 - CACHE FORZADO =====
 // ===== CONFIGURACIÓN DE LA EMPRESA =====
 let CONFIG_EMPRESA = {
     nombre: 'FRIOCAS',
@@ -5927,12 +5927,21 @@ function cargarCombosOfertas() {
     
     if (!combosContainer) return;
     
-    // Filtrar solo combos activos y no expirados
+    // Obtener categoría del cliente
+    const categoriaCliente = obtenerCategoriaCliente();
+    
+    // Filtrar combos por categoría de cliente y estado
     const combosActivos = combos.filter(combo => {
         if (!combo.activo) return false;
         if (combo.fechaExpiracion) {
             return new Date(combo.fechaExpiracion) > new Date();
         }
+        
+        // Filtrar por segmentación de cliente
+        if (combo.segmentacion && combo.segmentacion.length > 0) {
+            return combo.segmentacion.includes(categoriaCliente);
+        }
+        
         return true;
     });
     
@@ -6106,6 +6115,117 @@ function agregarComboAlCarrito(comboId) {
     
     mostrarNotificacion(`✅ Combo "${combo.nombre}" agregado al carrito`, 'success');
 }
+
+// ===== SEGMENTACIÓN DE CLIENTES =====
+function obtenerCategoriaCliente() {
+    // Obtener historial de compras del cliente
+    const logs = JSON.parse(localStorage.getItem('userLogs') || '[]');
+    const comprasCliente = logs.filter(log => log.type === 'purchase');
+    
+    if (comprasCliente.length === 0) {
+        return 'nuevo'; // Cliente nuevo
+    }
+    
+    // Calcular valor total de compras
+    const totalCompras = comprasCliente.reduce((total, compra) => total + (compra.amount || 0), 0);
+    
+    // Calcular frecuencia de compra
+    const primeraCompra = new Date(Math.min(...comprasCliente.map(c => new Date(c.timestamp))));
+    const ultimaCompra = new Date(Math.max(...comprasCliente.map(c => new Date(c.timestamp))));
+    const diasEntreCompras = (ultimaCompra - primeraCompra) / (1000 * 60 * 60 * 24);
+    const frecuencia = comprasCliente.length / Math.max(diasEntreCompras / 30, 1); // Compras por mes
+    
+    // Determinar categoría
+    if (totalCompras > 100000 && frecuencia > 2) {
+        return 'premium'; // Cliente premium
+    } else if (totalCompras > 50000 || frecuencia > 1) {
+        return 'regular'; // Cliente regular
+    } else if (totalCompras > 10000) {
+        return 'ocasional'; // Cliente ocasional
+    } else {
+        return 'nuevo'; // Cliente nuevo
+    }
+}
+
+// ===== NOTIFICACIONES DE OFERTAS =====
+function verificarOfertasExpiradas() {
+    const combos = JSON.parse(localStorage.getItem('COMBOS_DATA') || '[]');
+    const ahora = new Date();
+    
+    combos.forEach(combo => {
+        if (combo.fechaExpiracion && combo.activo) {
+            const fechaExpiracion = new Date(combo.fechaExpiracion);
+            const tiempoRestante = fechaExpiracion - ahora;
+            
+            // Notificar cuando quedan menos de 24 horas
+            if (tiempoRestante > 0 && tiempoRestante < 24 * 60 * 60 * 1000) {
+                const horasRestantes = Math.floor(tiempoRestante / (1000 * 60 * 60));
+                mostrarNotificacionOferta(combo, horasRestantes);
+            }
+        }
+    });
+}
+
+function mostrarNotificacionOferta(combo, horasRestantes) {
+    // Verificar si ya se mostró la notificación
+    const notificacionKey = `notificacion_${combo.id}`;
+    if (localStorage.getItem(notificacionKey)) return;
+    
+    // Crear notificación especial
+    const notificacion = document.createElement('div');
+    notificacion.className = 'notificacion-oferta';
+    notificacion.innerHTML = `
+        <div class="notificacion-oferta-content">
+            <div class="notificacion-oferta-header">
+                <i class="fas fa-clock"></i>
+                <span>¡Oferta por expirar!</span>
+                <button onclick="cerrarNotificacionOferta(this)" class="cerrar-notificacion">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="notificacion-oferta-body">
+                <h4>${combo.nombre}</h4>
+                <p>${combo.descripcion}</p>
+                <div class="oferta-precio">
+                    <span class="precio-original">$${combo.precioOriginal.toLocaleString()}</span>
+                    <span class="precio-final">$${combo.precioFinal.toLocaleString()}</span>
+                    <span class="descuento">-${combo.descuento}%</span>
+                </div>
+                <div class="tiempo-restante">
+                    <i class="fas fa-fire"></i>
+                    <span>¡Solo quedan ${horasRestantes} horas!</span>
+                </div>
+            </div>
+            <div class="notificacion-oferta-actions">
+                <button onclick="agregarComboAlCarrito('${combo.id}')" class="btn-aprovechar">
+                    <i class="fas fa-shopping-cart"></i> Aprovechar Ahora
+                </button>
+            </div>
+        </div>
+    `;
+    
+    document.body.appendChild(notificacion);
+    
+    // Marcar como mostrada
+    localStorage.setItem(notificacionKey, 'true');
+    
+    // Auto-ocultar después de 30 segundos
+    setTimeout(() => {
+        if (notificacion.parentNode) {
+            notificacion.remove();
+        }
+    }, 30000);
+}
+
+function cerrarNotificacionOferta(button) {
+    const notificacion = button.closest('.notificacion-oferta');
+    if (notificacion) {
+        notificacion.remove();
+    }
+}
+
+// Inicializar verificación de ofertas
+setInterval(verificarOfertasExpiradas, 60000); // Verificar cada minuto
 
 function verDetalleCombo(comboId) {
     const combos = JSON.parse(localStorage.getItem('COMBOS_DATA') || '[]');
