@@ -1,0 +1,486 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FRIOCAS - Panel de Administración</title>
+    
+    <!-- Favicon -->
+    <link rel="icon" type="image/png" href="assets/logo/logo-friocas.png">
+    <link rel="apple-touch-icon" href="assets/logo/logo-friocas.png">
+    
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Estilos de Administración -->
+    <link rel="stylesheet" href="styles-admin-friocas.css?v=1.8">
+</head>
+<body>
+    <!-- Pantalla de Login -->
+    <div id="loginScreen" class="login-container">
+        <div class="login-card">
+            <div class="login-header">
+                <img src="assets/logo/logo-friocas.png" alt="FRIOCAS" class="login-logo">
+                <h2>Panel de Administración</h2>
+                <p>Acceso exclusivo para FRIOCAS</p>
+                <div style="background: #f8f9fa; padding: 10px; border-radius: 8px; margin-top: 10px; border: 1px solid #dee2e6;">
+                    <p style="margin: 0; font-size: 14px; color: #6c757d;">
+                        <strong>🔑 Contraseña:</strong> FRIOCAS2024ADMIN
+                    </p>
+                </div>
+            </div>
+            
+            <form id="loginForm" class="login-form">
+                <div class="form-group">
+                    <label for="password">
+                        <i class="fas fa-lock"></i>
+                        Contraseña de Administrador
+                    </label>
+                    <input type="password" id="password" name="password" required>
+                    <div class="password-toggle">
+                        <i class="fas fa-eye" id="togglePassword"></i>
+                    </div>
+                </div>
+                
+                <button type="submit" class="login-btn">
+                    <i class="fas fa-sign-in-alt"></i>
+                    Acceder al Panel
+                </button>
+            </form>
+            
+            <div class="login-footer">
+                <p><i class="fas fa-shield-alt"></i> Acceso seguro y encriptado</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Panel de Administración -->
+    <div id="adminPanel" class="admin-container" style="display: none;">
+        <!-- Header del Panel -->
+        <header class="admin-header">
+            <div class="admin-header-left">
+                <img src="assets/logo/logo-friocas.png" alt="FRIOCAS" class="admin-logo">
+                <h1>Panel de Administración FRIOCAS</h1>
+            </div>
+            <div class="admin-header-right">
+                <div class="admin-user">
+                    <i class="fas fa-user-shield"></i>
+                    <span>Administrador</span>
+                </div>
+                <button onclick="cambiarContraseñaAdmin('ADMIN123')" class="btn btn-warning btn-sm" style="margin-right: 10px;">
+                    <i class="fas fa-key"></i>
+                    Cambiar a ADMIN123
+                </button>
+                <button id="logoutBtn" class="logout-btn">
+                    <i class="fas fa-sign-out-alt"></i>
+                    Cerrar Sesión
+                </button>
+            </div>
+        </header>
+
+        <!-- Navegación -->
+        <nav class="admin-nav">
+            <button class="nav-btn active" data-section="dashboard">
+                <i class="fas fa-tachometer-alt"></i>
+                Dashboard
+            </button>
+            <button class="nav-btn" data-section="productos">
+                <i class="fas fa-box"></i>
+                Productos
+            </button>
+            <button class="nav-btn" data-section="servicios">
+                <i class="fas fa-tools"></i>
+                Servicios
+            </button>
+            <button class="nav-btn" data-section="pagos">
+                <i class="fas fa-credit-card"></i>
+                Configuración de Pagos
+            </button>
+            <button class="nav-btn" data-section="configuracion">
+                <i class="fas fa-cog"></i>
+                Configuración General
+            </button>
+            <button class="nav-btn" data-section="ofertas">
+                <i class="fas fa-tags"></i>
+                Ofertas & Combos
+            </button>
+            <button class="nav-btn" data-section="estadisticas">
+                <i class="fas fa-chart-bar"></i>
+                Estadísticas
+            </button>
+        </nav>
+
+        <!-- Contenido Principal -->
+        <main class="admin-content">
+            <!-- Dashboard -->
+            <section id="dashboard" class="content-section active">
+                <div class="dashboard-header">
+                    <h2><i class="fas fa-tachometer-alt"></i> Dashboard</h2>
+                    <p>Bienvenido al panel de control de FRIOCAS</p>
+                </div>
+                
+                <div class="dashboard-stats">
+                    <div class="stat-card">
+                        <div class="stat-icon">
+                            <i class="fas fa-shopping-cart"></i>
+                        </div>
+                        <div class="stat-info">
+                            <h3>33</h3>
+                            <p>Productos Activos</p>
+                        </div>
+                    </div>
+                    
+                    <div class="stat-card">
+                        <div class="stat-icon">
+                            <i class="fas fa-tags"></i>
+                        </div>
+                        <div class="stat-info">
+                            <h3>5</h3>
+                            <p>Categorías</p>
+                        </div>
+                    </div>
+                    
+                    <div class="stat-card">
+                        <div class="stat-icon">
+                            <i class="fas fa-chart-line"></i>
+                        </div>
+                        <div class="stat-info">
+                            <h3>0</h3>
+                            <p>Ventas Hoy</p>
+                        </div>
+                    </div>
+                    
+                    <div class="stat-card">
+                        <div class="stat-icon">
+                            <i class="fas fa-users"></i>
+                        </div>
+                        <div class="stat-info">
+                            <h3>0</h3>
+                            <p>Clientes Nuevos</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="dashboard-actions">
+                    <div class="action-card">
+                        <h3>Acciones Rápidas</h3>
+                        <div class="action-buttons">
+                            <button class="action-btn" onclick="mostrarSeccion('productos')">
+                                <i class="fas fa-plus"></i>
+                                Agregar Producto
+                            </button>
+                            <button class="action-btn" onclick="mostrarSeccion('ofertas')">
+                                <i class="fas fa-tag"></i>
+                                Crear Oferta
+                            </button>
+                            <button class="action-btn" onclick="mostrarSeccion('pagos')">
+                                <i class="fas fa-cog"></i>
+                                Configurar Pagos
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <div class="action-card">
+                        <h3>Sincronización de Datos</h3>
+                        <div class="action-buttons">
+                            <button class="action-btn sync-btn" onclick="sincronizarConPaginaPrincipal()">
+                                <i class="fas fa-sync-alt"></i>
+                                Sincronizar Página
+                            </button>
+                            <button class="action-btn export-btn" onclick="exportarDatos()">
+                                <i class="fas fa-download"></i>
+                                Exportar Datos
+                            </button>
+                            <input type="file" id="importFile" style="display: none;" accept=".json" onchange="importarDatos(event)">
+                            <button class="action-btn import-btn" onclick="document.getElementById('importFile').click()">
+                                <i class="fas fa-upload"></i>
+                                Importar Datos
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <div class="action-card">
+                        <h3>Monitoreo y Notificaciones</h3>
+                        <div class="action-buttons">
+                            <button class="action-btn monitor-btn" onclick="mostrarPanelMonitoreo()">
+                                <i class="fas fa-chart-line"></i>
+                                Panel de Monitoreo
+                            </button>
+                            <button class="action-btn backup-btn" onclick="realizarBackupAutomatico()">
+                                <i class="fas fa-save"></i>
+                                Backup Manual
+                            </button>
+                            <button class="action-btn test-btn" onclick="probarNotificacion()">
+                                <i class="fas fa-bell"></i>
+                                Probar Notificación
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <div class="action-card">
+                        <h3>Gestión de Backups</h3>
+                        <div class="action-buttons">
+                            <button class="action-btn history-btn" onclick="mostrarHistorialBackups()">
+                                <i class="fas fa-history"></i>
+                                Historial de Backups
+                            </button>
+                            <button class="action-btn restore-btn" onclick="mostrarOpcionesRestauracion()">
+                                <i class="fas fa-undo"></i>
+                                Restaurar Sistema
+                            </button>
+                            <button class="action-btn config-btn" onclick="configurarBackup()">
+                                <i class="fas fa-cog"></i>
+                                Configurar Backup
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Productos -->
+            <section id="productos" class="content-section">
+                <div class="section-header">
+                    <h2><i class="fas fa-box"></i> Gestión de Productos</h2>
+                    <button class="add-btn" onclick="mostrarFormularioProducto()">
+                        <i class="fas fa-plus"></i>
+                        Agregar Producto
+                    </button>
+                </div>
+                
+                <div class="productos-grid" id="productosGrid">
+                    <!-- Los productos se cargarán dinámicamente -->
+                </div>
+            </section>
+
+            <!-- Servicios -->
+            <section id="servicios" class="content-section">
+                <div class="section-header">
+                    <h2><i class="fas fa-tools"></i> Gestión de Servicios</h2>
+                    <button class="add-btn" onclick="mostrarFormularioServicio()">
+                        <i class="fas fa-plus"></i>
+                        Agregar Servicio
+                    </button>
+                </div>
+                
+                <div class="servicios-grid" id="serviciosGrid">
+                    <!-- Los servicios se cargarán dinámicamente -->
+                </div>
+            </section>
+
+            <!-- Configuración de Pagos -->
+            <section id="pagos" class="content-section">
+                <div class="section-header">
+                    <h2><i class="fas fa-credit-card"></i> Configuración de Pagos</h2>
+                </div>
+                
+                <div class="payment-config">
+                    <!-- El contenido se cargará dinámicamente -->
+                </div>
+            </section>
+
+            <!-- Configuración General -->
+            <section id="configuracion" class="content-section">
+                <div class="section-header">
+                    <h2><i class="fas fa-cog"></i> Configuración General</h2>
+                    <p>Gestiona la información básica de FRIOCAS</p>
+                </div>
+                
+                <div class="config-general-grid" id="configGeneralGrid">
+                    <!-- El contenido se cargará dinámicamente -->
+                </div>
+            </section>
+
+            <!-- Ofertas y Combos -->
+            <section id="ofertas" class="content-section">
+                <div class="section-header">
+                    <h2><i class="fas fa-tags"></i> Ofertas y Combos</h2>
+                    <button class="add-btn" onclick="mostrarFormularioOferta()">
+                        <i class="fas fa-plus"></i>
+                        Crear Oferta
+                    </button>
+                </div>
+                
+                <div class="ofertas-grid" id="ofertasGrid">
+                    <!-- Las ofertas se cargarán dinámicamente -->
+                </div>
+            </section>
+
+            <!-- Atención al Cliente -->
+            <section id="atencion" class="content-section">
+                <div class="section-header">
+                    <h2><i class="fas fa-headset"></i> Atención al Cliente</h2>
+                    <button class="add-btn" onclick="mostrarFormularioTicket()">
+                        <i class="fas fa-plus"></i>
+                        Nuevo Ticket
+                    </button>
+                </div>
+                
+                <div class="atencion-container" id="atencionGrid">
+                    <!-- El contenido se cargará dinámicamente -->
+                </div>
+            </section>
+
+            <!-- Estadísticas -->
+            <section id="estadisticas" class="content-section">
+                <div class="section-header">
+                    <h2><i class="fas fa-chart-bar"></i> Estadísticas</h2>
+                    <div class="stats-filters">
+                        <select id="periodoEstadisticas" onchange="cargarEstadisticas()">
+                            <option value="hoy">Hoy</option>
+                            <option value="semana" selected>Esta Semana</option>
+                            <option value="mes">Este Mes</option>
+                            <option value="año">Este Año</option>
+                        </select>
+                    </div>
+                </div>
+                
+                <div class="stats-container" id="estadisticasContainer">
+                    <div class="stats-overview">
+                        <div class="stat-card">
+                            <div class="stat-icon">
+                                <i class="fas fa-shopping-cart"></i>
+                            </div>
+                            <div class="stat-content">
+                                <h3 id="totalVentas">0</h3>
+                                <p>Ventas Totales</p>
+                            </div>
+                        </div>
+                        
+                        <div class="stat-card">
+                            <div class="stat-icon">
+                                <i class="fas fa-dollar-sign"></i>
+                            </div>
+                            <div class="stat-content">
+                                <h3 id="ingresosTotales">$0</h3>
+                                <p>Ingresos</p>
+                            </div>
+                        </div>
+                        
+                        <div class="stat-card">
+                            <div class="stat-icon">
+                                <i class="fas fa-users"></i>
+                            </div>
+                            <div class="stat-content">
+                                <h3 id="clientesNuevos">0</h3>
+                                <p>Clientes Nuevos</p>
+                            </div>
+                        </div>
+                        
+                        <div class="stat-card">
+                            <div class="stat-icon">
+                                <i class="fas fa-star"></i>
+                            </div>
+                            <div class="stat-content">
+                                <h3 id="satisfaccion">0%</h3>
+                                <p>Satisfacción</p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="stats-charts">
+                        <div class="chart-card">
+                            <h3>Ventas por Día</h3>
+                            <div class="chart-container" id="ventasChart">
+                                <div class="chart-placeholder">
+                                    <i class="fas fa-chart-line"></i>
+                                    <p>Cargando gráfico...</p>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="chart-card">
+                            <h3>Productos Más Vendidos</h3>
+                            <div class="chart-container" id="productosChart">
+                                <div class="chart-placeholder">
+                                    <i class="fas fa-chart-pie"></i>
+                                    <p>Cargando gráfico...</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="stats-details">
+                        <div class="details-card">
+                            <h3>Últimas Transacciones</h3>
+                            <div class="transactions-list" id="transaccionesList">
+                                <!-- Las transacciones se cargarán dinámicamente -->
+                            </div>
+                        </div>
+                        
+                        <div class="details-card">
+                            <h3>Actividad Reciente</h3>
+                            <div class="activity-list" id="actividadList">
+                                <!-- La actividad se cargará dinámicamente -->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <!-- Script de Administración -->
+    <script src="admin-friocas.js?v=2.5"></script>
+    <script src="security-system.js?v=1.3"></script>
+    <script>
+        // Sistema de protección simplificado para el panel de administración
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('🔒 Verificando acceso al panel de administración...');
+            console.log('📍 URL actual:', window.location.href);
+            console.log('🔍 Referrer:', document.referrer);
+            
+            // Verificar si hay una sesión activa de administrador
+            const adminSession = localStorage.getItem('adminSession');
+            console.log('💾 Sesión en localStorage:', adminSession);
+            
+            if (adminSession) {
+                try {
+                    const sessionData = JSON.parse(adminSession);
+                    const now = Date.now();
+                    const sessionTimeout = 30 * 60 * 1000; // 30 minutos
+                    
+                    console.log('📅 Timestamp de sesión:', sessionData.timestamp);
+                    console.log('⏰ Tiempo actual:', now);
+                    console.log('⏱️ Diferencia:', now - sessionData.timestamp);
+                    console.log('⏳ Timeout:', sessionTimeout);
+                    
+                    if (now - sessionData.timestamp < sessionTimeout) {
+                        console.log('✅ Sesión de administrador válida - Acceso permitido');
+                        return; // Permitir acceso
+                    } else {
+                        console.log('⏰ Sesión de administrador expirada');
+                        localStorage.removeItem('adminSession');
+                    }
+                } catch (error) {
+                    console.error('❌ Error verificando sesión:', error);
+                    localStorage.removeItem('adminSession');
+                }
+            }
+            
+            // Si no hay sesión válida, verificar si es la primera carga
+            const adminPageLoaded = sessionStorage.getItem('adminPageLoaded');
+            console.log('🔄 Primera carga:', adminPageLoaded);
+            
+            if (adminPageLoaded) {
+                console.log('🔒 No hay sesión válida - Redirigiendo a página principal en 5 segundos');
+                setTimeout(() => {
+                    console.log('🔄 Redirigiendo a página principal...');
+                    window.location.href = 'index-friocas-productos.html';
+                }, 5000);
+            } else {
+                console.log('🔄 Primera carga del panel de administración - Mostrando login');
+                sessionStorage.setItem('adminPageLoaded', 'true');
+            }
+        });
+    </script>
+</body>
+</html>

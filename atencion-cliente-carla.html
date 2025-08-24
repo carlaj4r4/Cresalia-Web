@@ -1,0 +1,380 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🎯 Sistema de Atención al Cliente - Carla | FRIOCAS</title>
+    
+    <!-- Favicon -->
+    <link rel="icon" type="image/png" href="assets/logo/logo-friocas.png">
+    <link rel="apple-touch-icon" href="assets/logo/logo-friocas.png">
+    
+    <!-- Meta tags para seguridad -->
+    <meta name="robots" content="noindex, nofollow">
+    <meta name="description" content="Sistema exclusivo de atención al cliente">
+    
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Estilos Exclusivos de Carla -->
+    <link rel="stylesheet" href="styles-atencion-carla.css?v=1.3">
+</head>
+<body>
+    <!-- Pantalla de Login Exclusiva -->
+    <div id="loginCarla" class="login-carla-container">
+        <div class="login-carla-card">
+            <div class="login-carla-header">
+                <div class="carla-logo">
+                    <img src="assets/logo/logo-friocas.png" alt="FRIOCAS" class="carla-logo-img">
+                    <i class="fas fa-crown"></i>
+                </div>
+                <h1>👑 Carla's Support</h1>
+                <p>Sistema Exclusivo de Atención al Cliente</p>
+                <div style="background: #fff3cd; padding: 10px; border-radius: 8px; margin-top: 10px; border: 1px solid #ffeaa7;">
+                    <p style="margin: 0; font-size: 14px; color: #856404;">
+                        <strong>🔑 Contraseña:</strong> carla2024
+                    </p>
+                </div>
+            </div>
+            
+            <form id="loginCarlaForm" class="login-carla-form">
+                <div class="form-group">
+                    <label for="carlaPassword">
+                        <i class="fas fa-lock"></i>
+                        Contraseña de Acceso
+                    </label>
+                    <div class="password-input">
+                        <input type="password" id="carlaPassword" placeholder="Ingresa tu contraseña exclusiva" required>
+                        <button type="button" onclick="toggleCarlaPassword()" class="password-toggle">
+                            <i class="fas fa-eye" id="toggleCarlaPassword"></i>
+                        </button>
+                    </div>
+                </div>
+                
+                <button type="submit" class="login-carla-btn">
+                    <i class="fas fa-sign-in-alt"></i>
+                    Acceder al Sistema
+                </button>
+            </form>
+            
+            <div class="login-carla-footer">
+                <p><i class="fas fa-shield-alt"></i> Acceso exclusivo y seguro</p>
+                <p><i class="fas fa-user-secret"></i> Solo Carla tiene acceso</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Panel Principal de Carla -->
+    <div id="carlaPanel" class="carla-panel" style="display: none;">
+        <!-- Header Exclusivo de Carla -->
+        <header class="carla-header">
+            <div class="carla-header-left">
+                <div class="carla-avatar">
+                    <img src="assets/logo/logo-friocas.png" alt="FRIOCAS" class="carla-avatar-img">
+                    <i class="fas fa-crown"></i>
+                </div>
+                <div class="carla-info">
+                    <h2>👑 Carla's Support Center</h2>
+                    <p>Sistema Exclusivo de Atención al Cliente</p>
+                </div>
+            </div>
+            
+            <div class="carla-header-right">
+                <div class="carla-status">
+                    <span class="status-indicator online"></span>
+                    Carla en línea
+                </div>
+                <button onclick="cerrarSesionCarla()" class="logout-carla-btn">
+                    <i class="fas fa-sign-out-alt"></i>
+                    Cerrar Sesión
+                </button>
+            </div>
+        </header>
+
+        <!-- Navegación de Carla -->
+        <nav class="carla-nav">
+            <button class="carla-nav-btn active" data-section="dashboard">
+                <i class="fas fa-tachometer-alt"></i>
+                Dashboard
+            </button>
+            <button class="carla-nav-btn" data-section="tickets">
+                <i class="fas fa-ticket-alt"></i>
+                Tickets
+            </button>
+            <button class="carla-nav-btn" data-section="chat">
+                <i class="fas fa-comments"></i>
+                Chat en Vivo
+            </button>
+            <button class="carla-nav-btn" data-section="historial">
+                <i class="fas fa-history"></i>
+                Historial
+            </button>
+            <button class="carla-nav-btn" data-section="reportes">
+                <i class="fas fa-chart-bar"></i>
+                Reportes
+            </button>
+            <button class="carla-nav-btn" data-section="configuracion">
+                <i class="fas fa-cog"></i>
+                Configuración
+            </button>
+        </nav>
+
+        <!-- Contenido Principal -->
+        <main class="carla-content">
+            <!-- Dashboard de Carla -->
+            <section id="dashboard" class="carla-section active">
+                <div class="carla-section-header">
+                    <h2><i class="fas fa-tachometer-alt"></i> Dashboard de Carla</h2>
+                    <p>Bienvenida al centro de atención al cliente exclusivo</p>
+                </div>
+                
+                <div class="carla-stats">
+                    <div class="carla-stat-card">
+                        <div class="stat-icon">
+                            <i class="fas fa-ticket-alt"></i>
+                        </div>
+                        <div class="stat-info">
+                            <h3 id="totalTickets">0</h3>
+                            <p>Total Tickets</p>
+                        </div>
+                    </div>
+                    
+                    <div class="carla-stat-card urgent">
+                        <div class="stat-icon">
+                            <i class="fas fa-exclamation-triangle"></i>
+                        </div>
+                        <div class="stat-info">
+                            <h3 id="ticketsUrgentes">0</h3>
+                            <p>Urgentes</p>
+                        </div>
+                    </div>
+                    
+                    <div class="carla-stat-card pending">
+                        <div class="stat-icon">
+                            <i class="fas fa-clock"></i>
+                        </div>
+                        <div class="stat-info">
+                            <h3 id="ticketsPendientes">0</h3>
+                            <p>Pendientes</p>
+                        </div>
+                    </div>
+                    
+                    <div class="carla-stat-card resolved">
+                        <div class="stat-icon">
+                            <i class="fas fa-check-circle"></i>
+                        </div>
+                        <div class="stat-info">
+                            <h3 id="ticketsResueltos">0</h3>
+                            <p>Resueltos</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="carla-actions">
+                    <div class="carla-action-card">
+                        <h3>🚀 Acciones Rápidas</h3>
+                        <div class="action-buttons">
+                            <button class="carla-action-btn" onclick="mostrarSeccion('tickets')">
+                                <i class="fas fa-plus"></i>
+                                Nuevo Ticket
+                            </button>
+                            <button class="carla-action-btn" onclick="mostrarSeccion('chat')">
+                                <i class="fas fa-comments"></i>
+                                Chat en Vivo
+                            </button>
+                            <button class="carla-action-btn" onclick="simularNuevoTicket()">
+                                <i class="fas fa-magic"></i>
+                                Simular Ticket
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <div class="carla-action-card">
+                        <h3>📊 Estadísticas de Hoy</h3>
+                        <div class="stats-today">
+                            <div class="stat-item">
+                                <span class="stat-label">Tickets Atendidos:</span>
+                                <span class="stat-value" id="ticketsHoy">0</span>
+                            </div>
+                            <div class="stat-item">
+                                <span class="stat-label">Tiempo Promedio:</span>
+                                <span class="stat-value" id="tiempoPromedio">0 min</span>
+                            </div>
+                            <div class="stat-item">
+                                <span class="stat-label">Satisfacción:</span>
+                                <span class="stat-value" id="satisfaccion">100%</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Sección de Tickets -->
+            <section id="tickets" class="carla-section">
+                <div class="carla-section-header">
+                    <h2><i class="fas fa-ticket-alt"></i> Gestión de Tickets</h2>
+                    <button class="carla-add-btn" onclick="mostrarFormularioTicket()">
+                        <i class="fas fa-plus"></i>
+                        Nuevo Ticket
+                    </button>
+                </div>
+                
+                <div class="tickets-container" id="ticketsContainer">
+                    <!-- Los tickets se cargarán dinámicamente -->
+                </div>
+            </section>
+
+            <!-- Sección de Chat -->
+            <section id="chat" class="carla-section">
+                <div class="carla-section-header">
+                    <h2><i class="fas fa-comments"></i> Chat en Vivo</h2>
+                    <span class="chat-status-badge online">En línea</span>
+                </div>
+                
+                <div class="chat-container" id="chatContainer">
+                    <!-- Los chats se cargarán dinámicamente -->
+                </div>
+            </section>
+
+            <!-- Sección de Historial -->
+            <section id="historial" class="carla-section">
+                <div class="carla-section-header">
+                    <h2><i class="fas fa-history"></i> Historial de Atención</h2>
+                </div>
+                
+                <div class="historial-container" id="historialContainer">
+                    <!-- El historial se cargará dinámicamente -->
+                </div>
+            </section>
+
+            <!-- Sección de Reportes -->
+            <section id="reportes" class="carla-section">
+                <div class="carla-section-header">
+                    <h2><i class="fas fa-chart-bar"></i> Reportes y Análisis</h2>
+                </div>
+                
+                <div class="reportes-container">
+                    <div class="reportes-filtros">
+                        <div class="filtro-grupo">
+                            <label for="filtroFecha">Período:</label>
+                            <select id="filtroFecha" onchange="generarReporte()">
+                                <option value="hoy">Hoy</option>
+                                <option value="semana">Esta Semana</option>
+                                <option value="mes" selected>Este Mes</option>
+                                <option value="trimestre">Este Trimestre</option>
+                                <option value="año">Este Año</option>
+                            </select>
+                        </div>
+                        <div class="filtro-grupo">
+                            <label for="filtroTipo">Tipo de Reporte:</label>
+                            <select id="filtroTipo" onchange="generarReporte()">
+                                <option value="tickets">Tickets</option>
+                                <option value="satisfaccion">Satisfacción</option>
+                                <option value="tiempo">Tiempo de Respuesta</option>
+                                <option value="categorias">Categorías</option>
+                            </select>
+                        </div>
+                        <button class="btn-exportar" onclick="exportarReporte()">
+                            <i class="fas fa-download"></i> Exportar PDF
+                        </button>
+                    </div>
+                    
+                    <div class="reportes-grid">
+                        <div class="reporte-card">
+                            <h3>📊 Resumen General</h3>
+                            <div class="reporte-stats" id="reporteResumen">
+                                <!-- Se cargará dinámicamente -->
+                            </div>
+                        </div>
+                        
+                        <div class="reporte-card">
+                            <h3>📈 Gráfico de Tickets</h3>
+                            <div class="reporte-grafico" id="reporteGraficoTickets">
+                                <!-- Se cargará dinámicamente -->
+                            </div>
+                        </div>
+                        
+                        <div class="reporte-card">
+                            <h3>🎯 Métricas de Rendimiento</h3>
+                            <div class="reporte-metricas" id="reporteMetricas">
+                                <!-- Se cargará dinámicamente -->
+                            </div>
+                        </div>
+                        
+                        <div class="reporte-card">
+                            <h3>📋 Top Clientes</h3>
+                            <div class="reporte-clientes" id="reporteClientes">
+                                <!-- Se cargará dinámicamente -->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Sección de Configuración -->
+            <section id="configuracion" class="carla-section">
+                <div class="carla-section-header">
+                    <h2><i class="fas fa-cog"></i> Configuración Personal</h2>
+                </div>
+                
+                <div class="configuracion-container">
+                    <div class="config-card">
+                        <h3>🔐 Seguridad</h3>
+                        <p>Este sistema es exclusivo para Carla</p>
+                        <p><strong>Acceso:</strong> Ctrl + Alt + Shift + C</p>
+                        <p><strong>Estado:</strong> Protegido y seguro</p>
+                    </div>
+                    
+                    <div class="config-card">
+                        <h3>📱 Notificaciones</h3>
+                        <label class="switch">
+                            <input type="checkbox" id="notificacionesCarla" checked>
+                            <span class="slider"></span>
+                        </label>
+                        <p>Notificaciones en tiempo real</p>
+                    </div>
+                    
+                    <div class="config-card">
+                        <h3>🎨 Tema Personal</h3>
+                        <p>Tema exclusivo de Carla</p>
+                        <p>Colores: Azul elegante</p>
+                    </div>
+                    
+                    <div class="config-card">
+                        <h3>💾 Sistema de Backup</h3>
+                        <p>Backup automático cada 5 minutos</p>
+                        <div class="backup-actions">
+                            <button onclick="realizarBackupManualCarla()" class="btn-backup">
+                                <i class="fas fa-save"></i> Backup Manual
+                            </button>
+                            <button onclick="mostrarBackupsCarla()" class="btn-backup">
+                                <i class="fas fa-history"></i> Ver Backups
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <div class="config-card">
+                        <h3>🚀 Modo Desarrollo</h3>
+                        <p>Activar simulaciones para pruebas</p>
+                        <div class="desarrollo-actions">
+                            <button onclick="toggleModoDesarrollo()" class="btn-desarrollo" id="btnModoDesarrollo">
+                                <i class="fas fa-code"></i> <span id="textoModoDesarrollo">Activar Modo Desarrollo</span>
+                            </button>
+                        </div>
+                        <p class="desarrollo-info" id="infoModoDesarrollo">
+                            <small>Las simulaciones están desactivadas para producción</small>
+                        </p>
+                    </div>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <!-- Scripts -->
+    <script src="carla-support.js?v=1.8"></script>
+</body>
+</html>
+

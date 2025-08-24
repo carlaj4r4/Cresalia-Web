@@ -1,0 +1,1300 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="google" content="notranslate">
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
+    <title>FRIOCAS - Productos y Servicios Automotrices</title>
+    <link rel="icon" type="image/png" href="assets/logo/logo-friocas.png">
+    <link rel="apple-touch-icon" href="assets/logo/logo-friocas.png">
+    <meta name="msapplication-TileImage" content="assets/logo/logo-friocas.png">
+    
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+            <!-- Google Maps API -->
+        <script async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyB41DRUbKWJHPxaFjMAwdrzWzbVKartNGg&libraries=places"></script>
+    <!-- Mercado Pago SDK -->
+    <script src="https://sdk.mercadopago.com/js/v2"></script>
+    
+    <link rel="stylesheet" href="styles-friocas.css?v=4.8">
+</head>
+<body>
+    <!-- Navbar -->
+    <nav class="navbar navbar-expand-lg fixed-top">
+        <div class="container">
+            <a class="navbar-brand" href="#">
+                <div class="logo-container">
+                    <img src="assets/logo/logo-friocas.png" alt="FRIOCAS" height="50" class="logo-image">
+                    <div class="logo-glow"></div>
+                </div>
+            </a>
+            
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="#inicio">Inicio</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#productos">Productos</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#servicios">Servicios</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#ayuda">Ayuda</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#contacto">Contacto</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#" onclick="abrirCarrito(); return false;">
+                            <i class="fas fa-shopping-cart"></i>
+                            <span>Carrito</span>
+                            <span id="cartCount" class="cart-count">0</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link user-nav-btn" href="#" onclick="toggleUserSystem()">
+                            <i class="fas fa-user-circle"></i>
+                            <span id="userButtonText">Mi Cuenta</span>
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- ===== SISTEMA DE USUARIOS ===== -->
+    <div id="userSystem" class="user-system-overlay" style="display: none;">
+        <div class="user-system-container">
+            <!-- Login Form -->
+            <div id="loginForm" class="user-form active">
+                <div class="user-form-header">
+                    <h3><i class="fas fa-user-circle"></i> Iniciar Sesión</h3>
+                    <p>Accede a tu cuenta para ver tu historial</p>
+                </div>
+                <form id="loginUserForm">
+                                            <div class="form-group">
+                            <label for="loginEmail"><i class="fas fa-envelope"></i> Email</label>
+                            <input type="email" id="loginEmail" name="loginEmail" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="loginPassword"><i class="fas fa-lock"></i> Contraseña</label>
+                            <div class="password-input">
+                                <input type="password" id="loginPassword" name="loginPassword" required>
+                                <button type="button" class="password-toggle" onclick="togglePassword('loginPassword')">
+                                    <i class="fas fa-eye"></i>
+                                </button>
+                            </div>
+                        </div>
+                    <button type="submit" class="user-btn primary">
+                        <i class="fas fa-sign-in-alt"></i> Iniciar Sesión
+                    </button>
+                </form>
+                <div class="user-form-footer">
+                    <p>¿No tienes cuenta? <a href="#" onclick="showRegisterForm()">Regístrate aquí</a></p>
+                    <button class="user-btn secondary" onclick="closeUserSystem()">
+                        <i class="fas fa-times"></i> Cerrar
+                    </button>
+                </div>
+            </div>
+
+            <!-- Register Form -->
+            <div id="registerForm" class="user-form">
+                <div class="user-form-header">
+                    <h3><i class="fas fa-user-plus"></i> Crear Cuenta</h3>
+                    <p>Regístrate para guardar tu historial de compras</p>
+                </div>
+                <form id="registerUserForm">
+                                            <div class="form-group">
+                            <label for="registerName"><i class="fas fa-user"></i> Nombre Completo</label>
+                            <input type="text" id="registerName" name="registerName" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="registerEmail"><i class="fas fa-envelope"></i> Email</label>
+                            <input type="email" id="registerEmail" name="registerEmail" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="registerPhone"><i class="fas fa-phone"></i> Teléfono</label>
+                            <input type="tel" id="registerPhone" name="registerPhone" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="registerPassword"><i class="fas fa-lock"></i> Contraseña</label>
+                            <div class="password-input">
+                                <input type="password" id="registerPassword" name="registerPassword" required>
+                                <button type="button" class="password-toggle" onclick="togglePassword('registerPassword')">
+                                    <i class="fas fa-eye"></i>
+                                </button>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="registerConfirmPassword"><i class="fas fa-lock"></i> Confirmar Contraseña</label>
+                            <div class="password-input">
+                                <input type="password" id="registerConfirmPassword" name="registerConfirmPassword" required>
+                                <button type="button" class="password-toggle" onclick="togglePassword('registerConfirmPassword')">
+                                    <i class="fas fa-eye"></i>
+                                </button>
+                            </div>
+                        </div>
+                    <button type="submit" class="user-btn primary">
+                        <i class="fas fa-user-plus"></i> Crear Cuenta
+                    </button>
+                </form>
+                <div class="user-form-footer">
+                    <p>¿Ya tienes cuenta? <a href="#" onclick="showLoginForm()">Inicia sesión aquí</a></p>
+                    <button class="user-btn secondary" onclick="closeUserSystem()">
+                        <i class="fas fa-times"></i> Cerrar
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+
+    <!-- Hero Section -->
+    <section id="inicio" class="hero-section">
+        <div class="container">
+            <div class="hero-content">
+                <div class="welcome-message">
+                    <h2>Bienvenidos a FRIOCAS</h2>
+                </div>
+                <div class="hero-logo-container">
+                    <img src="assets/logo/logo-friocas.png" alt="FRIOCAS" class="hero-logo">
+                    <div class="hero-logo-glow"></div>
+                </div>
+                <h1>FRIOCAS</h1>
+                <p>Productos y servicios automotrices profesionales con la más alta calidad</p>
+                <div class="hero-buttons">
+                    <a href="#productos" class="btn-hero btn-primary-hero">
+                        <i class="fas fa-shopping-cart"></i> Ver Productos
+                    </a>
+                    <a href="#servicios" class="btn-hero btn-outline-hero">
+                        <i class="fas fa-tools"></i> Nuestros Servicios
+                    </a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Productos Section -->
+    <section id="productos" class="productos-section">
+        <div class="container">
+            <div class="section-header">
+                <h2>Nuestros Productos</h2>
+                <p>Descubre nuestra amplia gama de productos automotrices de alta calidad</p>
+            </div>
+            
+            <!-- Barra de Búsqueda Mejorada -->
+            <div class="search-container">
+                <div class="search-box">
+                    <i class="fas fa-search search-icon"></i>
+                    <input type="text" id="searchInput" placeholder="Buscar productos..." class="search-input">
+                    <button class="search-btn" onclick="buscarProductos()">
+                        <i class="fas fa-search"></i>
+                    </button>
+                </div>
+            </div>
+            
+            <!-- Filtros de Categorías Mejorados -->
+            <div class="categorias-filtros">
+                <button class="filtro-btn active" onclick="filtrarProductos('todos')">
+                    <i class="fas fa-th"></i> Todos
+                </button>
+                <button class="filtro-btn" onclick="filtrarProductos('limpiadores')">
+                    <i class="fas fa-spray-can"></i> Limpiadores
+                </button>
+                <button class="filtro-btn" onclick="filtrarProductos('shampoo')">
+                    <i class="fas fa-soap"></i> Shampoo
+                </button>
+                <button class="filtro-btn" onclick="filtrarProductos('ceras')">
+                    <i class="fas fa-star"></i> Ceras
+                </button>
+                <button class="filtro-btn" onclick="filtrarProductos('revividores')">
+                    <i class="fas fa-palette"></i> Revividores
+                </button>
+                <button class="filtro-btn" onclick="filtrarProductos('iluminacion')">
+                    <i class="fas fa-lightbulb"></i> Iluminación
+                </button>
+            </div>
+            
+            <!-- Grid de Productos -->
+            <div class="productos-grid" id="productosGrid">
+                <!-- Los productos se cargarán dinámicamente -->
+            </div>
+        </div>
+    </section>
+
+    <!-- Servicios Section -->
+    <section id="servicios" class="servicios-section">
+        <div class="container">
+            <div class="section-header">
+                <h2>Nuestros Servicios</h2>
+                <p>Ofrecemos una amplia gama de servicios automotrices profesionales</p>
+            </div>
+            
+                            <div class="servicios-grid" id="serviciosGrid">
+                <div class="servicio-card">
+                    <div class="servicio-icon">
+                        <i class="fas fa-snowflake"></i>
+                    </div>
+                    <h3>Aire Acondicionado</h3>
+                    <p>Instalación, mantenimiento y reparación de sistemas de aire acondicionado.</p>
+                    <div class="servicio-precios">
+                        <div class="precio-item">
+                            <span class="servicio-nombre">Instalación</span>
+                            <span class="precio">$45.000</span>
+                        </div>
+                        <div class="precio-item">
+                            <span class="servicio-nombre">Mantenimiento</span>
+                            <span class="precio">$25.000</span>
+                        </div>
+                        <div class="precio-item">
+                            <span class="servicio-nombre">Reparación</span>
+                            <span class="precio">Desde $35.000</span>
+                        </div>
+                    </div>
+                    <button class="btn-reservar" onclick="mostrarModalServicio('aire-acondicionado')">
+                        <i class="fas fa-calendar-plus"></i> Reservar Turno
+                    </button>
+                </div>
+                
+                <div class="servicio-card">
+                    <div class="servicio-icon">
+                        <i class="fas fa-bus"></i>
+                    </div>
+                    <h3>Transporte Privado</h3>
+                    <p>Servicios de traslado local e interprovincial con comodidad y seguridad.</p>
+                    <div class="servicio-precios">
+                        <div class="precio-item">
+                            <span class="servicio-nombre">Local (por km)</span>
+                            <span class="precio">$1.200</span>
+                        </div>
+                        <div class="precio-item">
+                            <span class="servicio-nombre">Interprovincial</span>
+                            <span class="precio">$1.500/km</span>
+                        </div>
+                        <div class="precio-item">
+                            <span class="servicio-nombre">Mínimo</span>
+                            <span class="precio">$8.000</span>
+                        </div>
+                    </div>
+                    <button class="btn-reservar" onclick="mostrarModalTransporte()">
+                        <i class="fas fa-route"></i> Calcular y Reservar
+                    </button>
+                </div>
+                
+                <div class="servicio-card">
+                    <div class="servicio-icon">
+                        <i class="fas fa-wrench"></i>
+                    </div>
+                    <h3>Taller Mecánico</h3>
+                    <p>Diagnóstico computarizado, cambio de aceite, alineación y balanceo.</p>
+                    <div class="servicio-precios">
+                        <div class="precio-item">
+                            <span class="servicio-nombre">Diagnóstico</span>
+                            <span class="precio">$15.000</span>
+                        </div>
+                        <div class="precio-item">
+                            <span class="servicio-nombre">Cambio de Aceite</span>
+                            <span class="precio">$18.000</span>
+                        </div>
+                        <div class="precio-item">
+                            <span class="servicio-nombre">Alineación</span>
+                            <span class="precio">$12.000</span>
+                        </div>
+                    </div>
+                    <button class="btn-reservar" onclick="mostrarModalServicio('taller')">
+                        <i class="fas fa-calendar-plus"></i> Reservar Turno
+                    </button>
+                </div>
+                
+                <div class="servicio-card">
+                    <div class="servicio-icon">
+                        <i class="fas fa-oil-can"></i>
+                    </div>
+                    <h3>Lubricentro</h3>
+                    <p>Cambio de aceite express, filtros, limpieza de inyectores.</p>
+                    <div class="servicio-precios">
+                        <div class="precio-item">
+                            <span class="servicio-nombre">Cambio Express</span>
+                            <span class="precio">$20.000</span>
+                        </div>
+                        <div class="precio-item">
+                            <span class="servicio-nombre">Filtros</span>
+                            <span class="precio">$8.000</span>
+                        </div>
+                        <div class="precio-item">
+                            <span class="servicio-nombre">Limpieza Inyectores</span>
+                            <span class="precio">$25.000</span>
+                        </div>
+                    </div>
+                    <button class="btn-reservar" onclick="mostrarModalServicio('lubricentro')">
+                        <i class="fas fa-calendar-plus"></i> Reservar Turno
+                    </button>
+                </div>
+                
+                <div class="servicio-card">
+                    <div class="servicio-icon">
+                        <i class="fas fa-spray-can"></i>
+                    </div>
+                    <h3>Detailing</h3>
+                    <p>Lavado completo, pulido y encerado, limpieza de motor.</p>
+                    <div class="servicio-precios">
+                        <div class="precio-item">
+                            <span class="servicio-nombre">Lavado Completo</span>
+                            <span class="precio">$30.000</span>
+                        </div>
+                        <div class="precio-item">
+                            <span class="servicio-nombre">Pulido y Encerado</span>
+                            <span class="precio">$45.000</span>
+                        </div>
+                        <div class="precio-item">
+                            <span class="servicio-nombre">Limpieza Motor</span>
+                            <span class="precio">$35.000</span>
+                        </div>
+                    </div>
+                    <button class="btn-reservar" onclick="mostrarModalServicio('detailing')">
+                        <i class="fas fa-calendar-plus"></i> Reservar Turno
+                    </button>
+                </div>
+                
+                <div class="servicio-card">
+                    <div class="servicio-icon">
+                        <i class="fas fa-file-contract"></i>
+                    </div>
+                    <h3>Gestión</h3>
+                    <p>Transferencia de vehículos, renovación de licencias, inscripción.</p>
+                    <div class="servicio-precios">
+                        <div class="precio-item">
+                            <span class="servicio-nombre">Transferencia</span>
+                            <span class="precio">$40.000</span>
+                        </div>
+                        <div class="precio-item">
+                            <span class="servicio-nombre">Renovación Licencia</span>
+                            <span class="precio">$15.000</span>
+                        </div>
+                        <div class="precio-item">
+                            <span class="servicio-nombre">Inscripción</span>
+                            <span class="precio">$25.000</span>
+                        </div>
+                    </div>
+                    <button class="btn-reservar" onclick="mostrarModalServicio('gestion')">
+                        <i class="fas fa-calendar-plus"></i> Reservar Turno
+                    </button>
+                </div>
+            </div>
+        </div>
+    </section>
+
+
+
+    <!-- Modal de Pago -->
+    <div id="modalPago" class="modal-pago-overlay">
+        <div id="modalPagoContenido">
+            <!-- Contenido del modal de pago se llena dinámicamente -->
+        </div>
+    </div>
+
+    <!-- Modal de Contratación de Servicios -->
+    <div id="modalServicio" class="modal-servicio" style="display: none;">
+        <div class="modal-servicio-content">
+            <div class="modal-servicio-header">
+                <h3 id="modalServicioTitulo"><i class="fas fa-tools"></i> Contratar Servicio</h3>
+                <button onclick="cerrarModalServicio()" class="close-btn">&times;</button>
+            </div>
+            <div class="modal-servicio-body">
+                <form id="formContratarServicio">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="servicioCliente">Nombre Completo *</label>
+                            <input type="text" id="servicioCliente" name="servicioCliente" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="servicioTelefono">Teléfono *</label>
+                            <input type="tel" id="servicioTelefono" name="servicioTelefono" required>
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="servicioEmail">Email *</label>
+                            <input type="email" id="servicioEmail" name="servicioEmail" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="servicioVehiculo">Marca y Modelo del Vehículo *</label>
+                            <input type="text" id="servicioVehiculo" name="servicioVehiculo" placeholder="Ej: Toyota Corolla 2020" required>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="servicioDescripcion">Descripción del Problema/Servicio *</label>
+                        <textarea id="servicioDescripcion" name="servicioDescripcion" rows="4" placeholder="Describe el problema o servicio que necesitas..." required></textarea>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="servicioFecha">Fecha Preferida *</label>
+                            <input type="date" id="servicioFecha" name="servicioFecha" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="servicioHora">Hora Preferida *</label>
+                            <select id="servicioHora" name="servicioHora" required>
+                                <option value="">Selecciona una hora</option>
+                                <option value="08:00">08:00</option>
+                                <option value="09:00">09:00</option>
+                                <option value="10:00">10:00</option>
+                                <option value="11:00">11:00</option>
+                                <option value="12:00">12:00</option>
+                                <option value="13:00">13:00</option>
+                                <option value="14:00">14:00</option>
+                                <option value="15:00">15:00</option>
+                                <option value="16:00">16:00</option>
+                                <option value="17:00">17:00</option>
+                                <option value="18:00">18:00</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="servicioUrgencia">Nivel de Urgencia</label>
+                        <select id="servicioUrgencia" name="servicioUrgencia">
+                            <option value="normal">Normal</option>
+                            <option value="urgente">Urgente</option>
+                            <option value="muy_urgente">Muy Urgente</option>
+                        </select>
+                    </div>
+                    <div class="servicio-resumen">
+                        <h4>Resumen del Servicio</h4>
+                        <div id="servicioResumen" class="resumen-content">
+                            <!-- Se llena dinámicamente -->
+                        </div>
+                    </div>
+                    <div class="modal-servicio-footer">
+                        <button type="button" onclick="cerrarModalServicio()" class="btn-cancelar">Cancelar</button>
+                        <button type="submit" class="btn-confirmar">
+                            <i class="fas fa-check"></i> Confirmar Servicio
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+
+
+    <!-- Ayuda Section -->
+    <section id="ayuda" class="ayuda-section">
+        <div class="container">
+            <div class="section-header">
+                <div class="ayuda-logo-container">
+                    <img src="assets/logo/logo-friocas.png" alt="FRIOCAS" class="ayuda-logo">
+                </div>
+                <h2>Centro de Ayuda FRIOCAS</h2>
+                <p>Encuentra respuestas rápidas a tus preguntas más frecuentes</p>
+            </div>
+            
+            <div class="ayuda-grid">
+                <div class="ayuda-card">
+                    <h4><i class="fas fa-clock"></i> Horarios de Atención</h4>
+                    <p>Lunes a Viernes: 8:00 - 12:00 y 16:00 - 20:00. Sábados: 8:00 - 12:00. <strong>Domingos: Cerrado</strong></p>
+                </div>
+                
+                <div class="ayuda-card">
+                    <h4><i class="fas fa-map-marker-alt"></i> Ubicación</h4>
+                    <p>Moreno 2242, Corrientes Capital, Argentina. Fácil acceso y estacionamiento disponible.</p>
+                </div>
+                
+                <div class="ayuda-card">
+                    <h4><i class="fas fa-phone"></i> Contacto</h4>
+                    <p>Teléfono: +5493795015712 | WhatsApp: +5493795015712 | Email: jj_refrigeracionesctes@hotmail.com</p>
+                </div>
+                
+                <div class="ayuda-card">
+                    <h4><i class="fas fa-credit-card"></i> Métodos de Pago</h4>
+                    <p>Aceptamos efectivo, tarjetas de crédito/débito, transferencias bancarias y cuotas sin interés hasta 12 cuotas.</p>
+                </div>
+                
+                <div class="ayuda-card">
+                    <h4><i class="fas fa-shield-alt"></i> Garantía</h4>
+                    <p>Todos nuestros productos y servicios incluyen garantía de calidad y satisfacción del cliente.</p>
+                </div>
+                
+                <div class="ayuda-card">
+                    <h4><i class="fas fa-truck"></i> Envíos y Servicios</h4>
+                    <p>Envíos de productos dentro de Corrientes Capital sin costo. Envíos a: Resistencia, Barranqueras, Interior a cargo del cliente. <strong>No ofrecemos servicios técnicos a domicilio.</strong></p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Contacto Section -->
+    <section id="contacto" class="contacto-section">
+        <div class="container">
+            <div class="section-header">
+                <div class="contacto-logo-container">
+                    <img src="assets/logo/logo-friocas.png" alt="FRIOCAS" class="contacto-logo">
+                </div>
+                <h2>Contacto FRIOCAS</h2>
+                <p>Estamos aquí para ayudarte. ¡Contáctanos hoy mismo!</p>
+            </div>
+            
+            <div class="row justify-content-center">
+                <div class="col-lg-10 col-md-12 text-center">
+                    <div class="row g-3">
+                        <div class="col-lg-4 col-md-6 col-sm-6 mb-3">
+                            <div class="contacto-card">
+                                <div class="contacto-icon">
+                                    <i class="fas fa-phone"></i>
+                                </div>
+                                <h3>Teléfono</h3>
+                                <p>+5493795015712</p>
+                            </div>
+                        </div>
+                        
+                        <div class="col-lg-4 col-md-6 col-sm-6 mb-3">
+                            <div class="contacto-card">
+                                <div class="contacto-icon">
+                                    <i class="fab fa-whatsapp"></i>
+                                </div>
+                                <h3>WhatsApp</h3>
+                                <p>+5493795015712</p>
+                            </div>
+                        </div>
+                        
+                        <div class="col-lg-4 col-md-6 col-sm-6 mb-3">
+                            <div class="contacto-card contacto-email">
+                                <div class="contacto-icon">
+                                    <i class="fas fa-envelope"></i>
+                                </div>
+                                <h3>Email</h3>
+                                <p class="email-text">jj_refrigeracionesctes@hotmail.com</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Mapa de Google Maps -->
+                <div class="row mt-5">
+                    <div class="col-12">
+                        <div class="mapa-container">
+                            <h3><i class="fas fa-map-marker-alt"></i> Nuestra Ubicación</h3>
+                            <div id="mapa-friocas" class="mapa-google"></div>
+                            <div class="mapa-info">
+                                <p><strong>Dirección:</strong> Corrientes, Argentina</p>
+                                <button class="btn btn-primary" onclick="obtenerRuta()">
+                                    <i class="fas fa-route"></i> Obtener Ruta
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Sistema de Usuarios -->
+    <div id="userSystem" class="user-system-overlay" style="display: none;">
+        <div class="user-system-container">
+            <!-- Formulario de Login -->
+            <form id="loginUserForm" class="user-form active">
+                <div class="user-form-header">
+                    <h3><i class="fas fa-sign-in-alt"></i> Iniciar Sesión</h3>
+                    <p>Accede a tu cuenta para ver tu historial</p>
+                </div>
+                
+                <div class="form-group">
+                    <label for="loginEmail"><i class="fas fa-envelope"></i> Email</label>
+                    <input type="email" id="loginEmail" name="loginEmail" required>
+                </div>
+                <div class="form-group">
+                    <label for="loginPassword"><i class="fas fa-lock"></i> Contraseña</label>
+                    <div class="password-input">
+                        <input type="password" id="loginPassword" name="loginPassword" required>
+                        <button type="button" class="password-toggle" onclick="togglePassword('loginPassword')">
+                            <i class="fas fa-eye"></i>
+                        </button>
+                    </div>
+                </div>
+                
+                <button type="submit" class="user-btn primary">
+                    <i class="fas fa-sign-in-alt"></i> Iniciar Sesión
+                </button>
+                
+                <div class="user-form-footer">
+                    <p>¿No tienes cuenta? <a href="#" onclick="showRegisterForm()">Regístrate aquí</a></p>
+                    <button type="button" class="user-btn secondary" onclick="closeUserSystem()">
+                        <i class="fas fa-times"></i> Cerrar
+                    </button>
+                </div>
+            </form>
+            
+            <!-- Formulario de Registro -->
+            <form id="registerUserForm" class="user-form">
+                <div class="user-form-header">
+                    <h3><i class="fas fa-user-plus"></i> Crear Cuenta</h3>
+                    <p>Regístrate para guardar tu historial de compras</p>
+                </div>
+                
+                <div class="form-group">
+                    <label for="registerName"><i class="fas fa-user"></i> Nombre Completo</label>
+                    <input type="text" id="registerName" name="registerName" required>
+                </div>
+                <div class="form-group">
+                    <label for="registerEmail"><i class="fas fa-envelope"></i> Email</label>
+                    <input type="email" id="registerEmail" name="registerEmail" required>
+                </div>
+                <div class="form-group">
+                    <label for="registerPhone"><i class="fas fa-phone"></i> Teléfono</label>
+                    <input type="tel" id="registerPhone" name="registerPhone" required>
+                </div>
+                <div class="form-group">
+                    <label for="registerPassword"><i class="fas fa-lock"></i> Contraseña</label>
+                    <div class="password-input">
+                        <input type="password" id="registerPassword" name="registerPassword" required>
+                        <button type="button" class="password-toggle" onclick="togglePassword('registerPassword')">
+                            <i class="fas fa-eye"></i>
+                        </button>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="registerConfirmPassword"><i class="fas fa-lock"></i> Confirmar Contraseña</label>
+                    <div class="password-input">
+                        <input type="password" id="registerConfirmPassword" name="registerConfirmPassword" required>
+                        <button type="button" class="password-toggle" onclick="togglePassword('registerConfirmPassword')">
+                            <i class="fas fa-eye"></i>
+                        </button>
+                    </div>
+                </div>
+                
+                <button type="submit" class="user-btn primary">
+                    <i class="fas fa-user-plus"></i> Crear Cuenta
+                </button>
+                
+                <div class="user-form-footer">
+                    <p>¿Ya tienes cuenta? <a href="#" onclick="showLoginForm()">Inicia sesión aquí</a></p>
+                    <button type="button" class="user-btn secondary" onclick="closeUserSystem()">
+                        <i class="fas fa-times"></i> Cerrar
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Carrito de Compras -->
+    <div class="cart-modal" id="cartModal">
+        <div class="cart-content">
+            <div class="cart-header">
+                <h3><i class="fas fa-shopping-cart"></i> Carrito de Compras</h3>
+                <div style="display: flex; align-items: center; gap: 10px;">
+                    <span style="color: white; font-size: 0.9rem; opacity: 0.9;">Cerrar</span>
+                    <button class="cart-close-btn" onclick="cerrarCarrito()" title="Cerrar carrito (ESC)">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+            </div>
+            
+            <div class="cart-items" id="cartItems">
+                <!-- Los items del carrito se cargarán dinámicamente -->
+            </div>
+            
+            <div class="cart-footer">
+                <div class="cart-total">
+                    <span>Total:</span>
+                    <span id="cartTotal">$0</span>
+                </div>
+                <div class="cart-actions">
+                    <button class="cart-btn-limpiar" onclick="limpiarCarrito()">
+                        <i class="fas fa-trash"></i> Limpiar
+                    </button>
+                    <button class="cart-btn-finalizar" onclick="pagarCarrito()">
+                        <i class="fas fa-credit-card"></i> Finalizar Compra
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal de Pago -->
+    <div id="modalPago" class="modal-pago-overlay">
+        <div id="modalPagoContenido">
+            <!-- Contenido del modal de pago se llena dinámicamente -->
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="row">
+                <!-- Información de la Empresa -->
+                <div class="col-lg-4 col-md-6 mb-4">
+                    <div class="footer-section">
+                        <div class="footer-logo">
+                            <img src="assets/logo/logo-friocas.png" alt="FRIOCAS" height="60">
+                        </div>
+                        <h4>FRIOCAS</h4>
+                        <p>Tu socio de confianza en productos y servicios automotrices. Más de 4 años de experiencia en el mercado.</p>
+                        <div class="footer-info">
+                            <p><i class="fas fa-map-marker-alt"></i> Moreno 2242, Corrientes Capital, Argentina</p>
+                            <p><i class="fas fa-phone"></i> +5493795015712</p>
+                            <p><i class="fas fa-envelope">jj_refrigeracionesctes@hotmail.com </p></i>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Enlaces Rápidos -->
+                <div class="col-lg-2 col-md-6 mb-4">
+                    <div class="footer-section">
+                        <h5>Enlaces Rápidos</h5>
+                        <ul class="footer-links">
+                            <li><a href="#inicio">Inicio</a></li>
+                            <li><a href="#productos">Productos</a></li>
+                            <li><a href="#servicios">Servicios</a></li>
+                            <li><a href="#ayuda">Ayuda</a></li>
+                            <li><a href="#contacto">Contacto</a></li>
+                        </ul>
+                    </div>
+                </div>
+                
+                <!-- Categorías de Productos -->
+                <div class="col-lg-3 col-md-6 mb-4">
+                    <div class="footer-section">
+                        <h5>Nuestros Productos</h5>
+                        <ul class="footer-links">
+                            <li><a href="#productos" onclick="filtrarProductos('limpiadores')">Limpiadores</a></li>
+                            <li><a href="#productos" onclick="filtrarProductos('shampoo')">Shampoo</a></li>
+                            <li><a href="#productos" onclick="filtrarProductos('ceras')">Ceras Líquidas</a></li>
+                            <li><a href="#productos" onclick="filtrarProductos('revividores')">Revividores</a></li>
+                            <li><a href="#productos" onclick="filtrarProductos('iluminacion')">Iluminación</a></li>
+                        </ul>
+                    </div>
+                </div>
+                
+                <!-- Redes Sociales y Contacto -->
+                <div class="col-lg-3 col-md-6 mb-4">
+                    <div class="footer-section">
+                        <h5>Síguenos</h5>
+                        <div class="social-links">
+                            <a href="https://www.facebook.com/p/JL-Refrigeraci%C3%B3n-100064909932527/" target="_blank" class="social-link facebook">
+                                <i class="fab fa-facebook-f"></i>
+                                <span>Facebook</span>
+                            </a>
+                            <a href="https://www.instagram.com/lccarshop_?igsh" target="_blank" class="social-link instagram">
+                                <i class="fab fa-instagram"></i>
+                                <span>Instagram</span>
+                            </a>
+                            <a href="https://wa.me/5493795015712" target="_blank" class="social-link whatsapp">
+                                <i class="fab fa-whatsapp"></i>
+                                <span>WhatsApp</span>
+                            </a>
+                        </div>
+                        
+                        <div class="footer-contact">
+                            <h6>Horarios de Atención</h6>
+                            <p>Lunes a Viernes: 8:00 - 12:00 y 16:00 - 20:00</p>
+                            <p>Sábados: 8:00 - 12:00</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Línea divisoria -->
+            <div class="footer-divider"></div>
+            
+            <!-- Información adicional -->
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="footer-bottom">
+                        <p>&copy; 2025 FRIOCAS. Todos los derechos reservados.</p>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="footer-bottom text-end">
+                        <p>Venta por mayor y menor disponible</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Carrito de Compras -->
+    <div class="cart-container" id="cartContainer">
+        <div class="cart-modal">
+            <div class="cart-header">
+                <h3><i class="fas fa-shopping-cart"></i> Carrito de Compras</h3>
+                <button class="cart-close" onclick="cerrarCarrito()">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            
+            <div class="cart-items" id="cartItems">
+                <!-- Los items del carrito se cargarán dinámicamente -->
+            </div>
+            
+            <div class="cart-footer">
+                <div class="cart-total">
+                    <span>Total:</span>
+                    <span id="cartTotal">$0</span>
+                </div>
+                <button class="cart-checkout-btn" onclick="checkout()">
+                    <i class="fas fa-credit-card"></i> Finalizar Compra
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Chatbot IA -->
+    <div class="ai-chatbot-container">
+        <button class="ai-chatbot-toggle" onclick="toggleAIChatbot()">
+            <div class="ai-toggle-content">
+                <i class="fas fa-brain"></i>
+                <span class="ai-toggle-text">FRIOCAS AI</span>
+            </div>
+        </button>
+        
+        <div class="ai-chatbot-modal" id="aiChatbotModal">
+            <div class="ai-chatbot-header">
+                <div class="ai-header-content">
+                    <div class="ai-avatar">
+                        <i class="fas fa-brain"></i>
+                    </div>
+                    <div class="ai-header-info">
+                        <h3>FRIOCAS AI</h3>
+                        <span class="ai-status">Asistente Inteligente</span>
+                    </div>
+                </div>
+                <button class="ai-chatbot-close" onclick="toggleAIChatbot()">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            
+            <div class="ai-chatbot-messages" id="aiChatbotMessages">
+                <!-- Los mensajes se agregarán dinámicamente -->
+            </div>
+            
+            <div class="ai-chatbot-input">
+                <div class="input-container">
+                    <input type="text" id="aiChatInput" placeholder="Escribe tu consulta..." onkeypress="handleAIChatKeyPress(event)">
+                    <button onclick="sendAIMessage()" class="send-btn">
+                        <i class="fas fa-paper-plane"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Chatbot FRIOCAS BOT (Servicio de Ayuda) -->
+    <div class="chatbot-container">
+        <button class="chatbot-toggle" onclick="toggleChatbot()">
+            <div class="chatbot-toggle-content">
+                <i class="fas fa-headset"></i>
+                <span class="chatbot-toggle-text">Ayuda</span>
+            </div>
+        </button>
+        
+        <div class="chatbot-modal" id="chatbotModal">
+            <div class="chatbot-header">
+                <div class="chatbot-header-content">
+                    <div class="chatbot-avatar">
+                        <i class="fas fa-headset"></i>
+                    </div>
+                    <div class="chatbot-header-info">
+                        <h3>Servicio de Ayuda</h3>
+                        <span class="chatbot-status">En línea</span>
+                    </div>
+                </div>
+                <button class="chatbot-close" onclick="toggleChatbot()">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            
+            <div class="chatbot-messages" id="chatbotMessages">
+                <!-- Los mensajes se agregarán dinámicamente -->
+            </div>
+            
+            <div class="chatbot-input">
+                <div class="input-container">
+                    <input type="text" id="chatInput" placeholder="Escribe tu mensaje..." onkeypress="handleChatKeyPress(event)">
+                    <button onclick="sendMessage()" class="send-btn">
+                        <i class="fas fa-paper-plane"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal de Reserva de Servicios -->
+    <div class="modal-reserva-overlay" id="modalReserva">
+        <div class="modal-reserva">
+            <div class="modal-reserva-header">
+                <h3 id="modalReservaTitulo">Reservar Servicio</h3>
+                <button onclick="cerrarModalReserva()" class="cerrar-modal">&times;</button>
+            </div>
+            <div class="modal-reserva-content">
+                <div id="modalReservaContenido">
+                    <!-- El contenido se cargará dinámicamente -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal de Pago -->
+    <div class="modal-pago-overlay" id="modalPago">
+        <div id="modalPagoContenido">
+            <!-- El contenido se cargará dinámicamente -->
+        </div>
+    </div>
+
+    <!-- Carrito de Compras -->
+    <div class="cart-container" id="cartContainer">
+        <div class="cart-header">
+            <h3><i class="fas fa-shopping-cart"></i> Carrito de Compras</h3>
+                            <button onclick="cerrarCarrito()" class="close-cart">&times;</button>
+        </div>
+        <div class="cart-items" id="cartItems">
+            <!-- Los items se cargarán dinámicamente -->
+        </div>
+        <div class="cart-footer">
+            <div class="cart-total">
+                <span>Total: <strong id="cartTotal">$0</strong></span>
+            </div>
+            <button onclick="checkout()" class="btn-checkout">
+                <i class="fas fa-credit-card"></i> Finalizar Compra
+            </button>
+        </div>
+    </div>
+
+    <!-- Chatbot de Ayuda -->
+    <div class="chatbot-container" id="chatbot">
+        <div class="chatbot-header">
+            <h4><i class="fas fa-headset"></i> Servicio de Ayuda</h4>
+            <button onclick="toggleChatbot()" class="close-chatbot">&times;</button>
+        </div>
+        <div class="chatbot-messages" id="chatbotMessages">
+            <!-- Los mensajes se cargarán dinámicamente -->
+        </div>
+        <div class="chatbot-input">
+            <input type="text" id="chatInput" placeholder="Escribe tu mensaje..." onkeypress="handleChatKeyPress(event)">
+            <button onclick="sendMessage()" class="send-btn">
+                <i class="fas fa-paper-plane"></i>
+            </button>
+        </div>
+    </div>
+
+    <!-- AI Chatbot -->
+    <div class="ai-chatbot-container" id="aiChatbot">
+        <div class="ai-chatbot-header">
+            <h4><i class="fas fa-robot"></i> FRIOCAS AI</h4>
+            <button onclick="toggleAIChatbot()" class="close-ai-chatbot">&times;</button>
+        </div>
+        <div class="ai-chatbot-messages" id="aiChatbotMessages">
+            <!-- Los mensajes se cargarán dinámicamente -->
+        </div>
+        <div class="ai-chatbot-input">
+            <input type="text" id="aiChatInput" placeholder="Pregúntale a FRIOCAS AI..." onkeypress="handleAIChatKeyPress(event)">
+            <button onclick="sendAIMessage()" class="send-btn">
+                <i class="fas fa-paper-plane"></i>
+            </button>
+        </div>
+    </div>
+
+    <!-- Botones flotantes -->
+    <button class="chatbot-toggle" onclick="toggleChatbot()">
+        <i class="fas fa-headset"></i>
+    </button>
+    
+    <button class="ai-chatbot-toggle" onclick="toggleAIChatbot()">
+        <i class="fas fa-robot"></i>
+    </button>
+
+    <!-- Chatbot de Ayuda -->
+    <div class="chatbot-container" id="chatbotContainer">
+        <div class="chatbot-header">
+            <h4><i class="fas fa-headset"></i> Soporte FRIOCAS</h4>
+            <button onclick="toggleChatbot()" class="chatbot-close">&times;</button>
+        </div>
+        <div class="chatbot-messages" id="chatHelpMessages">
+            <!-- Los mensajes se agregarán dinámicamente -->
+        </div>
+        <div class="chatbot-input">
+            <input type="text" id="chatHelpInput" placeholder="Escribe tu consulta..." onkeypress="if(event.key === 'Enter') sendMessage('help')">
+            <button onclick="sendMessage('help')" class="chatbot-send">
+                <i class="fas fa-arrow-right"></i>
+            </button>
+        </div>
+    </div>
+
+    <!-- Chatbot IA -->
+    <div class="ai-chatbot-container" id="aiChatbotContainer">
+        <div class="chatbot-header">
+            <h4><i class="fas fa-robot"></i> Asistente Virtual FRIOCAS</h4>
+            <button onclick="toggleAIChatbot()" class="chatbot-close">&times;</button>
+        </div>
+        <div class="chatbot-messages" id="chatAIMessages">
+            <!-- Los mensajes se agregarán dinámicamente -->
+        </div>
+        <div class="chatbot-input">
+            <input type="text" id="chatAIInput" placeholder="Pregunta sobre productos..." onkeypress="if(event.key === 'Enter') sendMessage('ai')">
+            <button onclick="sendMessage('ai')" class="chatbot-send">
+                <i class="fas fa-arrow-right"></i>
+            </button>
+        </div>
+    </div>
+
+                    <!-- Modal de Transporte con Google Maps -->
+                <div class="modal-transporte-overlay" id="modalTransporte">
+                    <div class="modal-transporte">
+                        <div class="modal-transporte-header">
+                            <h3>Calcular Precio de Transporte</h3>
+                            <button onclick="cerrarModalTransporte()" class="cerrar-modal">&times;</button>
+                        </div>
+                        <div class="modal-transporte-content">
+                            <div class="formulario-transporte">
+                                <div class="input-group">
+                                    <label for="origen">Origen:</label>
+                                    <input type="text" id="origen" placeholder="Ingresa tu dirección de origen">
+                                </div>
+                                <div class="input-group">
+                                    <label for="destino">Destino:</label>
+                                    <input type="text" id="destino" placeholder="Ingresa tu dirección de destino">
+                                </div>
+                                <div class="input-group">
+                                    <label for="tipoViaje">Tipo de Viaje:</label>
+                                    <select id="tipoViaje">
+                                        <option value="local">Local</option>
+                                        <option value="interprovincial">Interprovincial</option>
+                                    </select>
+                                </div>
+                                <div class="mapa-container">
+                                    <div id="mapaTransporte" class="mapa-transporte"></div>
+                                </div>
+                                <div class="resultado-calculo" id="resultadoCalculo">
+                                    <div class="distancia-info">
+                                        <span>Distancia: <strong id="distanciaCalculada">-</strong></span>
+                                        <span>Duración: <strong id="duracionCalculada">-</strong></span>
+                                    </div>
+                                    <div class="precio-final">
+                                        <span>Precio Total: <strong id="precioCalculado">$0</strong></span>
+                                    </div>
+                                </div>
+                                <div class="botones-transporte">
+                                    <button onclick="calcularRuta()" class="btn-calcular">
+                                        <i class="fas fa-calculator"></i> Calcular
+                                    </button>
+                                    <button onclick="mostrarFormularioReservaTransporte()" class="btn-reservar-transporte" id="btnReservarTransporte" disabled>
+                                        <i class="fas fa-calendar-plus"></i> Reservar
+                                    </button>
+                                </div>
+                                
+                                <!-- Formulario de reserva de transporte -->
+                                <div id="formularioReservaTransporte" class="formulario-reserva-transporte" style="display: none;">
+                                    <h4>Datos de Reserva</h4>
+                                    <div class="input-group">
+                                        <label for="nombreTransporte">Nombre completo:</label>
+                                        <input type="text" id="nombreTransporte" required>
+                                    </div>
+                                    <div class="input-group">
+                                        <label for="telefonoTransporte">Teléfono:</label>
+                                        <input type="tel" id="telefonoTransporte" required>
+                                    </div>
+                                    <div class="input-group">
+                                        <label for="emailTransporte">Email:</label>
+                                        <input type="email" id="emailTransporte" required>
+                                    </div>
+                                    <div class="input-group">
+                                        <label for="fechaTransporte">Fecha de viaje:</label>
+                                        <input type="date" id="fechaTransporte" required>
+                                    </div>
+                                    <div class="input-group">
+                                        <label for="horaTransporte">Hora de viaje:</label>
+                                        <input type="time" id="horaTransporte" required>
+                                    </div>
+                                    <div class="input-group">
+                                        <label for="comentariosTransporte">Comentarios adicionales:</label>
+                                        <textarea id="comentariosTransporte" rows="3" placeholder="Especificaciones especiales, equipaje, etc."></textarea>
+                                    </div>
+                                    <div class="botones-accion">
+                                        <button onclick="cancelarReservaTransporte()" class="btn-cancelar-reserva">
+                                            <i class="fas fa-times"></i> Cancelar
+                                        </button>
+                                        <button onclick="confirmarReservaTransporte()" class="btn-confirmar-reserva">
+                                            <i class="fas fa-check"></i> Confirmar Reserva
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+    <!-- Botón de emergencia para cerrar modales (temporal) -->
+    <div class="floating-emergency-btn" onclick="cerrarTodosLosModales()" title="Cerrar todos los modales (emergencia)" style="position: fixed; bottom: 20px; left: 20px; background: #dc3545; color: white; width: 50px; height: 50px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 20px; cursor: pointer; z-index: 9999; box-shadow: 0 4px 12px rgba(220, 53, 69, 0.4);">
+        <i class="fas fa-times-circle"></i>
+    </div>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+                    <script src="script-friocas.js?v=8.9"></script>
+        <script src="facturacion.js?v=2.7"></script>
+        <script src="security-system.js?v=1.2"></script>
+    
+    <!-- Sistema de Acceso Secreto al Panel de Administración -->
+    <script>
+        // ===== VARIABLE GLOBAL PARA ACCESO SECRETO =====
+        let adminAccessAttempted = false;
+        
+        // ===== DETECCIÓN DE COMBINACIÓN SECRETA =====
+        document.addEventListener('keydown', function(event) {
+            // Detectar Ctrl + Alt + A (Panel de Administración General)
+            if (event.ctrlKey && event.altKey && event.key.toLowerCase() === 'a') {
+                // Prevenir comportamiento por defecto
+                event.preventDefault();
+                event.stopPropagation();
+                
+                // Evitar múltiples activaciones
+                if (adminAccessAttempted) return;
+                adminAccessAttempted = true;
+                
+                // ¡COMBINACIÓN CORRECTA!
+                console.log('🔐 Acceso secreto detectado - Redirigiendo al panel de administración...');
+                mostrarNotificacionSecreta('🔓 Acceso concedido - Redirigiendo al panel de administración...', 'success');
+                
+                // Guardar estado del carrito antes de redirigir
+                if (typeof carrito !== 'undefined' && carrito.length > 0) {
+                    localStorage.setItem('carritoBackup', JSON.stringify(carrito));
+                    console.log('💾 Carrito guardado antes de redirección');
+                }
+                
+                // Redirigir al panel de administración con delay
+                setTimeout(() => {
+                    try {
+                        // Usar window.open para abrir en nueva pestaña
+                        window.open('admin-friocas.html', '_blank');
+                        console.log('🔐 Panel de administración abierto en nueva pestaña');
+                    } catch (error) {
+                        console.error('Error en redirección:', error);
+                        // Fallback a redirección normal
+                        window.location.href = 'admin-friocas.html';
+                    }
+                }, 2000);
+                
+                // Resetear después de 3 segundos
+                setTimeout(() => {
+                    adminAccessAttempted = false;
+                }, 3000);
+            }
+            
+            // 🎯 NUEVO: Acceso exclusivo para Carla - Sistema de Atención al Cliente
+            // Combinación secreta: Ctrl + Alt + Shift + C (Carla)
+            if (event.ctrlKey && event.altKey && event.shiftKey && event.key.toLowerCase() === 'c') {
+                // Prevenir comportamiento por defecto
+                event.preventDefault();
+                event.stopPropagation();
+                
+                // Evitar múltiples activaciones
+                if (adminAccessAttempted) return;
+                adminAccessAttempted = true;
+                
+                // ¡ACCESO EXCLUSIVO PARA CARLA!
+                console.log('🎯 Acceso exclusivo de Carla detectado - Sistema de Atención al Cliente...');
+                mostrarNotificacionSecreta('👑 Acceso exclusivo de Carla - Sistema de Atención al Cliente', 'success');
+                
+                // Guardar estado del carrito antes de redirigir
+                if (typeof carrito !== 'undefined' && carrito.length > 0) {
+                    localStorage.setItem('carritoBackup', JSON.stringify(carrito));
+                    console.log('💾 Carrito guardado antes de redirección');
+                }
+                
+                // Redirigir al sistema de atención al cliente exclusivo
+                setTimeout(() => {
+                    try {
+                        // Usar window.open para abrir en nueva pestaña
+                        window.open('atencion-cliente-carla.html', '_blank');
+                        console.log('🎯 Sistema de Carla abierto en nueva pestaña');
+                    } catch (error) {
+                        console.error('Error en redirección:', error);
+                        // Fallback a redirección normal
+                        window.location.href = 'atencion-cliente-carla.html';
+                    }
+                }, 2000);
+                
+                // Resetear después de 3 segundos
+                setTimeout(() => {
+                    adminAccessAttempted = false;
+                }, 3000);
+            }
+        });
+        
+        // ===== NOTIFICACIÓN SECRETA =====
+        function mostrarNotificacionSecreta(mensaje, tipo = 'info') {
+            const notificacion = document.createElement('div');
+            notificacion.className = `notificacion-secreta notificacion-${tipo}`;
+            notificacion.innerHTML = `
+                <div class="notificacion-contenido">
+                    <span>${mensaje}</span>
+                </div>
+            `;
+            
+            // Estilos para notificación secreta
+            notificacion.style.cssText = `
+                position: fixed;
+                top: 50%;
+                left: 50%;
+                transform: translate(-50%, -50%);
+                background: ${tipo === 'success' ? '#10B981' : tipo === 'error' ? '#EF4444' : '#3B82F6'};
+                color: white;
+                padding: 1.5rem 2rem;
+                border-radius: 15px;
+                box-shadow: 0 20px 40px rgba(0,0,0,0.3);
+                z-index: 100000;
+                animation: fadeInScale 0.3s ease-out;
+                font-weight: 600;
+                font-size: 1.1rem;
+                text-align: center;
+                min-width: 300px;
+            `;
+            
+            // Agregar al DOM
+            document.body.appendChild(notificacion);
+            
+            // Auto-remover después de 3 segundos
+            setTimeout(() => {
+                if (notificacion.parentElement) {
+                    notificacion.remove();
+                }
+            }, 3000);
+        }
+        
+        // ===== ESTILOS CSS DINÁMICOS PARA NOTIFICACIÓN =====
+        const estilosSecretos = `
+            @keyframes fadeInScale {
+                from {
+                    opacity: 0;
+                    transform: translate(-50%, -50%) scale(0.8);
+                }
+                to {
+                    opacity: 1;
+                    transform: translate(-50%, -50%) scale(1);
+                }
+            }
+        `;
+        
+        // Agregar estilos al head
+        const styleSheet = document.createElement('style');
+        styleSheet.textContent = estilosSecretos;
+        document.head.appendChild(styleSheet);
+        
+        // ===== LOG DE INICIALIZACIÓN =====
+        console.log('🔐 Sistema de acceso secreto inicializado');
+        console.log('🎯 Combinación secreta: Ctrl + Alt + A');
+        console.log('💡 Solo FRIOCAS conoce esta combinación');
+    </script>
+</body>
+</html>

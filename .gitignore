@@ -1,10 +1,3 @@
-# Archivos sensibles que NO se subirán a Git
-.env
-config.php
-database.php
-*.log
-*.tmp
-
 # Archivos del sistema
 .DS_Store
 Thumbs.db
@@ -15,19 +8,69 @@ desktop.ini
 .idea/
 *.swp
 *.swo
+*~
+
+# Archivos temporales
+*.tmp
+*.temp
+*.log
+
+# Archivos de configuración local
+config.local.js
+.env
+.env.local
+.env.production
 
 # Archivos de backup
 *.bak
 *.backup
-*~
+*_backup.*
 
-# Archivos temporales
-temp/
-tmp/
+# Archivos de caché
+.cache/
 cache/
 
-# Archivos de configuración local
-local-config.js
-local-settings.json
+# Archivos de node_modules (si se agregan dependencias)
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
 
-# Notas: Los archivos .htaccess y robots.txt SÍ se suben porque son necesarios para el funcionamiento
+# Archivos de build
+dist/
+build/
+
+# Archivos de credenciales (IMPORTANTE)
+credentials.json
+secrets.json
+*.key
+*.pem
+
+# Archivos de base de datos local
+*.db
+*.sqlite
+*.sqlite3
+
+# Archivos de logs
+logs/
+*.log
+
+# Archivos de test
+test-results/
+coverage/
+
+# Archivos de Mercado Pago (temporales)
+mercadopago-*.json
+mp-*.log
+
+# Archivos de desarrollo
+dev-*.js
+debug-*.js
+test-*.js
+
+# Excluir archivos de prueba específicos
+test-botones-cantidad.html
+test-seguridad.html
+test-reinicio-eventos.html
+debug-*.html
+limpiar-cache-productos.html

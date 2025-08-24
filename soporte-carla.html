@@ -1,0 +1,323 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FRIOCAS - Soporte de Carla</title>
+    
+    <!-- Favicon -->
+    <link rel="icon" type="image/png" href="assets/logo/logo-friocas.png">
+    <link rel="apple-touch-icon" href="assets/logo/logo-friocas.png">
+    
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <style>
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            margin: 0;
+            padding: 0;
+            min-height: 100vh;
+        }
+        
+        .soporte-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        .soporte-header {
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            margin-bottom: 30px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            text-align: center;
+        }
+        
+        .soporte-header h1 {
+            color: #333;
+            margin-bottom: 10px;
+        }
+        
+        .soporte-header p {
+            color: #666;
+            font-size: 1.1rem;
+        }
+        
+        .soporte-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+            margin-bottom: 30px;
+        }
+        
+        .soporte-card {
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            transition: transform 0.3s ease;
+        }
+        
+        .soporte-card:hover {
+            transform: translateY(-5px);
+        }
+        
+        .soporte-card h3 {
+            color: #333;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .soporte-card .icon {
+            font-size: 1.5rem;
+            color: #667eea;
+        }
+        
+        .soporte-card p {
+            color: #666;
+            line-height: 1.6;
+            margin-bottom: 20px;
+        }
+        
+        .soporte-btn {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            border: none;
+            padding: 12px 25px;
+            border-radius: 8px;
+            text-decoration: none;
+            display: inline-block;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+        
+        .soporte-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+            color: white;
+        }
+        
+        .security-info {
+            background: #f8f9fa;
+            border-radius: 15px;
+            padding: 30px;
+            margin-bottom: 30px;
+            border-left: 5px solid #667eea;
+        }
+        
+        .security-info h3 {
+            color: #333;
+            margin-bottom: 15px;
+        }
+        
+        .security-info ul {
+            color: #666;
+            line-height: 1.8;
+        }
+        
+        .security-info li {
+            margin-bottom: 8px;
+        }
+        
+        .back-btn {
+            background: #6c757d;
+            color: white;
+            border: none;
+            padding: 12px 25px;
+            border-radius: 8px;
+            text-decoration: none;
+            display: inline-block;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+        
+        .back-btn:hover {
+            background: #5a6268;
+            color: white;
+            text-decoration: none;
+        }
+        
+        .access-info {
+            background: #e3f2fd;
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 20px;
+            border-left: 5px solid #2196f3;
+        }
+        
+        .access-info h4 {
+            color: #1976d2;
+            margin-bottom: 10px;
+        }
+        
+        .access-info p {
+            color: #424242;
+            margin-bottom: 5px;
+        }
+        
+        .hotkey {
+            background: #333;
+            color: white;
+            padding: 5px 10px;
+            border-radius: 5px;
+            font-family: monospace;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <div class="soporte-container">
+        <!-- Header -->
+        <div class="soporte-header">
+            <h1><i class="fas fa-headset"></i> Soporte de Carla</h1>
+            <p>Sistema de atención al cliente y soporte técnico</p>
+        </div>
+        
+        <!-- Información de Acceso -->
+        <div class="access-info">
+            <h4><i class="fas fa-key"></i> Información de Acceso</h4>
+            <p><strong>Acceso Oculto:</strong> Presiona <span class="hotkey">Ctrl + Alt + C</span> en cualquier página</p>
+            <p><strong>Código de Acceso:</strong> FRIOCAS2024CARLA</p>
+            <p><strong>Último Acceso:</strong> <span id="lastAccess">Verificando...</span></p>
+        </div>
+        
+        <!-- Grid de Herramientas -->
+        <div class="soporte-grid">
+            <div class="soporte-card">
+                <h3><i class="fas fa-users icon"></i> Gestión de Clientes</h3>
+                <p>Accede a la información de clientes, historial de compras y datos de contacto para brindar soporte personalizado.</p>
+                <a href="#" class="soporte-btn" onclick="mostrarClientes()">
+                    <i class="fas fa-eye"></i> Ver Clientes
+                </a>
+            </div>
+            
+            <div class="soporte-card">
+                <h3><i class="fas fa-ticket-alt icon"></i> Tickets de Soporte</h3>
+                <p>Gestiona tickets de soporte, consultas de clientes y solicitudes de ayuda técnica.</p>
+                <a href="#" class="soporte-btn" onclick="mostrarTickets()">
+                    <i class="fas fa-list"></i> Ver Tickets
+                </a>
+            </div>
+            
+            <div class="soporte-card">
+                <h3><i class="fas fa-chart-line icon"></i> Reportes de Ventas</h3>
+                <p>Consulta reportes detallados de ventas, productos más vendidos y análisis de rendimiento.</p>
+                <a href="#" class="soporte-btn" onclick="mostrarReportes()">
+                    <i class="fas fa-chart-bar"></i> Ver Reportes
+                </a>
+            </div>
+            
+            <div class="soporte-card">
+                <h3><i class="fas fa-cog icon"></i> Configuración</h3>
+                <p>Configura horarios de atención, mensajes automáticos y parámetros del sistema de soporte.</p>
+                <a href="#" class="soporte-btn" onclick="mostrarConfiguracion()">
+                    <i class="fas fa-wrench"></i> Configurar
+                </a>
+            </div>
+            
+            <div class="soporte-card">
+                <h3><i class="fas fa-phone icon"></i> Contacto Directo</h3>
+                <p>Información de contacto directo para casos urgentes y comunicación con el equipo técnico.</p>
+                <a href="#" class="soporte-btn" onclick="mostrarContacto()">
+                    <i class="fas fa-address-book"></i> Ver Contactos
+                </a>
+            </div>
+            
+            <div class="soporte-card">
+                <h3><i class="fas fa-shield-alt icon"></i> Seguridad</h3>
+                <p>Monitorea eventos de seguridad, accesos no autorizados y configuración de protección.</p>
+                <a href="#" class="soporte-btn" onclick="mostrarSeguridad()">
+                    <i class="fas fa-eye-shield"></i> Ver Seguridad
+                </a>
+            </div>
+        </div>
+        
+        <!-- Información de Seguridad -->
+        <div class="security-info">
+            <h3><i class="fas fa-shield-alt"></i> Medidas de Seguridad Implementadas</h3>
+            <ul>
+                <li><strong>Autenticación Segura:</strong> Sistema de login con tokens de seguridad</li>
+                <li><strong>Protección contra Ataques:</strong> Rate limiting y detección de herramientas de desarrollador</li>
+                <li><strong>Auditoría Completa:</strong> Registro de todos los eventos de seguridad</li>
+                <li><strong>Timeout de Sesión:</strong> Cierre automático por inactividad (30 minutos)</li>
+                <li><strong>Bloqueo de Cuentas:</strong> Bloqueo temporal tras múltiples intentos fallidos</li>
+                <li><strong>Protección de Código:</strong> Deshabilitación de inspección y herramientas de desarrollador</li>
+            </ul>
+        </div>
+        
+        <!-- Botón de Regreso -->
+        <div style="text-align: center;">
+            <a href="index-friocas-productos.html" class="back-btn">
+                <i class="fas fa-arrow-left"></i> Volver a la Página Principal
+            </a>
+        </div>
+    </div>
+    
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <!-- Script de Seguridad -->
+    <script src="security-system.js?v=1.2"></script>
+    <script>
+        // Proteger página de soporte
+        if (!window.FRIOCAS_SECURITY || !window.FRIOCAS_SECURITY.protectCarlaPage()) {
+            console.log('🔒 Acceso denegado al soporte de Carla');
+        }
+        
+        // Mostrar último acceso
+        document.addEventListener('DOMContentLoaded', function() {
+            const lastAccess = localStorage.getItem('friocas_carla_last_access');
+            if (lastAccess) {
+                document.getElementById('lastAccess').textContent = new Date(parseInt(lastAccess)).toLocaleString('es-AR');
+            } else {
+                document.getElementById('lastAccess').textContent = 'Primera vez';
+            }
+            
+            // Registrar acceso actual
+            localStorage.setItem('friocas_carla_last_access', Date.now().toString());
+        });
+        
+        // Funciones de soporte
+        function mostrarClientes() {
+            alert('🔍 Función de gestión de clientes en desarrollo');
+        }
+        
+        function mostrarTickets() {
+            alert('🎫 Función de tickets de soporte en desarrollo');
+        }
+        
+        function mostrarReportes() {
+            alert('📊 Función de reportes en desarrollo');
+        }
+        
+        function mostrarConfiguracion() {
+            alert('⚙️ Función de configuración en desarrollo');
+        }
+        
+        function mostrarContacto() {
+            alert('📞 Función de contactos en desarrollo');
+        }
+        
+        function mostrarSeguridad() {
+            if (window.FRIOCAS_SECURITY) {
+                const log = window.FRIOCAS_SECURITY.getSecurityLog();
+                console.log('🔒 Log de Seguridad:', log);
+                alert('🔒 Log de seguridad mostrado en consola');
+            } else {
+                alert('🔒 Sistema de seguridad no disponible');
+            }
+        }
+    </script>
+</body>
+</html>
