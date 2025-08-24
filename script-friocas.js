@@ -4436,20 +4436,18 @@ const FRIOCAS_COORDS = {
 
 // Función para inicializar el mapa
 function inicializarMapa() {
+    console.log('🗺️ Inicializando mapa...');
     const mapaContainer = document.getElementById('mapa-friocas');
     if (!mapaContainer) {
-        console.log('Contenedor del mapa no encontrado');
+        console.log('❌ Contenedor del mapa no encontrado');
         return;
     }
     
-    // Intentar usar Google Maps primero, si falla usar mapa estático
-    if (typeof google !== 'undefined' && google.maps) {
-        console.log('✅ Google Maps disponible, usando mapa interactivo');
-        inicializarMapaGoogle();
-    } else {
-        console.log('⚠️ Google Maps no disponible, usando mapa estático');
-        crearMapaEstatico();
-    }
+    console.log('✅ Contenedor del mapa encontrado');
+    
+    // Forzar uso de mapa estático por ahora
+    console.log('🗺️ Usando mapa estático');
+    crearMapaEstatico();
 }
 
 function inicializarMapaGoogle() {

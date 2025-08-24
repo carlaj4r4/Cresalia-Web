@@ -815,6 +815,28 @@ function cargarConfiguracionGeneral() {
                 </div>
             </div>
         </div>
+        
+        <!-- Gestión de Precios de Servicios -->
+        <div class="config-general-card">
+            <div class="config-general-header">
+                <i class="fas fa-dollar-sign"></i>
+                <h3>Precios de Servicios</h3>
+            </div>
+            <div class="config-general-content">
+                <div class="servicios-precios-lista" id="serviciosPreciosLista">
+                    <!-- Los servicios se cargarán dinámicamente -->
+                </div>
+                
+                <div class="config-general-actions">
+                    <button type="button" class="add-btn" onclick="mostrarFormularioServicio()">
+                        <i class="fas fa-plus"></i> Agregar Servicio
+                    </button>
+                    <button type="button" class="sync-btn" onclick="sincronizarServicios()">
+                        <i class="fas fa-sync"></i> Sincronizar
+                    </button>
+                </div>
+            </div>
+        </div>
     `;
     
     // Configurar eventos
@@ -823,6 +845,7 @@ function cargarConfiguracionGeneral() {
     // Cargar datos
     cargarServicios();
     cargarCategorias();
+    cargarPreciosServicios();
 }
 
 function configurarEventosConfiguracion() {
@@ -948,6 +971,56 @@ function cargarCategorias() {
             </div>
         `).join('');
     }
+}
+
+function cargarPreciosServicios() {
+    const servicios = JSON.parse(localStorage.getItem('serviciosFRIOCAS') || '[]');
+    const serviciosLista = document.getElementById('serviciosPreciosLista');
+    
+    if (!serviciosLista) return;
+    
+    if (servicios.length === 0) {
+        serviciosLista.innerHTML = `
+            <div class="servicio-item" style="text-align: center; color: var(--gray-500);">
+                <i class="fas fa-dollar-sign" style="font-size: 2rem; margin-bottom: 1rem;"></i>
+                <p>No hay servicios configurados</p>
+                <p style="font-size: 0.9rem;">Agrega tu primer servicio para comenzar</p>
+            </div>
+        `;
+    } else {
+        serviciosLista.innerHTML = servicios.map((servicio, index) => `
+            <div class="servicio-precio-item">
+                <div class="servicio-precio-info">
+                    <div class="servicio-precio-nombre">${servicio.nombre}</div>
+                    <div class="servicio-precio-categoria">${getCategoriaDisplayName(servicio.categoria)}</div>
+                    <div class="servicio-precio-descripcion">${servicio.descripcion}</div>
+                </div>
+                <div class="servicio-precio-valor">
+                    <span class="precio-actual">$${parseInt(servicio.precio).toLocaleString('es-AR')}</span>
+                </div>
+                <div class="servicio-precio-acciones">
+                    <button class="btn-servicio-precio" onclick="editarPrecioServicio(${index})">
+                        <i class="fas fa-edit"></i> Editar
+                    </button>
+                    <button class="btn-servicio-precio btn-eliminar" onclick="eliminarServicio(${index})">
+                        <i class="fas fa-trash"></i>
+                    </button>
+                </div>
+            </div>
+        `).join('');
+    }
+}
+
+function getCategoriaDisplayName(categoria) {
+    const categorias = {
+        'aireAcondicionado': 'Aire Acondicionado',
+        'taller': 'Taller',
+        'lubricentro': 'Lubricentro',
+        'detailing': 'Detailing',
+        'gestoria': 'Gestoría',
+        'transporte': 'Transporte'
+    };
+    return categorias[categoria] || categoria;
 }
 
 function mostrarFormularioServicio(servicioIndex = null) {
@@ -3995,4 +4068,23 @@ function cerrarModalServicio() {
     if (modal) {
         modal.remove();
     }
+}
+
+function sincronizarServicios() {
+    const servicios = JSON.parse(localStorage.getItem('serviciosFRIOCAS') || '[]');
+    
+    // Guardar en localStorage para sincronización con la página principal
+    localStorage.setItem('SERVICIOS_DATA', JSON.stringify(servicios));
+    
+    // Intentar recargar la página principal si está abierta
+    if (window.opener && !window.opener.closed) {
+        try {
+            window.opener.location.reload();
+        } catch (e) {
+            console.log('No se pudo recargar la página principal');
+        }
+    }
+    
+    mostrarNotificacion('✅ Servicios sincronizados correctamente', 'success');
+    console.log('💾 Servicios sincronizados:', servicios);
 }
