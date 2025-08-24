@@ -125,6 +125,99 @@ function debugProductos() {
     };
 }
 
+// Función para debug del mapa
+function debugMapa() {
+    console.log('🗺️ DEBUG DEL MAPA:');
+    console.log('📍 Coordenadas FRIOCAS:', FRIOCAS_COORDS);
+    console.log('🌐 Google Maps cargado:', typeof google !== 'undefined');
+    console.log('🗺️ Google Maps API:', typeof google !== 'undefined' ? typeof google.maps : 'No disponible');
+    console.log('📱 Contenedor del mapa:', document.getElementById('mapaFRIOCAS'));
+    console.log('🎯 Mapa inicializado:', typeof mapaFRIOCAS !== 'undefined');
+    console.log('📍 Marcador creado:', typeof marcadorFRIOCAS !== 'undefined');
+    
+    // Verificar API Key
+    const script = document.querySelector('script[src*="maps.googleapis.com"]');
+    if (script) {
+        const src = script.src;
+        const apiKey = src.match(/key=([^&]+)/);
+        console.log('🔑 API Key encontrada:', apiKey ? 'Sí' : 'No');
+        if (apiKey) {
+            console.log('🔑 API Key:', apiKey[1].substring(0, 10) + '...');
+        }
+    } else {
+        console.log('❌ Script de Google Maps no encontrado');
+    }
+    
+    // Verificar errores en consola
+    console.log('🔍 Verifica la consola del navegador para errores de Google Maps');
+    
+    return {
+        googleLoaded: typeof google !== 'undefined',
+        mapsAvailable: typeof google !== 'undefined' ? typeof google.maps : false,
+        containerExists: !!document.getElementById('mapaFRIOCAS'),
+        mapaInitialized: typeof mapaFRIOCAS !== 'undefined',
+        marcadorCreated: typeof marcadorFRIOCAS !== 'undefined'
+    };
+}
+
+// Función para crear mapa estático sin API Key
+function crearMapaEstatico() {
+    const mapaContainer = document.getElementById('mapaFRIOCAS');
+    if (!mapaContainer) {
+        console.log('❌ Contenedor del mapa no encontrado');
+        return;
+    }
+    
+    // Crear mapa estático con OpenStreetMap
+    const lat = FRIOCAS_COORDS.lat;
+    const lng = FRIOCAS_COORDS.lng;
+    const zoom = 15;
+    const width = 600;
+    const height = 400;
+    
+    // URL del mapa estático de OpenStreetMap
+    const mapaUrl = `https://www.openstreetmap.org/export/embed.html?bbox=${lng-0.01},${lat-0.01},${lng+0.01},${lat+0.01}&layer=mapnik&marker=${lat},${lng}`;
+    
+    mapaContainer.innerHTML = `
+        <div style="width: 100%; height: 100%; border-radius: 10px; overflow: hidden; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);">
+            <iframe 
+                width="100%" 
+                height="100%" 
+                frameborder="0" 
+                scrolling="no" 
+                marginheight="0" 
+                marginwidth="0" 
+                src="${mapaUrl}"
+                style="border: 0;">
+            </iframe>
+        </div>
+        <div style="text-align: center; margin-top: 10px; padding: 10px; background: #f8fafc; border-radius: 8px;">
+            <h4 style="color: #2563eb; margin: 0 0 5px 0;">
+                <i class="fas fa-map-marker-alt"></i> FRIOCAS
+            </h4>
+            <p style="margin: 5px 0; color: #64748b;">
+                <i class="fas fa-location-dot"></i> Corrientes, Argentina
+            </p>
+            <p style="margin: 5px 0; color: #64748b;">
+                <i class="fas fa-phone"></i> +5493795015712
+            </p>
+            <button onclick="abrirGoogleMaps()" style="background: #2563eb; color: white; border: none; padding: 8px 16px; border-radius: 5px; cursor: pointer; margin-top: 5px;">
+                <i class="fas fa-external-link-alt"></i> Abrir en Google Maps
+            </button>
+        </div>
+    `;
+    
+    console.log('✅ Mapa estático creado correctamente');
+}
+
+// Función para abrir Google Maps en nueva pestaña
+function abrirGoogleMaps() {
+    const lat = FRIOCAS_COORDS.lat;
+    const lng = FRIOCAS_COORDS.lng;
+    const url = `https://www.google.com/maps?q=${lat},${lng}`;
+    window.open(url, '_blank');
+}
+
 // ===== CARRITO DE COMPRAS =====
 let carrito = [];
 let productosFiltrados = PRODUCTOS_DATA;
@@ -4349,17 +4442,27 @@ function inicializarMapa() {
         return;
     }
     
-    // Verificar si Google Maps está cargado
-    if (typeof google === 'undefined' || !google.maps) {
-        console.log('Google Maps no está cargado aún, reintentando en 2 segundos...');
-        setTimeout(inicializarMapa, 2000);
+    // Intentar usar Google Maps primero, si falla usar mapa estático
+    if (typeof google !== 'undefined' && google.maps) {
+        console.log('✅ Google Maps disponible, usando mapa interactivo');
+        inicializarMapaGoogle();
+    } else {
+        console.log('⚠️ Google Maps no disponible, usando mapa estático');
+        crearMapaEstatico();
+    }
+}
+
+function inicializarMapaGoogle() {
+    const mapaContainer = document.getElementById('mapa-friocas');
+    if (!mapaContainer) {
+        console.log('Contenedor del mapa no encontrado');
         return;
     }
     
     // Verificar que las librerías necesarias estén disponibles
     if (!google.maps.Map || !google.maps.Marker || !google.maps.InfoWindow) {
-        console.log('Librerías de Google Maps no están completamente cargadas, reintentando...');
-        setTimeout(inicializarMapa, 2000);
+        console.log('Librerías de Google Maps no están completamente cargadas, usando mapa estático...');
+        crearMapaEstatico();
         return;
     }
     
@@ -5713,3 +5816,6 @@ window.inicializarMapaTransporte = inicializarMapaTransporte;
 window.calcularRutaGoogleMaps = calcularRutaGoogleMaps;
 window.actualizarResultadosTransporte = actualizarResultadosTransporte;
 window.debugProductos = debugProductos;
+window.debugMapa = debugMapa;
+window.crearMapaEstatico = crearMapaEstatico;
+window.abrirGoogleMaps = abrirGoogleMaps;
