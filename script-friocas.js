@@ -2026,6 +2026,7 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // Inicializar mapa de Google Maps después de un delay para asegurar que la API esté cargada
     setTimeout(() => {
+        console.log('🗺️ Inicializando mapa con delay...');
         inicializarMapa();
     }, 2000);
     
@@ -4444,10 +4445,21 @@ function inicializarMapa() {
     }
     
     console.log('✅ Contenedor del mapa encontrado');
+    console.log('📍 Coordenadas FRIOCAS:', FRIOCAS_COORDS);
     
     // Forzar uso de mapa estático por ahora
     console.log('🗺️ Usando mapa estático');
     crearMapaEstatico();
+    
+    // Verificar que se creó correctamente
+    setTimeout(() => {
+        const iframe = mapaContainer.querySelector('iframe');
+        if (iframe) {
+            console.log('✅ Mapa estático creado correctamente');
+        } else {
+            console.log('❌ Error creando mapa estático');
+        }
+    }, 1000);
 }
 
 function inicializarMapaGoogle() {

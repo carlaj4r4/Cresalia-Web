@@ -1,0 +1,6 @@
+# Redirecciones para Vercel
+# Redirigir la raíz a la página principal
+/ /index-friocas-productos.html 200
+
+# Redireccionar cualquier página no encontrada a la principal
+/* /index-friocas-productos.html 404
