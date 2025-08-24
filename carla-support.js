@@ -1,4 +1,4 @@
-// ===== SISTEMA DE CARLA - VERSIÓN 1.8 - MODO DESARROLLO =====
+// ===== SISTEMA DE CARLA - VERSIÓN 1.9 - MODO DESARROLLO =====
 // ===== CONFIGURACIÓN EXCLUSIVA DE CARLA =====
 const CARLA_CONFIG = {
     password: 'carla2024',
@@ -135,6 +135,9 @@ function mostrarSeccionCarla(seccion) {
             break;
         case 'configuracion':
             cargarConfiguracionCarla();
+            break;
+        case 'logs':
+            cargarLogsUsuariosCarla();
             break;
     }
 }
@@ -1302,4 +1305,192 @@ function obtenerEstadisticasTickets() {
         atendidos: tickets.filter(t => t.estado === 'atendido').length,
         hoy: tickets.filter(t => new Date(t.fecha).toDateString() === hoy).length
     };
+}
+
+// ===== GESTIÓN DE LOGS DE USUARIOS PARA CARLA =====
+function cargarLogsUsuariosCarla() {
+    const logs = JSON.parse(localStorage.getItem('userLogs') || '[]');
+    const usersLogsCarla = document.getElementById('usersLogsCarla');
+    
+    if (!usersLogsCarla) return;
+    
+    // Actualizar estadísticas
+    actualizarEstadisticasUsuariosCarla(logs);
+    
+    if (logs.length === 0) {
+        usersLogsCarla.innerHTML = `
+            <div class="no-logs-carla" style="text-align: center; color: var(--gray-500); padding: 2rem;">
+                <i class="fas fa-users" style="font-size: 2rem; margin-bottom: 1rem;"></i>
+                <p>No hay logs de usuarios registrados</p>
+                <p style="font-size: 0.9rem;">Los logs aparecerán cuando los usuarios interactúen con el sitio</p>
+            </div>
+        `;
+    } else {
+        // Ordenar logs por fecha (más recientes primero)
+        const logsOrdenados = logs.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
+        
+        usersLogsCarla.innerHTML = logsOrdenados.map(log => `
+            <div class="log-item-carla ${log.type}">
+                <div class="log-icon-carla">
+                    <i class="fas ${getLogIconCarla(log.type)}"></i>
+                </div>
+                <div class="log-content-carla">
+                    <div class="log-header-carla">
+                        <span class="log-user-carla">${log.userName || log.email}</span>
+                        <span class="log-time-carla">${formatearFechaCarla(log.timestamp)}</span>
+                    </div>
+                    <div class="log-description-carla">${getLogDescriptionCarla(log)}</div>
+                    <div class="log-details-carla">
+                        <span class="log-type-carla">${getLogTypeNameCarla(log.type)}</span>
+                        ${log.details ? `<span class="log-details-text-carla">${log.details}</span>` : ''}
+                    </div>
+                </div>
+            </div>
+        `).join('');
+    }
+}
+
+function actualizarEstadisticasUsuariosCarla(logs) {
+    const usuariosUnicos = new Set(logs.map(log => log.email));
+    const loginsHoy = logs.filter(log => 
+        log.type === 'login' && 
+        new Date(log.timestamp).toDateString() === new Date().toDateString()
+    );
+    const compras = logs.filter(log => log.type === 'purchase');
+    const errores = logs.filter(log => log.type === 'error');
+    
+    document.getElementById('totalUsersCarla').textContent = usuariosUnicos.size;
+    document.getElementById('activeUsersCarla').textContent = loginsHoy.length;
+    document.getElementById('totalPurchasesCarla').textContent = compras.length;
+    document.getElementById('totalErrorsCarla').textContent = errores.length;
+}
+
+function getLogIconCarla(type) {
+    const icons = {
+        'login': 'fa-sign-in-alt',
+        'register': 'fa-user-plus',
+        'purchase': 'fa-shopping-cart',
+        'logout': 'fa-sign-out-alt',
+        'view': 'fa-eye',
+        'search': 'fa-search',
+        'error': 'fa-exclamation-triangle'
+    };
+    return icons[type] || 'fa-info-circle';
+}
+
+function getLogTypeNameCarla(type) {
+    const names = {
+        'login': 'Inicio de Sesión',
+        'register': 'Registro',
+        'purchase': 'Compra',
+        'logout': 'Cierre de Sesión',
+        'view': 'Visualización',
+        'search': 'Búsqueda',
+        'error': 'Error'
+    };
+    return names[type] || type;
+}
+
+function getLogDescriptionCarla(log) {
+    switch (log.type) {
+        case 'login':
+            return `Usuario inició sesión desde ${log.ip || 'IP desconocida'}`;
+        case 'register':
+            return `Nuevo usuario registrado: ${log.userName}`;
+        case 'purchase':
+            return `Compra realizada por $${log.amount || 0}`;
+        case 'logout':
+            return `Usuario cerró sesión`;
+        case 'view':
+            return `Vió la página: ${log.page || 'desconocida'}`;
+        case 'search':
+            return `Buscó: "${log.query || 'desconocido'}"`;
+        case 'error':
+            return `Error reportado: ${log.error || 'Error desconocido'}`;
+        default:
+            return log.description || 'Actividad del usuario';
+    }
+}
+
+function formatearFechaCarla(timestamp) {
+    const fecha = new Date(timestamp);
+    const ahora = new Date();
+    const diffMs = ahora - fecha;
+    const diffMins = Math.floor(diffMs / 60000);
+    const diffHours = Math.floor(diffMs / 3600000);
+    const diffDays = Math.floor(diffMs / 86400000);
+    
+    if (diffMins < 1) return 'Hace un momento';
+    if (diffMins < 60) return `Hace ${diffMins} min`;
+    if (diffHours < 24) return `Hace ${diffHours} horas`;
+    if (diffDays < 7) return `Hace ${diffDays} días`;
+    
+    return fecha.toLocaleDateString('es-AR', {
+        day: '2-digit',
+        month: '2-digit',
+        year: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit'
+    });
+}
+
+function filtrarUsuariosCarla() {
+    const searchTerm = document.getElementById('searchUsersCarla').value.toLowerCase();
+    const logItems = document.querySelectorAll('.log-item-carla');
+    
+    logItems.forEach(item => {
+        const userText = item.querySelector('.log-user-carla').textContent.toLowerCase();
+        const description = item.querySelector('.log-description-carla').textContent.toLowerCase();
+        
+        if (userText.includes(searchTerm) || description.includes(searchTerm)) {
+            item.style.display = 'block';
+        } else {
+            item.style.display = 'none';
+        }
+    });
+}
+
+function filtrarActividadCarla() {
+    const filterType = document.getElementById('filterActivityCarla').value;
+    const logItems = document.querySelectorAll('.log-item-carla');
+    
+    logItems.forEach(item => {
+        if (filterType === 'all' || item.classList.contains(filterType)) {
+            item.style.display = 'block';
+        } else {
+            item.style.display = 'none';
+        }
+    });
+}
+
+function exportarLogsCarla() {
+    const logs = JSON.parse(localStorage.getItem('userLogs') || '[]');
+    const csvContent = "data:text/csv;charset=utf-8," 
+        + "Usuario,Email,Tipo,Descripción,Fecha\n"
+        + logs.map(log => 
+            `"${log.userName || ''}","${log.email || ''}","${getLogTypeNameCarla(log.type)}","${getLogDescriptionCarla(log)}","${formatearFechaCarla(log.timestamp)}"`
+        ).join("\n");
+    
+    const encodedUri = encodeURI(csvContent);
+    const link = document.createElement("a");
+    link.setAttribute("href", encodedUri);
+    link.setAttribute("download", `logs_usuarios_carla_${new Date().toISOString().split('T')[0]}.csv`);
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    
+    mostrarNotificacionCarla('✅ Logs exportados correctamente', 'success');
+}
+
+function limpiarLogsCarla() {
+    if (confirm('¿Estás seguro de que quieres limpiar todos los logs? Esta acción no se puede deshacer.')) {
+        localStorage.removeItem('userLogs');
+        cargarLogsUsuariosCarla();
+        mostrarNotificacionCarla('✅ Logs limpiados correctamente', 'success');
+    }
+}
+
+function actualizarLogsCarla() {
+    cargarLogsUsuariosCarla();
+    mostrarNotificacionCarla('🔄 Logs actualizados', 'info');
 }

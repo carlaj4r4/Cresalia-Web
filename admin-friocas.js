@@ -837,6 +837,61 @@ function cargarConfiguracionGeneral() {
                 </div>
             </div>
         </div>
+        
+        <!-- Logs de Usuarios -->
+        <div class="config-general-card">
+            <div class="config-general-header">
+                <i class="fas fa-users"></i>
+                <h3>Logs de Usuarios</h3>
+            </div>
+            <div class="config-general-content">
+                <div class="logs-controls">
+                    <div class="search-box">
+                        <input type="text" id="searchUsers" placeholder="Buscar usuarios..." onkeyup="filtrarUsuarios()">
+                        <i class="fas fa-search"></i>
+                    </div>
+                    <div class="filter-controls">
+                        <select id="filterActivity" onchange="filtrarActividad()">
+                            <option value="all">Toda la actividad</option>
+                            <option value="login">Solo logins</option>
+                            <option value="purchase">Solo compras</option>
+                            <option value="register">Solo registros</option>
+                        </select>
+                    </div>
+                </div>
+                
+                <div class="users-stats">
+                    <div class="stat-item">
+                        <i class="fas fa-user-plus"></i>
+                        <span id="totalUsers">0</span>
+                        <label>Usuarios Registrados</label>
+                    </div>
+                    <div class="stat-item">
+                        <i class="fas fa-sign-in-alt"></i>
+                        <span id="activeUsers">0</span>
+                        <label>Usuarios Activos</label>
+                    </div>
+                    <div class="stat-item">
+                        <i class="fas fa-shopping-cart"></i>
+                        <span id="totalPurchases">0</span>
+                        <label>Compras Totales</label>
+                    </div>
+                </div>
+                
+                <div class="users-logs" id="usersLogs">
+                    <!-- Los logs se cargarán dinámicamente -->
+                </div>
+                
+                <div class="config-general-actions">
+                    <button type="button" class="export-btn" onclick="exportarLogs()">
+                        <i class="fas fa-download"></i> Exportar Logs
+                    </button>
+                    <button type="button" class="clear-btn" onclick="limpiarLogs()">
+                        <i class="fas fa-trash"></i> Limpiar Logs
+                    </button>
+                </div>
+            </div>
+        </div>
     `;
     
     // Configurar eventos
@@ -846,6 +901,7 @@ function cargarConfiguracionGeneral() {
     cargarServicios();
     cargarCategorias();
     cargarPreciosServicios();
+    cargarLogsUsuarios();
 }
 
 function configurarEventosConfiguracion() {
@@ -4087,4 +4143,181 @@ function sincronizarServicios() {
     
     mostrarNotificacion('✅ Servicios sincronizados correctamente', 'success');
     console.log('💾 Servicios sincronizados:', servicios);
+}
+
+// ===== GESTIÓN DE LOGS DE USUARIOS =====
+function cargarLogsUsuarios() {
+    const logs = JSON.parse(localStorage.getItem('userLogs') || '[]');
+    const usersLogs = document.getElementById('usersLogs');
+    
+    if (!usersLogs) return;
+    
+    // Actualizar estadísticas
+    actualizarEstadisticasUsuarios(logs);
+    
+    if (logs.length === 0) {
+        usersLogs.innerHTML = `
+            <div class="no-logs" style="text-align: center; color: var(--gray-500); padding: 2rem;">
+                <i class="fas fa-users" style="font-size: 2rem; margin-bottom: 1rem;"></i>
+                <p>No hay logs de usuarios registrados</p>
+                <p style="font-size: 0.9rem;">Los logs aparecerán cuando los usuarios interactúen con el sitio</p>
+            </div>
+        `;
+    } else {
+        // Ordenar logs por fecha (más recientes primero)
+        const logsOrdenados = logs.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
+        
+        usersLogs.innerHTML = logsOrdenados.map(log => `
+            <div class="log-item ${log.type}">
+                <div class="log-icon">
+                    <i class="fas ${getLogIcon(log.type)}"></i>
+                </div>
+                <div class="log-content">
+                    <div class="log-header">
+                        <span class="log-user">${log.userName || log.email}</span>
+                        <span class="log-time">${formatearFecha(log.timestamp)}</span>
+                    </div>
+                    <div class="log-description">${getLogDescription(log)}</div>
+                    <div class="log-details">
+                        <span class="log-type">${getLogTypeName(log.type)}</span>
+                        ${log.details ? `<span class="log-details-text">${log.details}</span>` : ''}
+                    </div>
+                </div>
+            </div>
+        `).join('');
+    }
+}
+
+function actualizarEstadisticasUsuarios(logs) {
+    const usuariosUnicos = new Set(logs.map(log => log.email));
+    const loginsHoy = logs.filter(log => 
+        log.type === 'login' && 
+        new Date(log.timestamp).toDateString() === new Date().toDateString()
+    );
+    const compras = logs.filter(log => log.type === 'purchase');
+    
+    document.getElementById('totalUsers').textContent = usuariosUnicos.size;
+    document.getElementById('activeUsers').textContent = loginsHoy.length;
+    document.getElementById('totalPurchases').textContent = compras.length;
+}
+
+function getLogIcon(type) {
+    const icons = {
+        'login': 'fa-sign-in-alt',
+        'register': 'fa-user-plus',
+        'purchase': 'fa-shopping-cart',
+        'logout': 'fa-sign-out-alt',
+        'view': 'fa-eye',
+        'search': 'fa-search'
+    };
+    return icons[type] || 'fa-info-circle';
+}
+
+function getLogTypeName(type) {
+    const names = {
+        'login': 'Inicio de Sesión',
+        'register': 'Registro',
+        'purchase': 'Compra',
+        'logout': 'Cierre de Sesión',
+        'view': 'Visualización',
+        'search': 'Búsqueda'
+    };
+    return names[type] || type;
+}
+
+function getLogDescription(log) {
+    switch (log.type) {
+        case 'login':
+            return `Usuario inició sesión desde ${log.ip || 'IP desconocida'}`;
+        case 'register':
+            return `Nuevo usuario registrado: ${log.userName}`;
+        case 'purchase':
+            return `Compra realizada por $${log.amount || 0}`;
+        case 'logout':
+            return `Usuario cerró sesión`;
+        case 'view':
+            return `Vió la página: ${log.page || 'desconocida'}`;
+        case 'search':
+            return `Buscó: "${log.query || 'desconocido'}"`;
+        default:
+            return log.description || 'Actividad del usuario';
+    }
+}
+
+function formatearFecha(timestamp) {
+    const fecha = new Date(timestamp);
+    const ahora = new Date();
+    const diffMs = ahora - fecha;
+    const diffMins = Math.floor(diffMs / 60000);
+    const diffHours = Math.floor(diffMs / 3600000);
+    const diffDays = Math.floor(diffMs / 86400000);
+    
+    if (diffMins < 1) return 'Hace un momento';
+    if (diffMins < 60) return `Hace ${diffMins} min`;
+    if (diffHours < 24) return `Hace ${diffHours} horas`;
+    if (diffDays < 7) return `Hace ${diffDays} días`;
+    
+    return fecha.toLocaleDateString('es-AR', {
+        day: '2-digit',
+        month: '2-digit',
+        year: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit'
+    });
+}
+
+function filtrarUsuarios() {
+    const searchTerm = document.getElementById('searchUsers').value.toLowerCase();
+    const logItems = document.querySelectorAll('.log-item');
+    
+    logItems.forEach(item => {
+        const userText = item.querySelector('.log-user').textContent.toLowerCase();
+        const description = item.querySelector('.log-description').textContent.toLowerCase();
+        
+        if (userText.includes(searchTerm) || description.includes(searchTerm)) {
+            item.style.display = 'block';
+        } else {
+            item.style.display = 'none';
+        }
+    });
+}
+
+function filtrarActividad() {
+    const filterType = document.getElementById('filterActivity').value;
+    const logItems = document.querySelectorAll('.log-item');
+    
+    logItems.forEach(item => {
+        if (filterType === 'all' || item.classList.contains(filterType)) {
+            item.style.display = 'block';
+        } else {
+            item.style.display = 'none';
+        }
+    });
+}
+
+function exportarLogs() {
+    const logs = JSON.parse(localStorage.getItem('userLogs') || '[]');
+    const csvContent = "data:text/csv;charset=utf-8," 
+        + "Usuario,Email,Tipo,Descripción,Fecha\n"
+        + logs.map(log => 
+            `"${log.userName || ''}","${log.email || ''}","${getLogTypeName(log.type)}","${getLogDescription(log)}","${formatearFecha(log.timestamp)}"`
+        ).join("\n");
+    
+    const encodedUri = encodeURI(csvContent);
+    const link = document.createElement("a");
+    link.setAttribute("href", encodedUri);
+    link.setAttribute("download", `logs_usuarios_${new Date().toISOString().split('T')[0]}.csv`);
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    
+    mostrarNotificacion('✅ Logs exportados correctamente', 'success');
+}
+
+function limpiarLogs() {
+    if (confirm('¿Estás seguro de que quieres limpiar todos los logs? Esta acción no se puede deshacer.')) {
+        localStorage.removeItem('userLogs');
+        cargarLogsUsuarios();
+        mostrarNotificacion('✅ Logs limpiados correctamente', 'success');
+    }
 }

@@ -120,6 +120,10 @@
                 <i class="fas fa-cog"></i>
                 Configuración
             </button>
+            <button class="carla-nav-btn" data-section="logs">
+                <i class="fas fa-users"></i>
+                Logs de Usuarios
+            </button>
         </nav>
 
         <!-- Contenido Principal -->
@@ -370,11 +374,76 @@
                     </div>
                 </div>
             </section>
+
+            <!-- Sección de Logs de Usuarios -->
+            <section id="logs" class="carla-section">
+                <div class="carla-section-header">
+                    <h2><i class="fas fa-users"></i> Logs de Usuarios</h2>
+                    <p>Actividad de usuarios para resolución de problemas</p>
+                </div>
+                
+                <div class="logs-container">
+                    <div class="logs-controls">
+                        <div class="search-box">
+                            <input type="text" id="searchUsersCarla" placeholder="Buscar usuarios..." onkeyup="filtrarUsuariosCarla()">
+                            <i class="fas fa-search"></i>
+                        </div>
+                        <div class="filter-controls">
+                            <select id="filterActivityCarla" onchange="filtrarActividadCarla()">
+                                <option value="all">Toda la actividad</option>
+                                <option value="login">Solo logins</option>
+                                <option value="purchase">Solo compras</option>
+                                <option value="register">Solo registros</option>
+                                <option value="error">Solo errores</option>
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <div class="users-stats-carla">
+                        <div class="stat-item-carla">
+                            <i class="fas fa-user-plus"></i>
+                            <span id="totalUsersCarla">0</span>
+                            <label>Usuarios Registrados</label>
+                        </div>
+                        <div class="stat-item-carla">
+                            <i class="fas fa-sign-in-alt"></i>
+                            <span id="activeUsersCarla">0</span>
+                            <label>Usuarios Activos Hoy</label>
+                        </div>
+                        <div class="stat-item-carla">
+                            <i class="fas fa-shopping-cart"></i>
+                            <span id="totalPurchasesCarla">0</span>
+                            <label>Compras Totales</label>
+                        </div>
+                        <div class="stat-item-carla">
+                            <i class="fas fa-exclamation-triangle"></i>
+                            <span id="totalErrorsCarla">0</span>
+                            <label>Errores Reportados</label>
+                        </div>
+                    </div>
+                    
+                    <div class="users-logs-carla" id="usersLogsCarla">
+                        <!-- Los logs se cargarán dinámicamente -->
+                    </div>
+                    
+                    <div class="logs-actions">
+                        <button type="button" class="carla-action-btn" onclick="exportarLogsCarla()">
+                            <i class="fas fa-download"></i> Exportar Logs
+                        </button>
+                        <button type="button" class="carla-action-btn" onclick="limpiarLogsCarla()">
+                            <i class="fas fa-trash"></i> Limpiar Logs
+                        </button>
+                        <button type="button" class="carla-action-btn" onclick="actualizarLogsCarla()">
+                            <i class="fas fa-sync"></i> Actualizar
+                        </button>
+                    </div>
+                </div>
+            </section>
         </main>
     </div>
 
     <!-- Scripts -->
-    <script src="carla-support.js?v=1.8"></script>
+    <script src="carla-support.js?v=1.9"></script>
 </body>
 </html>
 

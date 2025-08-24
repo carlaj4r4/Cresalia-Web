@@ -1,4 +1,4 @@
-// ===== FRIOCAS WEB - VERSIÓN 5.2 - CACHE FORZADO =====
+// ===== FRIOCAS WEB - VERSIÓN 5.3 - CACHE FORZADO =====
 // ===== CONFIGURACIÓN DE LA EMPRESA =====
 let CONFIG_EMPRESA = {
     nombre: 'FRIOCAS',
@@ -216,6 +216,41 @@ function abrirGoogleMaps() {
     const lng = FRIOCAS_COORDS.lng;
     const url = `https://www.google.com/maps?q=${lat},${lng}`;
     window.open(url, '_blank');
+}
+
+// ===== SISTEMA DE LOGS DE USUARIOS =====
+function registrarLog(tipo, datos = {}) {
+    try {
+        const logs = JSON.parse(localStorage.getItem('userLogs') || '[]');
+        const usuarioActual = JSON.parse(localStorage.getItem('usuarioActual') || '{}');
+        
+        const log = {
+            type: tipo,
+            email: usuarioActual.email || 'usuario_anonimo',
+            userName: usuarioActual.nombre || 'Usuario Anónimo',
+            timestamp: new Date().toISOString(),
+            ip: datos.ip || 'IP desconocida',
+            page: window.location.pathname,
+            ...datos
+        };
+        
+        logs.push(log);
+        
+        // Mantener solo los últimos 1000 logs para no saturar el localStorage
+        if (logs.length > 1000) {
+            logs.splice(0, logs.length - 1000);
+        }
+        
+        localStorage.setItem('userLogs', JSON.stringify(logs));
+        console.log('📝 Log registrado:', log);
+    } catch (error) {
+        console.error('Error registrando log:', error);
+    }
+}
+
+// Registrar actividad automáticamente
+function registrarActividad(tipo, datos = {}) {
+    registrarLog(tipo, datos);
 }
 
 // ===== CARRITO DE COMPRAS =====
@@ -5828,6 +5863,60 @@ function actualizarResultadosTransporte(distancia, duracion, precio, origen, des
     console.log('✅ Resultados de transporte actualizados:', direccionesCalculadas);
 }
 
+// ===== SISTEMA DE LOGS DE USUARIOS =====
+function registrarLogUsuario(tipo, datos = {}) {
+    const log = {
+        type: tipo,
+        timestamp: new Date().toISOString(),
+        email: datos.email || 'usuario@anonimo.com',
+        userName: datos.userName || 'Usuario Anónimo',
+        ip: datos.ip || 'IP desconocida',
+        userAgent: navigator.userAgent,
+        page: window.location.pathname,
+        ...datos
+    };
+    
+    // Obtener logs existentes
+    let logs = JSON.parse(localStorage.getItem('userLogs') || '[]');
+    
+    // Agregar nuevo log
+    logs.push(log);
+    
+    // Mantener solo los últimos 1000 logs para no saturar localStorage
+    if (logs.length > 1000) {
+        logs = logs.slice(-1000);
+    }
+    
+    // Guardar logs
+    localStorage.setItem('userLogs', JSON.stringify(logs));
+    
+    console.log('📝 Log registrado:', tipo, datos);
+}
+
+// Función para registrar visitas de página
+function registrarVisitaPagina() {
+    registrarLogUsuario('view', {
+        page: window.location.pathname,
+        title: document.title
+    });
+}
+
+// Función para registrar búsquedas
+function registrarBusqueda(query) {
+    registrarLogUsuario('search', {
+        query: query
+    });
+}
+
+// Función para registrar errores
+function registrarError(error, contexto = '') {
+    registrarLogUsuario('error', {
+        error: error.message || error,
+        contexto: contexto,
+        stack: error.stack
+    });
+}
+
 // Exponer funciones del mapa de transporte al contexto global
 window.inicializarMapaTransporte = inicializarMapaTransporte;
 window.calcularRutaGoogleMaps = calcularRutaGoogleMaps;
@@ -5836,3 +5925,7 @@ window.debugProductos = debugProductos;
 window.debugMapa = debugMapa;
 window.crearMapaEstatico = crearMapaEstatico;
 window.abrirGoogleMaps = abrirGoogleMaps;
+window.registrarLogUsuario = registrarLogUsuario;
+window.registrarVisitaPagina = registrarVisitaPagina;
+window.registrarBusqueda = registrarBusqueda;
+window.registrarError = registrarError;
