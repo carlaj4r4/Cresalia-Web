@@ -2027,7 +2027,7 @@ document.addEventListener('DOMContentLoaded', function() {
     // Inicializar mapa de Google Maps después de un delay para asegurar que la API esté cargada
     setTimeout(() => {
         console.log('🗺️ Inicializando mapa con delay...');
-        inicializarMapa();
+        inicializarMapaConRetry();
     }, 2000);
     
     // Inicializar Mercado Pago
@@ -4435,12 +4435,14 @@ const FRIOCAS_COORDS = {
     lng: -58.8304
 };
 
-// Función para inicializar el mapa
-function inicializarMapa() {
-    console.log('🗺️ Inicializando mapa...');
+// Función para inicializar el mapa con retry
+function inicializarMapaConRetry() {
+    console.log('🗺️ Inicializando mapa con retry...');
     const mapaContainer = document.getElementById('mapa-friocas');
+    
     if (!mapaContainer) {
-        console.log('❌ Contenedor del mapa no encontrado');
+        console.log('❌ Contenedor del mapa no encontrado, reintentando en 1 segundo...');
+        setTimeout(inicializarMapaConRetry, 1000);
         return;
     }
     
@@ -4460,6 +4462,11 @@ function inicializarMapa() {
             console.log('❌ Error creando mapa estático');
         }
     }, 1000);
+}
+
+// Función para inicializar el mapa
+function inicializarMapa() {
+    inicializarMapaConRetry();
 }
 
 function inicializarMapaGoogle() {
