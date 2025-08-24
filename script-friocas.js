@@ -5709,56 +5709,56 @@ function inicializarMapaTransporte() {
         return;
     }
     
-    // Verificar si Google Maps está cargado
-    if (typeof google === 'undefined' || !google.maps) {
-        console.log('Google Maps no está cargado aún, reintentando en 2 segundos...');
-        setTimeout(inicializarMapaTransporte, 2000);
+    // Usar mapa estático para transporte también
+    console.log('🗺️ Usando mapa estático para transporte');
+    crearMapaEstaticoTransporte();
+}
+
+// Función para crear mapa estático de transporte
+function crearMapaEstaticoTransporte() {
+    const mapaContainer = document.getElementById('mapaTransporte');
+    if (!mapaContainer) {
+        console.log('❌ Contenedor del mapa de transporte no encontrado');
         return;
     }
     
-    try {
-        // Crear el mapa
-        mapaTransporte = new google.maps.Map(mapaContainer, {
-            center: FRIOCAS_COORDS,
-            zoom: 10,
-            mapTypeControl: false,
-            streetViewControl: false,
-            fullscreenControl: true,
-            zoomControl: true,
-            styles: [
-                {
-                    featureType: 'all',
-                    elementType: 'geometry',
-                    stylers: [{ color: '#f5f5f5' }]
-                },
-                {
-                    featureType: 'road',
-                    elementType: 'geometry',
-                    stylers: [{ color: '#ffffff' }]
-                },
-                {
-                    featureType: 'water',
-                    elementType: 'geometry',
-                    stylers: [{ color: '#c9d6e6' }]
-                }
-            ]
-        });
-        
-        // Inicializar servicios de direcciones
-        directionsService = new google.maps.DirectionsService();
-        directionsRenderer = new google.maps.DirectionsRenderer({
-            map: mapaTransporte,
-            suppressMarkers: false,
-            polylineOptions: {
-                strokeColor: '#2563eb',
-                strokeWeight: 4
-            }
-        });
-        
-        console.log('✅ Mapa de transporte inicializado correctamente');
-    } catch (error) {
-        console.error('❌ Error inicializando mapa de transporte:', error);
-    }
+    // Crear mapa estático con OpenStreetMap para transporte
+    const lat = FRIOCAS_COORDS.lat;
+    const lng = FRIOCAS_COORDS.lng;
+    
+    // URL del mapa estático de OpenStreetMap para transporte
+    const mapaUrl = `https://www.openstreetmap.org/export/embed.html?bbox=${lng-0.02},${lat-0.02},${lng+0.02},${lat+0.02}&layer=mapnik&marker=${lat},${lng}`;
+    
+    mapaContainer.innerHTML = `
+        <div style="width: 100%; height: 100%; border-radius: 10px; overflow: hidden; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);">
+            <iframe 
+                width="100%" 
+                height="100%" 
+                frameborder="0" 
+                scrolling="no" 
+                marginheight="0" 
+                marginwidth="0" 
+                src="${mapaUrl}"
+                style="border: 0;">
+            </iframe>
+        </div>
+        <div style="text-align: center; margin-top: 10px; padding: 10px; background: #f8fafc; border-radius: 8px;">
+            <h4 style="color: #2563eb; margin: 0 0 5px 0;">
+                <i class="fas fa-map-marker-alt"></i> FRIOCAS - Servicio de Transporte
+            </h4>
+            <p style="margin: 5px 0; color: #64748b;">
+                <i class="fas fa-location-dot"></i> Corrientes, Argentina
+            </p>
+            <p style="margin: 5px 0; color: #64748b;">
+                <i class="fas fa-phone"></i> +5493795015712
+            </p>
+            <button onclick="abrirGoogleMaps()" style="background: #2563eb; color: white; border: none; padding: 8px 16px; border-radius: 5px; cursor: pointer; margin-top: 5px;">
+                <i class="fas fa-external-link-alt"></i> Abrir en Google Maps
+            </button>
+        </div>
+    `;
+    
+    console.log('✅ Mapa estático de transporte creado correctamente');
 }
 
 // Función para calcular ruta usando Google Maps API
