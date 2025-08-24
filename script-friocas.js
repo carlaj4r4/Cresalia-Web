@@ -131,7 +131,7 @@ function debugMapa() {
     console.log('📍 Coordenadas FRIOCAS:', FRIOCAS_COORDS);
     console.log('🌐 Google Maps cargado:', typeof google !== 'undefined');
     console.log('🗺️ Google Maps API:', typeof google !== 'undefined' ? typeof google.maps : 'No disponible');
-    console.log('📱 Contenedor del mapa:', document.getElementById('mapaFRIOCAS'));
+    console.log('📱 Contenedor del mapa:', document.getElementById('mapa-friocas'));
     console.log('🎯 Mapa inicializado:', typeof mapaFRIOCAS !== 'undefined');
     console.log('📍 Marcador creado:', typeof marcadorFRIOCAS !== 'undefined');
     
@@ -154,7 +154,7 @@ function debugMapa() {
     return {
         googleLoaded: typeof google !== 'undefined',
         mapsAvailable: typeof google !== 'undefined' ? typeof google.maps : false,
-        containerExists: !!document.getElementById('mapaFRIOCAS'),
+        containerExists: !!document.getElementById('mapa-friocas'),
         mapaInitialized: typeof mapaFRIOCAS !== 'undefined',
         marcadorCreated: typeof marcadorFRIOCAS !== 'undefined'
     };
@@ -162,7 +162,7 @@ function debugMapa() {
 
 // Función para crear mapa estático sin API Key
 function crearMapaEstatico() {
-    const mapaContainer = document.getElementById('mapaFRIOCAS');
+    const mapaContainer = document.getElementById('mapa-friocas');
     if (!mapaContainer) {
         console.log('❌ Contenedor del mapa no encontrado');
         return;
