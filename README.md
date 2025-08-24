@@ -1,180 +1,139 @@
-# 🚗 FRIOCAS - Sistema Web Completo
+# 🚗 FRIOCAS - Productos de Limpieza Automotriz
 
-Sistema web completo para FRIOCAS, empresa de refrigeración automotriz en Corrientes, Argentina.
+![FRIOCAS Logo](assets/logo-friocas.png)
 
-## 🌟 Características
+## 🌟 Descripción
 
-- **🛒 Catálogo de Productos** - Productos de refrigeración automotriz
-- **🛍️ Carrito de Compras** - Sistema completo de compras
-- **💳 Integración Mercado Pago** - Pagos online seguros
-- **🚚 Sistema de Transporte** - Cálculo de precios por kilómetro
-- **📋 Gestión de Reservas** - Sistema de turnos y servicios
-- **📧 Comprobantes** - Descarga PDF, Email y WhatsApp
-- **🔐 Panel de Administración** - Gestión completa del negocio
-- **🎧 Soporte de Carla** - Sistema de atención al cliente
-- **🛡️ Sistema de Seguridad** - Protección completa
+**FRIOCAS** es una plataforma web completa para la venta de productos de limpieza automotriz profesional. Ofrece un catálogo interactivo, sistema de carrito de compras, panel de administración y atención al cliente.
 
-## 🚀 Instalación
+## ✨ Características Principales
 
-### Requisitos
-- Navegador web moderno
-- Servidor web (para Mercado Pago)
-- Cuenta de Mercado Pago Business
+### 🛍️ **E-commerce Completo**
+- ✅ Catálogo de productos con filtros por categoría
+- ✅ Carrito de compras funcional
+- ✅ Sistema de cálculo de precios
+- ✅ Integración con Mercado Pago
+- ✅ Gestión de stock en tiempo real
 
-### Pasos de Instalación
+### 🎛️ **Panel de Administración**
+- ✅ Gestión completa de productos
+- ✅ Sistema de categorías personalizable
+- ✅ Configuración de empresa
+- ✅ Sincronización automática de datos
+- ✅ Sistema de respaldos automáticos
 
-1. **Clonar el repositorio:**
-```bash
-git clone https://github.com/tu-usuario/friocas-web.git
-cd friocas-web
-```
+### 🤖 **Atención al Cliente**
+- ✅ Chatbot IA integrado
+- ✅ Sistema de soporte técnico
+- ✅ Panel de atención personalizada
+- ✅ Gestión de consultas
 
-2. **Configurar Mercado Pago:**
-   - Obtener credenciales de Mercado Pago Business
-   - Editar `script-friocas.js` línea 4361-4364:
-   ```javascript
-   const MERCADO_PAGO_CONFIG = {
-       publicKey: 'APP-TU-PUBLIC-KEY-REAL',
-       accessToken: 'APP-TU-ACCESS-TOKEN-REAL',
-       preferenceId: null,
-       sandbox: false
-   };
-   ```
+### 🔒 **Seguridad Avanzada**
+- ✅ Acceso secreto por hotkeys
+- ✅ Sistema de sesiones seguras
+- ✅ Protección contra acceso no autorizado
+- ✅ Validación de contraseñas
 
-3. **Subir a servidor web:**
-   - GitHub Pages
-   - Vercel
-   - Netlify
-   - Servidor propio
+## 🚀 Tecnologías Utilizadas
 
-## 🔧 Configuración
-
-### Credenciales de Acceso
-
-**Panel de Administración:**
-- Acceso: `Ctrl + Alt + A`
-- Usuario: `admin`
-- Contraseña: `FRIOCAS2024ADMIN`
-
-**Soporte de Carla:**
-- Acceso: `Ctrl + Alt + C`
-- Usuario: `carla`
-- Contraseña: `FRIOCAS2024CARLA`
-
-### Configuración de Mercado Pago
-
-1. **Crear cuenta en Mercado Pago Business**
-2. **Obtener credenciales de producción:**
-   - Public Key
-   - Access Token
-3. **Configurar webhooks** (opcional)
-4. **Probar en sandbox** antes de producción
+- **Frontend:** HTML5, CSS3, JavaScript (ES6+)
+- **Frameworks:** Bootstrap 5, Font Awesome
+- **APIs:** Google Maps, Mercado Pago
+- **Almacenamiento:** localStorage, sessionStorage
+- **Control de Versiones:** Git & GitHub
 
 ## 📁 Estructura del Proyecto
 
 ```
 FRIOCAS-Web/
-├── index-friocas-productos.html    # Página principal
-├── admin-friocas.html              # Panel de administración
-├── soporte-carla.html              # Sistema de Carla
-├── script-friocas.js               # JavaScript principal
-├── admin-friocas.js                # JavaScript del admin
-├── security-system.js              # Sistema de seguridad
-├── styles-friocas.css              # Estilos principales
-├── assets/                         # Imágenes y recursos
-│   ├── logo/
-│   └── productos/
-├── test-*.html                     # Páginas de prueba
-└── README.md                       # Este archivo
+├── 📄 index.html                    # Página de entrada con redirección
+├── 📄 index-friocas-productos.html  # Página principal del catálogo
+├── 📄 admin-friocas.html            # Panel de administración
+├── 📄 atencion-cliente-carla.html   # Panel de atención al cliente
+├── 📄 script-friocas.js             # Script principal del sitio
+├── 📄 admin-friocas.js              # Script del panel admin
+├── 📄 carla-support.js              # Script de atención al cliente
+├── 📄 security-system.js            # Sistema de seguridad
+├── 📄 facturacion.js                # Integración con Mercado Pago
+├── 📄 styles-friocas.css            # Estilos principales
+├── 📄 styles-admin-friocas.css      # Estilos del panel admin
+├── 📄 styles-atencion-carla.css     # Estilos de atención al cliente
+├── 📁 assets/
+│   ├── 📁 productos/                # Imágenes de productos
+│   │   ├── 📁 Limpiadores/
+│   │   ├── 📁 Shampoo/
+│   │   ├── 📁 Ceras líquidas/
+│   │   ├── 📁 Revividores/
+│   │   └── 📁 Iluminación/
+│   └── 📁 images/                   # Imágenes generales
+└── 📄 README.md                     # Este archivo
 ```
+
+## 🎯 Funcionalidades Destacadas
+
+### **Acceso Secreto**
+- **Panel Admin:** `Ctrl + Alt + A`
+- **Atención Carla:** `Ctrl + Alt + Shift + C`
+
+### **Gestión de Productos**
+- 33+ productos organizados por categorías
+- Sistema de stock automático
+- Precios dinámicos con IVA
+- Imágenes de alta calidad
+
+### **Carrito de Compras**
+- Persistencia de datos en localStorage
+- Cálculo automático de totales
+- Backup automático antes de redirecciones
+- Restauración de carrito
+
+### **Sincronización**
+- Datos sincronizados entre admin y página principal
+- Actualización automática de productos
+- Configuración de empresa en tiempo real
 
 ## 🌐 Despliegue
 
-### GitHub Pages
-1. Subir código a GitHub
-2. Activar GitHub Pages en Settings
-3. Configurar dominio personalizado (opcional)
+### **GitHub Pages**
+El sitio está configurado para funcionar en GitHub Pages:
+- **URL:** https://carlaj4r4.github.io/FrioCas-web/
+- **Redirección automática** desde la raíz
+- **SEO optimizado** con meta tags
 
-### Vercel
-1. Conectar repositorio de GitHub
-2. Configurar variables de entorno
-3. Desplegar automáticamente
+### **Configuración Local**
+1. Clona el repositorio
+2. Abre `index.html` en tu navegador
+3. ¡Listo para usar!
 
-### Netlify
-1. Arrastrar carpeta del proyecto
-2. Configurar dominio
-3. Activar HTTPS automático
+## 🔧 Configuración
 
-## 🔐 Seguridad
+### **Panel de Administración**
+- **Usuario:** Admin
+- **Contraseña:** `FRIOCAS2024ADMIN`
+- **Acceso:** `Ctrl + Alt + A`
 
-- **Autenticación con tokens**
-- **Protección contra fuerza bruta**
-- **Detección de herramientas de desarrollador**
-- **Auditoría completa de eventos**
-- **Timeout de sesión automático**
+### **Atención al Cliente**
+- **Usuario:** Carla
+- **Contraseña:** `carla2024`
+- **Acceso:** `Ctrl + Alt + Shift + C`
+
+## 📊 Estadísticas del Proyecto
+
+- **Líneas de código:** 26,633+
+- **Archivos:** 62+
+- **Productos:** 33+
+- **Categorías:** 5+
+- **Funciones:** 100+
+
+## 🤝 Contribución
+
+Este es un proyecto personal de FRIOCAS. Para sugerencias o reportes de bugs, por favor contacta directamente.
 
 ## 📞 Contacto
 
-**FRIOCAS**
-- 📍 Moreno 2242, Corrientes Capital, Argentina
-- 📞 +5493795015712
-- 📧 jj_refrigeracionesctes@hotmail.com
-- 🕒 Lunes a Viernes: 8:00 - 12:00 y 16:00 - 20:00
-- 🕒 Sábados: 8:00 - 12:00
-- 🕒 Domingos: Cerrado
-
-## 🛠️ Tecnologías Utilizadas
-
-- **HTML5** - Estructura semántica
-- **CSS3** - Estilos modernos y responsivos
-- **JavaScript ES6+** - Funcionalidad dinámica
-- **Bootstrap 5** - Framework CSS
-- **Font Awesome** - Iconografía
-- **Mercado Pago API** - Procesamiento de pagos
-- **LocalStorage** - Almacenamiento local
-- **Google Maps API** - Mapas y ubicación
-
-## 📋 Funcionalidades Principales
-
-### Para Clientes
-- ✅ Catálogo de productos con búsqueda
-- ✅ Carrito de compras funcional
-- ✅ Cálculo de precios por cantidad
-- ✅ Reserva de servicios técnicos
-- ✅ Sistema de transporte con cálculo de precios
-- ✅ Descarga de comprobantes
-- ✅ Envío por email y WhatsApp
-- ✅ Múltiples métodos de pago
-
-### Para Administración
-- ✅ Gestión completa de productos
-- ✅ Panel de administración seguro
-- ✅ Gestión de usuarios y clientes
-- ✅ Reportes de ventas
-- ✅ Configuración de pagos
-- ✅ Monitoreo de seguridad
-- ✅ Backup automático de datos
-
-### Para Soporte (Carla)
-- ✅ Sistema de atención al cliente
-- ✅ Gestión de tickets de soporte
-- ✅ Chat en tiempo real
-- ✅ Reportes de clientes
-- ✅ Configuración de soporte
-
-## 🚨 Notas Importantes
-
-1. **Mercado Pago requiere un servidor web** - No funciona en archivos locales
-2. **Credenciales reales** - Reemplazar las credenciales de prueba
-3. **Dominio HTTPS** - Mercado Pago requiere HTTPS en producción
-4. **Webhooks** - Configurar para notificaciones automáticas
-5. **Backup regular** - Hacer copias de seguridad de los datos
-
-## 🔄 Actualizaciones
-
-- **Versión actual:** 7.5
-- **Última actualización:** Enero 2025
-- **Compatibilidad:** Navegadores modernos
+- **Empresa:** FRIOCAS
+- **Email:** carla@friocas.com
+- **Sitio Web:** https://carlaj4r4.github.io/FrioCas-web/
 
 ## 📄 Licencia
 
@@ -182,4 +141,4 @@ Este proyecto es propiedad de FRIOCAS. Todos los derechos reservados.
 
 ---
 
-**Desarrollado con ❤️ para FRIOCAS** 
+**Desarrollado con ❤️ para FRIOCAS** 🚗✨ 
