@@ -94,6 +94,10 @@
                 <i class="fas fa-box"></i>
                 Productos
             </button>
+            <button class="nav-btn" data-section="categorias">
+                <i class="fas fa-tags"></i>
+                Categorías
+            </button>
             <button class="nav-btn" data-section="servicios">
                 <i class="fas fa-tools"></i>
                 Servicios
@@ -466,20 +470,9 @@
                 }
             }
             
-            // Si no hay sesión válida, verificar si es la primera carga
-            const adminPageLoaded = sessionStorage.getItem('adminPageLoaded');
-            console.log('🔄 Primera carga:', adminPageLoaded);
-            
-            if (adminPageLoaded) {
-                console.log('🔒 No hay sesión válida - Redirigiendo a página principal en 5 segundos');
-                setTimeout(() => {
-                    console.log('🔄 Redirigiendo a página principal...');
-                    window.location.href = 'index-friocas-productos.html';
-                }, 5000);
-            } else {
-                console.log('🔄 Primera carga del panel de administración - Mostrando login');
-                sessionStorage.setItem('adminPageLoaded', 'true');
-            }
+            // Si no hay sesión válida, solo mostrar el login (sin redirección)
+            console.log('🔐 No hay sesión válida - Mostrando pantalla de login');
+            sessionStorage.setItem('adminPageLoaded', 'true');
         });
     </script>
 </body>

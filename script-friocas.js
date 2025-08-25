@@ -713,9 +713,34 @@ function agregarAlCarrito(productoId) {
 // ===== FUNCIONES DEL CARRITO =====
 function actualizarCarrito() {
     const cartCount = document.getElementById('cartCount');
+    const floatingCartCount = document.getElementById('floatingCartCount');
+    const floatingCartTotal = document.getElementById('floatingCartTotal');
+    const floatingCart = document.getElementById('floatingCart');
+    
+    const totalItems = carrito.reduce((total, item) => total + item.cantidad, 0);
+    const total = carrito.reduce((sum, item) => sum + (item.precio * item.cantidad), 0);
+    
+    // Actualizar contador en navbar
     if (cartCount) {
-        const totalItems = carrito.reduce((total, item) => total + item.cantidad, 0);
         cartCount.textContent = totalItems;
+    }
+    
+    // Actualizar carrito flotante
+    if (floatingCartCount) {
+        floatingCartCount.textContent = totalItems;
+    }
+    
+    if (floatingCartTotal) {
+        floatingCartTotal.textContent = `$${total.toLocaleString('es-AR')}`;
+    }
+    
+    // Mostrar/ocultar carrito flotante según items
+    if (floatingCart) {
+        if (totalItems > 0) {
+            floatingCart.classList.add('has-items');
+        } else {
+            floatingCart.classList.remove('has-items');
+        }
     }
     
     renderizarCarrito();
@@ -838,6 +863,14 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // Restaurar carrito desde backup si existe
     restaurarCarritoBackup();
+    
+    // Configurar carrito flotante
+    const floatingCart = document.getElementById('floatingCart');
+    if (floatingCart) {
+        floatingCart.addEventListener('click', function() {
+            abrirCarrito();
+        });
+    }
     
     const cartModal = document.getElementById('cartModal');
     if (cartModal) {

@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Verificación de Redirección - FRIOCAS</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 50px auto;
+            padding: 20px;
+            background: #f5f5f5;
+        }
+        .container {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+        .status {
+            padding: 15px;
+            border-radius: 8px;
+            margin: 20px 0;
+        }
+        .success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+        .error {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+        .info {
+            background: #d1ecf1;
+            color: #0c5460;
+            border: 1px solid #bee5eb;
+        }
+        .btn {
+            display: inline-block;
+            padding: 12px 24px;
+            background: #007bff;
+            color: white;
+            text-decoration: none;
+            border-radius: 5px;
+            margin: 10px 5px;
+            transition: background 0.3s;
+        }
+        .btn:hover {
+            background: #0056b3;
+        }
+        .btn-success {
+            background: #28a745;
+        }
+        .btn-success:hover {
+            background: #1e7e34;
+        }
+        .btn-danger {
+            background: #dc3545;
+        }
+        .btn-danger:hover {
+            background: #c82333;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🔍 Verificación de Redirección - FRIOCAS</h1>
+        
+        <div class="status info">
+            <h3>📋 Información del Sistema</h3>
+            <p><strong>URL Actual:</strong> <span id="currentUrl"></span></p>
+            <p><strong>Archivo Objetivo:</strong> index-friocas2.html</p>
+            <p><strong>Timestamp:</strong> <span id="timestamp"></span></p>
+        </div>
+        
+        <div class="status success">
+            <h3>✅ Estado de Archivos</h3>
+            <p>✅ index.html - Actualizado con redirección a index-friocas2.html</p>
+            <p>✅ index-friocas2.html - Archivo principal disponible</p>
+            <p>✅ Parámetros de caché - Agregados para forzar actualización</p>
+        </div>
+        
+        <div class="status info">
+            <h3>🔧 Pruebas de Redirección</h3>
+            <p>Haz clic en los botones para probar las diferentes formas de redirección:</p>
+            
+            <a href="index.html" class="btn">🏠 Ir a index.html</a>
+            <a href="index-friocas2.html" class="btn btn-success">📄 Ir directamente a index-friocas2.html</a>
+            <a href="index.html?v=test" class="btn btn-danger">🔄 Forzar recarga de index.html</a>
+        </div>
+        
+        <div class="status info">
+            <h3>📱 Enlaces de Verificación</h3>
+            <p><strong>Enlace Principal:</strong> <a href="https://carlaj4r4.github.io/FrioCas-web/" target="_blank">https://carlaj4r4.github.io/FrioCas-web/</a></p>
+            <p><strong>Enlace Directo:</strong> <a href="https://carlaj4r4.github.io/FrioCas-web/index-friocas2.html" target="_blank">https://carlaj4r4.github.io/FrioCas-web/index-friocas2.html</a></p>
+        </div>
+        
+        <div class="status error">
+            <h3>⚠️ Si sigue sin funcionar:</h3>
+            <ol>
+                <li><strong>Limpiar caché del navegador</strong> (Ctrl+F5 o Cmd+Shift+R)</li>
+                <li><strong>Probar en modo incógnito</strong></li>
+                <li><strong>Esperar 5-10 minutos</strong> para que GitHub Pages se actualice</li>
+                <li><strong>Verificar</strong> que todos los archivos están subidos al repositorio</li>
+            </ol>
+        </div>
+    </div>
+    
+    <script>
+        // Mostrar información actual
+        document.getElementById('currentUrl').textContent = window.location.href;
+        document.getElementById('timestamp').textContent = new Date().toLocaleString();
+        
+        // Verificar si el archivo objetivo existe
+        fetch('index-friocas2.html')
+            .then(response => {
+                if (response.ok) {
+                    console.log('✅ index-friocas2.html está disponible');
+                } else {
+                    console.log('❌ index-friocas2.html no encontrado');
+                }
+            })
+            .catch(error => {
+                console.log('❌ Error verificando index-friocas2.html:', error);
+            });
+    </script>
+</body>
+</html>

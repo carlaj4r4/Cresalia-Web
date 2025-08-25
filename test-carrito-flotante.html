@@ -1,0 +1,352 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test - Carrito Flotante FRIOCAS</title>
+    
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <link rel="stylesheet" href="styles-friocas.css?v=4.9">
+</head>
+<body>
+    <!-- Navbar -->
+    <nav class="navbar navbar-expand-lg fixed-top">
+        <div class="container">
+            <a class="navbar-brand" href="#">
+                <div class="logo-container">
+                    <img src="assets/logo/logo-friocas.png" alt="FRIOCAS" height="50" class="logo-image">
+                    <div class="logo-glow"></div>
+                </div>
+            </a>
+            
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="#inicio">Inicio</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#productos">Productos</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#" onclick="abrirCarrito(); return false;">
+                            <i class="fas fa-shopping-cart"></i>
+                            <span>Carrito</span>
+                            <span id="cartCount" class="cart-count">0</span>
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Carrito Flotante -->
+    <div id="floatingCart" class="floating-cart">
+        <div class="floating-cart-content">
+            <div class="floating-cart-icon">
+                <i class="fas fa-shopping-cart"></i>
+                <span id="floatingCartCount" class="floating-cart-count">0</span>
+            </div>
+            <div class="floating-cart-info">
+                <span class="floating-cart-text">Carrito</span>
+                <span id="floatingCartTotal" class="floating-cart-total">$0</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Contenido de Prueba -->
+    <div style="padding-top: 100px; padding-bottom: 100px;">
+        <div class="container">
+            <h1>🧪 Test - Carrito Flotante</h1>
+            <p>Esta página es para probar el carrito flotante en móviles.</p>
+            
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="card">
+                        <div class="card-body">
+                            <h5 class="card-title">Producto de Prueba 1</h5>
+                            <p class="card-text">Precio: $10,000</p>
+                            <button class="btn btn-primary" onclick="agregarProductoPrueba(1, 'Producto 1', 10000)">
+                                Agregar al Carrito
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="card">
+                        <div class="card-body">
+                            <h5 class="card-title">Producto de Prueba 2</h5>
+                            <p class="card-text">Precio: $15,000</p>
+                            <button class="btn btn-primary" onclick="agregarProductoPrueba(2, 'Producto 2', 15000)">
+                                Agregar al Carrito
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="mt-4">
+                <button class="btn btn-success" onclick="limpiarCarrito()">Limpiar Carrito</button>
+                <button class="btn btn-info" onclick="mostrarInfoCarrito()">Mostrar Info</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal del Carrito -->
+    <div id="cartModal" class="modal-overlay">
+        <div class="modal-cart">
+            <div class="modal-cart-header">
+                <h3><i class="fas fa-shopping-cart"></i> Carrito de Compras</h3>
+                <button onclick="cerrarCarrito()" class="cerrar-modal">&times;</button>
+            </div>
+            <div class="modal-cart-content">
+                <div id="cartItems">
+                    <!-- Los items se cargarán dinámicamente -->
+                </div>
+            </div>
+            <div class="modal-cart-footer">
+                <div class="cart-total">
+                    <span>Total: <span id="cartTotal">$0</span></span>
+                </div>
+                <button onclick="checkout()" class="checkout-btn">
+                    <i class="fas fa-credit-card"></i> Proceder al Pago
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <!-- Script de Prueba -->
+    <script>
+        // Variables globales
+        let carrito = [];
+        
+        // Función para agregar producto de prueba
+        function agregarProductoPrueba(id, nombre, precio) {
+            const itemExistente = carrito.find(item => item.id === id);
+            
+            if (itemExistente) {
+                itemExistente.cantidad += 1;
+            } else {
+                carrito.push({
+                    id: id,
+                    nombre: nombre,
+                    precio: precio,
+                    cantidad: 1,
+                    imagen: 'assets/logo/logo-friocas.png'
+                });
+            }
+            
+            actualizarCarrito();
+            mostrarNotificacion(`✅ ${nombre} agregado al carrito`);
+        }
+        
+        // Función para limpiar carrito
+        function limpiarCarrito() {
+            carrito = [];
+            actualizarCarrito();
+            mostrarNotificacion('🗑️ Carrito limpiado');
+        }
+        
+        // Función para mostrar información del carrito
+        function mostrarInfoCarrito() {
+            const totalItems = carrito.reduce((total, item) => total + item.cantidad, 0);
+            const total = carrito.reduce((sum, item) => sum + (item.precio * item.cantidad), 0);
+            
+            alert(`📊 Información del Carrito:\n\nItems: ${totalItems}\nTotal: $${total.toLocaleString('es-AR')}\n\nItems:\n${carrito.map(item => `- ${item.nombre}: x${item.cantidad} = $${(item.precio * item.cantidad).toLocaleString('es-AR')}`).join('\n')}`);
+        }
+        
+        // Función para actualizar carrito
+        function actualizarCarrito() {
+            const cartCount = document.getElementById('cartCount');
+            const floatingCartCount = document.getElementById('floatingCartCount');
+            const floatingCartTotal = document.getElementById('floatingCartTotal');
+            const floatingCart = document.getElementById('floatingCart');
+            
+            const totalItems = carrito.reduce((total, item) => total + item.cantidad, 0);
+            const total = carrito.reduce((sum, item) => sum + (item.precio * item.cantidad), 0);
+            
+            // Actualizar contador en navbar
+            if (cartCount) {
+                cartCount.textContent = totalItems;
+            }
+            
+            // Actualizar carrito flotante
+            if (floatingCartCount) {
+                floatingCartCount.textContent = totalItems;
+            }
+            
+            if (floatingCartTotal) {
+                floatingCartTotal.textContent = `$${total.toLocaleString('es-AR')}`;
+            }
+            
+            // Mostrar/ocultar carrito flotante según items
+            if (floatingCart) {
+                if (totalItems > 0) {
+                    floatingCart.classList.add('has-items');
+                } else {
+                    floatingCart.classList.remove('has-items');
+                }
+            }
+            
+            renderizarCarrito();
+        }
+        
+        // Función para renderizar carrito
+        function renderizarCarrito() {
+            const cartItems = document.getElementById('cartItems');
+            const cartTotal = document.getElementById('cartTotal');
+            
+            if (!cartItems || !cartTotal) {
+                console.error('No se encontraron los elementos del carrito');
+                return;
+            }
+            
+            if (carrito.length === 0) {
+                cartItems.innerHTML = '<p class="text-center text-muted">El carrito está vacío</p>';
+                cartTotal.textContent = '$0';
+                return;
+            }
+            
+            cartItems.innerHTML = carrito.map(item => `
+                <div class="cart-item">
+                    <img src="${item.imagen}" alt="${item.nombre}" class="cart-item-image">
+                    <div class="cart-item-info">
+                        <div class="cart-item-name">${item.nombre}</div>
+                        <div class="cart-item-price">$${(item.precio * item.cantidad).toLocaleString('es-AR')}</div>
+                        <div class="cart-item-quantity">
+                            <button class="quantity-btn" onclick="cambiarCantidadCarrito(${item.id}, -1)">-</button>
+                            <span>${item.cantidad}</span>
+                            <button class="quantity-btn" onclick="cambiarCantidadCarrito(${item.id}, 1)">+</button>
+                        </div>
+                    </div>
+                    <button class="cart-item-remove" onclick="removerDelCarrito(${item.id})">
+                        <i class="fas fa-trash"></i>
+                    </button>
+                </div>
+            `).join('');
+            
+            const total = carrito.reduce((sum, item) => sum + (item.precio * item.cantidad), 0);
+            cartTotal.textContent = `$${total.toLocaleString('es-AR')}`;
+        }
+        
+        // Función para cambiar cantidad
+        function cambiarCantidadCarrito(productoId, cambio) {
+            const item = carrito.find(item => item.id === productoId);
+            if (!item) return;
+            
+            item.cantidad += cambio;
+            
+            if (item.cantidad <= 0) {
+                removerDelCarrito(productoId);
+            } else {
+                actualizarCarrito();
+            }
+        }
+        
+        // Función para remover del carrito
+        function removerDelCarrito(productoId) {
+            carrito = carrito.filter(item => item.id !== productoId);
+            actualizarCarrito();
+        }
+        
+        // Función para abrir carrito
+        function abrirCarrito() {
+            const cartModal = document.getElementById('cartModal');
+            if (cartModal) {
+                cartModal.classList.add('active');
+                document.body.style.overflow = 'hidden';
+                actualizarCarrito();
+            }
+        }
+        
+        // Función para cerrar carrito
+        function cerrarCarrito() {
+            const cartModal = document.getElementById('cartModal');
+            if (cartModal) {
+                cartModal.classList.remove('active');
+                document.body.style.overflow = 'auto';
+            }
+        }
+        
+        // Función para checkout
+        function checkout() {
+            if (carrito.length === 0) {
+                alert('El carrito está vacío');
+                return;
+            }
+            
+            const total = carrito.reduce((sum, item) => sum + (item.precio * item.cantidad), 0);
+            alert(`🛒 Procesando compra por $${total.toLocaleString('es-AR')}\n\nEsta es solo una prueba. En la versión real, aquí irías al proceso de pago.`);
+        }
+        
+        // Función para mostrar notificación
+        function mostrarNotificacion(mensaje) {
+            const notificacion = document.createElement('div');
+            notificacion.style.cssText = `
+                position: fixed;
+                top: 20px;
+                right: 20px;
+                background: #28a745;
+                color: white;
+                padding: 1rem 1.5rem;
+                border-radius: 10px;
+                box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+                z-index: 10000;
+                animation: slideIn 0.3s ease-out;
+            `;
+            notificacion.innerHTML = mensaje;
+            
+            document.body.appendChild(notificacion);
+            
+            setTimeout(() => {
+                notificacion.remove();
+            }, 3000);
+        }
+        
+        // Inicialización
+        document.addEventListener('DOMContentLoaded', function() {
+            // Configurar carrito flotante
+            const floatingCart = document.getElementById('floatingCart');
+            if (floatingCart) {
+                floatingCart.addEventListener('click', function() {
+                    abrirCarrito();
+                });
+            }
+            
+            // Configurar modal del carrito
+            const cartModal = document.getElementById('cartModal');
+            if (cartModal) {
+                cartModal.addEventListener('click', function(e) {
+                    if (e.target === cartModal) {
+                        cerrarCarrito();
+                    }
+                });
+            }
+            
+            // Cerrar carrito con ESC
+            document.addEventListener('keydown', function(e) {
+                if (e.key === 'Escape') {
+                    const cartModal = document.getElementById('cartModal');
+                    if (cartModal && cartModal.classList.contains('active')) {
+                        cerrarCarrito();
+                    }
+                }
+            });
+            
+            console.log('✅ Test del carrito flotante inicializado');
+        });
+    </script>
+</body>
+</html>

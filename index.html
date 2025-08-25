@@ -99,7 +99,7 @@
         <div class="loading-text">Cargando productos de limpieza automotriz...</div>
         <div class="spinner"></div>
         <div class="redirect-text">Redirigiendo automáticamente...</div>
-        <a href="index-friocas-productos.html" class="manual-link">
+        <a href="index-friocas2.html" class="manual-link">
             Si no se redirige automáticamente, haz clic aquí
         </a>
     </div>
@@ -107,20 +107,21 @@
     <script>
         // Redirigir automáticamente después de 3 segundos
         setTimeout(() => {
-            window.location.href = 'index-friocas-productos.html';
+            window.location.href = 'index-friocas2.html?v=' + Date.now();
         }, 3000);
         
         // Redirigir inmediatamente si el usuario hace clic en cualquier lugar
         document.addEventListener('click', () => {
-            window.location.href = 'index-friocas-productos.html';
+            window.location.href = 'index-friocas2.html?v=' + Date.now();
         });
         
         // Redirigir con Enter
         document.addEventListener('keydown', (e) => {
             if (e.key === 'Enter') {
-                window.location.href = 'index-friocas-productos.html';
+                window.location.href = 'index-friocas2.html?v=' + Date.now();
             }
         });
     </script>
 </body>
 </html>
+

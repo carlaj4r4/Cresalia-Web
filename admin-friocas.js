@@ -778,261 +778,113 @@ function cargarConfiguracionGeneral() {
             </div>
         </div>
 
-        <!-- Gestión de Servicios -->
+        <!-- Configuración de Redes Sociales -->
         <div class="config-general-card">
             <div class="config-general-header">
-                <i class="fas fa-tools"></i>
-                <h3>Gestión de Servicios</h3>
+                <i class="fas fa-share-alt"></i>
+                <h3>Redes Sociales</h3>
             </div>
             <div class="config-general-content">
-                <div class="servicios-lista" id="serviciosLista">
-                    <!-- Los servicios se cargarán dinámicamente -->
-                </div>
-                
-                <div class="config-general-actions">
-                    <button type="button" class="add-btn" onclick="mostrarFormularioServicio()">
-                        <i class="fas fa-plus"></i> Agregar Servicio
-                    </button>
-                </div>
+                <form id="redesSocialesForm" class="config-general-form">
+                    <div class="form-group">
+                        <label for="whatsapp">WhatsApp:</label>
+                        <input type="text" id="whatsapp" name="whatsapp" value="${config.whatsapp || ''}" placeholder="+54 9 3794 XXXXXX">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="instagram">Instagram:</label>
+                        <input type="text" id="instagram" name="instagram" value="${config.instagram || ''}" placeholder="@friocas">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="facebook">Facebook:</label>
+                        <input type="text" id="facebook" name="facebook" value="${config.facebook || ''}" placeholder="FRIOCAS">
+                    </div>
+                    
+                    <div class="config-general-actions">
+                        <button type="submit" class="save-btn">
+                            <i class="fas fa-save"></i> Guardar Redes
+                        </button>
+                    </div>
+                </form>
             </div>
         </div>
 
-        <!-- Gestión de Categorías -->
+        <!-- Configuración de Pagos -->
         <div class="config-general-card">
             <div class="config-general-header">
-                <i class="fas fa-tags"></i>
-                <h3>Gestión de Categorías</h3>
+                <i class="fas fa-credit-card"></i>
+                <h3>Configuración de Pagos</h3>
             </div>
             <div class="config-general-content">
-                <div class="categorias-lista" id="categoriasLista">
-                    <!-- Las categorías se cargarán dinámicamente -->
-                </div>
-                
-                <div class="config-general-actions">
-                    <button type="button" class="add-btn" onclick="mostrarFormularioCategoria()">
-                        <i class="fas fa-plus"></i> Agregar Categoría
-                    </button>
-                </div>
-            </div>
-        </div>
-        
-        <!-- Gestión de Precios de Servicios -->
-        <div class="config-general-card">
-            <div class="config-general-header">
-                <i class="fas fa-dollar-sign"></i>
-                <h3>Precios de Servicios</h3>
-            </div>
-            <div class="config-general-content">
-                <div class="servicios-precios-lista" id="serviciosPreciosLista">
-                    <!-- Los servicios se cargarán dinámicamente -->
-                </div>
-                
-                <div class="config-general-actions">
-                    <button type="button" class="add-btn" onclick="mostrarFormularioServicio()">
-                        <i class="fas fa-plus"></i> Agregar Servicio
-                    </button>
-                    <button type="button" class="sync-btn" onclick="sincronizarServicios()">
-                        <i class="fas fa-sync"></i> Sincronizar
-                    </button>
-                </div>
-            </div>
-        </div>
-        
-        <!-- Logs de Usuarios -->
-        <div class="config-general-card">
-            <div class="config-general-header">
-                <i class="fas fa-users"></i>
-                <h3>Logs de Usuarios</h3>
-            </div>
-            <div class="config-general-content">
-                <div class="logs-controls">
-                    <div class="search-box">
-                        <input type="text" id="searchUsers" placeholder="Buscar usuarios..." onkeyup="filtrarUsuarios()">
-                        <i class="fas fa-search"></i>
-                    </div>
-                    <div class="filter-controls">
-                        <select id="filterActivity" onchange="filtrarActividad()">
-                            <option value="all">Toda la actividad</option>
-                            <option value="login">Solo logins</option>
-                            <option value="purchase">Solo compras</option>
-                            <option value="register">Solo registros</option>
+                <form id="pagosForm" class="config-general-form">
+                    <div class="form-group">
+                        <label for="metodoPago">Método de Pago Principal:</label>
+                        <select id="metodoPago" name="metodoPago">
+                            <option value="transferencia" ${config.metodoPago === 'transferencia' ? 'selected' : ''}>Transferencia Bancaria</option>
+                            <option value="efectivo" ${config.metodoPago === 'efectivo' ? 'selected' : ''}>Efectivo</option>
+                            <option value="mercadopago" ${config.metodoPago === 'mercadopago' ? 'selected' : ''}>Mercado Pago</option>
                         </select>
                     </div>
-                </div>
-                
-                <div class="users-stats">
-                    <div class="stat-item">
-                        <i class="fas fa-user-plus"></i>
-                        <span id="totalUsers">0</span>
-                        <label>Usuarios Registrados</label>
+                    
+                    <div class="form-group">
+                        <label for="cuentaBancaria">Datos Bancarios:</label>
+                        <textarea id="cuentaBancaria" name="cuentaBancaria" rows="3" placeholder="Banco: XXX\nTitular: XXX\nCBU: XXX\nAlias: XXX">${config.cuentaBancaria || ''}</textarea>
                     </div>
-                    <div class="stat-item">
-                        <i class="fas fa-sign-in-alt"></i>
-                        <span id="activeUsers">0</span>
-                        <label>Usuarios Activos</label>
+                    
+                    <div class="config-general-actions">
+                        <button type="submit" class="save-btn">
+                            <i class="fas fa-save"></i> Guardar Pagos
+                        </button>
                     </div>
-                    <div class="stat-item">
-                        <i class="fas fa-shopping-cart"></i>
-                        <span id="totalPurchases">0</span>
-                        <label>Compras Totales</label>
-                    </div>
-                </div>
-                
-                <div class="users-logs" id="usersLogs">
-                    <!-- Los logs se cargarán dinámicamente -->
-                </div>
-                
-                <div class="config-general-actions">
-                    <button type="button" class="export-btn" onclick="exportarLogs()">
-                        <i class="fas fa-download"></i> Exportar Logs
-                    </button>
-                    <button type="button" class="clear-btn" onclick="limpiarLogs()">
-                        <i class="fas fa-trash"></i> Limpiar Logs
-                    </button>
-                </div>
+                </form>
             </div>
         </div>
-        
-        <!-- Analytics y Métricas -->
+
+        <!-- Configuración del Sistema -->
         <div class="config-general-card">
             <div class="config-general-header">
-                <i class="fas fa-chart-line"></i>
-                <h3>Analytics y Métricas</h3>
+                <i class="fas fa-cog"></i>
+                <h3>Configuración del Sistema</h3>
             </div>
             <div class="config-general-content">
-                <div class="analytics-overview">
-                    <div class="metric-card">
-                        <div class="metric-icon">
-                            <i class="fas fa-shopping-cart"></i>
-                        </div>
-                        <div class="metric-info">
-                            <h4 id="totalVentas">$0</h4>
-                            <p>Ventas Totales</p>
-                            <span class="metric-change positive" id="cambioVentas">+0%</span>
-                        </div>
-                    </div>
-                    
-                    <div class="metric-card">
-                        <div class="metric-icon">
-                            <i class="fas fa-gift"></i>
-                        </div>
-                        <div class="metric-info">
-                            <h4 id="conversionCombos">0%</h4>
-                            <p>Conversión Combos</p>
-                            <span class="metric-change positive" id="cambioConversion">+0%</span>
-                        </div>
-                    </div>
-                    
-                    <div class="metric-card">
-                        <div class="metric-icon">
-                            <i class="fas fa-users"></i>
-                        </div>
-                        <div class="metric-info">
-                            <h4 id="clientesUnicos">0</h4>
-                            <p>Clientes Únicos</p>
-                            <span class="metric-change positive" id="cambioClientes">+0%</span>
-                        </div>
-                    </div>
-                    
-                    <div class="metric-card">
-                        <div class="metric-icon">
-                            <i class="fas fa-chart-bar"></i>
-                        </div>
-                        <div class="metric-info">
-                            <h4 id="ticketPromedio">$0</h4>
-                            <p>Ticket Promedio</p>
-                            <span class="metric-change positive" id="cambioTicket">+0%</span>
-                        </div>
-                    </div>
-                </div>
-                
-                <div class="analytics-charts">
-                    <div class="chart-container">
-                        <h4>Ventas por Día (Últimos 7 días)</h4>
-                        <div class="chart" id="ventasChart">
-                            <!-- Gráfico de ventas -->
-                        </div>
-                    </div>
-                    
-                    <div class="chart-container">
-                        <h4>Combos Más Vendidos</h4>
-                        <div class="chart" id="combosChart">
-                            <!-- Gráfico de combos -->
-                        </div>
-                    </div>
-                </div>
-                
-                <div class="analytics-actions">
-                    <button type="button" class="export-btn" onclick="exportarAnalytics()">
-                        <i class="fas fa-download"></i> Exportar Reporte
-                    </button>
-                    <button type="button" class="refresh-btn" onclick="actualizarAnalytics()">
-                        <i class="fas fa-sync"></i> Actualizar
-                    </button>
-                </div>
-            </div>
-        </div>
-        
-        <!-- Gestión de Combos y Ofertas -->
-        <div class="config-general-card">
-            <div class="config-general-header">
-                <i class="fas fa-gift"></i>
-                <h3>Combos y Ofertas</h3>
-            </div>
-            <div class="config-general-content">
-                <div class="combos-controls">
-                    <div class="search-box">
-                        <input type="text" id="searchCombos" placeholder="Buscar combos..." onkeyup="filtrarCombos()">
-                        <i class="fas fa-search"></i>
-                    </div>
-                    <div class="filter-controls">
-                        <select id="filterCombos" onchange="filtrarCombosPorTipo()">
-                            <option value="all">Todos los tipos</option>
-                            <option value="combo">Solo combos</option>
-                            <option value="oferta">Solo ofertas</option>
-                            <option value="flash">Flash sales</option>
-                            <option value="bundle">Bundles</option>
-                            <option value="seasonal">Ofertas Estacionales</option>
-                            <option value="loyalty">Programa de Lealtad</option>
+                <form id="sistemaForm" class="config-general-form">
+                    <div class="form-group">
+                        <label for="moneda">Moneda:</label>
+                        <select id="moneda" name="moneda">
+                            <option value="ARS" ${config.moneda === 'ARS' ? 'selected' : ''}>Pesos Argentinos ($)</option>
+                            <option value="USD" ${config.moneda === 'USD' ? 'selected' : ''}>Dólares (USD)</option>
                         </select>
                     </div>
-                </div>
-                
-                <div class="combos-stats">
-                    <div class="stat-item">
-                        <i class="fas fa-gift"></i>
-                        <span id="totalCombos">0</span>
-                        <label>Combos Activos</label>
+                    
+                    <div class="form-group">
+                        <label for="zonaHoraria">Zona Horaria:</label>
+                        <select id="zonaHoraria" name="zonaHoraria">
+                            <option value="America/Argentina/Buenos_Aires" ${config.zonaHoraria === 'America/Argentina/Buenos_Aires' ? 'selected' : ''}>Argentina (GMT-3)</option>
+                            <option value="America/New_York" ${config.zonaHoraria === 'America/New_York' ? 'selected' : ''}>Nueva York (GMT-5)</option>
+                        </select>
                     </div>
-                    <div class="stat-item">
-                        <i class="fas fa-percentage"></i>
-                        <span id="totalOfertas">0</span>
-                        <label>Ofertas Activas</label>
+                    
+                    <div class="form-group">
+                        <label for="notificaciones">Notificaciones:</label>
+                        <div class="checkbox-group">
+                            <label class="checkbox-label">
+                                <input type="checkbox" id="notifEmail" name="notifEmail" ${config.notifEmail ? 'checked' : ''}>
+                                <span>Email</span>
+                            </label>
+                            <label class="checkbox-label">
+                                <input type="checkbox" id="notifWhatsapp" name="notifWhatsapp" ${config.notifWhatsapp ? 'checked' : ''}>
+                                <span>WhatsApp</span>
+                            </label>
+                        </div>
                     </div>
-                    <div class="stat-item">
-                        <i class="fas fa-clock"></i>
-                        <span id="ofertasExpiradas">0</span>
-                        <label>Expiradas</label>
+                    
+                    <div class="config-general-actions">
+                        <button type="submit" class="save-btn">
+                            <i class="fas fa-save"></i> Guardar Sistema
+                        </button>
                     </div>
-                    <div class="stat-item">
-                        <i class="fas fa-star"></i>
-                        <span id="conversionRate">0%</span>
-                        <label>Tasa Conversión</label>
-                    </div>
-                </div>
-                
-                <div class="combos-lista" id="combosLista">
-                    <!-- Los combos se cargarán dinámicamente -->
-                </div>
-                
-                <div class="config-general-actions">
-                    <button type="button" class="add-btn" onclick="mostrarFormularioCombo()">
-                        <i class="fas fa-plus"></i> Nuevo Combo/Oferta
-                    </button>
-                    <button type="button" class="sync-btn" onclick="sincronizarCombos()">
-                        <i class="fas fa-sync"></i> Sincronizar
-                    </button>
-                </div>
+                </form>
             </div>
         </div>
     `;
@@ -1347,8 +1199,27 @@ function mostrarFormularioCategoria(categoriaIndex = null) {
                     </div>
                     
                     <div class="form-group">
-                        <label for="imagenCategoria">URL de la Imagen:</label>
-                        <input type="url" id="imagenCategoria" name="imagen" value="${categoria ? categoria.imagen : ''}" placeholder="https://ejemplo.com/imagen-categoria.jpg">
+                        <label for="imagenCategoria">Imagen de la Categoría:</label>
+                        <div class="imagen-input-container">
+                            <input type="file" id="imagenCategoriaFile" name="imagenFile" accept="image/*" style="display: none;" onchange="previsualizarImagenCategoria(event)">
+                            <input type="url" id="imagenCategoria" name="imagen" value="${categoria ? categoria.imagen : ''}" placeholder="URL de imagen o selecciona un archivo">
+                            <button type="button" class="btn-seleccionar-archivo" onclick="document.getElementById('imagenCategoriaFile').click()">
+                                <i class="fas fa-folder-open"></i> Seleccionar Archivo
+                            </button>
+                        </div>
+                        <div id="previsualizacionImagenCategoria" class="previsualizacion-imagen" style="display: none;">
+                            <img id="imagenPreviaCategoria" src="" alt="Vista previa">
+                        </div>
+                        <small class="form-text text-muted">
+                            💡 Puedes usar una URL de imagen o seleccionar un archivo local. 
+                            Para archivos locales, usa la ruta: assets/categorias/[nombre].jpg
+                        </small>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="colorCategoria">Color de la Categoría:</label>
+                        <input type="color" id="colorCategoria" name="color" value="${categoria ? categoria.color || '#007bff' : '#007bff'}">
+                        <small class="form-text text-muted">Color para identificar la categoría en la interfaz</small>
                     </div>
                     
                     <div class="botones-accion">
@@ -1376,12 +1247,110 @@ function mostrarFormularioCategoria(categoriaIndex = null) {
     setTimeout(() => modal.classList.add('active'), 10);
 }
 
+// Función para previsualizar imagen de categoría
+function previsualizarImagenCategoria(event) {
+    const file = event.target.files[0];
+    const previsualizacion = document.getElementById('previsualizacionImagenCategoria');
+    const imagenPrevia = document.getElementById('imagenPreviaCategoria');
+    const urlInput = document.getElementById('imagenCategoria');
+    
+    if (file) {
+        // Validar tipo de archivo
+        if (!file.type.startsWith('image/')) {
+            alert('❌ Por favor selecciona un archivo de imagen válido (JPG, PNG, GIF, etc.)');
+            return;
+        }
+        
+        // Validar tamaño (máximo 5MB)
+        if (file.size > 5 * 1024 * 1024) {
+            alert('❌ El archivo es demasiado grande. Máximo 5MB permitido.');
+            return;
+        }
+        
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            imagenPrevia.src = e.target.result;
+            previsualizacion.style.display = 'block';
+            
+            // Generar ruta sugerida
+            const nombre = document.getElementById('nombreCategoria').value;
+            if (nombre) {
+                const nombreArchivo = nombre.toLowerCase()
+                    .replace(/[^a-z0-9]/g, '-')
+                    .replace(/-+/g, '-')
+                    .replace(/^-|-$/g, '');
+                const extension = file.name.split('.').pop().toLowerCase();
+                urlInput.value = `assets/categorias/${nombreArchivo}.${extension}`;
+            } else {
+                // Si no hay nombre, usar el nombre del archivo
+                const nombreArchivo = file.name.replace(/\.[^/.]+$/, '');
+                urlInput.value = `assets/categorias/${nombreArchivo}`;
+            }
+            
+            // Mostrar información del archivo
+            mostrarInfoArchivoCategoria(file);
+        };
+        reader.readAsDataURL(file);
+    }
+}
+
+// Función para mostrar información del archivo de categoría
+function mostrarInfoArchivoCategoria(file) {
+    const infoDiv = document.getElementById('infoArchivoCategoria') || crearInfoArchivoCategoriaDiv();
+    const sizeMB = (file.size / (1024 * 1024)).toFixed(2);
+    const extension = file.name.split('.').pop().toUpperCase();
+    
+    infoDiv.innerHTML = `
+        <div class="file-info">
+            <i class="fas fa-file-image"></i>
+            <span><strong>${file.name}</strong></span>
+            <span>${extension} • ${sizeMB} MB</span>
+        </div>
+        <div class="file-actions">
+            <button type="button" onclick="limpiarArchivoCategoria()" class="btn-limpiar">
+                <i class="fas fa-trash"></i> Limpiar
+            </button>
+        </div>
+    `;
+    infoDiv.style.display = 'block';
+}
+
+// Función para crear div de información de archivo de categoría
+function crearInfoArchivoCategoriaDiv() {
+    const infoDiv = document.createElement('div');
+    infoDiv.id = 'infoArchivoCategoria';
+    infoDiv.className = 'file-info-container';
+    
+    const previsualizacion = document.getElementById('previsualizacionImagenCategoria');
+    if (previsualizacion) {
+        previsualizacion.parentNode.insertBefore(infoDiv, previsualizacion.nextSibling);
+    }
+    
+    return infoDiv;
+}
+
+// Función para limpiar archivo de categoría seleccionado
+function limpiarArchivoCategoria() {
+    const fileInput = document.getElementById('imagenCategoriaFile');
+    const urlInput = document.getElementById('imagenCategoria');
+    const previsualizacion = document.getElementById('previsualizacionImagenCategoria');
+    const infoDiv = document.getElementById('infoArchivoCategoria');
+    
+    fileInput.value = '';
+    urlInput.value = '';
+    previsualizacion.style.display = 'none';
+    if (infoDiv) infoDiv.style.display = 'none';
+    
+    mostrarNotificacion('🗑️ Archivo de categoría limpiado');
+}
+
 function guardarCategoria(categoriaIndex = null) {
     const formData = new FormData(document.getElementById('formularioCategoria'));
     const categoria = {
         nombre: formData.get('nombre'),
         descripcion: formData.get('descripcion'),
         imagen: formData.get('imagen'),
+        color: formData.get('color'),
         fechaCreacion: new Date().toISOString()
     };
     
@@ -1562,11 +1531,12 @@ function mostrarFormularioProducto(productoIndex = null) {
                         <label for="categoriaProducto">Categoría:</label>
                         <select id="categoriaProducto" name="categoria" required>
                             <option value="">Seleccionar categoría</option>
-                            <option value="Limpiadores" ${producto && producto.categoria === 'Limpiadores' ? 'selected' : ''}>Limpiadores</option>
-                            <option value="Shampoo" ${producto && producto.categoria === 'Shampoo' ? 'selected' : ''}>Shampoo</option>
-                            <option value="Ceras" ${producto && producto.categoria === 'Ceras' ? 'selected' : ''}>Ceras</option>
-                            <option value="Iluminación" ${producto && producto.categoria === 'Iluminación' ? 'selected' : ''}>Iluminación</option>
-                            <option value="Revividores" ${producto && producto.categoria === 'Revividores' ? 'selected' : ''}>Revividores</option>
+                            <option value="limpiadores" ${producto && producto.categoria === 'limpiadores' ? 'selected' : ''}>Limpiadores</option>
+                            <option value="shampoo" ${producto && producto.categoria === 'shampoo' ? 'selected' : ''}>Shampoo</option>
+                            <option value="ceras" ${producto && producto.categoria === 'ceras' ? 'selected' : ''}>Ceras</option>
+                            <option value="iluminacion" ${producto && producto.categoria === 'iluminacion' ? 'selected' : ''}>Iluminación</option>
+                            <option value="revividores" ${producto && producto.categoria === 'revividores' ? 'selected' : ''}>Revividores</option>
+                            <option value="accesorios" ${producto && producto.categoria === 'accesorios' ? 'selected' : ''}>Accesorios</option>
                         </select>
                     </div>
                     
@@ -1586,8 +1556,26 @@ function mostrarFormularioProducto(productoIndex = null) {
                     </div>
                     
                     <div class="form-group">
-                        <label for="imagenProducto">URL de la Imagen:</label>
-                        <input type="url" id="imagenProducto" name="imagen" value="${producto ? producto.imagen : ''}" placeholder="https://ejemplo.com/imagen.jpg">
+                        <label for="marcaProducto">Marca:</label>
+                        <input type="text" id="marcaProducto" name="marca" value="${producto ? producto.marca : ''}" placeholder="Marca del producto">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="imagenProducto">Imagen del Producto:</label>
+                        <div class="imagen-input-container">
+                            <input type="file" id="imagenProductoFile" name="imagenFile" accept="image/*" style="display: none;" onchange="previsualizarImagen(event)">
+                            <input type="url" id="imagenProducto" name="imagen" value="${producto ? producto.imagen : ''}" placeholder="URL de imagen o selecciona un archivo">
+                            <button type="button" class="btn-seleccionar-archivo" onclick="document.getElementById('imagenProductoFile').click()">
+                                <i class="fas fa-folder-open"></i> Seleccionar Archivo
+                            </button>
+                        </div>
+                        <div id="previsualizacionImagen" class="previsualizacion-imagen" style="display: none;">
+                            <img id="imagenPrevia" src="" alt="Vista previa">
+                        </div>
+                        <small class="form-text text-muted">
+                            💡 Puedes usar una URL de imagen o seleccionar un archivo local. 
+                            Para archivos locales, usa la ruta: assets/productos/[categoria]/[nombre].jpg
+                        </small>
                     </div>
                     
                     <div class="botones-accion">
@@ -1615,6 +1603,105 @@ function mostrarFormularioProducto(productoIndex = null) {
     setTimeout(() => modal.classList.add('active'), 10);
 }
 
+// Función para previsualizar imagen
+function previsualizarImagen(event) {
+    const file = event.target.files[0];
+    const previsualizacion = document.getElementById('previsualizacionImagen');
+    const imagenPrevia = document.getElementById('imagenPrevia');
+    const urlInput = document.getElementById('imagenProducto');
+    
+    if (file) {
+        // Validar tipo de archivo
+        if (!file.type.startsWith('image/')) {
+            alert('❌ Por favor selecciona un archivo de imagen válido (JPG, PNG, GIF, etc.)');
+            return;
+        }
+        
+        // Validar tamaño (máximo 5MB)
+        if (file.size > 5 * 1024 * 1024) {
+            alert('❌ El archivo es demasiado grande. Máximo 5MB permitido.');
+            return;
+        }
+        
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            imagenPrevia.src = e.target.result;
+            previsualizacion.style.display = 'block';
+            
+            // Generar ruta sugerida
+            const categoria = document.getElementById('categoriaProducto').value;
+            const nombre = document.getElementById('nombreProducto').value;
+            
+            if (categoria && nombre) {
+                const nombreArchivo = nombre.toLowerCase()
+                    .replace(/[^a-z0-9]/g, '-')
+                    .replace(/-+/g, '-')
+                    .replace(/^-|-$/g, '');
+                const extension = file.name.split('.').pop().toLowerCase();
+                urlInput.value = `assets/productos/${categoria}/${nombreArchivo}.${extension}`;
+            } else {
+                // Si no hay categoría o nombre, usar el nombre del archivo
+                const nombreArchivo = file.name.replace(/\.[^/.]+$/, '');
+                urlInput.value = `assets/productos/${categoria || 'general'}/${nombreArchivo}`;
+            }
+            
+            // Mostrar información del archivo
+            mostrarInfoArchivo(file);
+        };
+        reader.readAsDataURL(file);
+    }
+}
+
+// Función para mostrar información del archivo
+function mostrarInfoArchivo(file) {
+    const infoDiv = document.getElementById('infoArchivo') || crearInfoArchivoDiv();
+    const sizeMB = (file.size / (1024 * 1024)).toFixed(2);
+    const extension = file.name.split('.').pop().toUpperCase();
+    
+    infoDiv.innerHTML = `
+        <div class="file-info">
+            <i class="fas fa-file-image"></i>
+            <span><strong>${file.name}</strong></span>
+            <span>${extension} • ${sizeMB} MB</span>
+        </div>
+        <div class="file-actions">
+            <button type="button" onclick="limpiarArchivo()" class="btn-limpiar">
+                <i class="fas fa-trash"></i> Limpiar
+            </button>
+        </div>
+    `;
+    infoDiv.style.display = 'block';
+}
+
+// Función para crear div de información de archivo
+function crearInfoArchivoDiv() {
+    const infoDiv = document.createElement('div');
+    infoDiv.id = 'infoArchivo';
+    infoDiv.className = 'file-info-container';
+    
+    const previsualizacion = document.getElementById('previsualizacionImagen');
+    if (previsualizacion) {
+        previsualizacion.parentNode.insertBefore(infoDiv, previsualizacion.nextSibling);
+    }
+    
+    return infoDiv;
+}
+
+// Función para limpiar archivo seleccionado
+function limpiarArchivo() {
+    const fileInput = document.getElementById('imagenProductoFile');
+    const urlInput = document.getElementById('imagenProducto');
+    const previsualizacion = document.getElementById('previsualizacionImagen');
+    const infoDiv = document.getElementById('infoArchivo');
+    
+    fileInput.value = '';
+    urlInput.value = '';
+    previsualizacion.style.display = 'none';
+    if (infoDiv) infoDiv.style.display = 'none';
+    
+    mostrarNotificacion('🗑️ Archivo limpiado');
+}
+
 function cerrarModalProducto() {
     const modal = document.querySelector('.modal-producto-overlay');
     if (modal) {
@@ -1632,6 +1719,7 @@ function guardarProducto(productoIndex = null) {
         stock: parseInt(formData.get('stock')),
         descripcion: formData.get('descripcion'),
         imagen: formData.get('imagen'),
+        marca: formData.get('marca'),
         fechaCreacion: new Date().toISOString()
     };
     
@@ -5092,4 +5180,96 @@ function exportarAnalytics() {
 function actualizarAnalytics() {
     cargarAnalytics();
     mostrarNotificacion('🔄 Analytics actualizados', 'info');
+}
+
+// ===== FUNCIONES ADICIONALES PARA CONFIGURACIÓN =====
+
+// Configurar eventos de formularios de configuración
+function configurarEventosConfiguracion() {
+    // Formulario de contacto
+    const contactoForm = document.getElementById('contactoForm');
+    if (contactoForm) {
+        contactoForm.addEventListener('submit', function(e) {
+            e.preventDefault();
+            guardarConfiguracionContacto();
+        });
+    }
+    
+    // Formulario de redes sociales
+    const redesForm = document.getElementById('redesSocialesForm');
+    if (redesForm) {
+        redesForm.addEventListener('submit', function(e) {
+            e.preventDefault();
+            guardarConfiguracionRedes();
+        });
+    }
+    
+    // Formulario de pagos
+    const pagosForm = document.getElementById('pagosForm');
+    if (pagosForm) {
+        pagosForm.addEventListener('submit', function(e) {
+            e.preventDefault();
+            guardarConfiguracionPagos();
+        });
+    }
+    
+    // Formulario de sistema
+    const sistemaForm = document.getElementById('sistemaForm');
+    if (sistemaForm) {
+        sistemaForm.addEventListener('submit', function(e) {
+            e.preventDefault();
+            guardarConfiguracionSistema();
+        });
+    }
+}
+
+// Funciones para guardar configuración
+function guardarConfiguracionContacto() {
+    const formData = new FormData(document.getElementById('contactoForm'));
+    const config = JSON.parse(localStorage.getItem('friocasConfig') || '{}');
+    
+    config.nombreEmpresa = formData.get('nombreEmpresa');
+    config.direccion = formData.get('direccion');
+    config.telefono = formData.get('telefono');
+    config.email = formData.get('email');
+    config.horarios = formData.get('horarios');
+    
+    localStorage.setItem('friocasConfig', JSON.stringify(config));
+    mostrarNotificacion('✅ Información de contacto guardada correctamente', 'success');
+}
+
+function guardarConfiguracionRedes() {
+    const formData = new FormData(document.getElementById('redesSocialesForm'));
+    const config = JSON.parse(localStorage.getItem('friocasConfig') || '{}');
+    
+    config.whatsapp = formData.get('whatsapp');
+    config.instagram = formData.get('instagram');
+    config.facebook = formData.get('facebook');
+    
+    localStorage.setItem('friocasConfig', JSON.stringify(config));
+    mostrarNotificacion('✅ Redes sociales guardadas correctamente', 'success');
+}
+
+function guardarConfiguracionPagos() {
+    const formData = new FormData(document.getElementById('pagosForm'));
+    const config = JSON.parse(localStorage.getItem('friocasConfig') || '{}');
+    
+    config.metodoPago = formData.get('metodoPago');
+    config.cuentaBancaria = formData.get('cuentaBancaria');
+    
+    localStorage.setItem('friocasConfig', JSON.stringify(config));
+    mostrarNotificacion('✅ Configuración de pagos guardada correctamente', 'success');
+}
+
+function guardarConfiguracionSistema() {
+    const formData = new FormData(document.getElementById('sistemaForm'));
+    const config = JSON.parse(localStorage.getItem('friocasConfig') || '{}');
+    
+    config.moneda = formData.get('moneda');
+    config.zonaHoraria = formData.get('zonaHoraria');
+    config.notifEmail = document.getElementById('notifEmail').checked;
+    config.notifWhatsapp = document.getElementById('notifWhatsapp').checked;
+    
+    localStorage.setItem('friocasConfig', JSON.stringify(config));
+    mostrarNotificacion('✅ Configuración del sistema guardada correctamente', 'success');
 }

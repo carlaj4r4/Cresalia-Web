@@ -3504,3 +3504,529 @@ body {
         align-items: flex-start;
     }
 }
+
+/* ===== ESTILOS PARA FORMULARIOS MEJORADOS ===== */
+
+/* Modal de productos y categorías */
+.modal-producto-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.7);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 9999;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.modal-producto-overlay.active {
+    opacity: 1;
+}
+
+.modal-producto {
+    background: white;
+    border-radius: var(--radius-xl);
+    box-shadow: var(--shadow-2xl);
+    max-width: 600px;
+    width: 90%;
+    max-height: 90vh;
+    overflow-y: auto;
+    transform: scale(0.9);
+    transition: transform 0.3s ease;
+}
+
+.modal-producto-overlay.active .modal-producto {
+    transform: scale(1);
+}
+
+.modal-producto-header {
+    background: var(--blue-gradient);
+    color: white;
+    padding: 1.5rem;
+    border-radius: var(--radius-xl) var(--radius-xl) 0 0;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.modal-producto-header h3 {
+    margin: 0;
+    font-size: 1.25rem;
+    font-weight: 600;
+}
+
+.cerrar-modal {
+    background: none;
+    border: none;
+    color: white;
+    font-size: 1.5rem;
+    cursor: pointer;
+    padding: 0.5rem;
+    border-radius: var(--radius-md);
+    transition: var(--transition-fast);
+}
+
+.cerrar-modal:hover {
+    background: rgba(255, 255, 255, 0.2);
+}
+
+.modal-producto-content {
+    padding: 2rem;
+}
+
+.formulario-producto {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+
+.formulario-producto .form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.formulario-producto label {
+    font-weight: 600;
+    color: var(--gray-700);
+    font-size: 0.9rem;
+}
+
+.formulario-producto input,
+.formulario-producto select,
+.formulario-producto textarea {
+    padding: 0.75rem;
+    border: 2px solid var(--gray-200);
+    border-radius: var(--radius-md);
+    font-size: 0.9rem;
+    transition: var(--transition-fast);
+    background: white;
+}
+
+.formulario-producto input:focus,
+.formulario-producto select:focus,
+.formulario-producto textarea:focus {
+    outline: none;
+    border-color: var(--primary-blue);
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+
+.formulario-producto textarea {
+    resize: vertical;
+    min-height: 80px;
+}
+
+/* Contenedor de imagen con selector de archivo */
+.imagen-input-container {
+    display: flex;
+    gap: 0.5rem;
+    align-items: flex-end;
+}
+
+.imagen-input-container input[type="url"] {
+    flex: 1;
+}
+
+.btn-seleccionar-archivo {
+    background: var(--primary-blue);
+    color: white;
+    border: none;
+    padding: 0.75rem 1rem;
+    border-radius: var(--radius-md);
+    cursor: pointer;
+    font-size: 0.9rem;
+    font-weight: 500;
+    transition: var(--transition-fast);
+    white-space: nowrap;
+}
+
+.btn-seleccionar-archivo:hover {
+    background: var(--primary-dark);
+    transform: translateY(-1px);
+}
+
+.btn-seleccionar-archivo i {
+    margin-right: 0.5rem;
+}
+
+/* Previsualización de imagen */
+.previsualizacion-imagen {
+    margin-top: 1rem;
+    text-align: center;
+    padding: 1rem;
+    background: var(--gray-50);
+    border-radius: var(--radius-md);
+    border: 2px dashed var(--gray-300);
+}
+
+.previsualizacion-imagen img {
+    max-width: 200px;
+    max-height: 150px;
+    border-radius: var(--radius-md);
+    box-shadow: var(--shadow-md);
+}
+
+/* Botones de acción */
+.botones-accion {
+    display: flex;
+    gap: 1rem;
+    justify-content: flex-end;
+    margin-top: 2rem;
+    padding-top: 1.5rem;
+    border-top: 1px solid var(--gray-200);
+}
+
+.btn-cancelar {
+    background: var(--gray-500);
+    color: white;
+    border: none;
+    padding: 0.75rem 1.5rem;
+    border-radius: var(--radius-md);
+    cursor: pointer;
+    font-size: 0.9rem;
+    font-weight: 500;
+    transition: var(--transition-fast);
+}
+
+.btn-cancelar:hover {
+    background: var(--gray-600);
+    transform: translateY(-1px);
+}
+
+.btn-guardar {
+    background: var(--success);
+    color: white;
+    border: none;
+    padding: 0.75rem 1.5rem;
+    border-radius: var(--radius-md);
+    cursor: pointer;
+    font-size: 0.9rem;
+    font-weight: 500;
+    transition: var(--transition-fast);
+}
+
+.btn-guardar:hover {
+    background: var(--success-light);
+    transform: translateY(-1px);
+}
+
+.btn-cancelar i,
+.btn-guardar i {
+    margin-right: 0.5rem;
+}
+
+/* Input de color */
+.formulario-producto input[type="color"] {
+    width: 60px;
+    height: 40px;
+    padding: 0;
+    border: 2px solid var(--gray-200);
+    border-radius: var(--radius-md);
+    cursor: pointer;
+}
+
+.formulario-producto input[type="color"]:focus {
+    border-color: var(--primary-blue);
+}
+
+/* Texto de ayuda */
+.form-text {
+    font-size: 0.8rem;
+    color: var(--gray-500);
+    margin-top: 0.25rem;
+}
+
+/* Responsive para formularios */
+@media (max-width: 768px) {
+    .modal-producto {
+        width: 95%;
+        margin: 1rem;
+    }
+    
+    .modal-producto-content {
+        padding: 1.5rem;
+    }
+    
+    .imagen-input-container {
+        flex-direction: column;
+        align-items: stretch;
+    }
+    
+    .btn-seleccionar-archivo {
+        text-align: center;
+    }
+    
+    .botones-accion {
+        flex-direction: column;
+    }
+    
+    .botones-accion button {
+        width: 100%;
+    }
+}
+
+/* ===== ESTILOS PARA CONFIGURACIÓN GENERAL ===== */
+
+.config-general-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+    gap: 2rem;
+    padding: 2rem;
+}
+
+.config-general-card {
+    background: white;
+    border-radius: var(--radius-xl);
+    box-shadow: var(--shadow-lg);
+    overflow: hidden;
+    transition: var(--transition-normal);
+}
+
+.config-general-card:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-xl);
+}
+
+.config-general-header {
+    background: var(--blue-gradient);
+    color: white;
+    padding: 1.5rem;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.config-general-header i {
+    font-size: 1.5rem;
+}
+
+.config-general-header h3 {
+    margin: 0;
+    font-size: 1.25rem;
+    font-weight: 600;
+}
+
+.config-general-content {
+    padding: 2rem;
+}
+
+.config-general-form {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+
+.config-general-form .form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.config-general-form label {
+    font-weight: 600;
+    color: var(--gray-700);
+    font-size: 0.9rem;
+}
+
+.config-general-form input,
+.config-general-form select,
+.config-general-form textarea {
+    padding: 0.75rem;
+    border: 2px solid var(--gray-200);
+    border-radius: var(--radius-md);
+    font-size: 0.9rem;
+    transition: var(--transition-fast);
+    background: white;
+}
+
+.config-general-form input:focus,
+.config-general-form select:focus,
+.config-general-form textarea:focus {
+    outline: none;
+    border-color: var(--primary-blue);
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+
+.config-general-form textarea {
+    resize: vertical;
+    min-height: 80px;
+}
+
+.config-general-actions {
+    display: flex;
+    justify-content: flex-end;
+    margin-top: 1.5rem;
+    padding-top: 1.5rem;
+    border-top: 1px solid var(--gray-200);
+}
+
+.save-btn {
+    background: var(--success);
+    color: white;
+    border: none;
+    padding: 0.75rem 1.5rem;
+    border-radius: var(--radius-md);
+    cursor: pointer;
+    font-size: 0.9rem;
+    font-weight: 500;
+    transition: var(--transition-fast);
+}
+
+.save-btn:hover {
+    background: var(--success-light);
+    transform: translateY(-1px);
+}
+
+.save-btn i {
+    margin-right: 0.5rem;
+}
+
+/* Checkbox personalizado */
+.checkbox-group {
+    display: flex;
+    gap: 1.5rem;
+    flex-wrap: wrap;
+}
+
+.checkbox-label {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    cursor: pointer;
+    font-size: 0.9rem;
+    color: var(--gray-700);
+}
+
+.checkbox-label input[type="checkbox"] {
+    width: 18px;
+    height: 18px;
+    accent-color: var(--primary-blue);
+}
+
+.checkbox-label span {
+    font-weight: 500;
+}
+
+/* Responsive para configuración general */
+@media (max-width: 768px) {
+    .config-general-grid {
+        grid-template-columns: 1fr;
+        padding: 1rem;
+        gap: 1rem;
+    }
+    
+    .config-general-content {
+        padding: 1.5rem;
+    }
+    
+    .checkbox-group {
+        flex-direction: column;
+        gap: 1rem;
+    }
+    
+    .config-general-actions {
+        justify-content: center;
+    }
+    
+    .save-btn {
+        width: 100%;
+    }
+}
+
+/* ===== INFORMACIÓN DE ARCHIVOS ===== */
+.file-info-container {
+    background: #f8f9fa;
+    border: 1px solid #dee2e6;
+    border-radius: 8px;
+    padding: 12px;
+    margin-top: 10px;
+    display: none;
+    animation: fadeIn 0.3s ease-out;
+}
+
+.file-info {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 8px;
+}
+
+.file-info i {
+    color: #007bff;
+    font-size: 1.2rem;
+}
+
+.file-info span:first-of-type {
+    font-weight: 500;
+    color: #495057;
+}
+
+.file-info span:last-of-type {
+    color: #6c757d;
+    font-size: 0.9rem;
+}
+
+.file-actions {
+    display: flex;
+    justify-content: flex-end;
+}
+
+.btn-limpiar {
+    background: #dc3545;
+    color: white;
+    border: none;
+    padding: 6px 12px;
+    border-radius: 4px;
+    font-size: 0.85rem;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.btn-limpiar:hover {
+    background: #c82333;
+}
+
+/* ===== MEJORAS EN PREVISUALIZACIÓN ===== */
+.previsualizacion-imagen {
+    margin-top: 15px;
+    text-align: center;
+}
+
+.previsualizacion-imagen img {
+    max-width: 200px;
+    max-height: 200px;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    border: 2px solid #e9ecef;
+}
+
+/* ===== VALIDACIÓN DE ARCHIVOS ===== */
+.imagen-input-container input[type="file"]:invalid {
+    border-color: #dc3545;
+}
+
+.imagen-input-container input[type="file"]:valid {
+    border-color: #28a745;
+}
+
+/* ===== RESPONSIVE PARA ARCHIVOS ===== */
+@media (max-width: 768px) {
+    .file-info {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 5px;
+    }
+    
+    .file-info span {
+        font-size: 0.85rem;
+    }
+    
+    .previsualizacion-imagen img {
+        max-width: 150px;
+        max-height: 150px;
+    }
+}
