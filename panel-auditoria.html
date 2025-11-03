@@ -1,0 +1,382 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Auditoría de Tienda - Cresalia</title>
+    
+    <!-- Favicon -->
+    <link rel="icon" type="image/x-icon" href="favicon.ico">
+    <link rel="icon" type="image/png" href="assets/logo/logo-cresalia.png">
+    <link rel="apple-touch-icon" href="assets/logo/logo-cresalia.png">
+    
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        .header {
+            background: white;
+            padding: 30px;
+            border-radius: 15px;
+            margin-bottom: 20px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        }
+        
+        .header h1 {
+            color: #333;
+            margin-bottom: 10px;
+        }
+        
+        .header p {
+            color: #666;
+            font-size: 1.1rem;
+        }
+        
+        .btn-auditar {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 10px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            margin-top: 15px;
+            transition: transform 0.2s;
+        }
+        
+        .btn-auditar:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+        
+        .card {
+            background: white;
+            padding: 25px;
+            border-radius: 15px;
+            margin-bottom: 20px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+        
+        .card h2 {
+            color: #333;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .mensaje-motivacional {
+            background: linear-gradient(135deg, #E8F5E8, #C8E6C9);
+            padding: 20px;
+            border-radius: 12px;
+            border-left: 4px solid #4CAF50;
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: #2E7D32;
+            margin-bottom: 20px;
+        }
+        
+        .sugerencias-section {
+            margin-top: 20px;
+        }
+        
+        .sugerencia {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 15px;
+            border-left: 4px solid #667eea;
+        }
+        
+        .sugerencia.urgente {
+            border-left-color: #f44336;
+            background: #ffebee;
+        }
+        
+        .sugerencia.importante {
+            border-left-color: #ff9800;
+            background: #fff3e0;
+        }
+        
+        .sugerencia h3 {
+            color: #333;
+            font-size: 1.1rem;
+            margin-bottom: 8px;
+        }
+        
+        .sugerencia p {
+            color: #666;
+            margin-bottom: 5px;
+        }
+        
+        .sugerencia .accion {
+            color: #667eea;
+            font-weight: 600;
+            margin-top: 8px;
+        }
+        
+        .sugerencia .impacto {
+            color: #4CAF50;
+            font-style: italic;
+            font-size: 0.9rem;
+            margin-top: 5px;
+        }
+        
+        .loading {
+            text-align: center;
+            padding: 40px;
+        }
+        
+        .loading-spinner {
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #667eea;
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 20px;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        .historial {
+            margin-top: 30px;
+        }
+        
+        .historial-item {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 10px;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+        
+        .historial-item:hover {
+            background: #e9ecef;
+        }
+        
+        .historial-item .fecha {
+            color: #666;
+            font-size: 0.9rem;
+        }
+        
+        .badge {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            margin-left: 10px;
+        }
+        
+        .badge.alta {
+            background: #ffebee;
+            color: #f44336;
+        }
+        
+        .badge.media {
+            background: #fff3e0;
+            color: #ff9800;
+        }
+        
+        .badge.baja {
+            background: #e3f2fd;
+            color: #2196f3;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🔍 Auditoría Automática de Tu Tienda</h1>
+            <p>Revisamos tu tienda cada 3 días y te ayudamos a mejorar 💜</p>
+            <button class="btn-auditar" onclick="auditarAhora()">🚀 Auditar Ahora</button>
+        </div>
+        
+        <div id="resultado-auditoria">
+            <!-- Aquí se mostrará el resultado -->
+        </div>
+        
+        <div class="card historial">
+            <h2>📋 Historial de Auditorías</h2>
+            <div id="historial-lista"></div>
+        </div>
+    </div>
+    
+    <!-- Script del sistema -->
+    <script src="js/sistema-auditoria-tiendas.js"></script>
+    
+    <script>
+        // Cargar último reporte al iniciar
+        window.addEventListener('DOMContentLoaded', () => {
+            cargarUltimoReporte();
+            cargarHistorial();
+        });
+        
+        function cargarUltimoReporte() {
+            const reporte = auditoriaAutomatica.obtenerUltimoReporte();
+            
+            if (reporte) {
+                mostrarReporte(reporte);
+            } else {
+                document.getElementById('resultado-auditoria').innerHTML = `
+                    <div class="card">
+                        <p style="text-align: center; color: #666;">
+                            Aún no hay auditorías realizadas. Hacé clic en "Auditar Ahora" para comenzar.
+                        </p>
+                    </div>
+                `;
+            }
+        }
+        
+        async function auditarAhora() {
+            // Mostrar loading
+            document.getElementById('resultado-auditoria').innerHTML = `
+                <div class="card loading">
+                    <div class="loading-spinner"></div>
+                    <p>Analizando tu tienda... 🔍</p>
+                </div>
+            `;
+            
+            // Realizar auditoría
+            const reporte = await auditoriaAutomatica.auditarAhora();
+            
+            if (reporte) {
+                mostrarReporte(reporte);
+                cargarHistorial();
+            }
+        }
+        
+        function mostrarReporte(reporte) {
+            const container = document.getElementById('resultado-auditoria');
+            
+            // Fecha
+            const fecha = new Date(reporte.fecha).toLocaleString('es-AR', {
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric',
+                hour: '2-digit',
+                minute: '2-digit'
+            });
+            
+            let html = `
+                <div class="card">
+                    <h2>📊 Resultado de Auditoría</h2>
+                    <p style="color: #666; margin-bottom: 20px;">Realizada el ${fecha}</p>
+                    
+                    <div class="mensaje-motivacional">
+                        ${reporte.sugerencias.mensaje_motivacional}
+                    </div>
+            `;
+            
+            // Sugerencias urgentes
+            if (reporte.sugerencias.urgentes.length > 0) {
+                html += `
+                    <div class="sugerencias-section">
+                        <h3 style="color: #f44336; margin-bottom: 15px;">🚨 Urgentes (${reporte.sugerencias.urgentes.length})</h3>
+                        ${reporte.sugerencias.urgentes.map(s => generarSugerenciaHTML(s, 'urgente')).join('')}
+                    </div>
+                `;
+            }
+            
+            // Sugerencias importantes
+            if (reporte.sugerencias.importantes.length > 0) {
+                html += `
+                    <div class="sugerencias-section">
+                        <h3 style="color: #ff9800; margin-bottom: 15px;">⚠️ Importantes (${reporte.sugerencias.importantes.length})</h3>
+                        ${reporte.sugerencias.importantes.map(s => generarSugerenciaHTML(s, 'importante')).join('')}
+                    </div>
+                `;
+            }
+            
+            // Sugerencias recomendadas
+            if (reporte.sugerencias.recomendadas.length > 0) {
+                html += `
+                    <div class="sugerencias-section">
+                        <h3 style="color: #2196f3; margin-bottom: 15px;">💡 Recomendadas (${reporte.sugerencias.recomendadas.length})</h3>
+                        ${reporte.sugerencias.recomendadas.map(s => generarSugerenciaHTML(s, 'recomendada')).join('')}
+                    </div>
+                `;
+            }
+            
+            // Si todo está perfecto
+            if (reporte.sugerencias.urgentes.length === 0 && 
+                reporte.sugerencias.importantes.length === 0 && 
+                reporte.sugerencias.recomendadas.length === 0) {
+                html += `
+                    <div style="text-align: center; padding: 40px;">
+                        <div style="font-size: 4rem; margin-bottom: 20px;">🎉</div>
+                        <h2 style="color: #4CAF50; margin-bottom: 10px;">¡Tu tienda está perfecta!</h2>
+                        <p style="color: #666; font-size: 1.1rem;">No encontramos ningún problema. ¡Excelente trabajo! 🌟</p>
+                    </div>
+                `;
+            }
+            
+            html += '</div>';
+            
+            container.innerHTML = html;
+        }
+        
+        function generarSugerenciaHTML(sugerencia, tipo) {
+            return `
+                <div class="sugerencia ${tipo}">
+                    <h3>${sugerencia.titulo}</h3>
+                    <p>${sugerencia.descripcion}</p>
+                    <p class="accion">💡 Sugerencia: ${sugerencia.accion}</p>
+                    <p class="impacto">✨ Por qué es importante: ${sugerencia.impacto}</p>
+                </div>
+            `;
+        }
+        
+        function cargarHistorial() {
+            const reportes = auditoriaAutomatica.obtenerReportes();
+            const container = document.getElementById('historial-lista');
+            
+            if (reportes.length === 0) {
+                container.innerHTML = '<p style="color: #666; text-align: center;">No hay auditorías previas</p>';
+                return;
+            }
+            
+            container.innerHTML = reportes.map((reporte, index) => {
+                const fecha = new Date(reporte.fecha).toLocaleDateString('es-AR');
+                const totalProblemas = 
+                    reporte.sugerencias.urgentes.length +
+                    reporte.sugerencias.importantes.length +
+                    reporte.sugerencias.recomendadas.length;
+                
+                return `
+                    <div class="historial-item" onclick="mostrarReporte(${JSON.stringify(reporte).replace(/"/g, '&quot;')})">
+                        <strong>${fecha}</strong>
+                        <span class="fecha">${new Date(reporte.fecha).toLocaleTimeString('es-AR', {hour: '2-digit', minute: '2-digit'})}</span>
+                        ${reporte.sugerencias.urgentes.length > 0 ? `<span class="badge alta">${reporte.sugerencias.urgentes.length} urgentes</span>` : ''}
+                        ${reporte.sugerencias.importantes.length > 0 ? `<span class="badge media">${reporte.sugerencias.importantes.length} importantes</span>` : ''}
+                        ${reporte.sugerencias.recomendadas.length > 0 ? `<span class="badge baja">${reporte.sugerencias.recomendadas.length} recomendadas</span>` : ''}
+                        ${totalProblemas === 0 ? '<span style="color: #4CAF50; margin-left: 10px;">✨ Perfecto</span>' : ''}
+                    </div>
+                `;
+            }).join('');
+        }
+    </script>
+</body>
+</html>
+

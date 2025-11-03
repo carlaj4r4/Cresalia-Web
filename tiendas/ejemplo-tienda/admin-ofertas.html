@@ -1,0 +1,909 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mis Ofertas - Admin Panel</title>
+    
+    <!-- Favicon -->
+    <link rel="icon" type="image/png" href="../../assets/logo/logo-cresalia.png">
+    <link rel="apple-touch-icon" href="../../assets/logo/logo-cresalia.png">
+    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Click Derecho Personalizado -->
+    <script src="../../js/click-derecho-personalizado.js"></script>
+    
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #a855f7 0%, #ec4899 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+        
+        /* Header */
+        .header {
+            background: white;
+            border-radius: 20px;
+            padding: 30px;
+            margin-bottom: 30px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .header h1 {
+            color: #374151;
+            font-size: 2rem;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        
+        .header h1 i {
+            color: #a855f7;
+        }
+        
+        .btn-back {
+            background: linear-gradient(135deg, #a855f7, #ec4899);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 12px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            text-decoration: none;
+        }
+        
+        .btn-back:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(240, 147, 251, 0.3);
+        }
+        
+        /* Main Content */
+        .main-content {
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+        }
+        
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 2px solid #E5E7EB;
+        }
+        
+        .section-header h2 {
+            color: #374151;
+            font-size: 1.5rem;
+        }
+        
+        .btn-primary {
+            background: linear-gradient(135deg, #a855f7, #ec4899);
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 12px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(240, 147, 251, 0.3);
+        }
+        
+        /* Offers Grid */
+        .offers-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+            gap: 25px;
+            margin-top: 30px;
+        }
+        
+        .offer-card {
+            background: linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%);
+            border-radius: 15px;
+            padding: 25px;
+            transition: all 0.3s ease;
+            border: 2px solid #f093fb;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .offer-card::before {
+            content: '🔥';
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            font-size: 2rem;
+            opacity: 0.3;
+        }
+        
+        .offer-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(245, 87, 108, 0.3);
+        }
+        
+        .offer-badge {
+            background: #EF4444;
+            color: white;
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: bold;
+            display: inline-block;
+            margin-bottom: 10px;
+        }
+        
+        .offer-card h3 {
+            color: #374151;
+            font-size: 1.3rem;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .offer-card p {
+            color: #6B7280;
+            line-height: 1.6;
+            margin-bottom: 15px;
+        }
+        
+        .offer-discount {
+            background: #10B981;
+            color: white;
+            padding: 10px 20px;
+            border-radius: 10px;
+            font-size: 1.5rem;
+            font-weight: bold;
+            text-align: center;
+            margin: 15px 0;
+        }
+        
+        .offer-prices {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin: 15px 0;
+        }
+        
+        .offer-old-price {
+            text-decoration: line-through;
+            color: #9CA3AF;
+            font-size: 1rem;
+        }
+        
+        .offer-new-price {
+            color: #EF4444;
+            font-size: 1.5rem;
+            font-weight: bold;
+        }
+        
+        .offer-dates {
+            background: white;
+            padding: 10px;
+            border-radius: 8px;
+            margin: 15px 0;
+            font-size: 0.9rem;
+            color: #6B7280;
+        }
+        
+        .offer-status {
+            display: inline-block;
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+        
+        .offer-status.activa {
+            background: #D1FAE5;
+            color: #065F46;
+        }
+        
+        .offer-status.vencida {
+            background: #FEE2E2;
+            color: #991B1B;
+        }
+        
+        .offer-actions {
+            display: flex;
+            gap: 10px;
+            margin-top: 15px;
+        }
+        
+        .btn-edit, .btn-delete {
+            flex: 1;
+            padding: 10px;
+            border: none;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 5px;
+        }
+        
+        .btn-edit {
+            background: #3B82F6;
+            color: white;
+        }
+        
+        .btn-edit:hover {
+            background: #2563EB;
+        }
+        
+        .btn-delete {
+            background: #EF4444;
+            color: white;
+        }
+        
+        .btn-delete:hover {
+            background: #DC2626;
+        }
+        
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            color: #6B7280;
+        }
+        
+        .empty-state i {
+            font-size: 4rem;
+            color: #D1D5DB;
+            margin-bottom: 20px;
+        }
+        
+        .empty-state h3 {
+            color: #374151;
+            font-size: 1.5rem;
+            margin-bottom: 10px;
+        }
+        
+        /* Modal */
+        .modal {
+            position: fixed !important;
+            top: 0 !important;
+            left: 0 !important;
+            width: 100% !important;
+            height: 100% !important;
+            background: rgba(0,0,0,0.7) !important;
+            display: flex !important;
+            align-items: center !important;
+            justify-content: center !important;
+            z-index: 999999 !important;
+            opacity: 1 !important;
+            visibility: visible !important;
+        }
+        
+        .modal.hidden {
+            display: none !important;
+        }
+        
+        .modal-content {
+            background: white !important;
+            border-radius: 15px !important;
+            padding: 30px !important;
+            max-width: 600px !important;
+            width: 90% !important;
+            max-height: 90vh !important;
+            overflow-y: auto !important;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3) !important;
+        }
+        
+        .modal-header {
+            display: flex !important;
+            justify-content: space-between !important;
+            align-items: center !important;
+            margin-bottom: 25px !important;
+            padding-bottom: 15px !important;
+            border-bottom: 2px solid #E5E7EB !important;
+        }
+        
+        .modal-header h3 {
+            color: #374151 !important;
+            font-size: 1.5rem !important;
+            display: flex !important;
+            align-items: center !important;
+            gap: 10px !important;
+        }
+        
+        .close-btn {
+            background: #EF4444 !important;
+            color: white !important;
+            border: none !important;
+            width: 35px !important;
+            height: 35px !important;
+            border-radius: 50% !important;
+            cursor: pointer !important;
+            display: flex !important;
+            align-items: center !important;
+            justify-content: center !important;
+            font-size: 18px !important;
+            transition: all 0.3s ease !important;
+        }
+        
+        .close-btn:hover {
+            background: #DC2626 !important;
+            transform: rotate(90deg) !important;
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #374151;
+        }
+        
+        .form-group input,
+        .form-group textarea,
+        .form-group select {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #E5E7EB;
+            border-radius: 10px;
+            font-size: 14px;
+            transition: all 0.3s ease;
+        }
+        
+        .form-group input:focus,
+        .form-group textarea:focus,
+        .form-group select:focus {
+            outline: none;
+            border-color: #f093fb;
+            box-shadow: 0 0 0 3px rgba(240, 147, 251, 0.1);
+        }
+        
+        .form-group textarea {
+            min-height: 100px;
+            resize: vertical;
+        }
+        
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+        }
+        
+        .btn-secondary {
+            background: #6B7280;
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 12px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-right: 10px;
+        }
+        
+        .btn-secondary:hover {
+            background: #4B5563;
+        }
+        
+        /* Notificaciones */
+        .notification {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: white;
+            padding: 20px 25px;
+            border-radius: 12px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            z-index: 9999999;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            animation: slideIn 0.3s ease;
+            max-width: 400px;
+        }
+        
+        .notification.success {
+            border-left: 4px solid #10B981;
+        }
+        
+        .notification.error {
+            border-left: 4px solid #EF4444;
+        }
+        
+        .notification.info {
+            border-left: 4px solid #3B82F6;
+        }
+        
+        @keyframes slideIn {
+            from {
+                transform: translateX(400px);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+        
+        /* Responsive */
+        @media (max-width: 768px) {
+            .header {
+                flex-direction: column;
+                gap: 20px;
+                text-align: center;
+            }
+            
+            .offers-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .modal-content {
+                width: 95%;
+                padding: 20px;
+            }
+            
+            .form-row {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <div class="header">
+            <h1>
+                <i class="fas fa-tags"></i>
+                Mis Ofertas
+            </h1>
+            <a href="admin.html" class="btn-back">
+                <i class="fas fa-arrow-left"></i>
+                Volver al Dashboard
+            </a>
+        </div>
+        
+        <!-- Main Content -->
+        <div class="main-content">
+            <div class="section-header">
+                <h2>Gestión de Ofertas y Promociones</h2>
+                <button class="btn-primary" onclick="mostrarFormularioOferta()">
+                    <i class="fas fa-plus"></i>
+                    Crear Oferta
+                </button>
+            </div>
+            
+            <div id="ofertasContainer" class="offers-grid">
+                <!-- Las ofertas se cargarán aquí -->
+            </div>
+        </div>
+    </div>
+    
+    <!-- Modal de Oferta -->
+    <div id="modalOferta" class="modal hidden">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3><i class="fas fa-tags"></i> <span id="modalTitle">Nueva Oferta</span></h3>
+                <button class="close-btn" onclick="cerrarModalOferta()">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form id="ofertaForm" onsubmit="guardarOferta(event)">
+                    <input type="hidden" id="ofertaId">
+                    
+                    <div class="form-group">
+                        <label for="ofertaTitulo">
+                            <i class="fas fa-heading"></i> Título de la Oferta *
+                        </label>
+                        <input type="text" id="ofertaTitulo" required placeholder="Ej: ¡Oferta de Verano! 50% OFF">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="ofertaDescripcion">
+                            <i class="fas fa-align-left"></i> Descripción *
+                        </label>
+                        <textarea id="ofertaDescripcion" required placeholder="Describe los detalles de tu oferta..."></textarea>
+                    </div>
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="ofertaPrecioOriginal">
+                                <i class="fas fa-dollar-sign"></i> Precio Original *
+                            </label>
+                            <input type="number" id="ofertaPrecioOriginal" required placeholder="0.00" step="0.01" min="0" oninput="calcularDescuento()">
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="ofertaPrecioOferta">
+                                <i class="fas fa-dollar-sign"></i> Precio con Oferta *
+                            </label>
+                            <input type="number" id="ofertaPrecioOferta" required placeholder="0.00" step="0.01" min="0" oninput="calcularDescuento()">
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="ofertaDescuento">
+                            <i class="fas fa-percent"></i> Descuento (%)
+                        </label>
+                        <input type="text" id="ofertaDescuento" readonly placeholder="Se calcula automáticamente" style="background: #F3F4F6;">
+                    </div>
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="ofertaFechaInicio">
+                                <i class="fas fa-calendar-alt"></i> Fecha de Inicio *
+                            </label>
+                            <input type="date" id="ofertaFechaInicio" required>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="ofertaFechaFin">
+                                <i class="fas fa-calendar-alt"></i> Fecha de Fin *
+                            </label>
+                            <input type="date" id="ofertaFechaFin" required>
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="ofertaProducto">
+                            <i class="fas fa-box"></i> Producto/Servicio Relacionado
+                        </label>
+                        <select id="ofertaProducto">
+                            <option value="">Selecciona un producto/servicio (opcional)</option>
+                        </select>
+                    </div>
+                    
+                    <div style="text-align: center; margin-top: 30px;">
+                        <button type="button" class="btn-secondary" onclick="cerrarModalOferta()">
+                            <i class="fas fa-times"></i> Cancelar
+                        </button>
+                        <button type="submit" class="btn-primary">
+                            <i class="fas fa-save"></i> Guardar Oferta
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        // ========================================
+        // FUNCIONES MULTI-TENANT
+        // ========================================
+        
+        function obtenerTiendaId() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const tiendaId = urlParams.get('tienda') || 'demo-tienda';
+            console.log('🏪 Tienda actual:', tiendaId);
+            return tiendaId;
+        }
+        
+        // ========================================
+        // FUNCIONES DEL MODAL
+        // ========================================
+        
+        function mostrarFormularioOferta(oferta = null) {
+            console.log('🔵 FUNCIÓN mostrarFormularioOferta() EJECUTADA');
+            
+            const modal = document.getElementById('modalOferta');
+            const titulo = document.getElementById('modalTitle');
+            
+            // Cargar productos y servicios en el select
+            cargarProductosYServicios();
+            
+            if (oferta) {
+                // Modo edición
+                titulo.textContent = 'Editar Oferta';
+                document.getElementById('ofertaId').value = oferta.id;
+                document.getElementById('ofertaTitulo').value = oferta.titulo;
+                document.getElementById('ofertaDescripcion').value = oferta.descripcion;
+                document.getElementById('ofertaPrecioOriginal').value = oferta.precioOriginal;
+                document.getElementById('ofertaPrecioOferta').value = oferta.precioOferta;
+                document.getElementById('ofertaDescuento').value = oferta.descuento;
+                document.getElementById('ofertaFechaInicio').value = oferta.fechaInicio;
+                document.getElementById('ofertaFechaFin').value = oferta.fechaFin;
+                document.getElementById('ofertaProducto').value = oferta.productoId || '';
+            } else {
+                // Modo creación
+                titulo.textContent = 'Nueva Oferta';
+                document.getElementById('ofertaForm').reset();
+                document.getElementById('ofertaId').value = '';
+                
+                // Establecer fecha de inicio como hoy
+                const hoy = new Date().toISOString().split('T')[0];
+                document.getElementById('ofertaFechaInicio').value = hoy;
+            }
+            
+            modal.classList.remove('hidden');
+            console.log('✅ Modal de oferta mostrado');
+        }
+        
+        function cerrarModalOferta() {
+            const modal = document.getElementById('modalOferta');
+            modal.classList.add('hidden');
+            document.getElementById('ofertaForm').reset();
+            console.log('✅ Modal de oferta cerrado');
+        }
+        
+        function calcularDescuento() {
+            const precioOriginal = parseFloat(document.getElementById('ofertaPrecioOriginal').value) || 0;
+            const precioOferta = parseFloat(document.getElementById('ofertaPrecioOferta').value) || 0;
+            
+            if (precioOriginal > 0 && precioOferta > 0) {
+                const descuento = ((precioOriginal - precioOferta) / precioOriginal * 100).toFixed(0);
+                document.getElementById('ofertaDescuento').value = descuento + '%';
+            }
+        }
+        
+        function cargarProductosYServicios() {
+            const tiendaId = obtenerTiendaId();
+            const productos = JSON.parse(localStorage.getItem(`productos_${tiendaId}`) || '[]');
+            const servicios = JSON.parse(localStorage.getItem(`servicios_${tiendaId}`) || '[]');
+            
+            const select = document.getElementById('ofertaProducto');
+            select.innerHTML = '<option value="">Selecciona un producto/servicio (opcional)</option>';
+            
+            if (productos.length > 0) {
+                const optgroupProductos = document.createElement('optgroup');
+                optgroupProductos.label = 'Productos';
+                productos.forEach(producto => {
+                    const option = document.createElement('option');
+                    option.value = `producto_${producto.id}`;
+                    option.textContent = producto.nombre;
+                    optgroupProductos.appendChild(option);
+                });
+                select.appendChild(optgroupProductos);
+            }
+            
+            if (servicios.length > 0) {
+                const optgroupServicios = document.createElement('optgroup');
+                optgroupServicios.label = 'Servicios';
+                servicios.forEach(servicio => {
+                    const option = document.createElement('option');
+                    option.value = `servicio_${servicio.id}`;
+                    option.textContent = servicio.nombre;
+                    optgroupServicios.appendChild(option);
+                });
+                select.appendChild(optgroupServicios);
+            }
+        }
+        
+        // ========================================
+        // GUARDAR OFERTA
+        // ========================================
+        
+        function guardarOferta(event) {
+            event.preventDefault();
+            console.log('💾 Guardando oferta...');
+            
+            const tiendaId = obtenerTiendaId();
+            const ofertaId = document.getElementById('ofertaId').value;
+            
+            const oferta = {
+                id: ofertaId || Date.now().toString(),
+                titulo: document.getElementById('ofertaTitulo').value,
+                descripcion: document.getElementById('ofertaDescripcion').value,
+                precioOriginal: parseFloat(document.getElementById('ofertaPrecioOriginal').value),
+                precioOferta: parseFloat(document.getElementById('ofertaPrecioOferta').value),
+                descuento: document.getElementById('ofertaDescuento').value,
+                fechaInicio: document.getElementById('ofertaFechaInicio').value,
+                fechaFin: document.getElementById('ofertaFechaFin').value,
+                productoId: document.getElementById('ofertaProducto').value,
+                fechaCreacion: ofertaId ? undefined : new Date().toISOString()
+            };
+            
+            // Obtener ofertas existentes
+            let ofertas = JSON.parse(localStorage.getItem(`ofertas_${tiendaId}`) || '[]');
+            
+            if (ofertaId) {
+                // Actualizar oferta existente
+                const index = ofertas.findIndex(o => o.id === ofertaId);
+                if (index !== -1) {
+                    ofertas[index] = { ...ofertas[index], ...oferta };
+                    mostrarNotificacion('✅ Oferta actualizada exitosamente', 'success');
+                }
+            } else {
+                // Agregar nueva oferta
+                ofertas.push(oferta);
+                mostrarNotificacion('✅ Oferta creada exitosamente', 'success');
+            }
+            
+            // Guardar en localStorage
+            localStorage.setItem(`ofertas_${tiendaId}`, JSON.stringify(ofertas));
+            
+            console.log('✅ Oferta guardada:', oferta);
+            
+            // Actualizar estadísticas
+            actualizarEstadisticas();
+            
+            // Cerrar modal y recargar ofertas
+            cerrarModalOferta();
+            cargarOfertas();
+        }
+        
+        // ========================================
+        // CARGAR OFERTAS
+        // ========================================
+        
+        function cargarOfertas() {
+            console.log('📋 Cargando ofertas...');
+            
+            const tiendaId = obtenerTiendaId();
+            const ofertas = JSON.parse(localStorage.getItem(`ofertas_${tiendaId}`) || '[]');
+            const container = document.getElementById('ofertasContainer');
+            
+            if (ofertas.length === 0) {
+                container.innerHTML = `
+                    <div class="empty-state">
+                        <i class="fas fa-tags"></i>
+                        <h3>No tienes ofertas activas</h3>
+                        <p>Comienza creando tu primera oferta especial</p>
+                    </div>
+                `;
+                return;
+            }
+            
+            const hoy = new Date();
+            
+            container.innerHTML = ofertas.map(oferta => {
+                const fechaFin = new Date(oferta.fechaFin);
+                const activa = fechaFin >= hoy;
+                const statusClass = activa ? 'activa' : 'vencida';
+                const statusText = activa ? 'Activa' : 'Vencida';
+                
+                return `
+                    <div class="offer-card">
+                        <div class="offer-status ${statusClass}">${statusText}</div>
+                        <div class="offer-badge">OFERTA ESPECIAL</div>
+                        <h3>
+                            <i class="fas fa-fire"></i>
+                            ${oferta.titulo}
+                        </h3>
+                        <p>${oferta.descripcion}</p>
+                        <div class="offer-discount">${oferta.descuento} OFF</div>
+                        <div class="offer-prices">
+                            <span class="offer-old-price">$${oferta.precioOriginal.toFixed(2)}</span>
+                            <span class="offer-new-price">$${oferta.precioOferta.toFixed(2)}</span>
+                        </div>
+                        <div class="offer-dates">
+                            <div><i class="fas fa-calendar-check"></i> Inicio: ${formatearFecha(oferta.fechaInicio)}</div>
+                            <div><i class="fas fa-calendar-times"></i> Fin: ${formatearFecha(oferta.fechaFin)}</div>
+                        </div>
+                        <div class="offer-actions">
+                            <button class="btn-edit" onclick='editarOferta(${JSON.stringify(oferta).replace(/'/g, "&apos;")})'>
+                                <i class="fas fa-edit"></i> Editar
+                            </button>
+                            <button class="btn-delete" onclick="eliminarOferta('${oferta.id}')">
+                                <i class="fas fa-trash"></i> Eliminar
+                            </button>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+            
+            console.log(`✅ ${ofertas.length} ofertas cargadas`);
+        }
+        
+        function formatearFecha(fecha) {
+            const date = new Date(fecha + 'T00:00:00');
+            return date.toLocaleDateString('es-ES', { day: '2-digit', month: 'short', year: 'numeric' });
+        }
+        
+        // ========================================
+        // EDITAR Y ELIMINAR OFERTA
+        // ========================================
+        
+        function editarOferta(oferta) {
+            console.log('✏️ Editando oferta:', oferta);
+            mostrarFormularioOferta(oferta);
+        }
+        
+        function eliminarOferta(ofertaId) {
+            if (!confirm('¿Estás seguro de eliminar esta oferta?')) return;
+            
+            console.log('🗑️ Eliminando oferta:', ofertaId);
+            
+            const tiendaId = obtenerTiendaId();
+            let ofertas = JSON.parse(localStorage.getItem(`ofertas_${tiendaId}`) || '[]');
+            
+            ofertas = ofertas.filter(o => o.id !== ofertaId);
+            localStorage.setItem(`ofertas_${tiendaId}`, JSON.stringify(ofertas));
+            
+            mostrarNotificacion('✅ Oferta eliminada', 'success');
+            
+            // Actualizar estadísticas
+            actualizarEstadisticas();
+            
+            // Recargar ofertas
+            cargarOfertas();
+        }
+        
+        // ========================================
+        // ACTUALIZAR ESTADÍSTICAS
+        // ========================================
+        
+        function actualizarEstadisticas() {
+            const tiendaId = obtenerTiendaId();
+            const productos = JSON.parse(localStorage.getItem(`productos_${tiendaId}`) || '[]');
+            const servicios = JSON.parse(localStorage.getItem(`servicios_${tiendaId}`) || '[]');
+            const ofertas = JSON.parse(localStorage.getItem(`ofertas_${tiendaId}`) || '[]');
+            const diario = JSON.parse(localStorage.getItem(`diario_${tiendaId}`) || '[]');
+            
+            const stats = {
+                productos: productos.length,
+                servicios: servicios.length,
+                ofertas: ofertas.length,
+                entradas: diario.length
+            };
+            
+            localStorage.setItem(`estadisticas_${tiendaId}`, JSON.stringify(stats));
+            console.log('📊 Estadísticas actualizadas:', stats);
+        }
+        
+        // ========================================
+        // NOTIFICACIONES
+        // ========================================
+        
+        function mostrarNotificacion(mensaje, tipo = 'info') {
+            const notification = document.createElement('div');
+            notification.className = `notification ${tipo}`;
+            notification.innerHTML = `
+                <i class="fas fa-${tipo === 'success' ? 'check-circle' : tipo === 'error' ? 'exclamation-circle' : 'info-circle'}"></i>
+                <span>${mensaje}</span>
+            `;
+            
+            document.body.appendChild(notification);
+            
+            setTimeout(() => {
+                notification.style.animation = 'slideIn 0.3s ease reverse';
+                setTimeout(() => notification.remove(), 300);
+            }, 3000);
+        }
+        
+        // ========================================
+        // INICIALIZACIÓN
+        // ========================================
+        
+        document.addEventListener('DOMContentLoaded', () => {
+            console.log('🚀 Inicializando página de ofertas...');
+            cargarOfertas();
+            console.log('✅ Página de ofertas cargada');
+        });
+    </script>
+</body>
+</html>
+

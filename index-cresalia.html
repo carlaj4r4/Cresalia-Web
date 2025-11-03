@@ -1,0 +1,2802 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="google" content="notranslate">
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
+    <title>Cresalia - Plataforma E-commerce Multi-tenant</title>
+    
+    <!-- Meta Security -->
+    <meta http-equiv="Content-Security-Policy" content="
+      default-src 'self';
+      base-uri 'self';
+      object-src 'none';
+      img-src 'self' data: blob: https: https://via.placeholder.com;
+      font-src 'self' data: https: https://fonts.gstatic.com https://cdnjs.cloudflare.com https://cdn.jsdelivr.net;
+      style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://cdnjs.cloudflare.com https://cdn.jsdelivr.net;
+      style-src-elem 'self' 'unsafe-inline' https://fonts.googleapis.com https://cdnjs.cloudflare.com https://cdn.jsdelivr.net;
+      script-src 'self' 'unsafe-inline' 'unsafe-eval' https://cdnjs.cloudflare.com https://cdn.jsdelivr.net https://sdk.mercadopago.com;
+      script-src-elem 'self' 'unsafe-inline' https://cdnjs.cloudflare.com https://cdn.jsdelivr.net https://sdk.mercadopago.com;
+      connect-src 'self' https:;
+      frame-src 'self' https:;
+      form-action 'self';
+      upgrade-insecure-requests;
+    ">
+    <meta http-equiv="X-Content-Type-Options" content="nosniff">
+    <meta http-equiv="X-XSS-Protection" content="1; mode=block">
+    <meta name="referrer" content="strict-origin-when-cross-origin">
+    
+    <link rel="icon" type="image/png" href="assets/logo/logo-cresalia.png">
+    <link rel="apple-touch-icon" href="assets/logo/logo-cresalia.png">
+    <meta name="msapplication-TileImage" content="assets/logo/logo-cresalia.png">
+    
+    <!-- Sistema de Seguridad -->
+    <script src="security-system.js?v=2.0"></script>
+    <script src="core/proteccion-devtools-avanzada.js?v=2.0"></script>
+    <script src="core/proteccion-datos-sensibles.js?v=1.0"></script>
+    <script src="core/panel-monitoreo-seguridad.js?v=1.0"></script>
+    
+    <!-- 📱 PWA MANIFEST Y META TAGS -->
+    <link rel="manifest" href="manifest.json">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    <meta name="apple-mobile-web-app-title" content="Cresalia">
+    <meta name="theme-color" content="#7C3AED">
+    <meta name="msapplication-TileColor" content="#7C3AED">
+    <meta name="msapplication-navbutton-color" content="#7C3AED">
+    <meta name="application-name" content="Cresalia">
+    <meta name="msapplication-TileColor" content="#667eea">
+    <meta name="msapplication-tap-highlight" content="no">
+    <meta name="theme-color" content="#667eea">
+    
+    <!-- PWA Iconos iOS -->
+    <link rel="apple-touch-icon" sizes="152x152" href="assets/pwa/icon-152x152.svg">
+    <link rel="apple-touch-icon" sizes="192x192" href="assets/pwa/icon-192x192.svg">
+    
+    <!-- PWA Iconos Android -->
+    <link rel="icon" type="image/svg+xml" sizes="192x192" href="assets/pwa/icon-192x192.svg">
+    <link rel="icon" type="image/svg+xml" sizes="512x512" href="assets/pwa/icon-512x512.svg">
+    
+    <!-- PWA Splash Screens iOS -->
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <link rel="apple-touch-startup-image" href="assets/pwa/icon-512x512.svg">
+    
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+            <!-- Google Maps API (opcional) -->
+        <!-- <script async defer src="https://maps.googleapis.com/maps/api/js?key=TU_API_KEY&libraries=places"></script> -->
+    <!-- Mercado Pago SDK -->
+    <script src="https://sdk.mercadopago.com/js/v2"></script>
+    
+    <link rel="stylesheet" href="styles-cresalia.css?v=5.3">
+    <link rel="stylesheet" href="css/buyer-interface-improved.css">
+    <link rel="stylesheet" href="css/z-index-layers.css">
+    <link rel="stylesheet" href="css/elegant-notifications.css">
+    <link rel="stylesheet" href="css/filtros-productos.css?v=1.4">
+    <link rel="stylesheet" href="css/sistema-feedbacks.css">
+    <link rel="stylesheet" href="css/sistema-desafios-emocionales.css">
+    <link rel="stylesheet" href="css/contacto-directo-crisla.css">
+    <link rel="stylesheet" href="css/sistema-anti-fraudes.css">
+    <link rel="stylesheet" href="css/proteccion-bidireccional.css">
+    <link rel="stylesheet" href="css/filtros-avanzados.css">
+    
+    <!-- Click Derecho Personalizado -->
+    <script src="js/click-derecho-personalizado.js"></script>
+</head>
+<body>
+    <!-- Navbar -->
+    <nav class="navbar navbar-expand-lg fixed-top">
+        <div class="container">
+            <a class="navbar-brand" href="#">
+                <div class="logo-container">
+                    <img src="assets/logo/logo-cresalia.png" alt="Cresalia" height="50" class="logo-image">
+                    <div class="logo-glow"></div>
+                </div>
+            </a>
+            
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="#inicio" data-i18n="nav.inicio">Inicio</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#productos" data-i18n="nav.productos">Productos</a>
+                        <a class="nav-link" href="#servicios" data-i18n="nav.servicios">Servicios</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#ayuda" data-i18n="nav.ayuda">Ayuda</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#contacto" data-i18n="nav.contacto">Contacto</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#" onclick="toggleCart(); return false;">
+                            <i class="fas fa-shopping-cart"></i>
+                            <span data-i18n="nav.carrito">Carrito</span>
+                            <span id="cartCount" class="cart-count">0</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link user-nav-btn" href="#" onclick="toggleUserSystem()">
+                            <i class="fas fa-user-circle"></i>
+                            <span id="userButtonText" data-i18n="nav.mi_cuenta">Mi Cuenta</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#" onclick="toggleLanguageSelector(); return false;" title="Cambiar idioma">
+                            <i class="fas fa-globe"></i>
+                            <span id="currentLanguageFlag">🇪🇸</span>
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- ===== CARRITO FLOTANTE PARA MÓVILES ===== -->
+    <div id="floatingCart" class="floating-cart" onclick="toggleCart()">
+        <div class="floating-cart-content">
+            <div class="floating-cart-icon">
+                <i class="fas fa-shopping-cart"></i>
+                <span id="floatingCartCount" class="floating-cart-count">0</span>
+            </div>
+            <div class="floating-cart-info">
+                <span class="floating-cart-text">Carrito</span>
+                <span id="floatingCartTotal" class="floating-cart-total">$0</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- ===== SISTEMA DE USUARIOS ===== -->
+    <div id="userSystem" class="user-system-overlay" style="display: none;">
+        <div class="user-system-container">
+            <!-- Login Form -->
+            <div id="loginForm" class="user-form active">
+                <div class="user-form-header">
+                    <h3><i class="fas fa-user-circle"></i> Iniciar Sesión</h3>
+                    <p>Accede a tu cuenta para ver tu historial</p>
+                </div>
+                <form id="loginUserForm">
+                                            <div class="form-group">
+                            <label for="loginEmail"><i class="fas fa-envelope"></i> Email</label>
+                            <input type="email" id="loginEmail" name="loginEmail" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="loginPassword"><i class="fas fa-lock"></i> Contraseña</label>
+                            <div class="password-input">
+                                <input type="password" id="loginPassword" name="loginPassword" required>
+                                <button type="button" class="password-toggle" onclick="togglePassword('loginPassword')">
+                                    <i class="fas fa-eye"></i>
+                                </button>
+                            </div>
+                        </div>
+                    <button type="submit" class="user-btn primary">
+                        <i class="fas fa-sign-in-alt"></i> Iniciar Sesión
+                    </button>
+                </form>
+                <div class="user-form-footer">
+                    <p>¿No tienes cuenta? <a href="#" onclick="showRegisterForm()">Regístrate aquí</a></p>
+                    <button class="user-btn secondary" onclick="closeUserSystem()">
+                        <i class="fas fa-times"></i> Cerrar
+                    </button>
+                </div>
+            </div>
+
+            <!-- Register Form -->
+            <div id="registerForm" class="user-form">
+                <div class="user-form-header">
+                    <h3><i class="fas fa-user-plus"></i> Crear Cuenta</h3>
+                    <p>Regístrate para acceder a productos, servicios y guardar tu historial</p>
+                </div>
+                <form id="registerUserForm">
+                                            <div class="form-group">
+                            <label for="registerName"><i class="fas fa-user"></i> Nombre Completo</label>
+                            <input type="text" id="registerName" name="registerName" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="registerEmail"><i class="fas fa-envelope"></i> Email</label>
+                            <input type="email" id="registerEmail" name="registerEmail" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="registerPhone"><i class="fas fa-phone"></i> Teléfono</label>
+                            <input type="tel" id="registerPhone" name="registerPhone" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="registerPassword"><i class="fas fa-lock"></i> Contraseña</label>
+                            <div class="password-input">
+                                <input type="password" id="registerPassword" name="registerPassword" required>
+                                <button type="button" class="password-toggle" onclick="togglePassword('registerPassword')">
+                                    <i class="fas fa-eye"></i>
+                                </button>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="registerConfirmPassword"><i class="fas fa-lock"></i> Confirmar Contraseña</label>
+                            <div class="password-input">
+                                <input type="password" id="registerConfirmPassword" name="registerConfirmPassword" required>
+                                <button type="button" class="password-toggle" onclick="togglePassword('registerConfirmPassword')">
+                                    <i class="fas fa-eye"></i>
+                                </button>
+                            </div>
+                        </div>
+                    <button type="submit" class="user-btn primary">
+                        <i class="fas fa-user-plus"></i> Crear Cuenta
+                    </button>
+                </form>
+                <div class="user-form-footer">
+                    <p>¿Ya tienes cuenta? <a href="#" onclick="showLoginForm()">Inicia sesión aquí</a></p>
+                    <button class="user-btn secondary" onclick="closeUserSystem()">
+                        <i class="fas fa-times"></i> Cerrar
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+
+    <!-- Hero Section -->
+    <section id="inicio" class="hero-section" style="margin-top: 0 !important; padding-top: 80px !important; height: 100vh !important; min-height: 100vh !important;">
+        <div class="container">
+            <div class="hero-content">
+                <div class="hero-logo-container">
+                    <img src="assets/logo/logo-cresalia.png" alt="Cresalia" class="hero-logo">
+                    <div class="hero-logo-glow"></div>
+                </div>
+                <h1>Cresalia</h1>
+                <div class="welcome-message">
+                    <h2>Bienvenidos a Cresalia</h2>
+                </div>
+                <p>Empezamos pocos, crecemos mucho - El espacio ideal para desplegar juntos</p>
+                <div class="hero-buttons">
+                    <a href="#productos" class="btn-hero btn-primary-hero">
+                        <i class="fas fa-shopping-bag"></i> Ver Productos
+                    </a>
+                    <a href="#servicios" class="btn-hero btn-secondary-hero">
+                        <i class="fas fa-tools"></i> Ver Servicios
+                    </a>
+                    <a href="#tiendas" class="btn-hero btn-outline-hero">
+                        <i class="fas fa-store"></i> Ver Tiendas
+                    </a>
+                    <a href="#ofertas" class="btn-hero btn-outline-hero">
+                        <i class="fas fa-tags"></i> Ver Ofertas
+                    </a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Combos y Ofertas Section -->
+    <section id="combos-ofertas" class="combos-section">
+        <div class="container">
+            <div class="section-header">
+                <h2><i class="fas fa-gift"></i> Combos y Ofertas Especiales</h2>
+                <p>¡Aprovecha nuestras ofertas exclusivas y combos con descuentos increíbles!</p>
+            </div>
+            
+            <div class="combos-container" id="combosContainer">
+                <!-- Los combos se cargarán dinámicamente -->
+            </div>
+        </div>
+    </section>
+
+    <!-- Productos Section -->
+    <section id="productos" class="productos-section">
+        <div class="container">
+            <div class="section-header">
+                <h2><i class="fas fa-box"></i> Catálogo de Productos</h2>
+                <p>Descubre los mejores productos de nuestras tiendas asociadas</p>
+            </div>
+            
+            <!-- Sistema de Filtros y Búsqueda -->
+            <div class="filtros-container">
+                <div class="row">
+                    <!-- Búsqueda -->
+                    <div class="col-lg-4 col-md-6 mb-3">
+                        <div class="filtro-card busqueda-card">
+                            <label><i class="fas fa-search"></i> Buscar Productos</label>
+                            <div class="busqueda-container">
+                                <input type="text" id="busquedaProductos" class="form-control busqueda-input" placeholder="Escribe aquí para buscar productos..." autocomplete="off">
+                                <div class="busqueda-suggestions" id="busquedaSuggestions"></div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Categorías -->
+                    <div class="col-lg-3 col-md-6 mb-3">
+                        <div class="filtro-card">
+                            <label><i class="fas fa-tags"></i> Categoría</label>
+                            <select id="filtroCategoria" class="form-select" onchange="aplicarFiltros()">
+                                <option value="">Todas las categorías</option>
+                                <option value="tecnologia">📱 Tecnología</option>
+                                <option value="moda">👗 Moda y Accesorios</option>
+                                <option value="hogar">🏠 Hogar y Jardín</option>
+                                <option value="deportes">⚽ Deportes y Fitness</option>
+                                <option value="belleza">💄 Belleza y Cuidado</option>
+                                <option value="salud">💊 Salud y Bienestar</option>
+                                <option value="alimentacion">🍎 Alimentación</option>
+                                <option value="automotriz">🚗 Automotriz</option>
+                                <option value="libros">📚 Libros y Educación</option>
+                                <option value="juguetes">🧸 Juguetes y Niños</option>
+                                <option value="mascotas">🐕 Mascotas</option>
+                                <option value="viajes">✈️ Viajes y Turismo</option>
+                                <option value="arte">🎨 Arte y Manualidades</option>
+                                <option value="musica">🎵 Música e Instrumentos</option>
+                                <option value="oficina">💼 Oficina y Negocios</option>
+                                <option value="herramientas">🔧 Herramientas</option>
+                                <option value="jardineria">🌱 Jardinería</option>
+                                <option value="fotografia">📸 Fotografía</option>
+                                <option value="gaming">🎮 Gaming</option>
+                                <option value="servicios">🔧 Servicios</option>
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <!-- Rango de Precios -->
+                    <div class="col-lg-3 col-md-6 mb-3">
+                        <div class="filtro-card">
+                            <label><i class="fas fa-dollar-sign"></i> Rango de Precios</label>
+                            <div class="precio-range">
+                                <div class="row">
+                                    <div class="col-6">
+                                        <label>Mínimo:</label>
+                                        <input type="number" id="precioMin" class="form-control" min="0" max="100000" value="0" placeholder="0" onchange="aplicarFiltros()">
+                                    </div>
+                                    <div class="col-6">
+                                        <label>Máximo:</label>
+                                        <input type="number" id="precioMax" class="form-control" min="0" max="100000" value="100000" placeholder="100000" onchange="aplicarFiltros()">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Ordenamiento -->
+                    <div class="col-lg-2 col-md-6 mb-3">
+                        <div class="filtro-card">
+                            <label><i class="fas fa-sort"></i> Ordenar por</label>
+                            <select id="ordenarPor" class="form-select" onchange="aplicarFiltros()">
+                                <option value="relevancia">Relevancia</option>
+                                <option value="precio-asc">Precio: Menor a Mayor</option>
+                                <option value="precio-desc">Precio: Mayor a Menor</option>
+                                <option value="nombre-asc">Nombre: A-Z</option>
+                                <option value="nombre-desc">Nombre: Z-A</option>
+                                <option value="nuevos">Más Nuevos</option>
+                                <option value="valoracion">Mejor Valorados</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Filtros Avanzados -->
+                <div class="filtros-avanzados">
+                    <button class="btn btn-outline-primary" type="button" data-bs-toggle="collapse" data-bs-target="#filtrosAvanzados">
+                        <i class="fas fa-filter"></i> Filtros Avanzados
+                    </button>
+                    
+                    <div class="collapse" id="filtrosAvanzados">
+                        <div class="row mt-3">
+                            <div class="col-md-3 mb-3">
+                                <label><i class="fas fa-store"></i> Tienda</label>
+                                <select id="filtroTienda" class="form-select" onchange="aplicarFiltros()">
+                                    <option value="">Todas las tiendas</option>
+                                </select>
+                            </div>
+                            <div class="col-md-3 mb-3">
+                                <label><i class="fas fa-star"></i> Valoración Mínima</label>
+                                <select id="filtroValoracion" class="form-select" onchange="aplicarFiltros()">
+                                    <option value="">Cualquier valoración</option>
+                                    <option value="4">4+ estrellas</option>
+                                    <option value="3">3+ estrellas</option>
+                                    <option value="2">2+ estrellas</option>
+                                </select>
+                            </div>
+                            <div class="col-md-3 mb-3">
+                                <label><i class="fas fa-truck"></i> Envío</label>
+                                <select id="filtroEnvio" class="form-select" onchange="aplicarFiltros()">
+                                    <option value="">Todos</option>
+                                    <option value="gratis">Envío Gratis</option>
+                                    <option value="rapido">Envío Rápido</option>
+                                    <option value="local">Retiro Local</option>
+                                </select>
+                            </div>
+                            <div class="col-md-3 mb-3">
+                                <label><i class="fas fa-badge-check"></i> Estado</label>
+                                <select id="filtroEstado" class="form-select" onchange="aplicarFiltros()">
+                                    <option value="">Todos</option>
+                                    <option value="nuevo">Nuevo</option>
+                                    <option value="usado">Usado</option>
+                                    <option value="reacondicionado">Reacondicionado</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Resultados y Acciones -->
+                <div class="filtros-acciones">
+                    <div class="resultados-info">
+                        <span id="resultadosCount">0 productos encontrados</span>
+                    </div>
+                    <div class="filtros-botones">
+                        <button class="btn btn-primary" onclick="aplicarFiltros()">
+                            <i class="fas fa-search"></i> Buscar
+                        </button>
+                        <button class="btn btn-outline-secondary" onclick="limpiarFiltros()">
+                            <i class="fas fa-times"></i> Limpiar
+                        </button>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Grid de Productos -->
+            <div class="productos-grid" id="productosGrid">
+                <!-- Los productos se cargarán dinámicamente -->
+            </div>
+            
+            <!-- Paginación -->
+            <div class="paginacion-container">
+                <nav aria-label="Paginación de productos">
+                    <ul class="pagination justify-content-center" id="paginacionProductos">
+                        <!-- La paginación se generará dinámicamente -->
+                    </ul>
+                </nav>
+            </div>
+        </div>
+    </section>
+
+    <!-- Servicios Section -->
+    <section id="servicios" class="servicios-section">
+        <div class="container">
+            <div class="section-header">
+                <h2><i class="fas fa-tools"></i> Servicios Disponibles</h2>
+                <p>Encuentra los mejores servicios cerca de ti</p>
+            </div>
+            
+            <!-- Filtros de Servicios -->
+            <div class="filtros-container">
+                <div class="row">
+                    <div class="col-md-3">
+                        <div class="filtro-group">
+                            <label for="busquedaServicios" class="filtro-label">
+                                <i class="fas fa-search"></i> Buscar Servicios
+                            </label>
+                            <input type="text" id="busquedaServicios" class="form-control busqueda-input" placeholder="Ej: peluquería, estética, transporte..." autocomplete="off">
+                        </div>
+                    </div>
+                    <div class="col-md-2">
+                        <div class="filtro-group">
+                            <label for="categoriaServicio" class="filtro-label">
+                                <i class="fas fa-tags"></i> Categoría
+                            </label>
+                            <select id="categoriaServicio" class="form-select" onchange="aplicarFiltrosServicios()">
+                                <option value="">Todas las categorías</option>
+                                <option value="peluqueria">Peluquería</option>
+                                <option value="estetica">Estética y Belleza</option>
+                                <option value="transporte">Transporte</option>
+                                <option value="lubricentro">Lubricentro</option>
+                                <option value="detail">Detail y Limpieza</option>
+                                <option value="distribucion">Distribución</option>
+                                <option value="restaurante">Restaurante</option>
+                                <option value="bar">Bar y Tragos</option>
+                                <option value="cafe">Café y Té</option>
+                                <option value="panaderia">Panadería</option>
+                                <option value="comida">Comida</option>
+                                <option value="general">Negocio General</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="col-md-2">
+                        <div class="filtro-group">
+                            <label for="precioMinServicio" class="filtro-label">
+                                <i class="fas fa-dollar-sign"></i> Precio Mín
+                            </label>
+                            <input type="number" id="precioMinServicio" class="form-control" min="0" max="100000" value="0" placeholder="0" onchange="aplicarFiltrosServicios()">
+                        </div>
+                    </div>
+                    <div class="col-md-2">
+                        <div class="filtro-group">
+                            <label for="precioMaxServicio" class="filtro-label">
+                                <i class="fas fa-dollar-sign"></i> Precio Máx
+                            </label>
+                            <input type="number" id="precioMaxServicio" class="form-control" min="0" max="100000" value="100000" placeholder="100000" onchange="aplicarFiltrosServicios()">
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="filtro-group">
+                            <label class="filtro-label">
+                                <i class="fas fa-filter"></i> Filtros Especiales
+                            </label>
+                            <div class="filtros-especiales">
+                                <div class="form-check form-check-inline">
+                                    <input class="form-check-input" type="checkbox" id="envioDomicilio" onchange="aplicarFiltrosServicios()">
+                                    <label class="form-check-label" for="envioDomicilio">
+                                        <i class="fas fa-truck"></i> Envío a domicilio
+                                    </label>
+                                </div>
+                                <div class="form-check form-check-inline">
+                                    <input class="form-check-input" type="checkbox" id="masBarato" onchange="aplicarFiltrosServicios()">
+                                    <label class="form-check-label" for="masBarato">
+                                        <i class="fas fa-tag"></i> Más barato
+                                    </label>
+                                </div>
+                                <div class="form-check form-check-inline">
+                                    <input class="form-check-input" type="checkbox" id="masCercano" onchange="aplicarFiltrosServicios()">
+                                    <label class="form-check-label" for="masCercano">
+                                        <i class="fas fa-map-marker-alt"></i> Más cercano
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Grid de Servicios -->
+            <div class="servicios-grid" id="serviciosGrid">
+                <!-- Los servicios se cargarán dinámicamente -->
+            </div>
+            
+            <!-- Paginación de Servicios -->
+            <div class="paginacion-container">
+                <nav aria-label="Paginación de servicios">
+                    <ul class="pagination justify-content-center" id="paginacionServicios">
+                        <!-- La paginación se generará dinámicamente -->
+                    </ul>
+                </nav>
+            </div>
+        </div>
+    </section>
+
+    <!-- Tiendas Section -->
+    <section id="tiendas" class="tiendas-section">
+        <div class="container">
+            <div class="section-header">
+                <h2><i class="fas fa-store"></i> Tiendas Destacadas</h2>
+                <p>Descubre las mejores tiendas creadas con Cresalia</p>
+            </div>
+            
+            <div class="tiendas-grid" id="tiendasGrid">
+                <div class="tienda-card">
+                    <div class="tienda-placeholder">
+                        <i class="fas fa-store"></i>
+                        <h3>Próximamente</h3>
+                        <p>Las primeras tiendas aparecerán aquí cuando nuestros usuarios comiencen a usarlas</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Ofertas Section -->
+    <section id="ofertas" class="ofertas-section">
+        <div class="container">
+            <div class="section-header">
+                <h2><i class="fas fa-tags"></i> Ofertas Especiales</h2>
+                <p>Las mejores ofertas de nuestras tiendas asociadas</p>
+            </div>
+            
+            <div class="ofertas-grid" id="ofertasGrid">
+                <div class="oferta-card">
+                    <div class="oferta-placeholder">
+                        <i class="fas fa-tags"></i>
+                        <h3>Próximamente</h3>
+                        <p>Las ofertas aparecerán aquí cuando las tiendas las publiquen</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+
+
+
+    <!-- Modal de Pago -->
+    <div id="modalPago" class="modal-pago-overlay">
+        <div id="modalPagoContenido">
+            <!-- Contenido del modal de pago se llena dinámicamente -->
+        </div>
+    </div>
+
+
+
+
+    <!-- Ayuda Section -->
+    <section id="ayuda" class="ayuda-section">
+        <div class="container">
+            <div class="section-header">
+                <div class="ayuda-logo-container">
+                    <img src="assets/logo/logo-cresalia.png" alt="Cresalia" class="ayuda-logo">
+                </div>
+                <h2>Centro de Ayuda Cresalia</h2>
+                <p>Encuentra respuestas rápidas a tus preguntas más frecuentes</p>
+            </div>
+            
+            <div class="ayuda-grid">
+                <div class="ayuda-card">
+                    <h4><i class="fas fa-clock"></i> Horarios de Atención</h4>
+                    <p>Lunes a Viernes: 9:00 - 18:00. Sábados: 10:00 - 14:00. <strong>Domingos: Cerrado</strong></p>
+                </div>
+                
+                <div class="ayuda-card">
+                    <h4><i class="fas fa-map-marker-alt"></i> Ubicación</h4>
+                    <p>Av. Tecnología 1234, Buenos Aires, Argentina. Oficina virtual con soporte 24/7.</p>
+                </div>
+                
+                <div class="ayuda-card">
+                    <h4><i class="fas fa-phone"></i> Contacto</h4>
+                    <p>Teléfono: +54 11 1234-5678 | WhatsApp: +54 11 1234-5678 | Email: soporte@cresalia.com</p>
+                </div>
+                
+                <div class="ayuda-card">
+                    <h4><i class="fas fa-credit-card"></i> Métodos de Pago</h4>
+                    <p>Aceptamos efectivo, tarjetas de crédito/débito, transferencias bancarias y cuotas sin interés hasta 12 cuotas.</p>
+                </div>
+                
+                <div class="ayuda-card">
+                    <h4><i class="fas fa-shield-alt"></i> Garantía</h4>
+                    <p>Todos nuestros productos incluyen garantía de calidad y satisfacción del cliente.</p>
+                </div>
+                
+                <div class="ayuda-card">
+                    <h4><i class="fas fa-truck"></i> Envíos</h4>
+                    <p>Envíos de productos dentro de Argentina. Consultá por envíos internacionales.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Contacto Section -->
+    <section id="contacto" class="contacto-section">
+        <div class="container">
+            <div class="section-header">
+                <div class="contacto-logo-container">
+                    <img src="assets/logo/logo-cresalia.png" alt="Cresalia" class="contacto-logo">
+                </div>
+                <h2>Contacto Cresalia</h2>
+                <p>Estamos aquí para ayudarte. ¡Contáctanos hoy mismo!</p>
+            </div>
+            
+            <div class="row justify-content-center">
+                <div class="col-lg-10 col-md-12 text-center">
+                    <div class="row g-3">
+                        <div class="col-lg-4 col-md-6 col-sm-6 mb-3">
+                            <div class="contacto-card">
+                                <div class="contacto-icon">
+                                    <i class="fas fa-phone"></i>
+                                </div>
+                                <h3>Teléfono</h3>
+                                <p>+54 11 1234-5678</p>
+                            </div>
+                        </div>
+                        
+                        <div class="col-lg-4 col-md-6 col-sm-6 mb-3">
+                            <div class="contacto-card">
+                                <div class="contacto-icon">
+                                    <i class="fab fa-whatsapp"></i>
+                                </div>
+                                <h3>WhatsApp</h3>
+                                <p>+54 11 1234-5678</p>
+                            </div>
+                        </div>
+                        
+                        <div class="col-lg-4 col-md-6 col-sm-6 mb-3">
+                            <div class="contacto-card contacto-email">
+                                <div class="contacto-icon">
+                                    <i class="fas fa-envelope"></i>
+                                </div>
+                                <h3>Email</h3>
+                                <p class="email-text">contacto@cresalia.com</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Mapa dinámico por tienda -->
+                <div class="row mt-5">
+                    <div class="col-12">
+                        <div class="mapa-container">
+                            <h3><i class="fas fa-map-marker-alt"></i> Ubicación de la Tienda</h3>
+                            <div id="mapa-tienda" class="mapa-google">
+                                <div class="mapa-placeholder">
+                                    <i class="fas fa-store"></i>
+                                    <h4>Ubicación de la Tienda</h4>
+                                    <p>La ubicación aparecerá aquí cuando visites una tienda específica</p>
+                                </div>
+                            </div>
+                            <div class="mapa-info">
+                                <p><strong>Dirección:</strong> Se mostrará dinámicamente por tienda</p>
+                                <button class="btn btn-primary" onclick="obtenerRuta()" style="display: none;">
+                                    <i class="fas fa-route"></i> Obtener Ruta
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Sistema de Usuarios -->
+    <div id="userSystem" class="user-system-overlay" style="display: none;">
+        <div class="user-system-container">
+            <!-- Formulario de Login -->
+            <form id="loginUserForm" class="user-form active">
+                <div class="user-form-header">
+                    <h3><i class="fas fa-sign-in-alt"></i> Iniciar Sesión</h3>
+                    <p>Accede a tu cuenta para ver tu historial</p>
+                </div>
+                
+                <div class="form-group">
+                    <label for="loginEmail"><i class="fas fa-envelope"></i> Email</label>
+                    <input type="email" id="loginEmail" name="loginEmail" required>
+                </div>
+                <div class="form-group">
+                    <label for="loginPassword"><i class="fas fa-lock"></i> Contraseña</label>
+                    <div class="password-input">
+                        <input type="password" id="loginPassword" name="loginPassword" required>
+                        <button type="button" class="password-toggle" onclick="togglePassword('loginPassword')">
+                            <i class="fas fa-eye"></i>
+                        </button>
+                    </div>
+                </div>
+                
+                <button type="submit" class="user-btn primary">
+                    <i class="fas fa-sign-in-alt"></i> Iniciar Sesión
+                </button>
+                
+                <div class="user-form-footer">
+                    <p>¿No tienes cuenta? <a href="#" onclick="showRegisterForm()">Regístrate aquí</a></p>
+                    <button type="button" class="user-btn secondary" onclick="closeUserSystem()">
+                        <i class="fas fa-times"></i> Cerrar
+                    </button>
+                </div>
+            </form>
+            
+            <!-- Formulario de Registro -->
+            <form id="registerUserForm" class="user-form">
+                <div class="user-form-header">
+                    <h3><i class="fas fa-user-plus"></i> Crear Cuenta</h3>
+                    <p>Regístrate para acceder a productos, servicios y guardar tu historial</p>
+                </div>
+                
+                <div class="form-group">
+                    <label for="registerName"><i class="fas fa-user"></i> Nombre Completo</label>
+                    <input type="text" id="registerName" name="registerName" required>
+                </div>
+                <div class="form-group">
+                    <label for="registerEmail"><i class="fas fa-envelope"></i> Email</label>
+                    <input type="email" id="registerEmail" name="registerEmail" required>
+                </div>
+                <div class="form-group">
+                    <label for="registerPhone"><i class="fas fa-phone"></i> Teléfono</label>
+                    <input type="tel" id="registerPhone" name="registerPhone" required>
+                </div>
+                <div class="form-group">
+                    <label for="registerPassword"><i class="fas fa-lock"></i> Contraseña</label>
+                    <div class="password-input">
+                        <input type="password" id="registerPassword" name="registerPassword" required>
+                        <button type="button" class="password-toggle" onclick="togglePassword('registerPassword')">
+                            <i class="fas fa-eye"></i>
+                        </button>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="registerConfirmPassword"><i class="fas fa-lock"></i> Confirmar Contraseña</label>
+                    <div class="password-input">
+                        <input type="password" id="registerConfirmPassword" name="registerConfirmPassword" required>
+                        <button type="button" class="password-toggle" onclick="togglePassword('registerConfirmPassword')">
+                            <i class="fas fa-eye"></i>
+                        </button>
+                    </div>
+                </div>
+                
+                <button type="submit" class="user-btn primary">
+                    <i class="fas fa-user-plus"></i> Crear Cuenta
+                </button>
+                
+                <div class="user-form-footer">
+                    <p>¿Ya tienes cuenta? <a href="#" onclick="showLoginForm()">Inicia sesión aquí</a></p>
+                    <button type="button" class="user-btn secondary" onclick="closeUserSystem()">
+                        <i class="fas fa-times"></i> Cerrar
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Modal de Carrito de Compras -->
+    <div class="cart-modal-overlay" id="cartModal">
+        <div class="cart-modal-content">
+            <div class="cart-modal-header">
+                <h3><i class="fas fa-shopping-cart"></i> Carrito de Compras</h3>
+                <button class="cart-modal-close" onclick="cerrarCarrito()" title="Cerrar carrito (ESC)">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            
+            <div class="cart-modal-body">
+                <div class="cart-items-container" id="cartItems">
+                    <!-- Los items del carrito se cargarán dinámicamente -->
+                    <div class="cart-empty-message" id="cartEmptyMessage">
+                        <i class="fas fa-shopping-cart"></i>
+                        <h4>Tu carrito está vacío</h4>
+                        <p>Agrega productos para comenzar tu compra</p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="cart-modal-footer">
+                <div class="cart-total-section">
+                    <div class="cart-subtotal">
+                        <span>Subtotal:</span>
+                        <span id="cartSubtotal">$0</span>
+                    </div>
+                    <div class="cart-total">
+                        <span>Total:</span>
+                        <span id="cartTotal">$0</span>
+                    </div>
+                </div>
+                <div class="cart-actions">
+                    <button class="cart-btn-limpiar" onclick="limpiarCarrito()" id="cartBtnLimpiar" style="display: none;">
+                        <i class="fas fa-trash"></i> Limpiar Carrito
+                    </button>
+                    <button class="cart-btn-finalizar" onclick="pagarCarrito()" id="cartBtnFinalizar" style="display: none;">
+                        <i class="fas fa-credit-card"></i> Finalizar Compra
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal de Pago -->
+    <div id="modalPago" class="modal-pago-overlay">
+        <div id="modalPagoContenido">
+            <!-- Contenido del modal de pago se llena dinámicamente -->
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="row">
+                <!-- Información de la Empresa -->
+                <div class="col-lg-4 col-md-6 mb-4">
+                    <div class="footer-section">
+                        <div class="footer-logo">
+                            <img src="assets/logo/logo-cresalia.png" alt="Cresalia" height="60">
+                        </div>
+                        <h4>Cresalia</h4>
+                        <p>Tu plataforma de confianza para crear tu tienda online. Empezamos pocos, crecemos mucho.</p>
+                        <div class="footer-info">
+                            <p><i class="fas fa-map-marker-alt"></i> Argentina</p>
+                            <p><i class="fas fa-phone"></i> +54 11 XXXX-XXXX</p>
+                            <p><i class="fas fa-envelope"></i> contacto@cresalia.com</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Enlaces Rápidos -->
+                <div class="col-lg-2 col-md-6 mb-4">
+                    <div class="footer-section">
+                        <h5>Enlaces Rápidos</h5>
+                        <ul class="footer-links">
+                            <li><a href="#inicio">Inicio</a></li>
+                            <li><a href="#productos">Productos</a></li>
+                            <li><a href="#servicios">Servicios</a></li>
+                            <li><a href="#ayuda">Ayuda</a></li>
+                            <li><a href="#contacto">Contacto</a></li>
+                            <li><a href="legal/terminos-basicos.html">Términos de Servicio</a></li>
+                        </ul>
+                    </div>
+                </div>
+                
+                <!-- Comunidades Cresalia 💜 -->
+                <div class="col-lg-3 col-md-6 mb-4">
+                    <div class="footer-section">
+                        <h5>💜 Comunidades Cresalia</h5>
+                        <p style="font-size: 0.9rem; color: #9CA3AF; margin-bottom: 15px;">Espacios seguros y anónimos para compartir y encontrar apoyo</p>
+                        <ul class="footer-links" style="max-height: 400px; overflow-y: auto; padding-right: 10px;">
+                            <li><a href="comunidades/estres-laboral/" style="color: #667eea;">💼 Estrés Laboral</a></li>
+                            <li><a href="comunidades/lgbtq-experiencias/" style="color: #FF6B6B;">🏳️‍🌈 Experiencias LGBTQ+</a></li>
+                            <li><a href="comunidades/mujeres-sobrevivientes/" style="color: #C084FC;">💜 Mujeres Sobrevivientes</a></li>
+                            <li><a href="comunidades/hombres-sobrevivientes/" style="color: #3B82F6;">💙 Hombres Sobrevivientes</a></li>
+                            <li><a href="comunidades/anti-bullying/" style="color: #60A5FA;">🛡️ Anti-Bullying</a></li>
+                            <li><a href="comunidades/discapacidad/" style="color: #8B5CF6;">♿ Personas con Discapacidad</a></li>
+                            <li><a href="comunidades/inmigrantes-racializados/" style="color: #F59E0B;">🌍 Inmigrantes y Racializados</a></li>
+                            <li><a href="comunidades/adultos-mayores/" style="color: #F59E0B;">👴👵 Adultos Mayores</a></li>
+                            <li><a href="comunidades/cuidadores/" style="color: #10B981;">🤲 Cuidadores</a></li>
+                            <li><a href="comunidades/enfermedades-cronicas/" style="color: #EF4444;">🏥 Enfermedades Crónicas</a></li>
+                            <li><a href="comunidades/cresalia-jobs/" style="color: #F59E0B;">💼 Cresalia Jobs</a> <span style="font-size: 0.75rem; background: #F59E0B; color: white; padding: 2px 6px; border-radius: 4px; margin-left: 5px;">Próximamente</span></li>
+                        </ul>
+                        <p style="font-size: 0.85rem; color: #6B7280; margin-top: 10px; font-style: italic;">Parte del ecosistema Cresalia 💜</p>
+                    </div>
+                </div>
+                
+                <!-- Redes Sociales y Contacto -->
+                <div class="col-lg-3 col-md-6 mb-4">
+                    <div class="footer-section">
+                        <h5>Síguenos</h5>
+                        <div class="social-links">
+                            <a href="https://www.facebook.com/cresalia.saas" target="_blank" class="social-link facebook">
+                                <i class="fab fa-facebook-f"></i>
+                                <span>Facebook</span>
+                            </a>
+                            <a href="https://www.instagram.com/cresalia_empresas" target="_blank" class="social-link instagram">
+                                <i class="fab fa-instagram"></i>
+                                <span>Instagram</span>
+                            </a>
+                            <a href="https://wa.me/541112345678" target="_blank" class="social-link whatsapp">
+                                <i class="fab fa-whatsapp"></i>
+                                <span>WhatsApp</span>
+                            </a>
+                        </div>
+                        
+                        <div class="footer-contact">
+                            <h6>Horarios de Atención</h6>
+                            <p>Lunes a Viernes: 9:00 - 18:00</p>
+                            <p>Sábados: 10:00 - 14:00</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Línea divisoria -->
+            <div class="footer-divider"></div>
+            
+            <!-- Información adicional -->
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="footer-bottom">
+                        <p>&copy; 2025 Cresalia. Todos los derechos reservados.</p>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="footer-bottom text-end">
+                        <p>Venta por mayor y menor disponible</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+
+    <!-- Chatbot IA -->
+    <div class="ai-chatbot-container">
+        <button class="ai-chatbot-toggle" onclick="toggleAIChatbot()">
+            <div class="ai-toggle-content">
+                <i class="fas fa-brain"></i>
+                <span class="ai-toggle-text">Cresalia AI</span>
+            </div>
+        </button>
+        
+        <div class="ai-chatbot-modal" id="aiChatbotModal">
+            <div class="ai-chatbot-header">
+                <div class="ai-header-content">
+                    <div class="ai-avatar">
+                        <i class="fas fa-brain"></i>
+                    </div>
+                    <div class="ai-header-info">
+                        <h3>Cresalia AI</h3>
+                        <span class="ai-status">Asistente Inteligente</span>
+                    </div>
+                </div>
+                <button class="ai-chatbot-close" onclick="toggleAIChatbot()">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            
+            <div class="ai-chatbot-messages" id="aiChatbotMessages">
+                <!-- Los mensajes se agregarán dinámicamente -->
+            </div>
+            
+            <div class="ai-chatbot-input">
+                <div class="input-container">
+                    <input type="text" id="aiChatInput" placeholder="Escribe tu consulta..." onkeypress="handleAIChatKeyPress(event)">
+                    <button onclick="sendAIMessage()" class="send-btn">
+                        <i class="fas fa-paper-plane"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Chatbot Cresalia (Servicio de Ayuda) -->
+    <div class="chatbot-container">
+        <button class="chatbot-toggle" onclick="toggleChatbot()">
+            <div class="chatbot-toggle-content">
+                <i class="fas fa-headset"></i>
+                <span class="chatbot-toggle-text">Ayuda</span>
+            </div>
+        </button>
+        
+        <div class="chatbot-modal" id="chatbotModal">
+            <div class="chatbot-header">
+                <div class="chatbot-header-content">
+                    <div class="chatbot-avatar">
+                        <i class="fas fa-headset"></i>
+                    </div>
+                    <div class="chatbot-header-info">
+                        <h3>Servicio de Ayuda</h3>
+                        <span class="chatbot-status">En línea</span>
+                    </div>
+                </div>
+                <button class="chatbot-close" onclick="toggleChatbot()">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            
+            <div class="chatbot-messages" id="chatbotMessages">
+                <!-- Los mensajes se agregarán dinámicamente -->
+            </div>
+            
+            <div class="chatbot-input">
+                <div class="input-container">
+                    <input type="text" id="chatInput" placeholder="Escribe tu mensaje..." onkeypress="handleChatKeyPress(event)">
+                    <button onclick="sendMessage()" class="send-btn">
+                        <i class="fas fa-paper-plane"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <!-- Modal de Pago -->
+    <div class="modal-pago-overlay" id="modalPago">
+        <div id="modalPagoContenido">
+            <!-- El contenido se cargará dinámicamente -->
+        </div>
+    </div>
+
+
+    <!-- Chatbot de Ayuda -->
+    <div class="chatbot-container" id="chatbot">
+        <div class="chatbot-header">
+            <h4><i class="fas fa-headset"></i> Servicio de Ayuda</h4>
+            <button onclick="toggleChatbot()" class="close-chatbot">&times;</button>
+        </div>
+        <div class="chatbot-messages" id="chatbotMessages">
+            <!-- Los mensajes se cargarán dinámicamente -->
+        </div>
+        <div class="chatbot-input">
+            <input type="text" id="chatInput" placeholder="Escribe tu mensaje..." onkeypress="handleChatKeyPress(event)">
+            <button onclick="sendMessage()" class="send-btn">
+                <i class="fas fa-paper-plane"></i>
+            </button>
+        </div>
+    </div>
+
+    <!-- AI Chatbot -->
+    <div class="ai-chatbot-container" id="aiChatbot">
+        <div class="ai-chatbot-header">
+            <h4><i class="fas fa-robot"></i> Cresalia AI</h4>
+            <button onclick="toggleAIChatbot()" class="close-ai-chatbot">&times;</button>
+        </div>
+        <div class="ai-chatbot-messages" id="aiChatbotMessages">
+            <!-- Los mensajes se cargarán dinámicamente -->
+        </div>
+        <div class="ai-chatbot-input">
+            <input type="text" id="aiChatInput" placeholder="Pregúntale a Cresalia AI..." onkeypress="handleAIChatKeyPress(event)">
+            <button onclick="sendAIMessage()" class="send-btn">
+                <i class="fas fa-paper-plane"></i>
+            </button>
+        </div>
+    </div>
+
+    <!-- Botones flotantes -->
+    <button class="chatbot-toggle" onclick="toggleChatbot()">
+        <i class="fas fa-headset"></i>
+    </button>
+    
+    <button class="ai-chatbot-toggle" onclick="toggleAIChatbot()">
+        <i class="fas fa-robot"></i>
+    </button>
+
+    <!-- Chatbot de Ayuda -->
+    <div class="chatbot-container" id="chatbotContainer">
+        <div class="chatbot-header">
+            <h4><i class="fas fa-headset"></i> Soporte Cresalia</h4>
+            <button onclick="toggleChatbot()" class="chatbot-close">&times;</button>
+        </div>
+        <div class="chatbot-messages" id="chatHelpMessages">
+            <!-- Los mensajes se agregarán dinámicamente -->
+        </div>
+        <div class="chatbot-input">
+            <input type="text" id="chatHelpInput" placeholder="Escribe tu consulta..." onkeypress="if(event.key === 'Enter') sendMessage('help')">
+            <button onclick="sendMessage('help')" class="chatbot-send">
+                <i class="fas fa-arrow-right"></i>
+            </button>
+        </div>
+    </div>
+
+    <!-- Chatbot IA -->
+    <div class="ai-chatbot-container" id="aiChatbotContainer">
+        <div class="chatbot-header">
+            <h4><i class="fas fa-robot"></i> Asistente Virtual Cresalia</h4>
+            <button onclick="toggleAIChatbot()" class="chatbot-close">&times;</button>
+        </div>
+        <div class="chatbot-messages" id="chatAIMessages">
+            <!-- Los mensajes se agregarán dinámicamente -->
+        </div>
+        <div class="chatbot-input">
+            <input type="text" id="chatAIInput" placeholder="Pregunta sobre productos..." onkeypress="if(event.key === 'Enter') sendMessage('ai')">
+            <button onclick="sendMessage('ai')" class="chatbot-send">
+                <i class="fas fa-arrow-right"></i>
+            </button>
+        </div>
+    </div>
+
+                    <!-- Modal de Transporte con Google Maps -->
+                <div class="modal-transporte-overlay" id="modalTransporte">
+                    <div class="modal-transporte">
+                        <div class="modal-transporte-header">
+                            <h3>Calcular Precio de Transporte</h3>
+                            <button onclick="cerrarModalTransporte()" class="cerrar-modal">&times;</button>
+                        </div>
+                        <div class="modal-transporte-content">
+                            <div class="formulario-transporte">
+                                <div class="input-group">
+                                    <label for="origen">Origen:</label>
+                                    <input type="text" id="origen" placeholder="Ingresa tu dirección de origen">
+                                </div>
+                                <div class="input-group">
+                                    <label for="destino">Destino:</label>
+                                    <input type="text" id="destino" placeholder="Ingresa tu dirección de destino">
+                                </div>
+                                <div class="input-group">
+                                    <label for="tipoViaje">Tipo de Viaje:</label>
+                                    <select id="tipoViaje">
+                                        <option value="local">Local</option>
+                                        <option value="interprovincial">Interprovincial</option>
+                                    </select>
+                                </div>
+                                <div class="mapa-container">
+                                    <div id="mapaTransporte" class="mapa-transporte"></div>
+                                </div>
+                                <div class="resultado-calculo" id="resultadoCalculo">
+                                    <div class="distancia-info">
+                                        <span>Distancia: <strong id="distanciaCalculada">-</strong></span>
+                                        <span>Duración: <strong id="duracionCalculada">-</strong></span>
+                                    </div>
+                                    <div class="precio-final">
+                                        <span>Precio Total: <strong id="precioCalculado">$0</strong></span>
+                                    </div>
+                                </div>
+                                <div class="botones-transporte">
+                                    <button onclick="calcularRuta()" class="btn-calcular">
+                                        <i class="fas fa-calculator"></i> Calcular
+                                    </button>
+                                    <button onclick="mostrarFormularioReservaTransporte()" class="btn-reservar-transporte" id="btnReservarTransporte" disabled>
+                                        <i class="fas fa-calendar-plus"></i> Reservar
+                                    </button>
+                                </div>
+                                
+                                <!-- Formulario de reserva de transporte -->
+                                <div id="formularioReservaTransporte" class="formulario-reserva-transporte" style="display: none;">
+                                    <h4>Datos de Reserva</h4>
+                                    <div class="input-group">
+                                        <label for="nombreTransporte">Nombre completo:</label>
+                                        <input type="text" id="nombreTransporte" required>
+                                    </div>
+                                    <div class="input-group">
+                                        <label for="telefonoTransporte">Teléfono:</label>
+                                        <input type="tel" id="telefonoTransporte" required>
+                                    </div>
+                                    <div class="input-group">
+                                        <label for="emailTransporte">Email:</label>
+                                        <input type="email" id="emailTransporte" required>
+                                    </div>
+                                    <div class="input-group">
+                                        <label for="fechaTransporte">Fecha de viaje:</label>
+                                        <input type="date" id="fechaTransporte" required>
+                                    </div>
+                                    <div class="input-group">
+                                        <label for="horaTransporte">Hora de viaje:</label>
+                                        <input type="time" id="horaTransporte" required>
+                                    </div>
+                                    <div class="input-group">
+                                        <label for="comentariosTransporte">Comentarios adicionales:</label>
+                                        <textarea id="comentariosTransporte" rows="3" placeholder="Especificaciones especiales, equipaje, etc."></textarea>
+                                    </div>
+                                    <div class="botones-accion">
+                                        <button onclick="cancelarReservaTransporte()" class="btn-cancelar-reserva">
+                                            <i class="fas fa-times"></i> Cancelar
+                                        </button>
+                                        <button onclick="confirmarReservaTransporte()" class="btn-confirmar-reserva">
+                                            <i class="fas fa-check"></i> Confirmar Reserva
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="i18n-cresalia.js"></script>
+    <script src="script-cresalia.js?v=9.8"></script>
+    <script src="facturacion.js?v=2.7"></script>
+    <!-- script duplicado eliminado para evitar redefinir SECURITY_CONFIG -->
+    <script src="js/elegant-notifications.js"></script>
+    <script src="js/store-backend-connection.js"></script>
+    <script src="js/account-type-system.js"></script>
+    <script src="js/history-system.js"></script>
+    <script src="js/user-status-system.js"></script>
+    <script src="js/subscription-system.js"></script>
+    <script src="js/simple-payment-system.js"></script>
+    <script src="js/crisla-support-integration.js"></script>
+    <script src="js/filtros-productos.js?v=1.3"></script>
+    
+    <!-- Script para forzar ajuste del hero section -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const heroSection = document.getElementById('inicio');
+            if (heroSection) {
+                // Forzar estilos
+                heroSection.style.marginTop = '70px';
+                heroSection.style.paddingTop = '0px';
+                heroSection.style.height = 'calc(100vh - 70px)';
+                heroSection.style.minHeight = 'calc(100vh - 70px)';
+                console.log('✅ Hero section ajustado correctamente');
+            }
+        });
+    </script>
+    
+    <!-- Script para manejar nuevos registros -->
+    <script>
+        // Manejar parámetros de URL para nuevos registros
+        document.addEventListener('DOMContentLoaded', function() {
+            const urlParams = new URLSearchParams(window.location.search);
+            
+            // Manejar nueva tienda
+            if (urlParams.get('nueva-tienda') === 'true') {
+                const slug = urlParams.get('slug');
+                const nombre = urlParams.get('nombre');
+                const id = urlParams.get('id');
+                
+                if (slug && nombre) {
+                    mostrarBienvenidaTienda(nombre, slug, id);
+                    // Limpiar URL
+                    window.history.replaceState({}, document.title, window.location.pathname);
+                }
+            }
+            
+            // Manejar nuevo usuario
+            if (urlParams.get('nuevo-usuario') === 'true') {
+                const email = urlParams.get('email');
+                const nombre = urlParams.get('nombre');
+                const id = urlParams.get('id');
+                
+                if (email && nombre) {
+                    mostrarBienvenidaUsuario(nombre, email, id);
+                    // Limpiar URL
+                    window.history.replaceState({}, document.title, window.location.pathname);
+                }
+            }
+        });
+        
+        // Mostrar bienvenida para nueva tienda
+        function mostrarBienvenidaTienda(nombre, slug, id) {
+            const mensaje = `
+                <div style="text-align: center; padding: 2rem; background: linear-gradient(135deg, #7C3AED, #A78BFA); color: white; border-radius: 20px; margin: 2rem 0; box-shadow: 0 10px 30px rgba(124, 58, 237, 0.3);">
+                    <div style="font-size: 3rem; margin-bottom: 1rem;">🎉</div>
+                    <h2 style="margin-bottom: 1rem; font-weight: 700;">¡Bienvenida a Cresalia, ${nombre}!</h2>
+                    <p style="font-size: 1.1rem; margin-bottom: 1.5rem; opacity: 0.9;">Tu tienda "${nombre}" ha sido creada exitosamente</p>
+                    <div style="background: rgba(255,255,255,0.2); padding: 1rem; border-radius: 10px; margin-bottom: 1.5rem;">
+                        <p style="margin: 0; font-weight: 600;">URL de tu tienda:</p>
+                        <p style="margin: 0; font-family: monospace; font-size: 1.1rem;">cresalia.com/tienda/${slug}</p>
+                    </div>
+                    <div style="display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap;">
+                        <button onclick="irATienda('${slug}')" style="background: white; color: #7C3AED; border: none; padding: 12px 24px; border-radius: 25px; font-weight: 600; cursor: pointer; transition: all 0.3s;">
+                            <i class="fas fa-store"></i> Ver Mi Tienda
+                        </button>
+                        <button onclick="cerrarBienvenida()" style="background: rgba(255,255,255,0.2); color: white; border: 2px solid white; padding: 12px 24px; border-radius: 25px; font-weight: 600; cursor: pointer; transition: all 0.3s;">
+                            <i class="fas fa-times"></i> Cerrar
+                        </button>
+                    </div>
+                </div>
+            `;
+            
+            // Insertar mensaje al inicio del contenido
+            const heroSection = document.querySelector('.hero-section .container');
+            if (heroSection) {
+                heroSection.insertAdjacentHTML('afterbegin', mensaje);
+            }
+        }
+        
+        // Mostrar bienvenida para nuevo usuario
+        function mostrarBienvenidaUsuario(nombre, email, id) {
+            const mensaje = `
+                <div style="text-align: center; padding: 2rem; background: linear-gradient(135deg, #EC4899, #F9A8D4); color: white; border-radius: 20px; margin: 2rem 0; box-shadow: 0 10px 30px rgba(236, 72, 153, 0.3);">
+                    <div style="font-size: 3rem; margin-bottom: 1rem;">👋</div>
+                    <h2 style="margin-bottom: 1rem; font-weight: 700;">¡Bienvenido a Cresalia, ${nombre}!</h2>
+                    <p style="font-size: 1.1rem; margin-bottom: 1.5rem; opacity: 0.9;">Tu cuenta ha sido creada exitosamente</p>
+                    <div style="background: rgba(255,255,255,0.2); padding: 1rem; border-radius: 10px; margin-bottom: 1.5rem;">
+                        <p style="margin: 0; font-weight: 600;">Email registrado:</p>
+                        <p style="margin: 0; font-family: monospace; font-size: 1.1rem;">${email}</p>
+                    </div>
+                    <div style="display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap;">
+                        <button onclick="irAMiCuenta('${id}')" style="background: white; color: #EC4899; border: none; padding: 12px 24px; border-radius: 25px; font-weight: 600; cursor: pointer; transition: all 0.3s;">
+                            <i class="fas fa-user"></i> Mi Cuenta
+                        </button>
+                        <button onclick="cerrarBienvenida()" style="background: rgba(255,255,255,0.2); color: white; border: 2px solid white; padding: 12px 24px; border-radius: 25px; font-weight: 600; cursor: pointer; transition: all 0.3s;">
+                            <i class="fas fa-times"></i> Cerrar
+                        </button>
+                    </div>
+                </div>
+            `;
+            
+            // Insertar mensaje al inicio del contenido
+            const heroSection = document.querySelector('.hero-section .container');
+            if (heroSection) {
+                heroSection.insertAdjacentHTML('afterbegin', mensaje);
+            }
+        }
+        
+        // Funciones auxiliares
+        function irATienda(slug) {
+            window.open(`tiendas/${slug}/index.html`, '_blank');
+        }
+        
+        function irAMiCuenta(id) {
+            window.open(`usuarios/${id}/profile.html`, '_blank');
+        }
+        
+        function cerrarBienvenida() {
+            const bienvenida = document.querySelector('.hero-section .container > div:first-child');
+            if (bienvenida) {
+                bienvenida.remove();
+            }
+        }
+    </script>
+    
+    <!-- Sistema de Acceso Secreto al Panel de Administración -->
+    <script>
+        // ===== VARIABLE GLOBAL PARA ACCESO SECRETO =====
+        let adminAccessAttempted = false;
+        
+        // ===== DETECCIÓN DE COMBINACIÓN SECRETA =====
+        document.addEventListener('keydown', function(event) {
+            // Detectar Ctrl + Alt + A (Panel de Administración General)
+            if (event.ctrlKey && event.altKey && event.key.toLowerCase() === 'a') {
+                // Prevenir comportamiento por defecto
+                event.preventDefault();
+                event.stopPropagation();
+                
+                // Evitar múltiples activaciones
+                if (adminAccessAttempted) return;
+                adminAccessAttempted = true;
+                
+                // ¡COMBINACIÓN CORRECTA!
+                console.log('🔐 Acceso secreto detectado - Redirigiendo al panel de administración...');
+                mostrarNotificacionSecreta('🔓 Acceso concedido - Redirigiendo al panel de administración...', 'success');
+                
+                // Guardar estado del carrito antes de redirigir
+                if (typeof carrito !== 'undefined' && carrito.length > 0) {
+                    localStorage.setItem('carritoBackup', JSON.stringify(carrito));
+                    console.log('💾 Carrito guardado antes de redirección');
+                }
+                
+                // Redirigir al panel de administración con delay
+                setTimeout(() => {
+                    try {
+                        // Usar window.open para abrir en nueva pestaña
+                        window.open('admin-cresalia.html', '_blank');
+                        console.log('🔐 Panel de administración abierto en nueva pestaña');
+                    } catch (error) {
+                        console.error('Error en redirección:', error);
+                        // Fallback a redirección normal
+                        window.location.href = 'admin-cresalia.html';
+                    }
+                }, 2000);
+                
+                // Resetear después de 3 segundos
+                setTimeout(() => {
+                    adminAccessAttempted = false;
+                }, 3000);
+            }
+            
+            // 🎯 NUEVO: Acceso exclusivo para CRISLA - Sistema de Atención al Cliente
+            // Combinación secreta: Ctrl + Alt + Shift + C (CRISLA)
+            if (event.ctrlKey && event.altKey && event.shiftKey && event.key.toLowerCase() === 'c') {
+                // Prevenir comportamiento por defecto
+                event.preventDefault();
+                event.stopPropagation();
+                
+                // Evitar múltiples activaciones
+                if (adminAccessAttempted) return;
+                adminAccessAttempted = true;
+                
+                // ¡ACCESO EXCLUSIVO PARA CARLA!
+                console.log('🎯 Acceso exclusivo de CRISLA detectado - Sistema de Atención al Cliente...');
+                mostrarNotificacionSecreta('👑 Acceso exclusivo de CRISLA - Sistema de Atención al Cliente', 'success');
+                
+                // Guardar estado del carrito antes de redirigir
+                if (typeof carrito !== 'undefined' && carrito.length > 0) {
+                    localStorage.setItem('carritoBackup', JSON.stringify(carrito));
+                    console.log('💾 Carrito guardado antes de redirección');
+                }
+                
+                // Redirigir al sistema de atención al cliente exclusivo
+                setTimeout(() => {
+                    try {
+                        // Usar window.open para abrir en nueva pestaña
+                        window.open('panel-master-cresalia.html', '_blank');
+                        console.log('🎯 Sistema de CRISLA abierto en nueva pestaña');
+                    } catch (error) {
+                        console.error('Error en redirección:', error);
+                        // Fallback a redirección normal
+                        window.location.href = 'panel-master-cresalia.html';
+                    }
+                }, 2000);
+                
+                // Resetear después de 3 segundos
+                setTimeout(() => {
+                    adminAccessAttempted = false;
+                }, 3000);
+            }
+        });
+        
+        // ===== NOTIFICACIÓN SECRETA =====
+        function mostrarNotificacionSecreta(mensaje, tipo = 'info') {
+            const notificacion = document.createElement('div');
+            notificacion.className = `notificacion-secreta notificacion-${tipo}`;
+            notificacion.innerHTML = `
+                <div class="notificacion-contenido">
+                    <span>${mensaje}</span>
+                </div>
+            `;
+            
+            // Estilos para notificación secreta
+            notificacion.style.cssText = `
+                position: fixed;
+                top: 50%;
+                left: 50%;
+                transform: translate(-50%, -50%);
+                background: ${tipo === 'success' ? '#10B981' : tipo === 'error' ? '#EF4444' : '#3B82F6'};
+                color: white;
+                padding: 1.5rem 2rem;
+                border-radius: 15px;
+                box-shadow: 0 20px 40px rgba(0,0,0,0.3);
+                z-index: 100000;
+                animation: fadeInScale 0.3s ease-out;
+                font-weight: 600;
+                font-size: 1.1rem;
+                text-align: center;
+                min-width: 300px;
+            `;
+            
+            // Agregar al DOM
+            document.body.appendChild(notificacion);
+            
+            // Auto-remover después de 3 segundos
+            setTimeout(() => {
+                if (notificacion.parentElement) {
+                    notificacion.remove();
+                }
+            }, 3000);
+        }
+        
+        // ===== ESTILOS CSS DINÁMICOS PARA NOTIFICACIÓN =====
+        const estilosSecretos = `
+            @keyframes fadeInScale {
+                from {
+                    opacity: 0;
+                    transform: translate(-50%, -50%) scale(0.8);
+                }
+                to {
+                    opacity: 1;
+                    transform: translate(-50%, -50%) scale(1);
+                }
+            }
+        `;
+        
+        // Agregar estilos al head
+        const styleSheet = document.createElement('style');
+        styleSheet.textContent = estilosSecretos;
+        document.head.appendChild(styleSheet);
+        
+        // ===== LOG DE INICIALIZACIÓN =====
+        console.log('🔐 Sistema de acceso secreto inicializado');
+        console.log('🎯 Combinación secreta: Ctrl + Alt + A');
+        console.log('💡 Solo Cresalia conoce esta combinación');
+    </script>
+    
+    
+    <style>
+        @keyframes pulseChat {
+            0%, 100% {
+                box-shadow: 0 8px 25px rgba(239, 68, 68, 0.4);
+            }
+            50% {
+                box-shadow: 0 8px 35px rgba(239, 68, 68, 0.6);
+            }
+        }
+        
+        /* Estilos para la sección de servicios */
+        .servicios-section {
+            padding: 80px 0;
+            background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+        }
+        
+        .servicios-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+            margin-top: 40px;
+        }
+        
+        .servicio-card {
+            background: white;
+            border-radius: 20px;
+            padding: 25px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            transition: all 0.3s ease;
+            border: 2px solid transparent;
+        }
+        
+        .servicio-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.15);
+            border-color: #667eea;
+        }
+        
+        .servicio-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+        
+        .servicio-icon {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+                    display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 15px;
+            font-size: 20px;
+                        color: white;
+        }
+        
+        .servicio-info h3 {
+            margin: 0;
+            color: #2d3748;
+            font-size: 1.2rem;
+        }
+        
+        .servicio-categoria {
+            color: #667eea;
+            font-size: 0.9rem;
+            font-weight: 500;
+        }
+        
+        .servicio-descripcion {
+            color: #4a5568;
+            margin: 15px 0;
+            line-height: 1.6;
+        }
+        
+        .servicio-precio {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #10b981;
+            margin: 15px 0;
+        }
+        
+        .servicio-features {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin: 15px 0;
+        }
+        
+        .servicio-feature {
+            background: #f1f5f9;
+            color: #475569;
+            padding: 4px 12px;
+                    border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 500;
+        }
+        
+        .servicio-actions {
+            display: flex;
+            gap: 10px;
+            margin-top: 20px;
+        }
+        
+        .btn-servicio {
+            flex: 1;
+            padding: 12px 20px;
+            border: none;
+            border-radius: 10px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .btn-contactar {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+        }
+        
+        .btn-contactar:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(102, 126, 234, 0.4);
+        }
+        
+        .btn-favorito {
+            background: #f1f5f9;
+            color: #64748b;
+            border: 2px solid #e2e8f0;
+        }
+        
+        .btn-favorito:hover {
+            background: #fef2f2;
+            color: #dc2626;
+            border-color: #fecaca;
+        }
+        
+        .filtros-especiales {
+                    display: flex;
+                    flex-direction: column;
+            gap: 8px;
+        }
+        
+        .filtros-especiales .form-check {
+            margin: 0;
+        }
+        
+        .filtros-especiales .form-check-label {
+            font-size: 0.9rem;
+            color: #4a5568;
+        }
+        
+        /* Botón secundario para servicios */
+        .btn-secondary-hero {
+            background: linear-gradient(135deg, #10b981, #059669);
+                        color: white;
+                                border: none;
+            padding: 15px 30px;
+            border-radius: 50px;
+            font-weight: 600;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            transition: all 0.3s ease;
+            box-shadow: 0 8px 25px rgba(16, 185, 129, 0.3);
+        }
+        
+        .btn-secondary-hero:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 12px 35px rgba(16, 185, 129, 0.4);
+                                color: white;
+        }
+        
+        /* Responsive */
+        @media (max-width: 768px) {
+            .servicios-grid {
+                grid-template-columns: 1fr;
+                gap: 20px;
+            }
+            
+            .servicio-card {
+                        padding: 20px;
+            }
+            
+            .servicio-actions {
+                flex-direction: column;
+            }
+        }
+    </style>
+    
+    <script>
+        
+        // Funciones del widget rojo eliminadas (redundante)
+        
+        // ===== SISTEMA DE SERVICIOS =====
+        
+        // Datos de servicios de ejemplo
+        let servicios = [
+            {
+                id: 1,
+                nombre: "Peluquería María",
+                categoria: "peluqueria",
+                descripcion: "Cortes modernos, tinturas y peinados para toda la familia. Atención personalizada y productos de calidad.",
+                precio: 2500,
+                icono: "fas fa-cut",
+                color: "#ec4899",
+                features: ["Corte y peinado", "Tinturas", "Tratamientos", "A domicilio"],
+                envioDomicilio: true,
+                distancia: "2.5 km",
+                telefono: "+54 11 1234-5678"
+            },
+            {
+                id: 2,
+                nombre: "Estética Bella",
+                categoria: "estetica",
+                descripcion: "Tratamientos faciales, depilación, manicura y pedicura. Técnicas profesionales y productos premium.",
+                precio: 3500,
+                icono: "fas fa-spa",
+                color: "#f59e0b",
+                features: ["Faciales", "Depilación", "Manicura", "Pedicura"],
+                envioDomicilio: false,
+                distancia: "1.8 km",
+                telefono: "+54 11 2345-6789"
+            },
+            {
+                id: 3,
+                nombre: "Transporte Rápido",
+                categoria: "transporte",
+                descripcion: "Servicio de remis y transporte urbano. Vehículos cómodos y conductores profesionales.",
+                precio: 1200,
+                icono: "fas fa-car",
+                color: "#3b82f6",
+                features: ["24/7", "Aeropuerto", "Ciudad", "Seguro"],
+                envioDomicilio: true,
+                distancia: "0.5 km",
+                telefono: "+54 11 3456-7890"
+            },
+            {
+                id: 4,
+                nombre: "Lubricentro Central",
+                categoria: "lubricentro",
+                descripcion: "Cambio de aceite, filtros y mantenimiento automotriz. Marcas reconocidas y garantía.",
+                precio: 4500,
+                icono: "fas fa-oil-can",
+                color: "#10b981",
+                features: ["Aceite premium", "Filtros", "Garantía", "Rápido"],
+                envioDomicilio: false,
+                distancia: "3.2 km",
+                telefono: "+54 11 4567-8901"
+            },
+            {
+                id: 5,
+                nombre: "Detail Auto Pro",
+                categoria: "detail",
+                descripcion: "Lavado premium, encerado y detailing completo. Tu auto como nuevo.",
+                precio: 2800,
+                icono: "fas fa-car-wash",
+                color: "#8b5cf6",
+                features: ["Lavado premium", "Encerado", "Interior", "A domicilio"],
+                envioDomicilio: true,
+                distancia: "1.2 km",
+                telefono: "+54 11 5678-9012"
+            },
+            {
+                id: 6,
+                nombre: "Distribución Express",
+                categoria: "distribucion",
+                descripcion: "Servicio de distribución y logística para empresas. Entrega rápida y confiable.",
+                precio: 1800,
+                icono: "fas fa-truck",
+                color: "#ef4444",
+                features: ["Express", "Empresas", "Seguimiento", "Seguro"],
+                envioDomicilio: true,
+                distancia: "4.1 km",
+                telefono: "+54 11 6789-0123"
+            }
+        ];
+        
+        // Cargar servicios al iniciar
+        document.addEventListener('DOMContentLoaded', function() {
+            cargarServicios();
+            configurarFiltrosServicios();
+        });
+        
+        // Cargar servicios en el grid
+        function cargarServicios() {
+            const serviciosGrid = document.getElementById('serviciosGrid');
+            if (!serviciosGrid) return;
+            
+            serviciosGrid.innerHTML = '';
+            
+            servicios.forEach(servicio => {
+                const servicioCard = crearServicioCard(servicio);
+                serviciosGrid.appendChild(servicioCard);
+            });
+        }
+        
+        // Crear tarjeta de servicio
+        function crearServicioCard(servicio) {
+            const card = document.createElement('div');
+            card.className = 'servicio-card';
+            card.innerHTML = `
+                <div class="servicio-header">
+                    <div class="servicio-icon" style="background: ${servicio.color}">
+                        <i class="${servicio.icono}"></i>
+                            </div>
+                    <div class="servicio-info">
+                        <h3>${servicio.nombre}</h3>
+                        <div class="servicio-categoria">${obtenerNombreCategoria(servicio.categoria)}</div>
+                        </div>
+                    </div>
+                    
+                <div class="servicio-descripcion">
+                    ${servicio.descripcion}
+                        </div>
+                
+                <div class="servicio-precio">
+                    $${servicio.precio.toLocaleString()}
+                    </div>
+                    
+                <div class="servicio-features">
+                    ${servicio.features.map(feature => `<span class="servicio-feature">${feature}</span>`).join('')}
+                    ${servicio.envioDomicilio ? '<span class="servicio-feature" style="background: #dcfce7; color: #166534;"><i class="fas fa-truck"></i> A domicilio</span>' : ''}
+                    <span class="servicio-feature" style="background: #dbeafe; color: #1e40af;"><i class="fas fa-map-marker-alt"></i> ${servicio.distancia}</span>
+                </div>
+                
+                <div class="servicio-actions">
+                    <button class="btn-servicio btn-contactar" onclick="contactarServicio(${servicio.id})">
+                        <i class="fas fa-phone"></i> Contactar
+                    </button>
+                    <button class="btn-servicio btn-favorito" onclick="agregarFavorito(${servicio.id})">
+                        <i class="fas fa-heart"></i> Favorito
+                            </button>
+                        </div>
+            `;
+            
+            return card;
+        }
+        
+        // Obtener nombre de categoría
+        function obtenerNombreCategoria(categoria) {
+            const categorias = {
+                'peluqueria': 'Peluquería',
+                'estetica': 'Estética y Belleza',
+                'transporte': 'Transporte',
+                'lubricentro': 'Lubricentro',
+                'detail': 'Detail y Limpieza',
+                'distribucion': 'Distribución',
+                'restaurante': 'Restaurante',
+                'bar': 'Bar y Tragos',
+                'cafe': 'Café y Té',
+                'panaderia': 'Panadería',
+                'comida': 'Comida',
+                'general': 'Negocio General'
+            };
+            return categorias[categoria] || categoria;
+        }
+        
+        // Configurar filtros
+        function configurarFiltrosServicios() {
+            const busqueda = document.getElementById('busquedaServicios');
+            if (busqueda) {
+                busqueda.addEventListener('input', aplicarFiltrosServicios);
+            }
+        }
+        
+        // Aplicar filtros
+        function aplicarFiltrosServicios() {
+            const busqueda = document.getElementById('busquedaServicios')?.value.toLowerCase() || '';
+            const categoria = document.getElementById('categoriaServicio')?.value || '';
+            const precioMin = parseFloat(document.getElementById('precioMinServicio')?.value) || 0;
+            const precioMax = parseFloat(document.getElementById('precioMaxServicio')?.value) || 100000;
+            const envioDomicilio = document.getElementById('envioDomicilio')?.checked || false;
+            const masBarato = document.getElementById('masBarato')?.checked || false;
+            const masCercano = document.getElementById('masCercano')?.checked || false;
+            
+            let serviciosFiltrados = servicios.filter(servicio => {
+                // Filtro de búsqueda
+                if (busqueda && !servicio.nombre.toLowerCase().includes(busqueda) && 
+                    !servicio.descripcion.toLowerCase().includes(busqueda)) {
+                    return false;
+                }
+                
+                // Filtro de categoría
+                if (categoria && servicio.categoria !== categoria) {
+                    return false;
+                }
+                
+                // Filtro de precio
+                if (servicio.precio < precioMin || servicio.precio > precioMax) {
+                    return false;
+                }
+                
+                // Filtro de envío a domicilio
+                if (envioDomicilio && !servicio.envioDomicilio) {
+                    return false;
+                }
+                
+                return true;
+            });
+            
+            // Ordenar por criterios especiales
+            if (masBarato) {
+                serviciosFiltrados.sort((a, b) => a.precio - b.precio);
+            }
+            
+            if (masCercano) {
+                serviciosFiltrados.sort((a, b) => parseFloat(a.distancia) - parseFloat(b.distancia));
+            }
+            
+            // Mostrar servicios filtrados
+            mostrarServiciosFiltrados(serviciosFiltrados);
+        }
+        
+        // Mostrar servicios filtrados
+        function mostrarServiciosFiltrados(serviciosFiltrados) {
+            const serviciosGrid = document.getElementById('serviciosGrid');
+            if (!serviciosGrid) return;
+            
+            serviciosGrid.innerHTML = '';
+            
+            if (serviciosFiltrados.length === 0) {
+                serviciosGrid.innerHTML = `
+                    <div style="grid-column: 1 / -1; text-align: center; padding: 40px; color: #64748b;">
+                        <i class="fas fa-search" style="font-size: 3rem; margin-bottom: 20px; opacity: 0.5;"></i>
+                        <h3>No se encontraron servicios</h3>
+                        <p>Intenta ajustar los filtros de búsqueda</p>
+                    </div>
+                `;
+                return;
+            }
+            
+            serviciosFiltrados.forEach(servicio => {
+                const servicioCard = crearServicioCard(servicio);
+                serviciosGrid.appendChild(servicioCard);
+            });
+        }
+        
+        // Contactar servicio
+        function contactarServicio(servicioId) {
+            const servicio = servicios.find(s => s.id === servicioId);
+            if (!servicio) return;
+            
+            // Simular contacto (aquí integrarías con WhatsApp, teléfono, etc.)
+            alert(`Contactando con ${servicio.nombre}\nTeléfono: ${servicio.telefono}\n\n¡Pronto te contactaremos!`);
+        }
+        
+        // Agregar a favoritos
+        function agregarFavorito(servicioId) {
+            const servicio = servicios.find(s => s.id === servicioId);
+            if (!servicio) return;
+            
+            // Simular agregar a favoritos
+            alert(`¡${servicio.nombre} agregado a favoritos! 💜`);
+        }
+        
+        // ===== CRESALIA AI CHATBOT =====
+        
+        // Función para enviar mensaje al AI
+        function sendAIMessage() {
+            const input = document.getElementById('aiChatInput');
+            const message = input.value.trim();
+            
+            if (!message) return;
+            
+            // Mostrar mensaje del usuario
+            addAIMessage(message, 'user');
+            
+            // Limpiar input
+            input.value = '';
+            
+            // Simular respuesta del AI
+            setTimeout(() => {
+                const response = generateAIResponse(message);
+                addAIMessage(response, 'ai');
+            }, 1000);
+        }
+        
+        // Generar respuesta del AI
+        function generateAIResponse(message) {
+            const lowerMessage = message.toLowerCase();
+            
+            // Respuestas sobre servicios profesionales
+            if (lowerMessage.includes('servicio') || lowerMessage.includes('profesional') || lowerMessage.includes('emprendimiento')) {
+                return `¡Excelente! Para servicios profesionales y emprendimientos, puedes:
+                
+🏪 **Crear tu tienda online** - Vender productos y servicios
+💼 **Servicios profesionales** - Ofrecer servicios especializados
+🛒 **Comprar en Cresalia** - Descubrir tiendas y productos
+
+¿Te gustaría que te ayude con alguna opción específica?`;
+            }
+            
+            // Respuestas sobre productos
+            if (lowerMessage.includes('producto') || lowerMessage.includes('vender') || lowerMessage.includes('tienda')) {
+                return `¡Perfecto! Para vender productos puedes:
+                
+🏪 **Crear tu tienda online** - Configurar tu tienda completa
+📦 **Agregar productos** - Subir tus productos con fotos
+💰 **Gestionar ventas** - Controlar pedidos y pagos
+📊 **Analizar ventas** - Ver estadísticas de tu negocio
+
+¿Necesitas ayuda con algún paso específico?`;
+            }
+            
+            // Respuestas sobre compras
+            if (lowerMessage.includes('comprar') || lowerMessage.includes('buscar') || lowerMessage.includes('encontrar')) {
+                return `¡Genial! Para comprar en Cresalia puedes:
+                
+🛒 **Explorar productos** - Ver todas las tiendas disponibles
+🔍 **Buscar servicios** - Encontrar servicios profesionales
+🏪 **Ver tiendas** - Descubrir nuevas tiendas
+💝 **Favoritos** - Guardar tus productos favoritos
+
+¿Qué tipo de producto o servicio buscas?`;
+            }
+            
+            // Respuestas sobre ayuda
+            if (lowerMessage.includes('ayuda') || lowerMessage.includes('problema') || lowerMessage.includes('soporte')) {
+                return `¡Estoy aquí para ayudarte! Puedo ayudarte con:
+                
+🏪 **Configurar tu tienda** - Pasos para crear tu tienda
+💼 **Servicios profesionales** - Cómo ofrecer servicios
+🛒 **Comprar productos** - Encontrar lo que necesitas
+📞 **Contacto directo** - Hablar con nuestro equipo
+
+¿En qué específicamente necesitas ayuda?`;
+            }
+            
+            // Respuesta por defecto
+            return `¡Hola! Soy Cresalia AI, tu asistente virtual. Puedo ayudarte con:
+            
+🏪 **Crear tu tienda online** - Para vender productos
+💼 **Servicios profesionales** - Para ofrecer servicios
+🛒 **Comprar productos** - Para encontrar lo que necesitas
+📞 **Soporte técnico** - Para resolver problemas
+
+¿En qué puedo ayudarte hoy?`;
+        }
+        
+        // Agregar mensaje al chat
+        function addAIMessage(message, sender) {
+            const messagesContainer = document.getElementById('aiChatMessages');
+            if (!messagesContainer) return;
+            
+            const messageDiv = document.createElement('div');
+            messageDiv.className = `ai-message ai-message-${sender}`;
+            
+            if (sender === 'user') {
+                messageDiv.innerHTML = `
+                    <div style="text-align: right; margin-bottom: 15px;">
+                        <div style="display: inline-block; background: #667eea; color: white; padding: 10px 15px; border-radius: 15px 15px 0 15px; max-width: 70%;">
+                            ${message}
+                        </div>
+                    </div>
+                `;
+            } else {
+                messageDiv.innerHTML = `
+                    <div style="margin-bottom: 15px;">
+                        <div style="display: inline-block; background: #f1f5f9; color: #374151; padding: 10px 15px; border-radius: 15px 15px 15px 0; max-width: 70%; white-space: pre-line;">
+                            ${message}
+                        </div>
+                    </div>
+                `;
+            }
+            
+            messagesContainer.appendChild(messageDiv);
+            messagesContainer.scrollTop = messagesContainer.scrollHeight;
+        }
+        
+        // Manejar tecla Enter en el input
+        function handleAIChatKeyPress(event) {
+            if (event.key === 'Enter') {
+                sendAIMessage();
+            }
+        }
+        
+        // ===== SERVICIO DE AYUDA =====
+        
+        // Función para enviar mensaje al servicio de ayuda
+        function sendMessage(type = 'help') {
+            let input, messagesContainer;
+            
+            if (type === 'help') {
+                input = document.getElementById('chatHelpInput');
+                messagesContainer = document.getElementById('chatbotMessages');
+            } else if (type === 'ai') {
+                input = document.getElementById('chatAIInput');
+                messagesContainer = document.getElementById('chatbotMessages');
+            }
+            
+            if (!input || !messagesContainer) return;
+            
+            const message = input.value.trim();
+            if (!message) return;
+            
+            // Mostrar mensaje del usuario
+            addHelpMessage(message, 'user', messagesContainer);
+            
+            // Limpiar input
+            input.value = '';
+            
+            // Simular respuesta del servicio de ayuda
+            setTimeout(() => {
+                const response = generateHelpResponse(message, type);
+                addHelpMessage(response, 'help', messagesContainer);
+            }, 1000);
+        }
+        
+        // Generar respuesta del servicio de ayuda
+        function generateHelpResponse(message, type) {
+            const lowerMessage = message.toLowerCase();
+            
+            // Respuestas sobre servicios profesionales
+            if (lowerMessage.includes('servicio') || lowerMessage.includes('profesional') || lowerMessage.includes('emprendimiento')) {
+                return `¡Perfecto! Para servicios profesionales y emprendimientos:
+
+💼 **Opciones disponibles:**
+• Crear tu tienda online para vender productos
+• Ofrecer servicios profesionales especializados
+• Gestionar emprendimientos y negocios
+
+🏪 **Para empezar:**
+1. Haz clic en "Servicios Profesionales" en el registro
+2. Configura tu perfil profesional
+3. Agrega tus servicios y precios
+4. ¡Comienza a recibir clientes!
+
+¿Necesitas ayuda con algún paso específico?`;
+            }
+            
+            // Respuestas sobre productos
+            if (lowerMessage.includes('producto') || lowerMessage.includes('vender') || lowerMessage.includes('tienda')) {
+                return `¡Excelente! Para vender productos:
+
+🏪 **Crear tu tienda:**
+1. Registra tu tienda online
+2. Configura tu perfil y descripción
+3. Agrega productos con fotos y precios
+4. Configura métodos de pago
+5. ¡Comienza a vender!
+
+📦 **Gestión de productos:**
+• Subir fotos desde tu dispositivo
+• Descripciones detalladas
+• Categorías organizadas
+• Precios competitivos
+
+¿Te ayudo con algún paso específico?`;
+            }
+            
+            // Respuestas sobre compras
+            if (lowerMessage.includes('comprar') || lowerMessage.includes('buscar') || lowerMessage.includes('encontrar')) {
+                return `¡Genial! Para comprar en Cresalia:
+
+🛒 **Explorar productos:**
+• Navega por todas las tiendas
+• Usa filtros para encontrar lo que buscas
+• Compara precios y características
+• Lee reseñas de otros compradores
+
+🔍 **Buscar servicios:**
+• Encuentra servicios profesionales
+• Filtra por categoría y precio
+• Ve servicios con envío a domicilio
+• Contacta directamente con el proveedor
+
+¿Qué tipo de producto o servicio buscas?`;
+            }
+            
+            // Respuestas sobre planes y pagos
+            if (lowerMessage.includes('plan') || lowerMessage.includes('pago') || lowerMessage.includes('suscripcion')) {
+                return `¡Información sobre planes:
+
+💳 **Planes disponibles:**
+• **Gratuito** - 1.8% de comisión por venta
+• **Básico** - 2.0% de comisión por venta  
+• **Premium** - 1.5% de comisión por venta
+
+💰 **Ventajas de los planes pagos:**
+• Herramientas avanzadas para crecer
+• Soporte prioritario personalizado
+• IA para descripciones de productos
+• Recursos adicionales de bienestar
+
+¿Te interesa algún plan específico?`;
+            }
+            
+            // Respuesta por defecto
+            return `¡Hola! Soy el servicio de ayuda de Cresalia. Puedo ayudarte con:
+
+🏪 **Crear tu tienda** - Para vender productos
+💼 **Servicios profesionales** - Para ofrecer servicios
+🛒 **Comprar productos** - Para encontrar lo que necesitas
+💰 **Planes y pagos** - Información sobre suscripciones
+📞 **Soporte técnico** - Para resolver problemas
+
+¿En qué específicamente necesitas ayuda?`;
+        }
+        
+        // Agregar mensaje al chat de ayuda
+        function addHelpMessage(message, sender, container) {
+            const messageDiv = document.createElement('div');
+            messageDiv.className = `help-message help-message-${sender}`;
+            
+            if (sender === 'user') {
+                messageDiv.innerHTML = `
+                    <div style="text-align: right; margin-bottom: 15px;">
+                        <div style="display: inline-block; background: #667eea; color: white; padding: 10px 15px; border-radius: 15px 15px 0 15px; max-width: 70%;">
+                            ${message}
+                        </div>
+                    </div>
+                `;
+            } else {
+                messageDiv.innerHTML = `
+                    <div style="margin-bottom: 15px;">
+                        <div style="display: inline-block; background: #f1f5f9; color: #374151; padding: 10px 15px; border-radius: 15px 15px 15px 0; max-width: 70%; white-space: pre-line;">
+                            ${message}
+                        </div>
+                    </div>
+                `;
+            }
+            
+            container.appendChild(messageDiv);
+            container.scrollTop = container.scrollHeight;
+        }
+    </script>
+    
+    <!-- ===== SISTEMAS ADICIONALES ===== -->
+    
+    <!-- Sistema de Feedbacks -->
+    <script src="js/sistema-feedbacks.js"></script>
+    
+    <!-- Sistema de Desafíos Emocionales -->
+    <script src="js/sistema-desafios-emocionales.js"></script>
+    
+    <!-- Sistema de Contacto Directo -->
+    <script src="js/contacto-directo-crisla.js"></script>
+    
+    <!-- Sistema Anti-Fraudes -->
+    <script src="js/sistema-anti-fraudes-cresalia.js"></script>
+    
+    <!-- Sistema Protección Bidireccional -->
+    <script src="js/sistema-proteccion-bidireccional.js"></script>
+    
+    <!-- Sistema Credenciales Seguras -->
+    <script src="js/sistema-credenciales-seguras.js"></script>
+    
+    <!-- Categorías y Servicios -->
+    <script src="js/categorias-servicios-populares.js"></script>
+    
+    <!-- Filtros Avanzados -->
+    <script src="js/filtros-avanzados.js"></script>
+    
+    <!-- Inicialización de Sistemas -->
+    <script>
+        // Inicializar sistemas al cargar
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('🚀 Inicializando sistemas adicionales...');
+            
+            // Sistema de Bienestar eliminado
+            
+            // Sistema de Feedbacks (ya se auto-inicializa)
+            
+            // Sistema de Desafíos Emocionales
+            if (typeof DesafiosEmocionales !== 'undefined') {
+                // Se inicializa cuando hay un contenedor disponible
+                console.log('✅ Sistema de Desafíos disponible');
+            }
+            
+            // Sistema de Contacto
+            if (typeof ContactoDirectoCRISLA !== 'undefined') {
+                // Descomentar para activar botón flotante
+                // ContactoDirectoCRISLA.crearBotonFlotante();
+                console.log('✅ Sistema de Contacto disponible');
+            }
+            
+            // Categorías y Servicios
+            if (typeof CategoriasServiciosPopulares !== 'undefined') {
+                console.log('✅ Categorías y Servicios cargados:', {
+                    categorias: CategoriasServiciosPopulares.categorias.length,
+                    servicios: CategoriasServiciosPopulares.servicios.length
+                });
+                window.categoriasDisponibles = CategoriasServiciosPopulares;
+            }
+            
+            console.log('🎉 Todos los sistemas cargados correctamente');
+        });
+        
+        // ========================================
+        // FUNCIONES DE SISTEMA DE USUARIOS
+        // ========================================
+        
+        function showLoginForm() {
+            console.log('👤 Mostrando formulario de login');
+            document.getElementById('loginUserForm').style.display = 'block';
+            document.getElementById('registerUserForm').style.display = 'none';
+        }
+        
+        function showRegisterForm() {
+            console.log('👤 Mostrando formulario de registro');
+            document.getElementById('loginUserForm').style.display = 'none';
+            document.getElementById('registerUserForm').style.display = 'block';
+        }
+        
+        function closeUserSystem() {
+            console.log('👤 Cerrando sistema de usuarios');
+            document.getElementById('userSystem').style.display = 'none';
+        }
+        
+        // Funciones mejoradas para redirigir a páginas específicas
+        function openUserSystem() {
+            console.log('👤 Abriendo sistema de usuarios');
+            document.getElementById('userSystem').style.display = 'flex';
+            showLoginForm(); // Mostrar login por defecto
+        }
+        
+        // Interceptar envío de formularios para redirigir correctamente
+        document.addEventListener('DOMContentLoaded', function() {
+            // Interceptar formulario de login
+            const loginForms = document.querySelectorAll('#loginUserForm, form[onsubmit*="loginUser"]');
+            loginForms.forEach(form => {
+                form.addEventListener('submit', function(e) {
+                    e.preventDefault();
+                    
+                    // Mostrar modal de selección de tipo de login
+                    mostrarSeleccionTipoLoginIndex();
+                });
+            });
+            
+            // Interceptar formulario de registro
+            const registerForms = document.querySelectorAll('#registerUserForm, form[onsubmit*="registerUser"]');
+            registerForms.forEach(form => {
+                form.addEventListener('submit', function(e) {
+                    e.preventDefault();
+                    
+                    // Mostrar modal de selección de tipo de cuenta
+                    mostrarSeleccionTipoCuentaIndex();
+                });
+            });
+        });
+        
+        // Función para mostrar selección de tipo de cuenta en index
+        function mostrarSeleccionTipoCuentaIndex() {
+            closeUserSystem();
+            
+            const modalHTML = `
+                <div id="modalTipoCuentaIndex" style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); display: flex; align-items: center; justify-content: center; z-index: 99999;">
+                    <div style="background: white; border-radius: 20px; padding: 40px; max-width: 500px; margin: 20px;">
+                        <div style="text-align: center; margin-bottom: 30px;">
+                            <h2 style="margin: 0; color: #374151;"><i class="fas fa-user-plus"></i> ¿Qué quieres hacer?</h2>
+                            <p style="color: #6b7280; margin-top: 10px;">Selecciona el tipo de cuenta que necesitas</p>
+                        </div>
+                        
+                        <div style="display: grid; gap: 20px;">
+                            <button onclick="irARegistroTiendaIndex()" style="background: linear-gradient(135deg, #7C3AED, #EC4899); color: white; padding: 20px; border: none; border-radius: 15px; cursor: pointer; text-align: left; transition: all 0.3s ease;" onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 10px 30px rgba(124, 58, 237, 0.3)';" onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='none';">
+                                <div style="display: flex; align-items: center; gap: 15px;">
+                                    <div style="width: 60px; height: 60px; background: rgba(255,255,255,0.2); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 1.5rem;">
+                                        🏪
+                                    </div>
+                                    <div>
+                                        <h3 style="margin: 0; font-size: 1.2rem;">Crear mi Tienda Online</h3>
+                                        <p style="margin: 5px 0 0 0; opacity: 0.9; font-size: 0.9rem;">Vender productos y ofrecer servicios</p>
+                                    </div>
+                                </div>
+                            </button>
+                            
+                            <button onclick="irARegistroServiciosProfesionales()" style="background: linear-gradient(135deg, #F59E0B, #EF4444); color: white; padding: 20px; border: none; border-radius: 15px; cursor: pointer; text-align: left; transition: all 0.3s ease;" onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 10px 30px rgba(245, 158, 11, 0.3)';" onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='none';">
+                                <div style="display: flex; align-items: center; gap: 15px;">
+                                    <div style="width: 60px; height: 60px; background: rgba(255,255,255,0.2); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 1.5rem;">
+                                        💼
+                                    </div>
+                                    <div>
+                                        <h3 style="margin: 0; font-size: 1.2rem;">Servicios Profesionales</h3>
+                                        <p style="margin: 5px 0 0 0; opacity: 0.9; font-size: 0.9rem;">Ofrecer servicios profesionales y emprendimientos</p>
+                                    </div>
+                                </div>
+                            </button>
+                            
+                            <button onclick="irARegistroCompradorIndex()" style="background: linear-gradient(135deg, #10B981, #059669); color: white; padding: 20px; border: none; border-radius: 15px; cursor: pointer; text-align: left; transition: all 0.3s ease;" onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 10px 30px rgba(16, 185, 129, 0.3)';" onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='none';">
+                                <div style="display: flex; align-items: center; gap: 15px;">
+                                    <div style="width: 60px; height: 60px; background: rgba(255,255,255,0.2); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 1.5rem;">
+                                        🛒
+                                    </div>
+                                    <div>
+                                        <h3 style="margin: 0; font-size: 1.2rem;">Comprar en Cresalia</h3>
+                                        <p style="margin: 5px 0 0 0; opacity: 0.9; font-size: 0.9rem;">Descubrir tiendas y productos</p>
+                                    </div>
+                                </div>
+                            </button>
+                        </div>
+                        
+                        <div style="text-align: center; margin-top: 30px;">
+                            <button onclick="cerrarModalTipoCuentaIndex()" style="background: #6b7280; color: white; padding: 12px 30px; border: none; border-radius: 10px; cursor: pointer;">
+                                <i class="fas fa-times"></i> Cerrar
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            `;
+            
+            document.body.insertAdjacentHTML('beforeend', modalHTML);
+        }
+        
+        // Función para mostrar selección de tipo de login en index
+        function mostrarSeleccionTipoLoginIndex() {
+            closeUserSystem();
+            
+            const modalHTML = `
+                <div id="modalTipoLoginIndex" style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); display: flex; align-items: center; justify-content: center; z-index: 99999;">
+                    <div style="background: white; border-radius: 20px; padding: 40px; max-width: 500px; margin: 20px;">
+                        <div style="text-align: center; margin-bottom: 30px;">
+                            <h2 style="margin: 0; color: #374151;"><i class="fas fa-sign-in-alt"></i> ¿Cómo quieres ingresar?</h2>
+                            <p style="color: #6b7280; margin-top: 10px;">Selecciona tu tipo de cuenta</p>
+                        </div>
+                        
+                        <div style="display: grid; gap: 20px;">
+                            <button onclick="irALoginTiendaIndex()" style="background: linear-gradient(135deg, #7C3AED, #EC4899); color: white; padding: 20px; border: none; border-radius: 15px; cursor: pointer; text-align: left; transition: all 0.3s ease;" onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 10px 30px rgba(124, 58, 237, 0.3)';" onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='none';">
+                                <div style="display: flex; align-items: center; gap: 15px;">
+                                    <div style="width: 60px; height: 60px; background: rgba(255,255,255,0.2); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 1.5rem;">
+                                        🏪
+                                    </div>
+                                    <div>
+                                        <h3 style="margin: 0; font-size: 1.2rem;">Soy Vendedor</h3>
+                                        <p style="margin: 5px 0 0 0; opacity: 0.9; font-size: 0.9rem;">Acceder a mi tienda</p>
+                                    </div>
+                                </div>
+                            </button>
+                            
+                            <button onclick="irALoginCompradorIndex()" style="background: linear-gradient(135deg, #10B981, #059669); color: white; padding: 20px; border: none; border-radius: 15px; cursor: pointer; text-align: left; transition: all 0.3s ease;" onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 10px 30px rgba(16, 185, 129, 0.3)';" onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='none';">
+                                <div style="display: flex; align-items: center; gap: 15px;">
+                                    <div style="width: 60px; height: 60px; background: rgba(255,255,255,0.2); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 1.5rem;">
+                                        🛒
+                                    </div>
+                                    <div>
+                                        <h3 style="margin: 0; font-size: 1.2rem;">Soy Comprador</h3>
+                                        <p style="margin: 5px 0 0 0; opacity: 0.9; font-size: 0.9rem;">Acceder a mi cuenta</p>
+                                    </div>
+                                </div>
+                            </button>
+                        </div>
+                        
+                        <div style="text-align: center; margin-top: 30px;">
+                            <button onclick="cerrarModalTipoLoginIndex()" style="background: #6b7280; color: white; padding: 12px 30px; border: none; border-radius: 10px; cursor: pointer;">
+                                <i class="fas fa-times"></i> Cerrar
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            `;
+            
+            document.body.insertAdjacentHTML('beforeend', modalHTML);
+        }
+        
+        // Funciones de redirección para index
+        function irARegistroTiendaIndex() {
+            window.location.href = 'registro-tienda.html';
+        }
+        
+        function irARegistroServiciosProfesionales() {
+            // Redirigir a la página de admin para servicios profesionales
+            window.location.href = 'tiendas/ejemplo-tienda/admin.html';
+        }
+        
+        function irARegistroCompradorIndex() {
+            window.location.href = 'registro-comprador.html';
+        }
+        
+        function irALoginTiendaIndex() {
+            window.location.href = 'login-tienda.html';
+        }
+        
+        function irALoginCompradorIndex() {
+            window.location.href = 'login-comprador.html';
+        }
+        
+        function cerrarModalTipoCuentaIndex() {
+            const modal = document.getElementById('modalTipoCuentaIndex');
+            if (modal) modal.remove();
+        }
+        
+        function cerrarModalTipoLoginIndex() {
+            const modal = document.getElementById('modalTipoLoginIndex');
+            if (modal) modal.remove();
+        }
+    </script>
+    
+    <!-- 📱 PWA INSTALLATION BUTTON -->
+    <div id="pwa-install-container" style="display: none; position: fixed; top: 20px; right: 20px; z-index: 9999;">
+        <button id="pwa-install-btn" style="
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 25px;
+            cursor: pointer;
+            font-family: 'Poppins', sans-serif;
+            font-weight: 500;
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        " onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 6px 20px rgba(102, 126, 234, 0.4)';" onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 4px 15px rgba(102, 126, 234, 0.3)';">
+            <i class="fas fa-download"></i>
+            <span>Instalar App</span>
+        </button>
+    </div>
+
+    <!-- 📱 PWA SCRIPTS -->
+    <script>
+        // 🔧 PWA Configuration
+        const PWA_CONFIG = {
+            enabled: false, // ⚠️ CAMBIAR A true PARA ACTIVAR PWA
+            showInstallPrompt: true,
+            notificationsEnabled: false
+        };
+
+        // 📱 PWA Install Prompt Management
+        let deferredPrompt;
+        const installButton = document.getElementById('pwa-install-btn');
+        const installContainer = document.getElementById('pwa-install-container');
+
+        // 🔧 Service Worker Registration
+        async function registerServiceWorker() {
+            if (!PWA_CONFIG.enabled) {
+                console.log('🔄 PWA desactivada - Service Worker no registrado');
+                return;
+            }
+
+            if ('serviceWorker' in navigator) {
+                try {
+                    const registration = await navigator.serviceWorker.register('/sw.js');
+                    
+                    console.log('✅ Service Worker registrado:', registration.scope);
+                    
+                    // Manejar actualizaciones
+                    registration.addEventListener('updatefound', () => {
+                        const newWorker = registration.installing;
+                        newWorker.addEventListener('statechange', () => {
+                            if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
+                                showUpdateNotification();
+                            }
+                        });
+                    });
+                    
+                } catch (error) {
+                    console.error('❌ Error registrando Service Worker:', error);
+                }
+            }
+        }
+
+        // 📱 PWA Install Prompt
+        window.addEventListener('beforeinstallprompt', (e) => {
+            if (!PWA_CONFIG.enabled || !PWA_CONFIG.showInstallPrompt) {
+                return;
+            }
+
+            e.preventDefault();
+            deferredPrompt = e;
+            
+            // Mostrar botón de instalación personalizado
+            installContainer.style.display = 'block';
+            
+            // Animación de entrada
+            installContainer.style.opacity = '0';
+            installContainer.style.transform = 'translateY(-20px)';
+            setTimeout(() => {
+                installContainer.style.transition = 'all 0.3s ease';
+                installContainer.style.opacity = '1';
+                installContainer.style.transform = 'translateY(0)';
+            }, 100);
+        });
+
+        // 🎯 Install Button Click Handler
+        installButton.addEventListener('click', async () => {
+            if (!deferredPrompt) return;
+
+            try {
+                // Mostrar prompt nativo
+                deferredPrompt.prompt();
+                
+                // Esperar respuesta del usuario
+                const { outcome } = await deferredPrompt.userChoice;
+                
+                if (outcome === 'accepted') {
+                    console.log('✅ PWA instalada por el usuario');
+                    showNotification('¡Cresalia instalada correctamente!', 'success');
+                } else {
+                    console.log('❌ Usuario canceló instalación PWA');
+                }
+                
+                // Limpiar prompt
+                deferredPrompt = null;
+                installContainer.style.display = 'none';
+                
+            } catch (error) {
+                console.error('❌ Error instalando PWA:', error);
+                showNotification('Error al instalar la aplicación', 'error');
+            }
+        });
+
+        // 📱 PWA Installed Event
+        window.addEventListener('appinstalled', () => {
+            console.log('✅ PWA instalada exitosamente');
+            installContainer.style.display = 'none';
+            showNotification('¡Bienvenido a Cresalia App! 🎉', 'success');
+            
+            // Ocultar elementos web-only
+            document.querySelectorAll('.web-only').forEach(el => {
+                el.style.display = 'none';
+            });
+        });
+
+        // 🔄 Update Notification
+        function showUpdateNotification() {
+            if (!PWA_CONFIG.enabled) return;
+
+            const notification = document.createElement('div');
+            notification.innerHTML = `
+                <div style="
+                    position: fixed;
+                    top: 20px;
+                    left: 50%;
+                    transform: translateX(-50%);
+                    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+                    color: white;
+                    padding: 15px 25px;
+                    border-radius: 15px;
+                    box-shadow: 0 6px 20px rgba(102, 126, 234, 0.3);
+                    z-index: 10000;
+                    font-family: 'Poppins', sans-serif;
+                    display: flex;
+                    align-items: center;
+                    gap: 15px;
+                    animation: slideDown 0.3s ease;
+                ">
+                    <i class="fas fa-sync-alt"></i>
+                    <span>Nueva versión disponible</span>
+                    <button onclick="window.location.reload()" style="
+                        background: rgba(255,255,255,0.2);
+                        border: 1px solid rgba(255,255,255,0.3);
+                        color: white;
+                        padding: 5px 15px;
+                        border-radius: 8px;
+                        cursor: pointer;
+                        font-size: 0.9rem;
+                    ">Actualizar</button>
+                    <button onclick="this.parentElement.parentElement.remove()" style="
+                        background: none;
+                        border: none;
+                        color: white;
+                        cursor: pointer;
+                        font-size: 1.2rem;
+                        opacity: 0.7;
+                    ">&times;</button>
+                </div>
+            `;
+            document.body.appendChild(notification);
+            
+            // Auto-remover después de 10 segundos
+            setTimeout(() => {
+                if (notification.parentElement) {
+                    notification.remove();
+                }
+            }, 10000);
+        }
+
+        // 🔔 PWA Notifications Helper
+        function showNotification(message, type = 'info') {
+            // Usar el sistema de notificaciones existente de Cresalia
+            if (typeof mostrarNotificacion === 'function') {
+                mostrarNotificacion(message, type);
+            } else {
+                // Fallback simple
+                console.log(`📢 ${type.toUpperCase()}: ${message}`);
+            }
+        }
+
+        // 🎯 Check PWA Display Mode
+        function checkPWAMode() {
+            const isStandalone = window.matchMedia('(display-mode: standalone)').matches;
+            const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
+            const isInStandaloneMode = ('standalone' in window.navigator) && (window.navigator.standalone);
+            
+            if (isStandalone || (isIOS && isInStandaloneMode)) {
+                document.body.classList.add('pwa-mode');
+                console.log('📱 Ejecutándose como PWA');
+            }
+        }
+
+        // 🚀 PWA Initialization
+        document.addEventListener('DOMContentLoaded', () => {
+            checkPWAMode();
+            
+            if (PWA_CONFIG.enabled) {
+                registerServiceWorker();
+                console.log('🚀 PWA Cresalia inicializada');
+            } else {
+                console.log('⏸️ PWA Cresalia desactivada');
+                console.log('💡 Para activar: cambiar PWA_CONFIG.enabled = true');
+            }
+        });
+
+        // 📱 PWA Share API
+        async function shareContent(title, text, url) {
+            if (!PWA_CONFIG.enabled) return false;
+
+            if (navigator.share) {
+                try {
+                    await navigator.share({ title, text, url });
+                    return true;
+                } catch (error) {
+                    console.log('❌ Error compartiendo:', error);
+                }
+            }
+            return false;
+        }
+
+        // 🔋 PWA Battery API (opcional)
+        async function checkBatteryStatus() {
+            if (!PWA_CONFIG.enabled || !navigator.getBattery) return;
+
+            try {
+                const battery = await navigator.getBattery();
+                if (battery.level < 0.2 && !battery.charging) {
+                    showNotification('Batería baja. Considera activar modo ahorro.', 'warning');
+                }
+            } catch (error) {
+                console.log('❌ Battery API no disponible');
+            }
+        }
+
+        // 📱 Add to Home Screen CSS for PWA mode
+        const pwaStyles = `
+            <style id="pwa-styles">
+                .pwa-mode .web-only { display: none !important; }
+                .pwa-mode body { padding-top: env(safe-area-inset-top); }
+                .pwa-mode .navbar { padding-top: env(safe-area-inset-top); }
+                
+                @keyframes slideDown {
+                    from { transform: translateX(-50%) translateY(-50px); opacity: 0; }
+                    to { transform: translateX(-50%) translateY(0); opacity: 1; }
+                }
+            </style>
+        `;
+        document.head.insertAdjacentHTML('beforeend', pwaStyles);
+
+        // 🌐 PWA Analytics (opcional)
+        function trackPWAUsage(event, data = {}) {
+            if (!PWA_CONFIG.enabled) return;
+
+            // Aquí puedes integrar con tu sistema de analytics
+            console.log(`📊 PWA Event: ${event}`, data);
+            
+            // Ejemplo: Google Analytics
+            if (typeof gtag === 'function') {
+                gtag('event', event, {
+                    event_category: 'PWA',
+                    ...data
+                });
+            }
+        }
+
+        console.log('📱 Sistema PWA Cresalia cargado' + (PWA_CONFIG.enabled ? ' y activo' : ' (desactivado)'));
+    </script>
+    
+    <!-- Sistema de Alertas de Emergencia Global -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="config-supabase-seguro.js"></script>
+    <script src="js/sistema-alertas-comunidades.js"></script>
+    <script>
+        // Inicializar sistema de alertas global (sin comunidad específica)
+        document.addEventListener('DOMContentLoaded', () => {
+            setTimeout(() => {
+                if (typeof SistemaAlertasComunidades !== 'undefined') {
+                    window.alertasGlobalCresalia = new SistemaAlertasComunidades('global');
+                }
+            }, 500);
+        });
+    </script>
+</body>
+</html>

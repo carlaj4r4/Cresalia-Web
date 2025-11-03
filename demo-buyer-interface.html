@@ -1,0 +1,2839 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Demo - Interfaz de Compradores</title>
+    
+    <!-- Meta Security -->
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' cdnjs.cloudflare.com cdn.jsdelivr.net; style-src 'self' 'unsafe-inline' fonts.googleapis.com cdnjs.cloudflare.com cdn.jsdelivr.net; style-src-elem 'self' 'unsafe-inline' fonts.googleapis.com cdnjs.cloudflare.com cdn.jsdelivr.net; font-src 'self' fonts.gstatic.com cdnjs.cloudflare.com https:; img-src 'self' data: https:; connect-src 'self' https:; frame-src 'self'; object-src 'none'; base-uri 'self'; form-action 'self';">
+    <meta http-equiv="X-Content-Type-Options" content="nosniff">
+    <meta http-equiv="X-XSS-Protection" content="1; mode=block">
+    <meta name="referrer" content="strict-origin-when-cross-origin">
+    
+    <!-- Favicon -->
+    <link rel="icon" type="image/png" href="assets/logo/logo-cresalia.png">
+    
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Estilos -->
+    <link rel="stylesheet" href="css/buyer-interface-improved.css">
+    <link rel="stylesheet" href="css/z-index-layers.css">
+    <link rel="stylesheet" href="css/elegant-notifications.css">
+    
+    <!-- Sistema de Interconexiones -->
+    <script src="js/sistema-interconexiones-global.js"></script>
+    
+    <!-- Sistema de Alertas de Emergencia -->
+    <script src="js/sistema-alertas-emergencia-global.js"></script>
+    
+    <style>
+        body {
+            font-family: 'Poppins', sans-serif;
+            margin: 0;
+            padding: 0;
+        }
+        
+        .demo-header {
+            background: linear-gradient(135deg, #7C3AED, #EC4899);
+            color: white;
+            padding: 20px;
+            text-align: center;
+        }
+        
+        .demo-info {
+            background: #F8FAFC;
+            padding: 20px;
+            text-align: center;
+            border-bottom: 2px solid #E5E7EB;
+        }
+        
+        .demo-nav {
+            background: white;
+            padding: 15px 0;
+            border-bottom: 1px solid #E5E7EB;
+            position: sticky;
+        }
+        
+        .search-filters {
+            background: #F8FAFC;
+            padding: 20px;
+            border-radius: 12px;
+            margin: 20px 0;
+        }
+        
+        .filter-group {
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+            align-items: center;
+        }
+        
+        .filter-item {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+        
+        .filter-item label {
+            font-weight: 600;
+            color: #374151;
+            font-size: 0.9rem;
+        }
+        
+        .filter-item input,
+        .filter-item select {
+            padding: 8px 12px;
+            border: 1px solid #D1D5DB;
+            border-radius: 6px;
+            font-size: 0.9rem;
+        }
+        
+        .stock-indicator {
+            display: inline-block;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 0.8rem;
+            font-weight: 600;
+        }
+        
+        .stock-disponible {
+            background: #D1FAE5;
+            color: #065F46;
+        }
+        
+        .stock-bajo {
+            background: #FEF3C7;
+            color: #92400E;
+        }
+        
+        .stock-agotado {
+            background: #FEE2E2;
+            color: #991B1B;
+        }
+        
+        .calculadora-tiempo-real {
+            position: fixed;
+            bottom: 100px;
+            left: 20px;
+            background: white;
+            padding: 15px;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            z-index: 999;
+            min-width: 220px;
+            max-width: 250px;
+            font-size: 0.85rem;
+        }
+        
+        .calculadora-tiempo-real h4 {
+            margin: 0 0 10px 0;
+            color: #1F2937;
+            font-size: 1rem;
+        }
+        
+        .calculadora-tiempo-real input {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #D1D5DB;
+            border-radius: 6px;
+            margin-bottom: 8px;
+            font-size: 0.85rem;
+        }
+        
+        .calculadora-tiempo-real .resultado {
+            background: #F3F4F6;
+            padding: 8px;
+            border-radius: 6px;
+            font-weight: 600;
+            color: #1F2937;
+            font-size: 0.9rem;
+        }
+        
+        /* Ocultar notificaciones molestas */
+        .notification, .alert, .toast, .popup {
+            display: none !important;
+        }
+        
+        /* Ocultar mensajes de media query */
+        [class*="media-query"], [class*="responsive"], [class*="breakpoint"] {
+            display: none !important;
+        }
+        
+        .demo-nav ul {
+            list-style: none;
+            display: flex;
+            justify-content: center;
+            gap: 30px;
+            margin: 0;
+            padding: 0;
+        }
+
+        /* Estilos para servicios */
+        .servicios-section {
+            padding: 60px 0;
+            background: #F8FAFC;
+        }
+
+        .servicios-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+            margin-top: 40px;
+        }
+
+        .servicio-card {
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+            transition: all 0.3s ease;
+            border: 2px solid transparent;
+        }
+
+        .servicio-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 30px rgba(0,0,0,0.15);
+            border-color: #7C3AED;
+        }
+
+        .servicio-icon {
+            width: 60px;
+            height: 60px;
+            background: linear-gradient(135deg, #7C3AED, #EC4899);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 20px;
+        }
+
+        .servicio-icon i {
+            font-size: 24px;
+            color: white;
+        }
+
+        .servicio-title {
+            font-size: 1.3rem;
+            font-weight: 600;
+            color: #1F2937;
+            margin-bottom: 10px;
+        }
+
+        .servicio-description {
+            color: #6B7280;
+            margin-bottom: 20px;
+            line-height: 1.6;
+        }
+
+        .servicio-details {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .servicio-precio {
+            font-size: 1.2rem;
+            font-weight: 700;
+            color: #10B981;
+        }
+
+        .servicio-duracion {
+            background: #E5E7EB;
+            color: #374151;
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 0.9rem;
+        }
+
+        .servicio-actions .btn {
+            width: 100%;
+            background: linear-gradient(135deg, #7C3AED, #EC4899);
+            border: none;
+            color: white;
+            padding: 12px 20px;
+            border-radius: 10px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .servicio-actions .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(124, 58, 237, 0.4);
+        }
+        
+        .demo-nav a {
+            color: #6B7280;
+            text-decoration: none;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+        
+        .demo-nav a:hover {
+            color: #7C3AED;
+        }
+        
+        /* =============================================== */
+        /* RESPONSIVE MÓVIL - ARREGLO PARA CARLA 💜 */
+        /* =============================================== */
+        @media (max-width: 768px) {
+            body {
+                overflow-x: hidden;
+            }
+            
+            .demo-header {
+                padding: 15px 10px;
+            }
+            
+            .demo-header h1 {
+                font-size: 1.5rem;
+            }
+            
+            .demo-info {
+                padding: 15px 10px;
+            }
+            
+            .demo-nav ul {
+                flex-wrap: wrap;
+                gap: 15px;
+                padding: 0 10px;
+            }
+            
+            .demo-nav {
+                padding: 10px 0;
+            }
+            
+            /* Contenedor principal responsive */
+            .container, .buyer-container {
+                width: 100% !important;
+                max-width: 100% !important;
+                padding: 0 10px !important;
+                margin: 0 !important;
+                overflow-x: hidden !important;
+            }
+            
+            /* Cards de productos responsive */
+            .product-card, .store-card, .servicio-card {
+                width: calc(50% - 10px) !important;
+                margin: 5px !important;
+                padding: 10px !important;
+            }
+            
+            /* Grid responsive */
+            .products-grid, .stores-grid {
+                grid-template-columns: repeat(2, 1fr) !important;
+                gap: 10px !important;
+                padding: 10px !important;
+            }
+            
+            /* Secciones responsive */
+            section {
+                padding: 20px 10px !important;
+                margin: 0 !important;
+            }
+            
+            /* Botones responsive */
+            .btn {
+                padding: 8px 15px !important;
+                font-size: 0.9rem !important;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .demo-header h1 {
+                font-size: 1.2rem;
+            }
+            
+            .demo-nav ul {
+                gap: 10px;
+                font-size: 0.9rem;
+            }
+            
+            .product-card, .store-card {
+                width: 100% !important;
+            }
+            
+            .products-grid, .stores-grid {
+                grid-template-columns: 1fr !important;
+            }
+        }
+        
+        /* =============================================== */
+        /* ESTILOS CHATBOTS IA Y SOPORTE */
+        /* =============================================== */
+        
+        /* Chatbot IA Container - MEJOR ESPACIADO */
+        .ai-chatbot-container {
+            position: fixed;
+            bottom: 20px;
+            right: 120px;
+            z-index: 10000;
+        }
+        
+        .ai-chatbot-toggle {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            border: none;
+            border-radius: 50px;
+            padding: 12px 20px;
+            color: white;
+            font-weight: 600;
+            cursor: pointer;
+            box-shadow: 0 4px 20px rgba(102, 126, 234, 0.3);
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .ai-chatbot-toggle:hover {
+            transform: translateY(-2px) scale(1.05);
+            box-shadow: 0 6px 25px rgba(102, 126, 234, 0.4);
+        }
+        
+        .ai-toggle-content {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .ai-toggle-text {
+            font-size: 14px;
+        }
+        
+        /* Chatbot de Soporte Container */
+        .chatbot-container {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            z-index: 10000;
+        }
+        
+        .chatbot-toggle {
+            background: linear-gradient(135deg, #10b981, #059669);
+            border: none;
+            border-radius: 50px;
+            padding: 12px 20px;
+            color: white;
+            font-weight: 600;
+            cursor: pointer;
+            box-shadow: 0 4px 20px rgba(16, 185, 129, 0.3);
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .chatbot-toggle:hover {
+            transform: translateY(-2px) scale(1.05);
+            box-shadow: 0 6px 25px rgba(16, 185, 129, 0.4);
+        }
+        
+        .chatbot-toggle-content {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .chatbot-toggle-text {
+            font-size: 14px;
+        }
+        
+        /* Modales de Chatbot - MEJOR POSICIONADOS */
+        .ai-chatbot-modal {
+            position: fixed;
+            bottom: 90px;
+            right: 140px;
+            width: 380px;
+            height: 480px;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.15);
+            display: none;
+            flex-direction: column;
+            z-index: 10001;
+            overflow: hidden;
+        }
+        
+        .chatbot-modal {
+            position: fixed;
+            bottom: 90px;
+            right: 20px;
+            width: 380px;
+            height: 480px;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.15);
+            display: none;
+            flex-direction: column;
+            z-index: 10001;
+            overflow: hidden;
+        }
+        
+        /* Headers de Chatbot */
+        .ai-chatbot-header, .chatbot-header {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            padding: 15px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .chatbot-header {
+            background: linear-gradient(135deg, #10b981, #059669);
+        }
+        
+        .ai-header-content, .chatbot-header-content {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        
+        .ai-avatar, .chatbot-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: rgba(255,255,255,0.2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+        }
+        
+        .ai-header-info h3, .chatbot-header-info h3 {
+            margin: 0;
+            font-size: 16px;
+            font-weight: 600;
+        }
+        
+        .ai-status, .chatbot-status {
+            font-size: 12px;
+            opacity: 0.9;
+        }
+        
+        .ai-chatbot-close, .chatbot-close {
+            background: none;
+            border: none;
+            color: white;
+            font-size: 20px;
+            cursor: pointer;
+            padding: 5px;
+            border-radius: 50%;
+            transition: background 0.3s ease;
+        }
+        
+        .ai-chatbot-close:hover, .chatbot-close:hover {
+            background: rgba(255,255,255,0.2);
+        }
+        
+        /* Messages */
+        .ai-chatbot-messages, .chatbot-messages {
+            flex: 1;
+            padding: 20px;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+        
+        .ai-message, .chat-message {
+            max-width: 80%;
+            animation: slideIn 0.3s ease;
+        }
+        
+        .ai-message.ai-bot, .chat-message.bot {
+            align-self: flex-start;
+        }
+        
+        .ai-message.ai-user, .chat-message.user {
+            align-self: flex-end;
+        }
+        
+        .ai-message-content, .message-content {
+            padding: 12px 16px;
+            border-radius: 18px;
+            background: #f1f5f9;
+            color: #333;
+            line-height: 1.4;
+        }
+        
+        .ai-message.ai-user .ai-message-content, .chat-message.user .message-content {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+        }
+        
+        .ai-message-content p, .message-content p {
+            margin: 0;
+            font-size: 14px;
+        }
+        
+        /* Suggestions & Quick Actions */
+        .ai-suggestions, .quick-actions {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            margin-top: 10px;
+        }
+        
+        .ai-suggestions button, .quick-actions button {
+            background: rgba(102, 126, 234, 0.1);
+            border: 1px solid rgba(102, 126, 234, 0.3);
+            color: #667eea;
+            padding: 8px 12px;
+            border-radius: 12px;
+            font-size: 12px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .ai-suggestions button:hover, .quick-actions button:hover {
+            background: rgba(102, 126, 234, 0.2);
+            transform: translateY(-1px);
+        }
+        
+        /* Input */
+        .ai-chatbot-input, .chatbot-input {
+            padding: 15px 20px;
+            border-top: 1px solid #e5e7eb;
+        }
+        
+        .input-container {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+        
+        .input-container input {
+            flex: 1;
+            padding: 12px 15px;
+            border: 2px solid #e5e7eb;
+            border-radius: 25px;
+            font-size: 14px;
+            outline: none;
+            transition: border-color 0.3s ease;
+        }
+        
+        .input-container input:focus {
+            border-color: #667eea;
+        }
+        
+        .send-btn {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            border: none;
+            color: white;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+        }
+        
+        .send-btn:hover {
+            transform: scale(1.1);
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+        }
+        
+        /* Responsive Chatbots - MEJORADO */
+        @media (max-width: 768px) {
+            .ai-chatbot-modal {
+                width: calc(100vw - 30px);
+                height: 65vh;
+                bottom: 80px;
+                right: 15px;
+                left: 15px;
+            }
+            
+            .chatbot-modal {
+                width: calc(100vw - 30px);
+                height: 65vh;
+                bottom: 80px;
+                right: 15px;
+                left: 15px;
+            }
+            
+            .ai-chatbot-container {
+                right: 80px;
+                bottom: 15px;
+            }
+            
+            .chatbot-container {
+                right: 15px;
+                bottom: 15px;
+            }
+            
+            .ai-chatbot-toggle, .chatbot-toggle {
+                padding: 8px 12px;
+                font-size: 11px;
+                gap: 3px;
+            }
+            
+            .ai-toggle-text, .chatbot-toggle-text {
+                display: none;
+            }
+        }
+        
+        /* Para pantallas muy pequeñas */
+        @media (max-width: 480px) {
+            .ai-chatbot-container {
+                right: 70px;
+                bottom: 10px;
+            }
+            
+            .chatbot-container {
+                right: 10px;
+                bottom: 10px;
+            }
+            
+            .ai-chatbot-toggle, .chatbot-toggle {
+                padding: 6px 10px;
+                font-size: 10px;
+            }
+        }
+        
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="demo-header">
+        <h1><i class="fas fa-shopping-cart"></i> Demo - Interfaz de Compradores</h1>
+        <p>Vista previa de la nueva interfaz para compradores</p>
+    </div>
+    
+    <div class="demo-info">
+        <p><strong>🛍️ Interfaz completamente rediseñada</strong> • <strong>📱 Responsive</strong> • <strong>⚡ Animaciones suaves</strong> • <strong>🎯 Mejor experiencia de compra</strong></p>
+        <button class="btn btn-primary" onclick="window.open('index-cresalia.html', '_blank')">
+            <i class="fas fa-external-link-alt"></i> Abrir Tienda Real
+        </button>
+    </div>
+    
+    <!-- Filtros de Búsqueda Inteligente (Ocultos por defecto) -->
+    <div class="search-filters" style="display: none;" id="filtrosSeccion">
+        <h3>🔍 Búsqueda Inteligente y Filtros</h3>
+        <div class="filter-group">
+            <div class="filter-item">
+                <label>Buscar</label>
+                <input type="text" id="busqueda" placeholder="Productos, servicios, tiendas..." onkeyup="filtrarResultados()">
+            </div>
+            <div class="filter-item">
+                <label>Zona</label>
+                <select id="zona" onchange="filtrarResultados()">
+                    <option value="">Todas las zonas</option>
+                    <option value="centro">Centro</option>
+                    <option value="norte">Norte</option>
+                    <option value="sur">Sur</option>
+                    <option value="este">Este</option>
+                    <option value="oeste">Oeste</option>
+                </select>
+            </div>
+            <div class="filter-item">
+                <label>Categoría</label>
+                <select id="categoria" onchange="filtrarResultados()">
+                    <option value="">Todas las categorías</option>
+                    <option value="ropa">Ropa</option>
+                    <option value="comida">Comida</option>
+                    <option value="servicios">Servicios</option>
+                    <option value="tecnologia">Tecnología</option>
+                    <option value="hogar">Hogar</option>
+                </select>
+            </div>
+            <div class="filter-item">
+                <label>Precio Máximo</label>
+                <input type="number" id="precioMax" placeholder="$0" onchange="filtrarResultados()">
+            </div>
+            <div class="filter-item">
+                <label>Stock</label>
+                <select id="stock" onchange="filtrarResultados()">
+                    <option value="">Todos</option>
+                    <option value="disponible">Disponible</option>
+                    <option value="bajo">Stock Bajo</option>
+                </select>
+            </div>
+        </div>
+    </div>
+
+    <nav class="demo-nav">
+        <ul>
+            <li><a href="#productos">Productos</a></li>
+            <li><a href="#servicios">Servicios</a></li>
+            <li><a href="#tiendas">Tiendas</a></li>
+            <li><a href="#ofertas">Ofertas</a></li>
+            <li><a href="#combos">Combos</a></li>
+            <li><a href="panel-comunidad-compradores.html" target="_blank" style="color: #EC4899; font-weight: 600;">
+                <i class="fas fa-users"></i> Comunidad
+            </a></li>
+            <li><a href="#" onclick="abrirFeedbackCompradores(); return false;" style="color: #10B981; font-weight: 600;">
+                <i class="fas fa-comment-dots"></i> Feedback
+            </a></li>
+            <li><a href="#" onclick="mostrarHistorialCompras(); return false;" style="color: #8B5CF6; font-weight: 600;">
+                <i class="fas fa-history"></i> Mis Compras
+            </a></li>
+            <li><a href="#" onclick="mostrarHistorialServicios(); return false;" style="color: #10B981; font-weight: 600;">
+                <i class="fas fa-cogs"></i> Mis Servicios
+            </a></li>
+            <li><a href="#" onclick="toggleCart(); return false;">
+                <i class="fas fa-shopping-cart"></i> Carrito
+                <span id="navCartCount" style="background: #EF4444; color: white; border-radius: 50%; padding: 2px 6px; font-size: 12px; margin-left: 5px;">0</span>
+            </a></li>
+        </ul>
+    </nav>
+
+    <!-- Productos Section -->
+    <section id="productos" class="productos-section">
+        <div class="container">
+            <div class="section-header">
+                <h2><i class="fas fa-box"></i> Productos Destacados</h2>
+                <p>Descubre los mejores productos de nuestras tiendas asociadas</p>
+            </div>
+            
+            <div class="productos-grid">
+                <div class="producto-card">
+                    <div class="producto-image">
+                        <i class="fas fa-box fa-3x" style="color: #D1D5DB;"></i>
+                    </div>
+                    <div class="product-badge badge-new">Nuevo</div>
+                    <div class="producto-content">
+                        <h3 class="producto-title">Producto de Ejemplo</h3>
+                        <p class="producto-description">Descripción del producto que se muestra en la tienda. Este es un ejemplo de cómo se verán los productos reales.</p>
+                        <div class="producto-price">
+                            <span class="price-current">$29.99</span>
+                            <span class="price-discount">-20%</span>
+                        </div>
+                        <div class="producto-actions">
+                            <button class="btn-add-cart" onclick="agregarAlCarrito(1)">
+                                <i class="fas fa-shopping-cart"></i>
+                                Agregar al Carrito
+                            </button>
+                            <button class="btn-view-store" onclick="demoAction('Ver tienda')">
+                                <i class="fas fa-store"></i>
+                                Ver Tienda
+                            </button>
+                            <button class="btn-rate-store" onclick="abrirCalificacionTienda('Tienda Demo', 1)" style="background: linear-gradient(135deg, #F59E0B, #D97706); color: white; border: none; padding: 8px 12px; border-radius: 8px; font-size: 0.9rem; cursor: pointer; transition: all 0.3s ease;">
+                                <i class="fas fa-star"></i>
+                                Calificar
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="producto-card">
+                    <div class="producto-image">
+                        <i class="fas fa-laptop fa-3x" style="color: #D1D5DB;"></i>
+                    </div>
+                    <div class="product-badge badge-sale">Oferta</div>
+                    <div class="producto-content">
+                        <h3 class="producto-title">Laptop Gaming Pro</h3>
+                        <p class="producto-description">Laptop de alta gama para gaming y trabajo profesional. Incluye procesador Intel i7 y tarjeta gráfica RTX 4060.</p>
+                        <div class="producto-price">
+                            <span class="price-original">$1,299.99</span>
+                            <span class="price-current">$999.99</span>
+                        </div>
+                        <div class="producto-actions">
+                            <button class="btn-add-cart" onclick="agregarAlCarrito(2)">
+                                <i class="fas fa-shopping-cart"></i>
+                                Agregar al Carrito
+                            </button>
+                            <button class="btn-view-store" onclick="demoAction('Ver tienda TechStore')">
+                                <i class="fas fa-store"></i>
+                                Ver Tienda
+                            </button>
+                            <button class="btn-rate-store" onclick="abrirCalificacionTienda('TechStore', 2)" style="background: linear-gradient(135deg, #F59E0B, #D97706); color: white; border: none; padding: 8px 12px; border-radius: 8px; font-size: 0.9rem; cursor: pointer; transition: all 0.3s ease;">
+                                <i class="fas fa-star"></i>
+                                Calificar
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="producto-card">
+                    <div class="producto-image">
+                        <i class="fas fa-tshirt fa-3x" style="color: #D1D5DB;"></i>
+                    </div>
+                    <div class="product-badge badge-featured">Destacado</div>
+                    <div class="producto-content">
+                        <h3 class="producto-title">Camiseta Premium</h3>
+                        <p class="producto-description">Camiseta de algodón orgánico 100% con diseño exclusivo. Disponible en múltiples colores y tallas.</p>
+                        <div class="producto-price">
+                            <span class="price-current">$24.99</span>
+                        </div>
+                        <div class="producto-actions">
+                            <button class="btn-add-cart" onclick="agregarAlCarrito(3)">
+                                <i class="fas fa-shopping-cart"></i>
+                                Agregar al Carrito
+                            </button>
+                            <button class="btn-view-store" onclick="demoAction('Ver tienda Fashion')">
+                                <i class="fas fa-store"></i>
+                                Ver Tienda
+                            </button>
+                            <button class="btn-rate-store" onclick="abrirCalificacionTienda('Fashion Store', 3)" style="background: linear-gradient(135deg, #F59E0B, #D97706); color: white; border: none; padding: 8px 12px; border-radius: 8px; font-size: 0.9rem; cursor: pointer; transition: all 0.3s ease;">
+                                <i class="fas fa-star"></i>
+                                Calificar
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Servicios Section -->
+    <section id="servicios" class="servicios-section">
+        <div class="container">
+            <div class="section-header">
+                <h2><i class="fas fa-cogs"></i> Servicios Disponibles</h2>
+                <p>Reserva turnos para servicios profesionales de nuestras tiendas</p>
+            </div>
+            
+            <div class="servicios-grid">
+                <div class="servicio-card">
+                    <div class="servicio-icon">
+                        <i class="fas fa-cut" style="color: #EC4899;"></i>
+                    </div>
+                    <div class="servicio-content">
+                        <h3 class="servicio-title">Corte de Cabello</h3>
+                        <p class="servicio-description">Servicio profesional de peluquería con estilistas experimentados</p>
+                        <div class="servicio-details">
+                            <span class="servicio-precio">$25.00</span>
+                            <span class="servicio-duracion">1 hora</span>
+                        </div>
+                        <div class="servicio-actions">
+                            <button class="btn btn-primary" onclick="reservarServicio(1)">
+                                <i class="fas fa-calendar-plus"></i> Reservar Turno
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="servicio-card">
+                    <div class="servicio-icon">
+                        <i class="fas fa-car" style="color: #10B981;"></i>
+                    </div>
+                    <div class="servicio-content">
+                        <h3 class="servicio-title">Transporte Local</h3>
+                        <p class="servicio-description">Servicio de transporte seguro y confiable por la ciudad</p>
+                        <div class="servicio-details">
+                            <span class="servicio-precio">$15.00</span>
+                            <span class="servicio-duracion">30 min</span>
+                        </div>
+                        <div class="servicio-actions">
+                            <button class="btn btn-primary" onclick="reservarServicio(2)">
+                                <i class="fas fa-calendar-plus"></i> Reservar Turno
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="servicio-card">
+                    <div class="servicio-icon">
+                        <i class="fas fa-laptop-code" style="color: #8B5CF6;"></i>
+                    </div>
+                    <div class="servicio-content">
+                        <h3 class="servicio-title">Consultoría Técnica</h3>
+                        <p class="servicio-description">Asesoramiento profesional en tecnología y desarrollo</p>
+                        <div class="servicio-details">
+                            <span class="servicio-precio">$50.00</span>
+                            <span class="servicio-duracion">2 horas</span>
+                        </div>
+                        <div class="servicio-actions">
+                            <button class="btn btn-primary" onclick="reservarServicio(3)">
+                                <i class="fas fa-calendar-plus"></i> Reservar Turno
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="servicio-card">
+                    <div class="servicio-icon">
+                        <i class="fas fa-paint-brush" style="color: #F59E0B;"></i>
+                    </div>
+                    <div class="servicio-content">
+                        <h3 class="servicio-title">Diseño Gráfico</h3>
+                        <p class="servicio-description">Creación de logos, banners y material gráfico profesional</p>
+                        <div class="servicio-details">
+                            <span class="servicio-precio">$75.00</span>
+                            <span class="servicio-duracion">1 día</span>
+                        </div>
+                        <div class="servicio-actions">
+                            <button class="btn btn-primary" onclick="reservarServicio(4)">
+                                <i class="fas fa-calendar-plus"></i> Reservar Turno
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Tiendas Section -->
+    <section id="tiendas" class="tiendas-section">
+        <div class="container">
+            <div class="section-header">
+                <h2><i class="fas fa-store"></i> Tiendas Destacadas</h2>
+                <p>Descubre las mejores tiendas creadas con Cresalia</p>
+            </div>
+            
+            <div class="tiendas-grid">
+                <div class="tienda-card">
+                    <div class="tienda-image">
+                        <i class="fas fa-laptop fa-3x" style="color: #D1D5DB;"></i>
+                    </div>
+                    <div class="store-badge badge-pro">Pro</div>
+                    <div class="tienda-content">
+                        <h3 class="tienda-title">TechStore Argentina</h3>
+                        <p class="tienda-description">Especialistas en tecnología y electrónicos. Los mejores precios en laptops, smartphones y accesorios.</p>
+                        <div class="tienda-actions">
+                            <button class="btn-view-store" onclick="demoAction('Visitando TechStore')">
+                                <i class="fas fa-external-link-alt"></i>
+                                Visitar Tienda
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="tienda-card">
+                    <div class="tienda-image">
+                        <i class="fas fa-tshirt fa-3x" style="color: #D1D5DB;"></i>
+                    </div>
+                    <div class="store-badge badge-pro">Pro</div>
+                    <div class="tienda-content">
+                        <h3 class="tienda-title">Fashion Boutique</h3>
+                        <p class="tienda-description">Moda y estilo para toda la familia. Ropa de calidad con diseños únicos y tendencias actuales.</p>
+                        <div class="tienda-actions">
+                            <button class="btn-view-store" onclick="demoAction('Visitando Fashion Boutique')">
+                                <i class="fas fa-external-link-alt"></i>
+                                Visitar Tienda
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="tienda-card">
+                    <div class="tienda-image">
+                        <i class="fas fa-home fa-3x" style="color: #D1D5DB;"></i>
+                    </div>
+                    <div class="store-badge badge-featured">Destacada</div>
+                    <div class="tienda-content">
+                        <h3 class="tienda-title">Hogar & Deco</h3>
+                        <p class="tienda-description">Todo para tu hogar. Muebles, decoración y artículos para hacer de tu casa un hogar único.</p>
+                        <div class="tienda-actions">
+                            <button class="btn-view-store" onclick="demoAction('Visitando Hogar & Deco')">
+                                <i class="fas fa-external-link-alt"></i>
+                                Visitar Tienda
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Ofertas Section -->
+    <section id="ofertas" class="ofertas-section">
+        <div class="container">
+            <div class="section-header">
+                <h2><i class="fas fa-tags"></i> Ofertas Especiales</h2>
+                <p>Las mejores ofertas de nuestras tiendas asociadas</p>
+            </div>
+            
+            <div class="ofertas-grid">
+                <div class="oferta-card">
+                    <div class="oferta-image">
+                        <i class="fas fa-gift fa-3x" style="color: #D1D5DB;"></i>
+                    </div>
+                    <div class="offer-badge badge-sale">50% OFF</div>
+                    <div class="oferta-content">
+                        <h3 class="oferta-title">Black Friday Tech</h3>
+                        <p class="oferta-description">Descuentos increíbles en tecnología. ¡No te pierdas esta oportunidad única!</p>
+                        <div class="oferta-price">
+                            <span class="price-original">$599.99</span>
+                            <span class="price-current">$299.99</span>
+                        </div>
+                        <div class="oferta-actions">
+                            <button class="btn-view-offer" onclick="demoAction('Ver oferta Black Friday')">
+                                <i class="fas fa-tags"></i>
+                                Ver Oferta
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="oferta-card">
+                    <div class="oferta-image">
+                        <i class="fas fa-percent fa-3x" style="color: #D1D5DB;"></i>
+                    </div>
+                    <div class="offer-badge badge-new">Nueva</div>
+                    <div class="oferta-content">
+                        <h3 class="oferta-title">Descuento Fashion</h3>
+                        <p class="oferta-description">30% de descuento en toda la colección de verano. ¡Stock limitado!</p>
+                        <div class="oferta-price">
+                            <span class="price-original">$89.99</span>
+                            <span class="price-current">$62.99</span>
+                        </div>
+                        <div class="oferta-actions">
+                            <button class="btn-view-offer" onclick="demoAction('Ver oferta Fashion')">
+                                <i class="fas fa-tags"></i>
+                                Ver Oferta
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Combos Section -->
+    <section id="combos" class="combos-section">
+        <div class="container">
+            <div class="section-header">
+                <h2><i class="fas fa-gift"></i> Combos y Ofertas Especiales</h2>
+                <p>¡Aprovecha nuestras ofertas exclusivas y combos con descuentos increíbles!</p>
+            </div>
+            
+            <div class="combos-container">
+                <div class="combo-card">
+                    <div class="oferta-image">
+                        <i class="fas fa-shopping-bag fa-3x" style="color: #D1D5DB;"></i>
+                    </div>
+                    <div class="offer-badge badge-featured">Combo</div>
+                    <div class="combo-content">
+                        <h3 class="combo-title">Combo Gaming Completo</h3>
+                        <p class="combo-description">Laptop + Mouse + Teclado + Auriculares. Todo lo que necesitas para gaming profesional.</p>
+                        <div class="combo-price">
+                            <span class="price-original">$1,499.99</span>
+                            <span class="price-current">$1,199.99</span>
+                        </div>
+                        <div class="combo-actions">
+                            <button class="btn-view-combo" onclick="demoAction('Ver combo gaming')">
+                                <i class="fas fa-gift"></i>
+                                Ver Combo
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="combo-card">
+                    <div class="oferta-image">
+                        <i class="fas fa-home fa-3x" style="color: #D1D5DB;"></i>
+                    </div>
+                    <div class="offer-badge badge-sale">40% OFF</div>
+                    <div class="combo-content">
+                        <h3 class="combo-title">Kit Hogar Esencial</h3>
+                        <p class="combo-description">Todo para equipar tu hogar. Muebles, decoración y accesorios con descuento especial.</p>
+                        <div class="combo-price">
+                            <span class="price-original">$799.99</span>
+                            <span class="price-current">$479.99</span>
+                        </div>
+                        <div class="combo-actions">
+                            <button class="btn-view-combo" onclick="demoAction('Ver kit hogar')">
+                                <i class="fas fa-gift"></i>
+                                Ver Combo
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Carro flotante -->
+    <div class="floating-cart" onclick="toggleCart()">
+        <div class="floating-cart-content">
+            <div class="floating-cart-icon">
+                <i class="fas fa-shopping-cart"></i>
+                <span class="floating-cart-count">0</span>
+            </div>
+            <div class="floating-cart-info">
+                <span class="floating-cart-text">Carrito</span>
+                <span class="floating-cart-total">$0.00</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal de Feedback para Compradores -->
+    <div id="feedbackModalCompradores" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); z-index: 9999; align-items: center; justify-content: center;">
+        <div style="background: white; border-radius: 20px; padding: 30px; max-width: 600px; width: 90%; max-height: 80vh; overflow-y: auto; position: relative;">
+            <button onclick="cerrarFeedbackCompradores()" style="position: absolute; top: 15px; right: 15px; background: none; border: none; font-size: 24px; color: #666; cursor: pointer;">
+                <i class="fas fa-times"></i>
+            </button>
+            
+            <div style="text-align: center; margin-bottom: 30px;">
+                <h3 style="color: #10B981; margin-bottom: 10px;">
+                    <i class="fas fa-comment-dots"></i> Tu Opinión es Importante
+                </h3>
+                <p style="color: #666; margin: 0;">Ayúdanos a mejorar Cresalia con tus sugerencias y comentarios</p>
+            </div>
+            
+            <form id="feedbackFormCompradores" onsubmit="enviarFeedbackCompradores(event)">
+                <div style="margin-bottom: 20px;">
+                    <label style="display: block; margin-bottom: 8px; font-weight: 600; color: #333;">Tipo de Feedback:</label>
+                    <select id="tipoFeedback" required style="width: 100%; padding: 12px; border: 2px solid #E5E7EB; border-radius: 10px; font-size: 1rem;">
+                        <option value="">Selecciona el tipo de feedback</option>
+                        <option value="sugerencia">💡 Sugerencia de mejora</option>
+                        <option value="problema">🐛 Reporte de problema</option>
+                        <option value="elogio">⭐ Elogio/Reconocimiento</option>
+                        <option value="nueva-funcionalidad">🚀 Solicitud de nueva funcionalidad</option>
+                        <option value="experiencia-usuario">👤 Experiencia de usuario</option>
+                        <option value="otro">📝 Otro</option>
+                    </select>
+                </div>
+                
+                <div style="margin-bottom: 20px;">
+                    <label style="display: block; margin-bottom: 8px; font-weight: 600; color: #333;">Tu Nombre (opcional):</label>
+                    <input type="text" id="nombreFeedback" placeholder="Tu nombre o alias" style="width: 100%; padding: 12px; border: 2px solid #E5E7EB; border-radius: 10px; font-size: 1rem;">
+                </div>
+                
+                <div style="margin-bottom: 20px;">
+                    <label style="display: block; margin-bottom: 8px; font-weight: 600; color: #333;">Tu Email (opcional):</label>
+                    <input type="email" id="emailFeedback" placeholder="tu@email.com" style="width: 100%; padding: 12px; border: 2px solid #E5E7EB; border-radius: 10px; font-size: 1rem;">
+                </div>
+                
+                <div style="margin-bottom: 20px;">
+                    <label style="display: block; margin-bottom: 8px; font-weight: 600; color: #333;">Tu Mensaje:</label>
+                    <textarea id="mensajeFeedback" required placeholder="Cuéntanos tu experiencia, sugerencias o comentarios..." style="width: 100%; padding: 12px; border: 2px solid #E5E7EB; border-radius: 10px; font-size: 1rem; min-height: 120px; resize: vertical;"></textarea>
+                </div>
+                
+                <div style="margin-bottom: 20px;">
+                    <label style="display: block; margin-bottom: 8px; font-weight: 600; color: #333;">Calificación General:</label>
+                    <div id="estrellas-feedback" style="display: flex; gap: 5px; justify-content: center; margin-bottom: 15px;">
+                        <i class="fas fa-star" style="font-size: 2rem; color: #E5E7EB; cursor: pointer; transition: all 0.3s ease;" data-rating="1"></i>
+                        <i class="fas fa-star" style="font-size: 2rem; color: #E5E7EB; cursor: pointer; transition: all 0.3s ease;" data-rating="2"></i>
+                        <i class="fas fa-star" style="font-size: 2rem; color: #E5E7EB; cursor: pointer; transition: all 0.3s ease;" data-rating="3"></i>
+                        <i class="fas fa-star" style="font-size: 2rem; color: #E5E7EB; cursor: pointer; transition: all 0.3s ease;" data-rating="4"></i>
+                        <i class="fas fa-star" style="font-size: 2rem; color: #E5E7EB; cursor: pointer; transition: all 0.3s ease;" data-rating="5"></i>
+                    </div>
+                    <input type="hidden" id="rating-feedback" value="0">
+                </div>
+                
+                <button type="submit" style="width: 100%; background: linear-gradient(135deg, #10B981, #059669); color: white; border: none; padding: 15px; border-radius: 10px; font-weight: 600; font-size: 1.1rem; cursor: pointer; transition: all 0.3s ease;">
+                    <i class="fas fa-paper-plane"></i> Enviar Feedback
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Modal de Calificación de Tiendas -->
+    <div id="calificacionModalTienda" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); z-index: 9999; align-items: center; justify-content: center;">
+        <div style="background: white; border-radius: 20px; padding: 30px; max-width: 500px; width: 90%; max-height: 80vh; overflow-y: auto; position: relative;">
+            <button onclick="cerrarCalificacionTienda()" style="position: absolute; top: 15px; right: 15px; background: none; border: none; font-size: 24px; color: #666; cursor: pointer;">
+                <i class="fas fa-times"></i>
+            </button>
+            
+            <div style="text-align: center; margin-bottom: 30px;">
+                <h3 style="color: #F59E0B; margin-bottom: 10px;">
+                    <i class="fas fa-star"></i> Calificar Tienda
+                </h3>
+                <p id="nombreTiendaCalificacion" style="color: #666; margin: 0; font-weight: 600; font-size: 1.1rem;"></p>
+            </div>
+            
+            <form id="calificacionFormTienda" onsubmit="enviarCalificacionTienda(event)">
+                <div style="margin-bottom: 25px;">
+                    <label style="display: block; margin-bottom: 15px; font-weight: 600; color: #333; text-align: center;">Tu Calificación:</label>
+                    <div id="estrellas-tienda" style="display: flex; gap: 8px; justify-content: center; margin-bottom: 15px;">
+                        <i class="fas fa-star" style="font-size: 2.5rem; color: #E5E7EB; cursor: pointer; transition: all 0.3s ease;" data-rating="1"></i>
+                        <i class="fas fa-star" style="font-size: 2.5rem; color: #E5E7EB; cursor: pointer; transition: all 0.3s ease;" data-rating="2"></i>
+                        <i class="fas fa-star" style="font-size: 2.5rem; color: #E5E7EB; cursor: pointer; transition: all 0.3s ease;" data-rating="3"></i>
+                        <i class="fas fa-star" style="font-size: 2.5rem; color: #E5E7EB; cursor: pointer; transition: all 0.3s ease;" data-rating="4"></i>
+                        <i class="fas fa-star" style="font-size: 2.5rem; color: #E5E7EB; cursor: pointer; transition: all 0.3s ease;" data-rating="5"></i>
+                    </div>
+                    <input type="hidden" id="rating-tienda" value="0" required>
+                </div>
+                
+                <div style="margin-bottom: 20px;">
+                    <label style="display: block; margin-bottom: 8px; font-weight: 600; color: #333;">Tu Nombre (opcional):</label>
+                    <input type="text" id="nombreCalificacion" placeholder="Tu nombre o alias" style="width: 100%; padding: 12px; border: 2px solid #E5E7EB; border-radius: 10px; font-size: 1rem;">
+                </div>
+                
+                <div style="margin-bottom: 20px;">
+                    <label style="display: block; margin-bottom: 8px; font-weight: 600; color: #333;">Comentario (opcional):</label>
+                    <textarea id="comentarioCalificacion" placeholder="Cuéntanos tu experiencia con esta tienda..." style="width: 100%; padding: 12px; border: 2px solid #E5E7EB; border-radius: 10px; font-size: 1rem; min-height: 100px; resize: vertical;"></textarea>
+                </div>
+                
+                <button type="submit" style="width: 100%; background: linear-gradient(135deg, #F59E0B, #D97706); color: white; border: none; padding: 15px; border-radius: 10px; font-weight: 600; font-size: 1.1rem; cursor: pointer; transition: all 0.3s ease;">
+                    <i class="fas fa-star"></i> Enviar Calificación
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Calculadora en Tiempo Real -->
+    <div class="calculadora-tiempo-real" id="calculadora">
+        <h4>💰 Calculadora de Precios</h4>
+        <input type="number" id="precioBase" placeholder="Precio base" oninput="calcularPrecio()">
+        <input type="number" id="cantidad" placeholder="Cantidad" oninput="calcularPrecio()">
+        <input type="number" id="descuento" placeholder="Descuento %" oninput="calcularPrecio()">
+        <div class="resultado" id="resultadoCalculadora">Total: $0</div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="js/elegant-notifications.js"></script>
+    <script src="js/historiales-sistema.js"></script>
+    
+    <!-- Sistema de Seguridad -->
+    <script src="security-system.js?v=2.0"></script>
+    <script src="core/proteccion-devtools-avanzada.js?v=2.0"></script>
+    <script src="core/proteccion-datos-sensibles.js?v=1.0"></script>
+    
+    <script>
+        // ===== CARRITO DE COMPRAS =====
+        let carrito = [];
+        let cartCount = 0;
+        let cartTotal = 0;
+        
+        // Demo de notificaciones
+        function demoAction(action) {
+            if (window.elegantNotifications) {
+                window.elegantNotifications.show(`🎯 ${action}`, 'success');
+            } else {
+                alert(action);
+            }
+        }
+        
+        // Función para agregar al carrito
+        function agregarAlCarrito(productoId) {
+            const productos = [
+                { id: 1, nombre: 'Producto de Ejemplo', precio: 29.99 },
+                { id: 2, nombre: 'Laptop Gaming Pro', precio: 999.99 },
+                { id: 3, nombre: 'Camiseta Premium', precio: 24.99 }
+            ];
+            
+            const producto = productos.find(p => p.id === productoId);
+            if (producto) {
+                const itemExistente = carrito.find(item => item.id === productoId);
+                if (itemExistente) {
+                    itemExistente.cantidad += 1;
+                } else {
+                    carrito.push({
+                        id: producto.id,
+                        nombre: producto.nombre,
+                        precio: producto.precio,
+                        cantidad: 1
+                    });
+                }
+                
+                actualizarCarrito();
+                demoAction(`${producto.nombre} agregado al carrito`);
+            }
+        }
+        
+        // Función para actualizar carrito
+        function actualizarCarrito() {
+            cartCount = carrito.reduce((total, item) => total + item.cantidad, 0);
+            cartTotal = carrito.reduce((total, item) => total + (item.precio * item.cantidad), 0);
+            
+            // Actualizar contador flotante
+            const floatingCount = document.querySelector('.floating-cart-count');
+            const floatingTotal = document.querySelector('.floating-cart-total');
+            
+            if (floatingCount) floatingCount.textContent = cartCount;
+            if (floatingTotal) floatingTotal.textContent = `$${cartTotal.toFixed(2)}`;
+            
+            // Actualizar contador de navegación
+            const navCartCount = document.getElementById('navCartCount');
+            if (navCartCount) navCartCount.textContent = cartCount;
+        }
+
+        // Función para reservar servicios
+        function reservarServicio(servicioId) {
+            const servicios = [
+                { id: 1, nombre: 'Corte de Cabello', precio: 25.00, duracion: '1 hora' },
+                { id: 2, nombre: 'Transporte Local', precio: 15.00, duracion: '30 min' },
+                { id: 3, nombre: 'Consultoría Técnica', precio: 50.00, duracion: '2 horas' },
+                { id: 4, nombre: 'Diseño Gráfico', precio: 75.00, duracion: '1 día' }
+            ];
+            
+            const servicio = servicios.find(s => s.id === servicioId);
+            if (servicio) {
+                mostrarModalReservaServicio(servicio);
+            }
+        }
+
+        // Función para mostrar modal de reserva de servicio
+        function mostrarModalReservaServicio(servicio) {
+            const modalHTML = `
+                <div id="reservaServicioModal" style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); display: flex; align-items: center; justify-content: center; z-index: 9999999;">
+                    <div style="background: white; border-radius: 20px; padding: 40px; max-width: 500px; width: 90%; max-height: 90vh; overflow-y: auto;">
+                        <div style="text-align: center; margin-bottom: 30px;">
+                            <h3 style="color: #333; font-size: 1.8rem; margin-bottom: 10px;">
+                                <i class="fas fa-calendar-plus" style="color: #7C3AED;"></i> Reservar Servicio
+                            </h3>
+                            <p style="color: #666; font-size: 1rem;">Completa los datos para reservar tu turno</p>
+                        </div>
+                        
+                        <div style="background: #F8FAFC; padding: 20px; border-radius: 12px; margin-bottom: 25px;">
+                            <h4 style="margin: 0 0 10px 0; color: #333;">${servicio.nombre}</h4>
+                            <div style="display: flex; justify-content: space-between; align-items: center;">
+                                <span style="font-size: 1.2rem; font-weight: 700; color: #10B981;">$${servicio.precio}</span>
+                                <span style="background: #E5E7EB; color: #374151; padding: 5px 12px; border-radius: 20px; font-size: 0.9rem;">${servicio.duracion}</span>
+                            </div>
+                        </div>
+                        
+                        <form id="formReservaServicio" style="display: grid; gap: 20px;">
+                            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+                                <div>
+                                    <label style="display: block; margin-bottom: 8px; font-weight: 600; color: #374151;">Nombre</label>
+                                    <input type="text" id="nombreCliente" required style="width: 100%; padding: 12px; border: 2px solid #E5E7EB; border-radius: 8px; font-size: 1rem;" placeholder="Tu nombre">
+                                </div>
+                                <div>
+                                    <label style="display: block; margin-bottom: 8px; font-weight: 600; color: #374151;">Apellido</label>
+                                    <input type="text" id="apellidoCliente" required style="width: 100%; padding: 12px; border: 2px solid #E5E7EB; border-radius: 8px; font-size: 1rem;" placeholder="Tu apellido">
+                                </div>
+                            </div>
+                            
+                            <div>
+                                <label style="display: block; margin-bottom: 8px; font-weight: 600; color: #374151;">Fecha de Cumpleaños</label>
+                                <input type="date" id="cumpleanosCliente" required style="width: 100%; padding: 12px; border: 2px solid #E5E7EB; border-radius: 8px; font-size: 1rem;">
+                            </div>
+                            
+                            <div>
+                                <label style="display: block; margin-bottom: 8px; font-weight: 600; color: #374151;">Teléfono</label>
+                                <input type="tel" id="telefonoCliente" required style="width: 100%; padding: 12px; border: 2px solid #E5E7EB; border-radius: 8px; font-size: 1rem;" placeholder="Tu número de teléfono">
+                            </div>
+                            
+                            <div>
+                                <label style="display: block; margin-bottom: 8px; font-weight: 600; color: #374151;">Email</label>
+                                <input type="email" id="emailCliente" required style="width: 100%; padding: 12px; border: 2px solid #E5E7EB; border-radius: 8px; font-size: 1rem;" placeholder="tu@email.com">
+                            </div>
+                            
+                            <div>
+                                <label style="display: block; margin-bottom: 8px; font-weight: 600; color: #374151;">Fecha Preferida</label>
+                                <input type="date" id="fechaServicio" required style="width: 100%; padding: 12px; border: 2px solid #E5E7EB; border-radius: 8px; font-size: 1rem;">
+                            </div>
+                            
+                            <div>
+                                <label style="display: block; margin-bottom: 8px; font-weight: 600; color: #374151;">Hora Preferida</label>
+                                <select id="horaServicio" required style="width: 100%; padding: 12px; border: 2px solid #E5E7EB; border-radius: 8px; font-size: 1rem;">
+                                    <option value="">Selecciona una hora</option>
+                                    <option value="09:00">09:00 AM</option>
+                                    <option value="10:00">10:00 AM</option>
+                                    <option value="11:00">11:00 AM</option>
+                                    <option value="12:00">12:00 PM</option>
+                                    <option value="14:00">02:00 PM</option>
+                                    <option value="15:00">03:00 PM</option>
+                                    <option value="16:00">04:00 PM</option>
+                                    <option value="17:00">05:00 PM</option>
+                                </select>
+                            </div>
+                            
+                            <div>
+                                <label style="display: block; margin-bottom: 8px; font-weight: 600; color: #374151;">Comentarios Adicionales</label>
+                                <textarea id="comentariosServicio" style="width: 100%; padding: 12px; border: 2px solid #E5E7EB; border-radius: 8px; font-size: 1rem; min-height: 80px;" placeholder="Alguna preferencia especial o comentario..."></textarea>
+                            </div>
+                            
+                            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-top: 20px;">
+                                <button type="button" onclick="cerrarModalReservaServicio()" style="background: #6b7280; color: white; border: none; padding: 15px; border-radius: 12px; cursor: pointer; font-weight: 600; font-size: 1rem;">
+                                    <i class="fas fa-times"></i> Cancelar
+                                </button>
+                                <button type="submit" style="background: linear-gradient(135deg, #7C3AED, #EC4899); color: white; border: none; padding: 15px; border-radius: 12px; cursor: pointer; font-weight: 600; font-size: 1rem;">
+                                    <i class="fas fa-calendar-check"></i> Confirmar Reserva
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            `;
+            
+            document.body.insertAdjacentHTML('beforeend', modalHTML);
+            
+            // Configurar fecha mínima (hoy)
+            const fechaInput = document.getElementById('fechaServicio');
+            const hoy = new Date().toISOString().split('T')[0];
+            fechaInput.min = hoy;
+            
+            // Manejar envío del formulario
+            document.getElementById('formReservaServicio').addEventListener('submit', function(e) {
+                e.preventDefault();
+                
+                const reserva = {
+                    servicio: servicio.nombre,
+                    precio: servicio.precio,
+                    duracion: servicio.duracion,
+                    cliente: {
+                        nombre: document.getElementById('nombreCliente').value,
+                        apellido: document.getElementById('apellidoCliente').value,
+                        cumpleanos: document.getElementById('cumpleanosCliente').value,
+                        telefono: document.getElementById('telefonoCliente').value,
+                        email: document.getElementById('emailCliente').value
+                    },
+                    fecha: document.getElementById('fechaServicio').value,
+                    hora: document.getElementById('horaServicio').value,
+                    comentarios: document.getElementById('comentariosServicio').value,
+                    estado: 'pendiente',
+                    fechaReserva: new Date().toISOString()
+                };
+                
+                // Guardar reserva en localStorage
+                let reservas = JSON.parse(localStorage.getItem('reservasServicios') || '[]');
+                reservas.push(reserva);
+                localStorage.setItem('reservasServicios', JSON.stringify(reservas));
+                
+                // Mostrar confirmación
+                alert(`✅ ¡Reserva confirmada!\n\nServicio: ${servicio.nombre}\nFecha: ${reserva.fecha}\nHora: ${reserva.hora}\n\nTe contactaremos pronto para confirmar los detalles.`);
+                
+                cerrarModalReservaServicio();
+            });
+        }
+
+        // Función para cerrar modal de reserva
+        function cerrarModalReservaServicio() {
+            const modal = document.getElementById('reservaServicioModal');
+            if (modal) {
+                modal.remove();
+            }
+        }
+        
+        // Función para mostrar/ocultar modal del carrito
+        function toggleCart() {
+            const modal = document.getElementById('cartModal');
+            if (modal) {
+                // Si el modal existe, cerrarlo
+                cerrarModalCarrito();
+            } else {
+                // Si no existe, mostrarlo
+                mostrarModalCarrito();
+            }
+        }
+        
+        function mostrarModalCarrito() {
+            // Siempre mostrar el modal, incluso si está vacío
+            
+            // Crear modal dinámico
+            const modalHTML = `
+                <div id="cartModal" style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); display: flex; align-items: center; justify-content: center; z-index: 9999;">
+                    <div style="background: white; border-radius: 15px; padding: 30px; max-width: 600px; width: 90%; max-height: 80vh; overflow-y: auto;">
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                            <h3 style="color: #7C3AED; margin: 0;">
+                                <i class="fas fa-shopping-cart"></i> Mi Carrito
+                            </h3>
+                            <button onclick="cerrarModalCarrito()" style="background: none; border: none; font-size: 24px; cursor: pointer; color: #6B7280;">
+                                <i class="fas fa-times"></i>
+                            </button>
+                        </div>
+                        
+                        <div id="cartItems" style="margin-bottom: 20px;">
+                            ${carrito.length === 0 ? `
+                                <div style="text-align: center; padding: 40px; color: #6B7280;">
+                                    <i class="fas fa-shopping-cart" style="font-size: 48px; margin-bottom: 20px; opacity: 0.3;"></i>
+                                    <h3 style="margin: 0 0 10px 0; color: #374151;">Tu carrito está vacío</h3>
+                                    <p style="margin: 0;">¡Agrega algunos productos para comenzar!</p>
+                                </div>
+                            ` : carrito.map(item => `
+                                <div style="display: flex; justify-content: space-between; align-items: center; padding: 15px; border: 1px solid #E5E7EB; border-radius: 8px; margin-bottom: 10px;">
+                                    <div>
+                                        <h4 style="margin: 0; color: #374151;">${item.nombre}</h4>
+                                        <p style="margin: 5px 0 0 0; color: #6B7280;">Cantidad: ${item.cantidad}</p>
+                                    </div>
+                                    <div style="text-align: right;">
+                                        <p style="margin: 0; font-weight: 600; color: #7C3AED;">$${(item.precio * item.cantidad).toFixed(2)}</p>
+                                        <button onclick="eliminarDelCarrito(${item.id})" style="background: #EF4444; color: white; border: none; padding: 5px 10px; border-radius: 4px; cursor: pointer; font-size: 12px; margin-top: 5px;">
+                                            <i class="fas fa-trash"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                            `).join('')}
+                        </div>
+                        
+                        <div style="border-top: 2px solid #E5E7EB; padding-top: 20px;">
+                            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                                <h4 style="margin: 0; color: #374151;">Total:</h4>
+                                <h4 style="margin: 0; color: #7C3AED;">$${cartTotal.toFixed(2)}</h4>
+                            </div>
+                            
+                            <div style="display: flex; gap: 10px;">
+                                ${carrito.length > 0 ? `
+                                    <button onclick="vaciarCarrito()" style="flex: 1; background: #6B7280; color: white; border: none; padding: 12px; border-radius: 8px; cursor: pointer; font-weight: 600;">
+                                        <i class="fas fa-trash"></i> Vaciar Carrito
+                                    </button>
+                                    <button onclick="procederAlPago()" style="flex: 2; background: linear-gradient(135deg, #7C3AED, #EC4899); color: white; border: none; padding: 12px; border-radius: 8px; cursor: pointer; font-weight: 600;">
+                                        <i class="fas fa-credit-card"></i> Proceder al Pago
+                                    </button>
+                                ` : `
+                                    <button onclick="cerrarModalCarrito()" style="flex: 1; background: linear-gradient(135deg, #7C3AED, #EC4899); color: white; border: none; padding: 12px; border-radius: 8px; cursor: pointer; font-weight: 600;">
+                                        <i class="fas fa-shopping-bag"></i> Ir a Productos
+                                    </button>
+                                `}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+            
+            // Remover modal existente si hay uno
+            const modalExistente = document.getElementById('cartModal');
+            if (modalExistente) {
+                modalExistente.remove();
+            }
+            
+            // Agregar nuevo modal
+            document.body.insertAdjacentHTML('beforeend', modalHTML);
+            
+            // Agregar funcionalidad de cerrar al hacer click fuera del modal
+            const modal = document.getElementById('cartModal');
+            if (modal) {
+                modal.addEventListener('click', (e) => {
+                    if (e.target === modal) {
+                        cerrarModalCarrito();
+                    }
+                });
+                
+                // Agregar funcionalidad de cerrar con tecla Escape
+                const handleEscape = (e) => {
+                    if (e.key === 'Escape') {
+                        cerrarModalCarrito();
+                        document.removeEventListener('keydown', handleEscape);
+                    }
+                };
+                document.addEventListener('keydown', handleEscape);
+            }
+        }
+        
+        // Función para cerrar modal
+        function cerrarModalCarrito() {
+            const modal = document.getElementById('cartModal');
+            if (modal) {
+                modal.remove();
+            }
+        }
+        
+        // Función para eliminar del carrito
+        function eliminarDelCarrito(productoId) {
+            carrito = carrito.filter(item => item.id !== productoId);
+            actualizarCarrito();
+            
+            // Actualizar modal si está abierto
+            const modal = document.getElementById('cartModal');
+            if (modal) {
+                if (carrito.length === 0) {
+                    cerrarModalCarrito();
+                    demoAction('Carrito vaciado');
+                } else {
+                    mostrarModalCarrito(); // Recargar modal
+                }
+            }
+        }
+        
+        // Función para vaciar carrito
+        function vaciarCarrito() {
+            carrito = [];
+            actualizarCarrito();
+            cerrarModalCarrito();
+            demoAction('Carrito vaciado completamente');
+        }
+        
+        // Función para proceder al pago
+        function procederAlPago() {
+            cerrarModalCarrito();
+            demoAction(`Procesando pago de $${cartTotal.toFixed(2)}...`);
+            
+            // Simular proceso de pago
+            setTimeout(() => {
+                // Crear objeto de compra para el agradecimiento
+                const compra = {
+                    cliente: 'Cliente de Cresalia',
+                    items: carrito.map(item => ({
+                        nombre: item.nombre,
+                        precio: item.precio,
+                        cantidad: item.cantidad
+                    })),
+                    total: cartTotal.toFixed(2),
+                    fecha: new Date().toLocaleDateString('es-ES')
+                };
+                
+                // Limpiar carrito
+                carrito = [];
+                actualizarCarrito();
+                
+                // Enviar agradecimiento por la compra
+                enviarAgradecimientoDespuesCompra(compra);
+                
+                // Mostrar confirmación de entrega
+                setTimeout(() => {
+                    mostrarConfirmacionEntrega(compra);
+                }, 1000);
+                
+                demoAction('¡Pago procesado exitosamente!');
+            }, 2000);
+        }
+
+        // Función para mostrar confirmación de entrega
+        function mostrarConfirmacionEntrega(compra) {
+            const modalHTML = `
+                <div id="confirmacionEntregaModal" style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); display: flex; align-items: center; justify-content: center; z-index: 9999999;">
+                    <div style="background: white; border-radius: 20px; padding: 40px; max-width: 500px; width: 90%; max-height: 90vh; overflow-y: auto;">
+                        <div style="text-align: center; margin-bottom: 30px;">
+                            <h3 style="color: #333; font-size: 1.8rem; margin-bottom: 10px;">
+                                <i class="fas fa-truck" style="color: #10B981;"></i> Confirmar Entrega
+                            </h3>
+                            <p style="color: #666; font-size: 1rem;">¿Ya recibiste tu pedido?</p>
+                        </div>
+                        
+                        <div style="background: #F8FAFC; padding: 20px; border-radius: 12px; margin-bottom: 25px;">
+                            <h4 style="margin: 0 0 10px 0; color: #333;">Resumen de tu compra:</h4>
+                            <p style="margin: 0; color: #666;">Total: $${compra.total}</p>
+                            <p style="margin: 0; color: #666;">Fecha: ${compra.fecha}</p>
+                        </div>
+                        
+                        <div style="display: grid; gap: 15px; margin-bottom: 25px;">
+                            <button onclick="confirmarEntrega('recibido', ${JSON.stringify(compra).replace(/"/g, '&quot;')})" style="background: linear-gradient(135deg, #10B981, #059669); color: white; border: none; padding: 15px; border-radius: 12px; cursor: pointer; font-weight: 600; font-size: 1rem;">
+                                <i class="fas fa-check"></i> Sí, ya recibí mi pedido
+                            </button>
+                            <button onclick="confirmarEntrega('pendiente', ${JSON.stringify(compra).replace(/"/g, '&quot;')})" style="background: linear-gradient(135deg, #F59E0B, #FBBF24); color: white; border: none; padding: 15px; border-radius: 12px; cursor: pointer; font-weight: 600; font-size: 1rem;">
+                                <i class="fas fa-clock"></i> Aún no lo he recibido
+                            </button>
+                        </div>
+                        
+                        <div style="text-align: center;">
+                            <button onclick="cerrarConfirmacionEntrega()" style="background: #6b7280; color: white; border: none; padding: 10px 20px; border-radius: 8px; cursor: pointer;">
+                                Cerrar
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            `;
+            
+            document.body.insertAdjacentHTML('beforeend', modalHTML);
+        }
+
+        // Función para confirmar entrega
+        function confirmarEntrega(estado, compra) {
+            const compraObj = JSON.parse(compra);
+            
+            // Guardar confirmación en localStorage
+            let entregas = JSON.parse(localStorage.getItem('confirmacionesEntrega') || '[]');
+            entregas.push({
+                ...compraObj,
+                estadoEntrega: estado,
+                fechaConfirmacion: new Date().toISOString()
+            });
+            localStorage.setItem('confirmacionesEntrega', JSON.stringify(entregas));
+            
+            if (estado === 'recibido') {
+                alert('✅ ¡Gracias por confirmar! ¡Esperamos que disfrutes tu compra!');
+            } else {
+                alert('⏳ Entendido. Te contactaremos pronto para coordinar la entrega.');
+            }
+            
+            cerrarConfirmacionEntrega();
+        }
+
+        // Función para cerrar modal de confirmación
+        function cerrarConfirmacionEntrega() {
+            const modal = document.getElementById('confirmacionEntregaModal');
+            if (modal) {
+                modal.remove();
+            }
+        }
+        
+        // Demo de navegación suave
+        document.querySelectorAll('.demo-nav a').forEach(link => {
+            link.addEventListener('click', function(e) {
+                const href = this.getAttribute('href');
+                
+                if (href && href.startsWith('#')) {
+                    e.preventDefault();
+                    const targetId = href.substring(1); // Remover el #
+                    const target = document.getElementById(targetId);
+                    if (target) {
+                        target.scrollIntoView({
+                            behavior: 'smooth',
+                            block: 'start'
+                        });
+                    }
+                }
+            });
+        });
+        
+        // ===== SISTEMA DE FEEDBACK PARA COMPRADORES =====
+        
+        // Inicializar sistema de estrellas para feedback
+        document.addEventListener('DOMContentLoaded', function() {
+            const estrellas = document.querySelectorAll('#estrellas-feedback i');
+            
+            estrellas.forEach((estrella, index) => {
+                estrella.addEventListener('click', function() {
+                    const rating = parseInt(this.getAttribute('data-rating'));
+                    document.getElementById('rating-feedback').value = rating;
+                    
+                    // Actualizar visual de estrellas
+                    estrellas.forEach((s, i) => {
+                        if (i < rating) {
+                            s.style.color = '#F59E0B';
+                        } else {
+                            s.style.color = '#E5E7EB';
+                        }
+                    });
+                });
+                
+                estrella.addEventListener('mouseenter', function() {
+                    const rating = parseInt(this.getAttribute('data-rating'));
+                    estrellas.forEach((s, i) => {
+                        if (i < rating) {
+                            s.style.color = '#F59E0B';
+                        } else {
+                            s.style.color = '#E5E7EB';
+                        }
+                    });
+                });
+            });
+            
+            // Restaurar estrellas al salir del hover
+            document.getElementById('estrellas-feedback').addEventListener('mouseleave', function() {
+                const currentRating = parseInt(document.getElementById('rating-feedback').value);
+                const estrellas = document.querySelectorAll('#estrellas-feedback i');
+                
+                estrellas.forEach((s, i) => {
+                    if (i < currentRating) {
+                        s.style.color = '#F59E0B';
+                    } else {
+                        s.style.color = '#E5E7EB';
+                    }
+                });
+            });
+        });
+        
+        // Función para abrir el modal de feedback
+        function abrirFeedbackCompradores() {
+            const modal = document.getElementById('feedbackModalCompradores');
+            modal.style.display = 'flex';
+            document.body.style.overflow = 'hidden';
+        }
+        
+        // Función para cerrar el modal de feedback
+        function cerrarFeedbackCompradores() {
+            const modal = document.getElementById('feedbackModalCompradores');
+            modal.style.display = 'none';
+            document.body.style.overflow = 'auto';
+            
+            // Limpiar formulario
+            document.getElementById('feedbackFormCompradores').reset();
+            document.getElementById('rating-feedback').value = '0';
+            
+            // Restaurar estrellas
+            const estrellas = document.querySelectorAll('#estrellas-feedback i');
+            estrellas.forEach(s => s.style.color = '#E5E7EB');
+        }
+        
+        // Función para enviar feedback
+        function enviarFeedbackCompradores(event) {
+            event.preventDefault();
+            
+            const tipoFeedback = document.getElementById('tipoFeedback').value;
+            const nombre = document.getElementById('nombreFeedback').value.trim();
+            const email = document.getElementById('emailFeedback').value.trim();
+            const mensaje = document.getElementById('mensajeFeedback').value.trim();
+            const rating = parseInt(document.getElementById('rating-feedback').value);
+            
+            // Validaciones
+            if (!tipoFeedback) {
+                alert('⚠️ Por favor selecciona el tipo de feedback.');
+                return;
+            }
+            
+            if (!mensaje) {
+                alert('⚠️ Por favor escribe tu mensaje.');
+                return;
+            }
+            
+            if (mensaje.length < 10) {
+                alert('⚠️ El mensaje debe tener al menos 10 caracteres.');
+                return;
+            }
+            
+            // Crear objeto de feedback
+            const feedback = {
+                id: Date.now(),
+                tipo: tipoFeedback,
+                nombre: nombre || 'Comprador Anónimo',
+                email: email || '',
+                mensaje: mensaje,
+                rating: rating || 0,
+                fecha: new Date().toLocaleDateString('es-ES'),
+                hora: new Date().toLocaleTimeString('es-ES'),
+                usuario: 'comprador'
+            };
+            
+            // Guardar en localStorage
+            let feedbacks = JSON.parse(localStorage.getItem('feedbacks_compradores') || '[]');
+            feedbacks.push(feedback);
+            localStorage.setItem('feedbacks_compradores', JSON.stringify(feedbacks));
+            
+            // Cerrar modal
+            cerrarFeedbackCompradores();
+            
+            // Mostrar confirmación
+            if (window.elegantNotifications) {
+                window.elegantNotifications.show('✅ ¡Feedback enviado exitosamente! Gracias por ayudarnos a mejorar Cresalia.', 'success');
+            } else {
+                alert('✅ ¡Feedback enviado exitosamente! Gracias por ayudarnos a mejorar Cresalia.');
+            }
+            
+            // También guardar en el sistema general de feedbacks (compatible con vendedores)
+            let feedbacksGenerales = JSON.parse(localStorage.getItem('feedbacks_generales') || '[]');
+            feedbacksGenerales.push(feedback);
+            localStorage.setItem('feedbacks_generales', JSON.stringify(feedbacksGenerales));
+        }
+        
+        // Cerrar modal al hacer click fuera
+        document.getElementById('feedbackModalCompradores').addEventListener('click', function(e) {
+            if (e.target === this) {
+                cerrarFeedbackCompradores();
+            }
+        });
+        
+        // ===== SISTEMA DE CALIFICACIÓN DE TIENDAS =====
+        
+        // Variables globales para calificación
+        let tiendaActualCalificacion = '';
+        
+        // Inicializar sistema de estrellas para calificación de tiendas
+        document.addEventListener('DOMContentLoaded', function() {
+            const estrellasTienda = document.querySelectorAll('#estrellas-tienda i');
+            
+            estrellasTienda.forEach((estrella, index) => {
+                estrella.addEventListener('click', function() {
+                    const rating = parseInt(this.getAttribute('data-rating'));
+                    document.getElementById('rating-tienda').value = rating;
+                    
+                    // Actualizar visual de estrellas
+                    estrellasTienda.forEach((s, i) => {
+                        if (i < rating) {
+                            s.style.color = '#F59E0B';
+                        } else {
+                            s.style.color = '#E5E7EB';
+                        }
+                    });
+                });
+                
+                estrella.addEventListener('mouseenter', function() {
+                    const rating = parseInt(this.getAttribute('data-rating'));
+                    estrellasTienda.forEach((s, i) => {
+                        if (i < rating) {
+                            s.style.color = '#F59E0B';
+                        } else {
+                            s.style.color = '#E5E7EB';
+                        }
+                    });
+                });
+            });
+            
+            // Restaurar estrellas al salir del hover
+            document.getElementById('estrellas-tienda').addEventListener('mouseleave', function() {
+                const currentRating = parseInt(document.getElementById('rating-tienda').value);
+                const estrellasTienda = document.querySelectorAll('#estrellas-tienda i');
+                
+                estrellasTienda.forEach((s, i) => {
+                    if (i < currentRating) {
+                        s.style.color = '#F59E0B';
+                    } else {
+                        s.style.color = '#E5E7EB';
+                    }
+                });
+            });
+        });
+        
+        // Función para abrir el modal de calificación de tienda
+        function abrirCalificacionTienda(nombreTienda, tiendaId) {
+            tiendaActualCalificacion = nombreTienda;
+            document.getElementById('nombreTiendaCalificacion').textContent = nombreTienda;
+            
+            const modal = document.getElementById('calificacionModalTienda');
+            modal.style.display = 'flex';
+            document.body.style.overflow = 'hidden';
+        }
+        
+        // Función para cerrar el modal de calificación
+        function cerrarCalificacionTienda() {
+            const modal = document.getElementById('calificacionModalTienda');
+            modal.style.display = 'none';
+            document.body.style.overflow = 'auto';
+            
+            // Limpiar formulario
+            document.getElementById('calificacionFormTienda').reset();
+            document.getElementById('rating-tienda').value = '0';
+            
+            // Restaurar estrellas
+            const estrellasTienda = document.querySelectorAll('#estrellas-tienda i');
+            estrellasTienda.forEach(s => s.style.color = '#E5E7EB');
+        }
+        
+        // Función para enviar calificación de tienda
+        function enviarCalificacionTienda(event) {
+            event.preventDefault();
+            
+            const rating = parseInt(document.getElementById('rating-tienda').value);
+            const nombre = document.getElementById('nombreCalificacion').value.trim();
+            const comentario = document.getElementById('comentarioCalificacion').value.trim();
+            
+            // Validaciones
+            if (rating === 0) {
+                alert('⚠️ Por favor selecciona una calificación con estrellas.');
+                return;
+            }
+            
+            // Crear objeto de calificación
+            const calificacion = {
+                id: Date.now(),
+                tienda: tiendaActualCalificacion,
+                rating: rating,
+                nombre: nombre || 'Comprador Anónimo',
+                comentario: comentario || '',
+                fecha: new Date().toLocaleDateString('es-ES'),
+                hora: new Date().toLocaleTimeString('es-ES'),
+                usuario: 'comprador'
+            };
+            
+            // Guardar en localStorage
+            let calificaciones = JSON.parse(localStorage.getItem('calificaciones_tiendas') || '[]');
+            calificaciones.push(calificacion);
+            localStorage.setItem('calificaciones_tiendas', JSON.stringify(calificaciones));
+            
+            // Cerrar modal
+            cerrarCalificacionTienda();
+            
+            // Mostrar confirmación
+            if (window.elegantNotifications) {
+                window.elegantNotifications.show(`⭐ ¡Calificación enviada! Gracias por calificar a ${tiendaActualCalificacion}.`, 'success');
+            } else {
+                alert(`⭐ ¡Calificación enviada! Gracias por calificar a ${tiendaActualCalificacion}.`);
+            }
+        }
+        
+        // Cerrar modal de calificación al hacer click fuera
+        document.getElementById('calificacionModalTienda').addEventListener('click', function(e) {
+            if (e.target === this) {
+                cerrarCalificacionTienda();
+            }
+        });
+        
+        // Demo de notificación inicial
+        document.addEventListener('DOMContentLoaded', function() {
+            setTimeout(() => {
+                if (window.elegantNotifications) {
+                    window.elegantNotifications.show('🛍️ Interfaz de compradores cargada correctamente', 'success');
+                }
+            }, 1000);
+        });
+        
+        // Demo de scroll spy
+        window.addEventListener('scroll', function() {
+            const sections = document.querySelectorAll('section[id]');
+            const navLinks = document.querySelectorAll('.demo-nav a');
+            
+            let current = '';
+            sections.forEach(section => {
+                const sectionTop = section.offsetTop;
+                const sectionHeight = section.clientHeight;
+                if (scrollY >= (sectionTop - 200)) {
+                    current = section.getAttribute('id');
+                }
+            });
+            
+            navLinks.forEach(link => {
+                link.style.color = '#6B7280';
+                if (link.getAttribute('href') === '#' + current) {
+                    link.style.color = '#7C3AED';
+                }
+            });
+        });
+    </script>
+
+    <!-- =============================================== -->
+    <!-- CHATBOT IA Y SOPORTE - AGREGADO POR CARLA 💜 -->
+    <!-- =============================================== -->
+
+    <!-- Chatbot IA -->
+    <div class="ai-chatbot-container">
+        <button class="ai-chatbot-toggle" onclick="toggleAIChatbot()">
+            <div class="ai-toggle-content">
+                <i class="fas fa-brain"></i>
+                <span class="ai-toggle-text">Cresalia AI</span>
+            </div>
+        </button>
+        
+        <div class="ai-chatbot-modal" id="aiChatbotModal">
+            <div class="ai-chatbot-header">
+                <div class="ai-header-content">
+                    <div class="ai-avatar">
+                        <i class="fas fa-brain"></i>
+                    </div>
+                    <div class="ai-header-info">
+                        <h3>Cresalia AI</h3>
+                        <span class="ai-status">Asistente Inteligente</span>
+                    </div>
+                </div>
+                <button class="ai-chatbot-close" onclick="toggleAIChatbot()">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            
+            <div class="ai-chatbot-messages" id="aiChatbotMessages">
+                <div class="ai-message ai-bot">
+                    <div class="ai-message-content">
+                        <p>¡Hola! 👋 Soy tu asistente de Cresalia AI. ¿En qué puedo ayudarte hoy?</p>
+                        <div class="ai-suggestions">
+                            <button onclick="sendAIMessage('¿Cómo funciona Cresalia?')">¿Cómo funciona Cresalia?</button>
+                            <button onclick="sendAIMessage('¿Qué productos tienen?')">¿Qué productos tienen?</button>
+                            <button onclick="sendAIMessage('Ayuda con mi pedido')">Ayuda con mi pedido</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="ai-chatbot-input">
+                <div class="input-container">
+                    <input type="text" id="aiChatInput" placeholder="Escribe tu consulta..." onkeypress="handleAIChatKeyPress(event)">
+                    <button onclick="sendAIMessage()" class="send-btn">
+                        <i class="fas fa-paper-plane"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Chatbot Cresalia (Servicio de Ayuda) -->
+    <div class="chatbot-container">
+        <button class="chatbot-toggle" onclick="toggleChatbot()">
+            <div class="chatbot-toggle-content">
+                <i class="fas fa-headset"></i>
+                <span class="chatbot-toggle-text">Ayuda</span>
+            </div>
+        </button>
+        
+        <div class="chatbot-modal" id="chatbotModal">
+            <div class="chatbot-header">
+                <div class="chatbot-header-content">
+                    <div class="chatbot-avatar">
+                        <i class="fas fa-user-circle"></i>
+                    </div>
+                    <div class="chatbot-header-info">
+                        <h3>Soporte Cresalia</h3>
+                        <span class="chatbot-status">En línea</span>
+                    </div>
+                </div>
+                <button class="chatbot-close" onclick="toggleChatbot()">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            
+            <div class="chatbot-messages" id="chatbotMessages">
+                <div class="chat-message bot">
+                    <div class="message-content">
+                        <p>¡Hola! 😊 Soy Crisla, tu asistente de soporte. ¿En qué puedo ayudarte?</p>
+                        <div class="quick-actions">
+                            <button onclick="sendMessage('Tengo un problema con mi pedido')">Problema con pedido</button>
+                            <button onclick="sendMessage('¿Cómo puedo contactar a una tienda?')">Contactar tienda</button>
+                            <button onclick="sendMessage('Necesito ayuda con el pago')">Ayuda con pago</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="chatbot-input">
+                <div class="input-container">
+                    <input type="text" id="chatInput" placeholder="Escribe tu mensaje..." onkeypress="handleChatKeyPress(event)">
+                    <button onclick="sendMessage()" class="send-btn">
+                        <i class="fas fa-paper-plane"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Script de Soporte -->
+    <script src="js/crisla-support-integration.js"></script>
+
+    <!-- Scripts de Chatbot -->
+    <script>
+        // ========================================
+        // FUNCIONES DE CHATBOT IA Y SOPORTE
+        // ========================================
+
+        // Variables globales
+        let aiChatbotOpen = false;
+        let chatbotOpen = false;
+
+        // Función para toggle Chatbot IA
+        function toggleAIChatbot() {
+            const modal = document.getElementById('aiChatbotModal');
+            const button = document.querySelector('.ai-chatbot-toggle');
+            
+            aiChatbotOpen = !aiChatbotOpen;
+            
+            if (aiChatbotOpen) {
+                modal.style.display = 'flex';
+                button.style.transform = 'scale(0.9)';
+                // Cerrar el otro chatbot si está abierto
+                if (chatbotOpen) {
+                    toggleChatbot();
+                }
+            } else {
+                modal.style.display = 'none';
+                button.style.transform = 'scale(1)';
+            }
+        }
+
+        // Función para toggle Chatbot de Soporte
+        function toggleChatbot() {
+            const modal = document.getElementById('chatbotModal');
+            const button = document.querySelector('.chatbot-toggle');
+            
+            chatbotOpen = !chatbotOpen;
+            
+            if (chatbotOpen) {
+                modal.style.display = 'flex';
+                button.style.transform = 'scale(0.9)';
+                // Cerrar el otro chatbot si está abierto
+                if (aiChatbotOpen) {
+                    toggleAIChatbot();
+                }
+            } else {
+                modal.style.display = 'none';
+                button.style.transform = 'scale(1)';
+            }
+        }
+
+        // Función para enviar mensaje AI
+        function sendAIMessage(message = null) {
+            const input = document.getElementById('aiChatInput');
+            const messagesContainer = document.getElementById('aiChatbotMessages');
+            
+            const messageText = message || input.value.trim();
+            if (!messageText) return;
+            
+            // Mensaje del usuario
+            const userMessage = document.createElement('div');
+            userMessage.className = 'ai-message ai-user';
+            userMessage.innerHTML = `
+                <div class="ai-message-content">
+                    <p>${messageText}</p>
+                </div>
+            `;
+            messagesContainer.appendChild(userMessage);
+            
+            // Limpiar input
+            if (!message) input.value = '';
+            
+            // Simular respuesta del AI (después de un delay)
+            setTimeout(() => {
+                const aiResponse = getAIResponse(messageText);
+                const botMessage = document.createElement('div');
+                botMessage.className = 'ai-message ai-bot';
+                botMessage.innerHTML = `
+                    <div class="ai-message-content">
+                        <p>${aiResponse}</p>
+                    </div>
+                `;
+                messagesContainer.appendChild(botMessage);
+                messagesContainer.scrollTop = messagesContainer.scrollHeight;
+            }, 1000);
+            
+            messagesContainer.scrollTop = messagesContainer.scrollHeight;
+        }
+
+        // Función para enviar mensaje de soporte
+        function sendMessage(message = null) {
+            const input = document.getElementById('chatInput');
+            const messagesContainer = document.getElementById('chatbotMessages');
+            
+            const messageText = message || input.value.trim();
+            if (!messageText) return;
+            
+            // Mensaje del usuario
+            const userMessage = document.createElement('div');
+            userMessage.className = 'chat-message user';
+            userMessage.innerHTML = `
+                <div class="message-content">
+                    <p>${messageText}</p>
+                </div>
+            `;
+            messagesContainer.appendChild(userMessage);
+            
+            // Limpiar input
+            if (!message) input.value = '';
+            
+            // Simular respuesta del soporte (después de un delay)
+            setTimeout(() => {
+                const supportResponse = getSupportResponse(messageText);
+                const botMessage = document.createElement('div');
+                botMessage.className = 'chat-message bot';
+                botMessage.innerHTML = `
+                    <div class="message-content">
+                        <p>${supportResponse}</p>
+                    </div>
+                `;
+                messagesContainer.appendChild(botMessage);
+                messagesContainer.scrollTop = messagesContainer.scrollHeight;
+            }, 1500);
+            
+            messagesContainer.scrollTop = messagesContainer.scrollHeight;
+        }
+
+        // Respuestas del AI
+        function getAIResponse(message) {
+            const responses = {
+                'cómo funciona': '🚀 Cresalia es una plataforma que conecta compradores con tiendas locales. Puedes explorar productos, comparar precios y comprar de forma segura.',
+                'productos': '🛍️ Tenemos productos y servicios: electrónicos, ropa, hogar, belleza, servicios profesionales y mucho más. ¿Buscas algo específico?',
+                'pedido': '📦 Puedo ayudarte con tu pedido. ¿Cuál es el número de tu pedido o qué problema tienes?',
+                'default': '💡 Entiendo tu consulta. Para ayudarte mejor, ¿podrías ser más específico? También puedes contactar con soporte para asistencia personalizada.'
+            };
+            
+            const lowerMessage = message.toLowerCase();
+            for (let key in responses) {
+                if (lowerMessage.includes(key)) {
+                    return responses[key];
+                }
+            }
+            return responses.default;
+        }
+
+        // Respuestas del soporte
+        function getSupportResponse(message) {
+            const responses = {
+                'pedido': '📦 Para ayudarte con tu pedido, necesito el número de orden. También puedes revisar el estado en "Mis Pedidos".',
+                'contactar': '📞 Puedes contactar directamente con las tiendas desde su perfil, o escribir a soporte@cresalia.com',
+                'pago': '💳 Aceptamos tarjetas de crédito/débito, transferencias y pago en efectivo. ¿Tienes algún problema específico?',
+                'default': '😊 Gracias por contactarnos. Un agente revisará tu consulta y te responderá pronto. ¿Hay algo más en lo que pueda ayudarte?'
+            };
+            
+            const lowerMessage = message.toLowerCase();
+            for (let key in responses) {
+                if (lowerMessage.includes(key)) {
+                    return responses[key];
+                }
+            }
+            return responses.default;
+        }
+
+        // Manejar Enter en inputs
+        function handleAIChatKeyPress(event) {
+            if (event.key === 'Enter') {
+                sendAIMessage();
+            }
+        }
+
+        function handleChatKeyPress(event) {
+            if (event.key === 'Enter') {
+                sendMessage();
+            }
+        }
+
+        // Cerrar chatbots al hacer clic fuera
+        document.addEventListener('click', function(event) {
+            const aiModal = document.getElementById('aiChatbotModal');
+            const chatModal = document.getElementById('chatbotModal');
+            const aiToggle = document.querySelector('.ai-chatbot-toggle');
+            const chatToggle = document.querySelector('.chatbot-toggle');
+            
+            if (aiChatbotOpen && !aiModal.contains(event.target) && !aiToggle.contains(event.target)) {
+                toggleAIChatbot();
+            }
+            
+            if (chatbotOpen && !chatModal.contains(event.target) && !chatToggle.contains(event.target)) {
+                toggleChatbot();
+            }
+        });
+
+        console.log('✅ Chatbots IA y Soporte cargados en demo-buyer-interface.html');
+        
+        // ===== SISTEMA DE AGRADECIMIENTO AUTOMÁTICO =====
+        
+        // Función para enviar agradecimiento por usar la plataforma
+        function enviarAgradecimientoUsoPlataforma() {
+            const ultimoAgradecimiento = localStorage.getItem('ultimoAgradecimientoUso');
+            const ahora = new Date();
+            const ultimoAgradecimientoFecha = ultimoAgradecimiento ? new Date(ultimoAgradecimiento) : null;
+            
+            // Verificar si ha pasado al menos 1 día desde el último agradecimiento
+            if (!ultimoAgradecimientoFecha || (ahora.getTime() - ultimoAgradecimientoFecha.getTime()) > 24 * 60 * 60 * 1000) {
+                generarAgradecimientoUsoPlataforma();
+                localStorage.setItem('ultimoAgradecimientoUso', ahora.toISOString());
+            }
+        }
+        
+        // Función para generar agradecimiento por usar la plataforma
+        function generarAgradecimientoUsoPlataforma() {
+            const agradecimientoUso = `
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Gracias por usar Cresalia</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; background: linear-gradient(135deg, #F59E0B 0%, #FBBF24 100%); }
+        .container { max-width: 600px; margin: 0 auto; background: white; border-radius: 12px; overflow: hidden; box-shadow: 0 10px 30px rgba(0,0,0,0.1); }
+        .header { background: linear-gradient(135deg, #F59E0B, #FBBF24); color: white; padding: 30px; text-align: center; }
+        .content { padding: 30px; }
+        .highlight { background: #fef3c7; padding: 20px; border-radius: 8px; margin: 20px 0; border-left: 4px solid #F59E0B; }
+        .footer { background: #f8fafc; padding: 20px; text-align: center; color: #666; border-top: 1px solid #e5e7eb; }
+        .stats { display: grid; grid-template-columns: repeat(2, 1fr); gap: 15px; margin: 20px 0; }
+        .stat-card { background: #fef3c7; padding: 15px; border-radius: 8px; text-align: center; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>¡Gracias por usar Cresalia! 🛍️</h1>
+            <p style="margin: 0; font-size: 1.1rem;">Tu plataforma de compras de confianza</p>
+        </div>
+        
+        <div class="content">
+            <h2>¡Apreciamos tu confianza! 💜</h2>
+            
+            <p>Gracias por elegir Cresalia para tus compras. Tu apoyo nos motiva a seguir mejorando y ofreciendo el mejor servicio.</p>
+            
+            <div class="highlight">
+                <h3>🎉 ¡Nuevas Funcionalidades Disponibles!</h3>
+                <ul>
+                    <li>✅ Sistema de transporte local</li>
+                    <li>✅ Calificaciones y opiniones</li>
+                    <li>✅ Ofertas especiales</li>
+                    <li>✅ Soporte 24/7</li>
+                    <li>✅ Compras seguras</li>
+                    <li>✅ Notas de agradecimiento personalizadas</li>
+                </ul>
+            </div>
+            
+            <div class="stats">
+                <div class="stat-card">
+                    <h3 style="margin: 0; color: #F59E0B;">🏪</h3>
+                    <p style="margin: 5px 0; color: #666;">Tiendas Locales</p>
+                </div>
+                <div class="stat-card">
+                    <h3 style="margin: 0; color: #F59E0B;">🚗</h3>
+                    <p style="margin: 5px 0; color: #666;">Servicio de Transporte</p>
+                </div>
+            </div>
+            
+            <p>Tu satisfacción es nuestra prioridad. Si tienes alguna sugerencia o necesitas ayuda, no dudes en contactarnos.</p>
+            
+            <div style="text-align: center; margin: 30px 0;">
+                <p style="font-size: 1.2rem; color: #F59E0B; font-weight: bold;">
+                    ¡Gracias por hacer crecer Cresalia! 🚀
+                </p>
+            </div>
+        </div>
+        
+        <div class="footer">
+            <p><strong>El equipo de Cresalia</strong> te agradece por usar nuestra plataforma</p>
+            <p style="font-size: 0.9rem; margin-top: 10px;">
+                Esta nota fue generada automáticamente por Cresalia - Tu plataforma de confianza para el comercio digital
+            </p>
+            <p style="font-size: 0.8rem; color: #999; margin-top: 15px;">
+                Fecha: ${new Date().toLocaleString('es-ES')}
+            </p>
+        </div>
+    </div>
+</body>
+</html>
+            `;
+            
+            // Crear y descargar el agradecimiento
+            const blob = new Blob([agradecimientoUso], { type: 'text/html' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `agradecimiento-uso-cresalia-${new Date().toISOString().split('T')[0]}.html`;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+            
+            console.log('📧 Agradecimiento por uso de plataforma generado');
+        }
+        
+        // Función para enviar agradecimiento después de una compra
+        function enviarAgradecimientoDespuesCompra(compra) {
+            console.log('📧 Enviando agradecimiento por compra realizada...');
+            
+            // Generar mensaje de agradecimiento personalizado
+            const agradecimientoCompra = `
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>¡Gracias por tu compra en Cresalia!</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; background: linear-gradient(135deg, #7C3AED 0%, #EC4899 100%); }
+        .container { max-width: 600px; margin: 0 auto; background: white; border-radius: 12px; overflow: hidden; box-shadow: 0 10px 30px rgba(0,0,0,0.1); }
+        .header { background: linear-gradient(135deg, #7C3AED, #EC4899); color: white; padding: 30px; text-align: center; }
+        .content { padding: 30px; }
+        .footer { background: #F8FAFC; padding: 20px; text-align: center; color: #6B7280; }
+        .btn { display: inline-block; background: linear-gradient(135deg, #7C3AED, #EC4899); color: white; padding: 12px 24px; text-decoration: none; border-radius: 8px; margin: 10px 5px; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>¡Gracias por tu compra! 🎉</h1>
+            <p>Tu pedido ha sido procesado exitosamente</p>
+        </div>
+        <div class="content">
+            <h2>Hola ${compra.cliente || 'Cliente'},</h2>
+            <p>¡Muchas gracias por confiar en Cresalia! Tu compra ha sido procesada exitosamente.</p>
+            
+            <h3>📦 Detalles de tu compra:</h3>
+            <ul>
+                ${compra.items ? compra.items.map(item => `<li>${item.nombre} - $${item.precio}</li>`).join('') : '<li>Productos varios</li>'}
+            </ul>
+            
+            <p><strong>Total: $${compra.total || '0.00'}</strong></p>
+            
+            <h3>📋 Próximos pasos:</h3>
+            <p>1. Recibirás una confirmación por email</p>
+            <p>2. El vendedor se pondrá en contacto contigo</p>
+            <p>3. Coordinarás la entrega o retiro</p>
+            
+            <div style="text-align: center; margin: 30px 0;">
+                <a href="#" class="btn">Ver mis compras</a>
+                <a href="#" class="btn">Contactar vendedor</a>
+            </div>
+            
+            <p>¡Esperamos que disfrutes tu compra!</p>
+            <p>El equipo de Cresalia 💜</p>
+        </div>
+        <div class="footer">
+            <p>© 2024 Cresalia - Conectando emprendedores y compradores</p>
+        </div>
+    </div>
+</body>
+</html>`;
+            
+            // Crear y descargar el archivo
+            const blob = new Blob([agradecimientoCompra], { type: 'text/html' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `agradecimiento-compra-${new Date().toISOString().split('T')[0]}.html`;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+            
+            console.log('📧 Agradecimiento por compra enviado');
+        }
+
+        // ===== HISTORIAL DE SERVICIOS =====
+        
+        // Función para mostrar historial de servicios
+        function mostrarHistorialServicios() {
+            console.log('🔧 Mostrando historial de servicios...');
+            
+            // Cargar servicios del localStorage
+            const serviciosReservados = JSON.parse(localStorage.getItem('reservasServicios') || '[]');
+            
+            const modalHTML = `
+                <div id="historialServiciosModal" style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); display: flex; align-items: center; justify-content: center; z-index: 9999999;">
+                    <div style="background: white; border-radius: 20px; padding: 40px; max-width: 800px; width: 90%; max-height: 90vh; overflow-y: auto;">
+                        <div style="text-align: center; margin-bottom: 30px;">
+                            <h3 style="color: #333; font-size: 1.8rem; margin-bottom: 10px;">
+                                <i class="fas fa-cogs" style="color: #10B981;"></i> Mis Servicios
+                            </h3>
+                            <p style="color: #666; font-size: 1rem;">Historial de servicios reservados</p>
+                        </div>
+                        
+                        <div id="listaServiciosHistorial" style="max-height: 400px; overflow-y: auto;">
+                            ${serviciosReservados.length === 0 ? `
+                                <div style="text-align: center; padding: 40px; color: #6B7280;">
+                                    <i class="fas fa-cogs" style="font-size: 48px; margin-bottom: 20px; opacity: 0.3;"></i>
+                                    <h3 style="margin: 0 0 10px 0; color: #374151;">No tienes servicios reservados</h3>
+                                    <p style="margin: 0;">¡Reserva tu primer servicio!</p>
+                                </div>
+                            ` : serviciosReservados.map((servicio, index) => `
+                                <div style="border: 2px solid #E5E7EB; border-radius: 12px; padding: 20px; margin-bottom: 15px; background: #F8FAFC;">
+                                    <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 15px;">
+                                        <div>
+                                            <h4 style="margin: 0 0 5px 0; color: #333; font-size: 1.2rem;">${servicio.servicio}</h4>
+                                            <p style="margin: 0; color: #6B7280; font-size: 0.9rem;">Cliente: ${servicio.cliente.nombre} ${servicio.cliente.apellido}</p>
+                                        </div>
+                                        <div style="text-align: right;">
+                                            <span style="background: ${servicio.estado === 'pendiente' ? '#F59E0B' : '#10B981'}; color: white; padding: 4px 12px; border-radius: 20px; font-size: 0.8rem; font-weight: 600;">
+                                                ${servicio.estado === 'pendiente' ? 'Pendiente' : 'Confirmado'}
+                                            </span>
+                                        </div>
+                                    </div>
+                                    
+                                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 15px; margin-bottom: 15px;">
+                                        <div>
+                                            <strong style="color: #374151;">Precio:</strong><br>
+                                            <span style="color: #10B981; font-weight: 600;">$${servicio.precio}</span>
+                                        </div>
+                                        <div>
+                                            <strong style="color: #374151;">Duración:</strong><br>
+                                            <span style="color: #6B7280;">${servicio.duracion}</span>
+                                        </div>
+                                        <div>
+                                            <strong style="color: #374151;">Fecha:</strong><br>
+                                            <span style="color: #6B7280;">${servicio.fecha}</span>
+                                        </div>
+                                        <div>
+                                            <strong style="color: #374151;">Hora:</strong><br>
+                                            <span style="color: #6B7280;">${servicio.hora}</span>
+                                        </div>
+                                    </div>
+                                    
+                                    ${servicio.comentarios ? `
+                                        <div style="background: white; padding: 10px; border-radius: 8px; margin-bottom: 15px;">
+                                            <strong style="color: #374151;">Comentarios:</strong><br>
+                                            <span style="color: #6B7280;">${servicio.comentarios}</span>
+                                        </div>
+                                    ` : ''}
+                                    
+                                    <div style="display: flex; gap: 10px; justify-content: flex-end;">
+                                        <button onclick="repetirServicio(${index})" style="background: linear-gradient(135deg, #7C3AED, #EC4899); color: white; border: none; padding: 8px 16px; border-radius: 8px; cursor: pointer; font-weight: 600;">
+                                            <i class="fas fa-redo"></i> Repetir
+                                        </button>
+                                        <button onclick="contactarVendedorServicio(${index})" style="background: linear-gradient(135deg, #10B981, #059669); color: white; border: none; padding: 8px 16px; border-radius: 8px; cursor: pointer; font-weight: 600;">
+                                            <i class="fas fa-phone"></i> Contactar
+                                        </button>
+                                    </div>
+                                </div>
+                            `).join('')}
+                        </div>
+                        
+                        <div style="text-align: center; margin-top: 20px;">
+                            <button onclick="cerrarHistorialServicios()" style="background: #6b7280; color: white; border: none; padding: 12px 24px; border-radius: 8px; cursor: pointer; font-weight: 600;">
+                                <i class="fas fa-times"></i> Cerrar
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            `;
+            
+            document.body.insertAdjacentHTML('beforeend', modalHTML);
+        }
+
+        // Función para repetir servicio
+        function repetirServicio(servicioIndex) {
+            const serviciosReservados = JSON.parse(localStorage.getItem('reservasServicios') || '[]');
+            const servicio = serviciosReservados[servicioIndex];
+            
+            if (!servicio) {
+                alert('❌ Servicio no encontrado');
+                return;
+            }
+            
+            // Mostrar modal de repetición con opciones
+            const modalHTML = `
+                <div id="repetirServicioModal" style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); display: flex; align-items: center; justify-content: center; z-index: 9999999;">
+                    <div style="background: white; border-radius: 20px; padding: 40px; max-width: 600px; width: 90%; max-height: 90vh; overflow-y: auto;">
+                        <div style="text-align: center; margin-bottom: 30px;">
+                            <h3 style="color: #333; font-size: 1.8rem; margin-bottom: 10px;">
+                                <i class="fas fa-redo" style="color: #7C3AED;"></i> Repetir Servicio
+                            </h3>
+                            <p style="color: #666; font-size: 1rem;">¿Dónde y cuándo quieres repetir este servicio?</p>
+                        </div>
+                        
+                        <div style="background: #F8FAFC; padding: 20px; border-radius: 12px; margin-bottom: 25px;">
+                            <h4 style="margin: 0 0 10px 0; color: #333;">${servicio.servicio}</h4>
+                            <div style="display: flex; justify-content: space-between; align-items: center;">
+                                <span style="font-size: 1.2rem; font-weight: 700; color: #10B981;">$${servicio.precio}</span>
+                                <span style="background: #E5E7EB; color: #374151; padding: 5px 12px; border-radius: 20px; font-size: 0.9rem;">${servicio.duracion}</span>
+                            </div>
+                        </div>
+                        
+                        <form id="formRepetirServicio" style="display: grid; gap: 20px;">
+                            <div>
+                                <label style="display: block; margin-bottom: 8px; font-weight: 600; color: #374151;">Lugar Preferido</label>
+                                <select id="lugarRepetir" required style="width: 100%; padding: 12px; border: 2px solid #E5E7EB; border-radius: 8px; font-size: 1rem;">
+                                    <option value="">Selecciona un lugar</option>
+                                    <option value="mismo-lugar">Mismo lugar que la vez anterior</option>
+                                    <option value="domicilio">A domicilio</option>
+                                    <option value="oficina-centro">Oficina Centro</option>
+                                    <option value="oficina-norte">Oficina Norte</option>
+                                    <option value="oficina-sur">Oficina Sur</option>
+                                </select>
+                            </div>
+                            
+                            <div>
+                                <label style="display: block; margin-bottom: 8px; font-weight: 600; color: #374151;">Fecha Preferida</label>
+                                <input type="date" id="fechaRepetir" required style="width: 100%; padding: 12px; border: 2px solid #E5E7EB; border-radius: 8px; font-size: 1rem;">
+                            </div>
+                            
+                            <div>
+                                <label style="display: block; margin-bottom: 8px; font-weight: 600; color: #374151;">Hora Preferida</label>
+                                <select id="horaRepetir" required style="width: 100%; padding: 12px; border: 2px solid #E5E7EB; border-radius: 8px; font-size: 1rem;">
+                                    <option value="">Selecciona una hora</option>
+                                    <option value="09:00">09:00 AM</option>
+                                    <option value="10:00">10:00 AM</option>
+                                    <option value="11:00">11:00 AM</option>
+                                    <option value="12:00">12:00 PM</option>
+                                    <option value="14:00">02:00 PM</option>
+                                    <option value="15:00">03:00 PM</option>
+                                    <option value="16:00">04:00 PM</option>
+                                    <option value="17:00">05:00 PM</option>
+                                </select>
+                            </div>
+                            
+                            <div>
+                                <label style="display: block; margin-bottom: 8px; font-weight: 600; color: #374151;">Comentarios Adicionales</label>
+                                <textarea id="comentariosRepetir" style="width: 100%; padding: 12px; border: 2px solid #E5E7EB; border-radius: 8px; font-size: 1rem; min-height: 80px;" placeholder="Alguna preferencia especial para esta repetición..."></textarea>
+                            </div>
+                            
+                            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-top: 20px;">
+                                <button type="button" onclick="cerrarRepetirServicio()" style="background: #6b7280; color: white; border: none; padding: 15px; border-radius: 12px; cursor: pointer; font-weight: 600; font-size: 1rem;">
+                                    <i class="fas fa-times"></i> Cancelar
+                                </button>
+                                <button type="submit" style="background: linear-gradient(135deg, #7C3AED, #EC4899); color: white; border: none; padding: 15px; border-radius: 12px; cursor: pointer; font-weight: 600; font-size: 1rem;">
+                                    <i class="fas fa-calendar-check"></i> Confirmar Repetición
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            `;
+            
+            document.body.insertAdjacentHTML('beforeend', modalHTML);
+            
+            // Configurar fecha mínima (hoy)
+            const fechaInput = document.getElementById('fechaRepetir');
+            const hoy = new Date().toISOString().split('T')[0];
+            fechaInput.min = hoy;
+            
+            // Manejar envío del formulario
+            document.getElementById('formRepetirServicio').addEventListener('submit', function(e) {
+                e.preventDefault();
+                
+                const nuevaReserva = {
+                    ...servicio,
+                    fecha: document.getElementById('fechaRepetir').value,
+                    hora: document.getElementById('horaRepetir').value,
+                    lugar: document.getElementById('lugarRepetir').value,
+                    comentarios: document.getElementById('comentariosRepetir').value,
+                    esRepeticion: true,
+                    servicioOriginal: servicio.servicio,
+                    fechaReserva: new Date().toISOString()
+                };
+                
+                // Guardar nueva reserva
+                let reservas = JSON.parse(localStorage.getItem('reservasServicios') || '[]');
+                reservas.push(nuevaReserva);
+                localStorage.setItem('reservasServicios', JSON.stringify(reservas));
+                
+                // Mostrar confirmación
+                alert(`✅ ¡Repetición confirmada!\n\nServicio: ${servicio.servicio}\nLugar: ${nuevaReserva.lugar}\nFecha: ${nuevaReserva.fecha}\nHora: ${nuevaReserva.hora}\n\nTe contactaremos pronto para confirmar los detalles.`);
+                
+                cerrarRepetirServicio();
+                cerrarHistorialServicios();
+                
+                // Recargar historial
+                setTimeout(() => mostrarHistorialServicios(), 500);
+            });
+        }
+
+        // Función para contactar vendedor del servicio
+        function contactarVendedorServicio(servicioIndex) {
+            const serviciosReservados = JSON.parse(localStorage.getItem('reservasServicios') || '[]');
+            const servicio = serviciosReservados[servicioIndex];
+            
+            if (!servicio) {
+                alert('❌ Servicio no encontrado');
+                return;
+            }
+            
+            alert(`📞 Contactando vendedor para:\n\nServicio: ${servicio.servicio}\nFecha: ${servicio.fecha}\nHora: ${servicio.hora}\n\nSe abrirá WhatsApp o se enviará un email al vendedor.`);
+        }
+
+        // Función para cerrar modal de historial de servicios
+        function cerrarHistorialServicios() {
+            const modal = document.getElementById('historialServiciosModal');
+            if (modal) {
+                modal.remove();
+            }
+        }
+
+        // Función para cerrar modal de repetir servicio
+        function cerrarRepetirServicio() {
+            const modal = document.getElementById('repetirServicioModal');
+            if (modal) {
+                modal.remove();
+            }
+        }
+        
+        // ===== FUNCIONES DE BÚSQUEDA Y FILTROS =====
+        function filtrarResultados() {
+            const busqueda = document.getElementById('busqueda').value.toLowerCase();
+            const zona = document.getElementById('zona').value;
+            const categoria = document.getElementById('categoria').value;
+            const precioMax = parseFloat(document.getElementById('precioMax').value) || Infinity;
+            const stock = document.getElementById('stock').value;
+            
+            console.log('🔍 Filtrando resultados:', { busqueda, zona, categoria, precioMax, stock });
+            
+            // Aquí se implementaría la lógica de filtrado
+            // Por ahora solo mostramos en consola
+        }
+        
+        // ===== CALCULADORA EN TIEMPO REAL =====
+        function calcularPrecio() {
+            const precioBase = parseFloat(document.getElementById('precioBase').value) || 0;
+            const cantidad = parseFloat(document.getElementById('cantidad').value) || 1;
+            const descuento = parseFloat(document.getElementById('descuento').value) || 0;
+            
+            const subtotal = precioBase * cantidad;
+            const descuentoMonto = subtotal * (descuento / 100);
+            const total = subtotal - descuentoMonto;
+            
+            document.getElementById('resultadoCalculadora').textContent = `Total: $${total.toFixed(2)}`;
+        }
+        
+        // ===== FUNCIÓN PARA MOSTRAR STOCK =====
+        function mostrarStock(cantidad) {
+            if (cantidad > 10) {
+                return '<span class="stock-indicator stock-disponible">Disponible</span>';
+            } else if (cantidad > 0) {
+                return '<span class="stock-indicator stock-bajo">Stock Bajo</span>';
+            } else {
+                return '<span class="stock-indicator stock-agotado">Agotado</span>';
+            }
+        }
+        
+        // ===== INICIALIZACIÓN =====
+        document.addEventListener('DOMContentLoaded', function() {
+            calcularPrecio();
+            console.log('🛍️ Interfaz de compradores inicializada');
+            
+            // Inicializar protección de datos sensibles
+            if (typeof ProteccionDatosSensibles !== 'undefined') {
+                new ProteccionDatosSensibles();
+            }
+            
+            // Inicializar protección de devtools
+            if (typeof ProteccionDevToolsAvanzada !== 'undefined') {
+                new ProteccionDevToolsAvanzada();
+            }
+        });
+    </script>
+    
+    <!-- Sistema de Alertas de Emergencia Global -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="config-supabase-seguro.js"></script>
+    <script src="js/sistema-alertas-comunidades.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            setTimeout(() => {
+                if (typeof SistemaAlertasComunidades !== 'undefined') {
+                    window.alertasGlobal = new SistemaAlertasComunidades('global');
+                }
+            }, 500);
+        });
+    </script>
+</body>
+</html>

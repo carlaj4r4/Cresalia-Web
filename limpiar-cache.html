@@ -3,104 +3,123 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Limpiar Cache - FRIOCAS</title>
+    <title>Limpiar Caché - Cresalia</title>
     <style>
         body {
-            font-family: Arial, sans-serif;
-            text-align: center;
-            padding: 50px;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            min-height: 100vh;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #7C3AED 0%, #EC4899 100%);
             margin: 0;
+            padding: 20px;
+            min-height: 100vh;
             display: flex;
-            flex-direction: column;
-            justify-content: center;
             align-items: center;
+            justify-content: center;
         }
         .container {
-            background: rgba(255,255,255,0.1);
-            padding: 30px;
-            border-radius: 15px;
-            backdrop-filter: blur(10px);
-            box-shadow: 0 8px 32px rgba(0,0,0,0.3);
+            background: white;
+            padding: 40px;
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            text-align: center;
+            max-width: 500px;
         }
         h1 {
+            color: #7C3AED;
             margin-bottom: 20px;
-            font-size: 2.5em;
-        }
-        p {
-            font-size: 1.2em;
-            margin-bottom: 30px;
         }
         .btn {
-            background: linear-gradient(135deg, #ff6b35 0%, #f7931e 100%);
+            background: linear-gradient(135deg, #7C3AED, #EC4899);
             color: white;
             border: none;
             padding: 15px 30px;
-            border-radius: 25px;
-            font-size: 1.1em;
+            border-radius: 10px;
+            font-size: 16px;
+            font-weight: 600;
             cursor: pointer;
-            transition: all 0.3s ease;
-            text-decoration: none;
-            display: inline-block;
             margin: 10px;
+            transition: all 0.3s ease;
         }
         .btn:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 10px 25px rgba(255, 107, 53, 0.4);
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(124, 58, 237, 0.3);
         }
-        .status {
-            margin-top: 20px;
-            padding: 15px;
+        .info {
+            background: #FDF2F8;
+            padding: 20px;
             border-radius: 10px;
-            background: rgba(255,255,255,0.2);
+            margin: 20px 0;
+            border: 2px solid #F9A8D4;
         }
     </style>
 </head>
 <body>
     <div class="container">
-        <h1>🧹 Limpiar Cache</h1>
-        <p>Este archivo ayuda a limpiar el cache del navegador para cargar la versión más reciente de los archivos.</p>
+        <h1>🧹 Limpiar Caché</h1>
         
-        <div>
-            <button class="btn" onclick="limpiarCache()">🔄 Limpiar Cache</button>
-            <a href="atencion-cliente-carla.html" class="btn">🚀 Ir a Carla</a>
-            <a href="index-friocas-productos.html" class="btn">🏠 Ir a Principal</a>
+        <div class="info">
+            <p><strong>Problema:</strong> Los cambios no se aplican porque el navegador tiene archivos en caché.</p>
+            <p><strong>Solución:</strong> Sigue estos pasos para limpiar la caché:</p>
         </div>
         
-        <div id="status" class="status" style="display: none;"></div>
+        <button class="btn" onclick="limpiarCache()">🧹 Limpiar Caché Automáticamente</button>
+        
+        <div class="info">
+            <h3>📋 Pasos Manuales:</h3>
+            <p><strong>Chrome/Edge:</strong> Ctrl + Shift + R</p>
+            <p><strong>Firefox:</strong> Ctrl + F5</p>
+            <p><strong>Safari:</strong> Cmd + Shift + R</p>
+            <p><strong>O:</strong> F12 → Network → "Disable cache"</p>
+        </div>
+        
+        <button class="btn" onclick="abrirPanel()">🎯 Abrir Panel de Crisla</button>
     </div>
 
     <script>
         function limpiarCache() {
-            const status = document.getElementById('status');
-            status.style.display = 'block';
-            status.innerHTML = '🔄 Limpiando cache...';
+            // Limpiar localStorage
+            localStorage.clear();
             
-            // Forzar recarga de recursos
-            if ('caches' in window) {
-                caches.keys().then(function(names) {
-                    for (let name of names) {
-                        caches.delete(name);
-                    }
-                    status.innerHTML = '✅ Cache limpiado exitosamente';
-                });
-            } else {
-                status.innerHTML = '⚠️ Cache limpiado (navegador no soporta Cache API)';
-            }
+            // Limpiar sessionStorage
+            sessionStorage.clear();
             
-            // Forzar recarga de la página después de 2 segundos
-            setTimeout(() => {
-                window.location.reload(true);
-            }, 2000);
+            // Recargar con parámetros para evitar caché
+            window.location.href = 'atencion-cliente-carla.html?t=' + Date.now();
         }
         
-        // Mostrar información del navegador
-        console.log('🌐 Navegador:', navigator.userAgent);
-        console.log('📅 Fecha:', new Date().toLocaleString());
-        console.log('🔧 Versión Carla:', '1.4');
+        function abrirPanel() {
+            // Abrir el panel con timestamp para evitar caché
+            window.open('atencion-cliente-carla.html?t=' + Date.now(), '_blank');
+        }
+        
+        // Auto-redirigir después de 5 segundos
+        setTimeout(() => {
+            if (confirm('¿Quieres ir automáticamente al panel de Crisla?')) {
+                abrirPanel();
+            }
+        }, 5000);
     </script>
 </body>
 </html>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 

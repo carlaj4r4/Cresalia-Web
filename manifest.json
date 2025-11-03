@@ -1,0 +1,150 @@
+{
+  "name": "Cresalia - Plataforma de Emprendedores",
+  "short_name": "Cresalia",
+  "description": "Plataforma inclusiva para emprendedores de todos los géneros. Crea tu tienda online, gestiona productos, servicios y crece con nosotros.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#8B5CF6",
+  "theme_color": "#7C3AED",
+  "orientation": "portrait-primary",
+  "scope": "/",
+  "lang": "es-ES",
+  "dir": "ltr",
+  "categories": ["business", "productivity", "shopping"],
+  "icons": [
+    {
+      "src": "icons/icon-72x72.png",
+      "sizes": "72x72",
+      "type": "image/png",
+      "purpose": "maskable any"
+    },
+    {
+      "src": "icons/icon-96x96.png",
+      "sizes": "96x96",
+      "type": "image/png",
+      "purpose": "maskable any"
+    },
+    {
+      "src": "icons/icon-128x128.png",
+      "sizes": "128x128",
+      "type": "image/png",
+      "purpose": "maskable any"
+    },
+    {
+      "src": "icons/icon-144x144.png",
+      "sizes": "144x144",
+      "type": "image/png",
+      "purpose": "maskable any"
+    },
+    {
+      "src": "icons/icon-152x152.png",
+      "sizes": "152x152",
+      "type": "image/png",
+      "purpose": "maskable any"
+    },
+    {
+      "src": "icons/icon-192x192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "maskable any"
+    },
+    {
+      "src": "icons/icon-384x384.png",
+      "sizes": "384x384",
+      "type": "image/png",
+      "purpose": "maskable any"
+    },
+    {
+      "src": "icons/icon-512x512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable any"
+    }
+  ],
+  "screenshots": [
+    {
+      "src": "screenshots/desktop-1.png",
+      "sizes": "1280x720",
+      "type": "image/png",
+      "form_factor": "wide",
+      "label": "Dashboard principal de Cresalia"
+    },
+    {
+      "src": "screenshots/mobile-1.png",
+      "sizes": "375x667",
+      "type": "image/png",
+      "form_factor": "narrow",
+      "label": "Vista móvil de la tienda"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "Mi Tienda",
+      "short_name": "Tienda",
+      "description": "Acceder a mi tienda online",
+      "url": "/tiendas/ejemplo-tienda/index.html",
+      "icons": [
+        {
+          "src": "icons/shortcut-tienda.png",
+          "sizes": "96x96"
+        }
+      ]
+    },
+    {
+      "name": "Panel Admin",
+      "short_name": "Admin",
+      "description": "Gestionar mi tienda",
+      "url": "/tiendas/ejemplo-tienda/admin-nuevo.html",
+      "icons": [
+        {
+          "src": "icons/shortcut-admin.png",
+          "sizes": "96x96"
+        }
+      ]
+    },
+    {
+      "name": "Interfaz Compradores",
+      "short_name": "Compradores",
+      "description": "Explorar productos y servicios",
+      "url": "/demo-buyer-interface.html",
+      "icons": [
+        {
+          "src": "icons/shortcut-compradores.png",
+          "sizes": "96x96"
+        }
+      ]
+    },
+    {
+      "name": "Panel Master",
+      "short_name": "Master",
+      "description": "Panel de administración master",
+      "url": "/panel-master-cresalia.html",
+      "icons": [
+        {
+          "src": "icons/shortcut-master.png",
+          "sizes": "96x96"
+        }
+      ]
+    },
+    {
+      "name": "Bienestar Emocional",
+      "short_name": "Bienestar",
+      "description": "Sistema de apoyo emocional",
+      "url": "/crisla-respaldo-emocional.html",
+      "icons": [
+        {
+          "src": "icons/shortcut-bienestar.png",
+          "sizes": "96x96"
+        }
+      ]
+    }
+  ],
+  "related_applications": [],
+  "prefer_related_applications": false,
+  "edge_side_panel": {
+    "preferred_width": 400
+  },
+  "launch_handler": {
+    "client_mode": "navigate-existing"
+  }
+}

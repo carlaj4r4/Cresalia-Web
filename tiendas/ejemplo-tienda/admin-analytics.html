@@ -1,0 +1,751 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Analytics - Admin Panel</title>
+    
+    <!-- Favicon -->
+    <link rel="icon" type="image/png" href="../../assets/logo/logo-cresalia.png">
+    <link rel="apple-touch-icon" href="../../assets/logo/logo-cresalia.png">
+    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+    
+    <!-- Click Derecho Personalizado -->
+    <script src="../../js/click-derecho-personalizado.js"></script>
+    
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        @keyframes gradientShift {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+        
+        @keyframes float {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-15px); }
+        }
+        
+        @keyframes slideInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+        
+        @keyframes countUp {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f093fb 100%);
+            background-size: 200% 200%;
+            animation: gradientShift 15s ease infinite;
+            min-height: 100vh;
+            padding: 20px;
+            position: relative;
+            overflow-x: hidden;
+        }
+        
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><circle cx="25" cy="25" r="2" fill="rgba(255,255,255,0.1)"/><circle cx="75" cy="75" r="3" fill="rgba(255,255,255,0.15)"/><circle cx="50" cy="10" r="1.5" fill="rgba(255,255,255,0.1)"/><circle cx="10" cy="60" r="2" fill="rgba(255,255,255,0.1)"/><circle cx="90" cy="40" r="1" fill="rgba(255,255,255,0.1)"/></svg>');
+            pointer-events: none;
+            z-index: 0;
+        }
+        
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            position: relative;
+            z-index: 1;
+        }
+        
+        /* Header */
+        .header {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(20px);
+            border-radius: 20px;
+            padding: 30px;
+            margin-bottom: 30px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.15);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            animation: slideInUp 0.6s ease-out;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+        }
+        
+        .header h1 {
+            color: #374151;
+            font-size: 2rem;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        
+        .header h1 i {
+            color: #a855f7;
+        }
+        
+        .btn-back {
+            background: linear-gradient(135deg, #667eea, #764ba2, #f093fb);
+            background-size: 200% 200%;
+            animation: gradientShift 3s ease infinite;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 12px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            text-decoration: none;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .btn-back::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
+            transition: left 0.5s;
+        }
+        
+        .btn-back:hover::before {
+            left: 100%;
+        }
+        
+        .btn-back:hover {
+            transform: translateY(-3px) scale(1.05);
+            box-shadow: 0 15px 35px rgba(102, 126, 234, 0.4);
+        }
+        
+        /* Stats Cards */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 25px;
+            margin-bottom: 30px;
+        }
+        
+        .stat-card {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(20px);
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 15px 40px rgba(0,0,0,0.12);
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            position: relative;
+            overflow: hidden;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            animation: slideInUp 0.8s ease-out;
+        }
+        
+        .stat-card::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%);
+            animation: float 6s ease-in-out infinite;
+        }
+        
+        .stat-card:hover {
+            transform: translateY(-10px) scale(1.02);
+            box-shadow: 0 25px 60px rgba(168, 85, 247, 0.25);
+        }
+        
+        .stat-icon {
+            width: 70px;
+            height: 70px;
+            border-radius: 18px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2rem;
+            margin-bottom: 15px;
+            position: relative;
+            z-index: 1;
+            animation: pulse 3s ease-in-out infinite;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.15);
+        }
+        
+        .stat-icon.purple {
+            background: linear-gradient(135deg, #a855f7, #ec4899, #f093fb);
+            background-size: 200% 200%;
+            animation: gradientShift 4s ease infinite, pulse 3s ease-in-out infinite;
+            color: white;
+        }
+        
+        .stat-icon.blue {
+            background: linear-gradient(135deg, #3b82f6, #8b5cf6, #6366f1);
+            background-size: 200% 200%;
+            animation: gradientShift 4s ease infinite, pulse 3s ease-in-out infinite;
+            color: white;
+        }
+        
+        .stat-icon.green {
+            background: linear-gradient(135deg, #10b981, #34d399, #6ee7b7);
+            background-size: 200% 200%;
+            animation: gradientShift 4s ease infinite, pulse 3s ease-in-out infinite;
+            color: white;
+        }
+        
+        .stat-icon.orange {
+            background: linear-gradient(135deg, #f59e0b, #f97316, #fb923c);
+            background-size: 200% 200%;
+            animation: gradientShift 4s ease infinite, pulse 3s ease-in-out infinite;
+            color: white;
+        }
+        
+        .stat-label {
+            color: #6B7280;
+            font-size: 0.9rem;
+            margin-bottom: 8px;
+        }
+        
+        .stat-value {
+            color: #374151;
+            font-size: 2.8rem;
+            font-weight: bold;
+            position: relative;
+            z-index: 1;
+            animation: countUp 1s ease-out;
+        }
+        
+        .stat-trend {
+            color: #10B981;
+            font-size: 0.95rem;
+            margin-top: 10px;
+            font-weight: 600;
+            position: relative;
+            z-index: 1;
+        }
+        
+        .stat-trend i {
+            animation: float 2s ease-in-out infinite;
+        }
+        
+        /* Charts Section */
+        .charts-section {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 25px;
+            margin-bottom: 30px;
+        }
+        
+        .chart-card {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(20px);
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 15px 40px rgba(0,0,0,0.12);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            transition: all 0.4s ease;
+            animation: slideInUp 1s ease-out;
+        }
+        
+        .chart-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 20px 50px rgba(168, 85, 247, 0.2);
+        }
+        
+        .chart-card h3 {
+            color: #374151;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 1.3rem;
+            font-weight: 700;
+        }
+        
+        .chart-card h3 i {
+            color: #a855f7;
+            animation: pulse 3s ease-in-out infinite;
+        }
+        
+        .full-width {
+            grid-column: 1 / -1;
+        }
+        
+        /* Responsive */
+        @media (max-width: 768px) {
+            .header {
+                flex-direction: column;
+                gap: 20px;
+            }
+            
+            .charts-section {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <div class="header">
+            <h1>
+                <i class="fas fa-chart-line"></i>
+                Analytics y Métricas
+            </h1>
+            <a href="admin.html" class="btn-back">
+                <i class="fas fa-arrow-left"></i>
+                Volver al Dashboard
+            </a>
+        </div>
+        
+        <!-- Stats Cards -->
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-icon purple">
+                    <i class="fas fa-eye"></i>
+                </div>
+                <div class="stat-label">Visitas Totales</div>
+                <div class="stat-value" id="totalVisitas">0</div>
+                <div class="stat-trend">
+                    <i class="fas fa-arrow-up"></i> +0% vs mes anterior
+                </div>
+            </div>
+            
+            <div class="stat-card">
+                <div class="stat-icon blue">
+                    <i class="fas fa-users"></i>
+                </div>
+                <div class="stat-label">Visitantes Únicos</div>
+                <div class="stat-value" id="visitantesUnicos">0</div>
+                <div class="stat-trend">
+                    <i class="fas fa-arrow-up"></i> +0% vs mes anterior
+                </div>
+            </div>
+            
+            <div class="stat-card">
+                <div class="stat-icon green">
+                    <i class="fas fa-shopping-cart"></i>
+                </div>
+                <div class="stat-label">Consultas por Productos</div>
+                <div class="stat-value" id="consultasProductos">0</div>
+                <div class="stat-trend">
+                    <i class="fas fa-arrow-up"></i> +0% vs mes anterior
+                </div>
+            </div>
+            
+            <div class="stat-card">
+                <div class="stat-icon orange">
+                    <i class="fas fa-clock"></i>
+                </div>
+                <div class="stat-label">Tiempo Promedio</div>
+                <div class="stat-value" style="font-size: 2rem;">0m 0s</div>
+                <div class="stat-trend">
+                    <i class="fas fa-arrow-up"></i> +0% vs mes anterior
+                </div>
+            </div>
+        </div>
+        
+        <!-- Charts -->
+        <div class="charts-section">
+            <!-- Gráfico de Visitas -->
+            <div class="chart-card">
+                <h3><i class="fas fa-chart-area"></i> Visitas Diarias (Últimos 7 días)</h3>
+                <canvas id="chartVisitas"></canvas>
+            </div>
+            
+            <!-- Gráfico de Productos Más Vistos -->
+            <div class="chart-card">
+                <h3><i class="fas fa-chart-pie"></i> Productos Más Vistos</h3>
+                <canvas id="chartProductos"></canvas>
+            </div>
+            
+            <!-- Gráfico de Conversión -->
+            <div class="chart-card full-width">
+                <h3><i class="fas fa-chart-bar"></i> Métricas de Conversión</h3>
+                <canvas id="chartConversion"></canvas>
+            </div>
+        </div>
+        
+        <!-- Tabla de Páginas Más Visitadas -->
+        <div class="chart-card">
+            <h3><i class="fas fa-list"></i> Páginas Más Visitadas</h3>
+            <table style="width: 100%; margin-top: 20px;">
+                <thead>
+                    <tr style="border-bottom: 2px solid #E5E7EB; text-align: left;">
+                        <th style="padding: 15px; color: #374151;">Página</th>
+                        <th style="padding: 15px; color: #374151;">Visitas</th>
+                        <th style="padding: 15px; color: #374151;">Tiempo Promedio</th>
+                        <th style="padding: 15px; color: #374151;">Tasa de Rebote</th>
+                    </tr>
+                </thead>
+                <tbody id="tablaPaginas">
+                    <tr>
+                        <td style="padding: 15px; color: #6B7280;">Inicio</td>
+                        <td style="padding: 15px; color: #374151; font-weight: bold;">0</td>
+                        <td style="padding: 15px; color: #6B7280;">0m 0s</td>
+                        <td style="padding: 15px; color: #6B7280;">0%</td>
+                    </tr>
+                    <tr>
+                        <td style="padding: 15px; color: #6B7280;">Productos</td>
+                        <td style="padding: 15px; color: #374151; font-weight: bold;">0</td>
+                        <td style="padding: 15px; color: #6B7280;">0m 0s</td>
+                        <td style="padding: 15px; color: #6B7280;">0%</td>
+                    </tr>
+                    <tr>
+                        <td style="padding: 15px; color: #6B7280;">Servicios</td>
+                        <td style="padding: 15px; color: #374151; font-weight: bold;">0</td>
+                        <td style="padding: 15px; color: #6B7280;">0m 0s</td>
+                        <td style="padding: 15px; color: #6B7280;">0%</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+    
+    <script>
+        console.log('📊 Inicializando Analytics...');
+        
+        // Datos de ejemplo (en producción vendrían de tu base de datos)
+        const datosEjemplo = {
+            visitasDiarias: [125, 158, 142, 189, 234, 267, 298],
+            visitantesUnicos: 1247,
+            consultasProductos: 389,
+            tiempoPromedio: 245, // segundos
+            productosMasVistos: [
+                { nombre: 'Laptop Gaming', visitas: 245 },
+                { nombre: 'Mouse RGB', visitas: 189 },
+                { nombre: 'Teclado Mecánico', visitas: 156 },
+                { nombre: 'Monitor 4K', visitas: 134 },
+                { nombre: 'Auriculares', visitas: 98 }
+            ],
+            conversionFunnel: {
+                visitas: 1247,
+                vieronProductos: 876,
+                consultaron: 389,
+                compraron: 67
+            }
+        };
+        
+        // Actualizar stats
+        function actualizarStats() {
+            // Animación de conteo
+            animarNumero('totalVisitas', datosEjemplo.visitasDiarias.reduce((a, b) => a + b, 0));
+            animarNumero('visitantesUnicos', datosEjemplo.visitantesUnicos);
+            animarNumero('consultasProductos', datosEjemplo.consultasProductos);
+            
+            const minutos = Math.floor(datosEjemplo.tiempoPromedio / 60);
+            const segundos = datosEjemplo.tiempoPromedio % 60;
+            
+            // Animar tiempo promedio
+            const tiempoElement = document.querySelector('.stat-value[style*="font-size: 2rem"]');
+            if (tiempoElement) {
+                let currentTime = 0;
+                const targetTime = datosEjemplo.tiempoPromedio;
+                const duration = 2000;
+                const increment = targetTime / (duration / 16);
+                
+                const animation = setInterval(() => {
+                    currentTime += increment;
+                    if (currentTime >= targetTime) {
+                        currentTime = targetTime;
+                        clearInterval(animation);
+                    }
+                    const m = Math.floor(currentTime / 60);
+                    const s = Math.floor(currentTime % 60);
+                    tiempoElement.textContent = `${m}m ${s}s`;
+                }, 16);
+            }
+        }
+        
+        // Función para animar números
+        function animarNumero(elementId, valorFinal) {
+            const elemento = document.getElementById(elementId);
+            if (!elemento) return;
+            
+            let valorActual = 0;
+            const duracion = 2000;
+            const incremento = valorFinal / (duracion / 16);
+            
+            const animacion = setInterval(() => {
+                valorActual += incremento;
+                if (valorActual >= valorFinal) {
+                    valorActual = valorFinal;
+                    clearInterval(animacion);
+                }
+                elemento.textContent = Math.floor(valorActual).toLocaleString('es-ES');
+            }, 16);
+        }
+        
+        // Gráfico de Visitas Diarias
+        function crearGraficoVisitas() {
+            const ctx = document.getElementById('chartVisitas').getContext('2d');
+            new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: ['Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sáb', 'Dom'],
+                    datasets: [{
+                        label: 'Visitas',
+                        data: datosEjemplo.visitasDiarias,
+                        borderColor: '#a855f7',
+                        backgroundColor: 'rgba(168, 85, 247, 0.2)',
+                        tension: 0.4,
+                        fill: true,
+                        borderWidth: 3,
+                        pointRadius: 6,
+                        pointHoverRadius: 8,
+                        pointBackgroundColor: '#a855f7',
+                        pointBorderColor: '#fff',
+                        pointBorderWidth: 2,
+                        pointHoverBackgroundColor: '#ec4899',
+                        pointHoverBorderColor: '#fff'
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: true,
+                    plugins: {
+                        legend: {
+                            display: false
+                        },
+                        tooltip: {
+                            backgroundColor: 'rgba(0, 0, 0, 0.8)',
+                            padding: 12,
+                            titleFont: {
+                                size: 14,
+                                weight: 'bold'
+                            },
+                            bodyFont: {
+                                size: 13
+                            },
+                            borderColor: '#a855f7',
+                            borderWidth: 2
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            grid: {
+                                color: 'rgba(0, 0, 0, 0.05)'
+                            },
+                            ticks: {
+                                font: {
+                                    size: 12,
+                                    weight: '600'
+                                }
+                            }
+                        },
+                        x: {
+                            grid: {
+                                display: false
+                            },
+                            ticks: {
+                                font: {
+                                    size: 12,
+                                    weight: '600'
+                                }
+                            }
+                        }
+                    },
+                    animation: {
+                        duration: 2000,
+                        easing: 'easeInOutQuart'
+                    }
+                }
+            });
+        }
+        
+        // Gráfico de Productos Más Vistos
+        function crearGraficoProductos() {
+            const ctx = document.getElementById('chartProductos').getContext('2d');
+            new Chart(ctx, {
+                type: 'doughnut',
+                data: {
+                    labels: datosEjemplo.productosMasVistos.map(p => p.nombre),
+                    datasets: [{
+                        data: datosEjemplo.productosMasVistos.map(p => p.visitas),
+                        backgroundColor: [
+                            'rgba(168, 85, 247, 0.9)',
+                            'rgba(236, 72, 153, 0.9)',
+                            'rgba(59, 130, 246, 0.9)',
+                            'rgba(16, 185, 129, 0.9)',
+                            'rgba(245, 158, 11, 0.9)'
+                        ],
+                        borderColor: '#fff',
+                        borderWidth: 3,
+                        hoverOffset: 20
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: true,
+                    plugins: {
+                        legend: {
+                            position: 'bottom',
+                            labels: {
+                                padding: 15,
+                                font: {
+                                    size: 12,
+                                    weight: '600'
+                                }
+                            }
+                        },
+                        tooltip: {
+                            backgroundColor: 'rgba(0, 0, 0, 0.8)',
+                            padding: 12,
+                            titleFont: {
+                                size: 14,
+                                weight: 'bold'
+                            },
+                            bodyFont: {
+                                size: 13
+                            },
+                            callbacks: {
+                                label: function(context) {
+                                    return context.label + ': ' + context.parsed + ' visitas';
+                                }
+                            }
+                        }
+                    },
+                    animation: {
+                        animateRotate: true,
+                        animateScale: true,
+                        duration: 2000,
+                        easing: 'easeInOutQuart'
+                    }
+                }
+            });
+        }
+        
+        // Gráfico de Conversión
+        function crearGraficoConversion() {
+            const ctx = document.getElementById('chartConversion').getContext('2d');
+            new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: ['Visitas', 'Vieron Productos', 'Consultaron', 'Compraron'],
+                    datasets: [{
+                        label: 'Usuarios',
+                        data: [
+                            datosEjemplo.conversionFunnel.visitas,
+                            datosEjemplo.conversionFunnel.vieronProductos,
+                            datosEjemplo.conversionFunnel.consultaron,
+                            datosEjemplo.conversionFunnel.compraron
+                        ],
+                        backgroundColor: [
+                            'rgba(168, 85, 247, 0.9)',
+                            'rgba(168, 85, 247, 0.7)',
+                            'rgba(168, 85, 247, 0.5)',
+                            'rgba(168, 85, 247, 0.3)'
+                        ],
+                        borderColor: '#a855f7',
+                        borderWidth: 2,
+                        borderRadius: 10,
+                        borderSkipped: false
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: true,
+                    plugins: {
+                        legend: {
+                            display: false
+                        },
+                        tooltip: {
+                            backgroundColor: 'rgba(0, 0, 0, 0.8)',
+                            padding: 12,
+                            titleFont: {
+                                size: 14,
+                                weight: 'bold'
+                            },
+                            bodyFont: {
+                                size: 13
+                            },
+                            callbacks: {
+                                label: function(context) {
+                                    const percentage = ((context.parsed.y / datosEjemplo.conversionFunnel.visitas) * 100).toFixed(1);
+                                    return context.parsed.y + ' usuarios (' + percentage + '%)';
+                                }
+                            }
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            grid: {
+                                color: 'rgba(0, 0, 0, 0.05)'
+                            },
+                            ticks: {
+                                font: {
+                                    size: 12,
+                                    weight: '600'
+                                }
+                            }
+                        },
+                        x: {
+                            grid: {
+                                display: false
+                            },
+                            ticks: {
+                                font: {
+                                    size: 12,
+                                    weight: '600'
+                                }
+                            }
+                        }
+                    },
+                    animation: {
+                        duration: 2000,
+                        easing: 'easeInOutQuart'
+                    }
+                }
+            });
+        }
+        
+        // Inicialización
+        document.addEventListener('DOMContentLoaded', () => {
+            console.log('📊 Cargando analytics...');
+            
+            // Simular carga de datos
+            setTimeout(() => {
+                actualizarStats();
+                crearGraficoVisitas();
+                crearGraficoProductos();
+                crearGraficoConversion();
+                console.log('✅ Analytics cargados');
+            }, 500);
+        });
+    </script>
+</body>
+</html>
+

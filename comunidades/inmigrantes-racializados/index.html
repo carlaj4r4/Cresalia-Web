@@ -1,0 +1,503 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cresalia - Comunidad de Inmigrantes y Personas Racializadas</title>
+    <link rel="icon" type="image/x-icon" href="../../favicon.ico">
+    <link rel="icon" type="image/png" href="../../assets/logo/logo-cresalia.png">
+    <link rel="apple-touch-icon" href="../../assets/logo/logo-cresalia.png">
+    
+    <!-- PWA Manifest -->
+    <link rel="manifest" href="../../comunidades/manifest-comunidades.json">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    <meta name="apple-mobile-web-app-title" content="Cresalia Comunidades">
+    <meta name="theme-color" content="#F59E0B">
+    
+    <!-- Protección Anti-DevTools -->
+    <script src="../../core/proteccion-devtools-avanzada.js?v=2.0"></script>
+    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            /* PROTECCIÓN: Dificultar selección para prevenir copy-paste */
+            -webkit-user-select: none;
+            -moz-user-select: none;
+            -ms-user-select: none;
+            user-select: none;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            /* Colores de diversos tonos de piel y culturas */
+            background: linear-gradient(135deg, #D97706 0%, #F59E0B 25%, #10B981 50%, #06B6D4 75%, #8B5CF6 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+        
+        .container {
+            background: white;
+            border-radius: 24px;
+            padding: 60px 40px;
+            max-width: 700px;
+            text-align: center;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+        }
+        
+        .icon {
+            font-size: 80px;
+            margin-bottom: 20px;
+        }
+        
+        h1 {
+            color: #374151;
+            margin-bottom: 10px;
+            font-size: 2.5rem;
+        }
+        
+        .subtitle {
+            background: linear-gradient(135deg, #D97706, #F59E0B, #10B981, #06B6D4, #8B5CF6);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            font-weight: 700;
+            font-size: 1.4rem;
+            margin-bottom: 30px;
+        }
+        
+        p {
+            color: #6B7280;
+            font-size: 1.1rem;
+            line-height: 1.8;
+            margin-bottom: 25px;
+        }
+        
+        .safe-space {
+            background: linear-gradient(135deg, rgba(217, 119, 6, 0.05), rgba(245, 158, 11, 0.05), rgba(16, 185, 129, 0.05), rgba(6, 182, 212, 0.05), rgba(139, 92, 246, 0.05));
+            padding: 30px;
+            border-radius: 15px;
+            margin: 30px 0;
+            border-left: 5px solid #F59E0B;
+        }
+        
+        .safe-space h3 {
+            color: #D97706;
+            margin-bottom: 15px;
+            font-size: 1.5rem;
+        }
+        
+        .safe-space p {
+            margin-bottom: 0;
+            color: #374151;
+            font-weight: 500;
+        }
+        
+        .important-message {
+            background: linear-gradient(135deg, #D97706, #F59E0B);
+            color: white;
+            padding: 25px;
+            border-radius: 15px;
+            margin: 30px 0;
+            font-weight: 500;
+            line-height: 1.8;
+        }
+        
+        .important-message strong {
+            font-size: 1.2em;
+            display: block;
+            margin-bottom: 10px;
+        }
+        
+        .btn {
+            display: inline-block;
+            background: linear-gradient(135deg, #D97706, #F59E0B);
+            color: white;
+            padding: 15px 40px;
+            border-radius: 12px;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 1.1rem;
+            transition: all 0.3s ease;
+            margin: 5px;
+        }
+        
+        .btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 30px rgba(217, 119, 6, 0.4);
+        }
+        
+        .btn-rules {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+        
+        .btn-rules:hover {
+            box-shadow: 0 10px 30px rgba(102, 126, 234, 0.4);
+        }
+        
+        .btn-home {
+            background: linear-gradient(135deg, #EC4899, #F9A8D4);
+        }
+        
+        .btn-home:hover {
+            box-shadow: 0 10px 30px rgba(236, 72, 153, 0.4);
+        }
+        
+        .features {
+            margin-top: 40px;
+            padding-top: 40px;
+            border-top: 2px solid #E5E7EB;
+        }
+        
+        .feature {
+            margin-bottom: 20px;
+            color: #374151;
+            font-size: 1rem;
+            text-align: left;
+            padding-left: 20px;
+        }
+        
+        .feature i {
+            color: #F59E0B;
+            margin-right: 10px;
+            font-size: 1.2rem;
+        }
+        
+        .divider {
+            height: 3px;
+            background: linear-gradient(90deg, #D97706, #F59E0B, #10B981, #06B6D4, #8B5CF6);
+            border-radius: 2px;
+            margin: 30px 0;
+        }
+        
+        .you-belong {
+            background: white;
+            border: 3px solid #F59E0B;
+            padding: 25px;
+            border-radius: 15px;
+            margin: 30px 0;
+            box-shadow: 0 5px 20px rgba(245, 158, 11, 0.2);
+        }
+        
+        .you-belong h3 {
+            color: #D97706;
+            margin-bottom: 15px;
+            font-size: 1.8rem;
+        }
+        
+        .you-belong p {
+            color: #374151;
+            font-weight: 600;
+            margin-bottom: 0;
+            font-size: 1.2rem;
+        }
+        
+        .other-communities {
+            margin-top: 50px;
+            padding-top: 30px;
+            border-top: 2px solid #E5E7EB;
+        }
+        
+        .other-communities h3 {
+            color: #374151;
+            margin-bottom: 20px;
+        }
+        
+        .community-links {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            justify-content: center;
+        }
+        
+        .community-link {
+            display: inline-block;
+            padding: 10px 20px;
+            color: white;
+            text-decoration: none;
+            border-radius: 8px;
+            font-size: 0.9rem;
+            transition: all 0.3s ease;
+        }
+        
+        .community-link:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        }
+        
+        @media (max-width: 768px) {
+            .container {
+                padding: 40px 25px;
+            }
+            
+            h1 {
+                font-size: 2rem;
+            }
+            
+            .icon {
+                font-size: 60px;
+            }
+            
+            .feature {
+                text-align: center;
+                padding-left: 0;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="icon">🌍</div>
+        <h1>Cresalia</h1>
+        <p class="subtitle">Comunidad de Inmigrantes y Personas Racializadas</p>
+        
+        <div class="trigger-warning">
+            <strong>⚠️ Advertencia de Contenido:</strong>
+            Esta comunidad puede contener contenido sensible sobre experiencias difíciles y traumas. 
+            Si estás en un momento vulnerable, por favor considerá tu bienestar emocional antes de participar. 
+            No estás obligado/a a leer nada que te haga daño. Tu bienestar es lo más importante.
+        </div>
+        
+        <p>Un espacio seguro, anónimo y sin juicio para inmigrantes, extranjeros y personas racializadas que enfrentan racismo, xenofobia y discriminación. No importa de dónde vengas. Aquí SOS BIENVENIDO/A.</p>
+        
+        <div class="you-belong">
+            <h3>🌍 SÍ PERTENECÉS AQUÍ 🌍</h3>
+            <p>"Volvé a tu país" NO. Este ES tu lugar. Merecés respeto. Merecés dignidad. 
+            Merecés estar aquí. Tu color de piel NO determina tu valor. Punto.</p>
+        </div>
+        
+        <div class="safe-space">
+            <h3>🛡️ Este es TU refugio</h3>
+            <p>Aquí no hay "volvé a tu país", no hay insultos racistas, no hay xenofobia. 
+            Aquí hay RESPETO, COMPRENSIÓN y SOLIDARIDAD. Estás SOBREVIVIENDO igual que todos. 
+            Y eso merece reconocimiento, no odio.</p>
+        </div>
+        
+        <div class="divider"></div>
+        
+        <div class="important-message">
+            <strong>🌍 Lo que nadie pregunta, pero deberían:</strong>
+            ¿Por qué tuviste que irte de tu país? ¿Qué dejaste atrás? ¿A quién extrañás? 
+            ¿Cuánto te duele estar lejos de tu familia? ¿Cuántas veces te insultaron hoy? 
+            ¿Cuántas veces te discriminaron? <strong>NADIE LO PREGUNTA. PERO AQUÍ SÍ NOS IMPORTA.</strong>
+        </div>
+        
+        <a href="../reglas-comunidad.html" class="btn btn-rules">
+            <i class="fas fa-shield-alt"></i> Leer Reglas (IMPORTANTE)
+        </a>
+        
+        <a href="../../index-cresalia.html" class="btn btn-home">
+            <i class="fas fa-home"></i> Volver a Cresalia
+        </a>
+        
+        <div class="features">
+            <h3 style="color: #374151; margin-bottom: 25px; text-align: center;">Lo que encontrarás próximamente:</h3>
+            <div class="feature">
+                <i class="fas fa-comment-dots"></i> <strong>Espacio para contar tu historia</strong> sin ser juzgado o insultado
+            </div>
+            <div class="feature">
+                <i class="fas fa-user-secret"></i> <strong>Anonimato total</strong> - Protección contra acoso y discriminación
+            </div>
+            <div class="feature">
+                <i class="fas fa-users"></i> <strong>Otros inmigrantes y personas racializadas</strong> que entienden tu experiencia
+            </div>
+            <div class="feature">
+                <i class="fas fa-heart"></i> <strong>Validación de tu dolor</strong> - El racismo ES real. La xenofobia ES real.
+            </div>
+            <div class="feature">
+                <i class="fas fa-ban"></i> <strong>Cero tolerancia al racismo</strong> - Este es un espacio SEGURO
+            </div>
+            <div class="feature">
+                <i class="fas fa-briefcase"></i> <strong>Recursos laborales</strong> - Empleos que NO te discriminen por tu origen
+            </div>
+            <div class="feature">
+                <i class="fas fa-file-alt"></i> <strong>Información migratoria</strong> - Tus derechos, documentación, asesoría
+            </div>
+            <div class="feature">
+                <i class="fas fa="fas fa-gavel"></i> <strong>Asesoría legal</strong> - Cómo denunciar discriminación y racismo
+            </div>
+            <div class="feature">
+                <i class="fas fa-hands-helping"></i> <strong>Red de apoyo</strong> - Ayuda mutua entre inmigrantes
+            </div>
+            <div class="feature">
+                <i class="fas fa-lock"></i> <strong>Sin explotación</strong> - Tu historia NO será usada para marketing
+            </div>
+        </div>
+        
+        <div class="divider"></div>
+        
+        <div class="safe-space">
+            <h3>💪 Estás haciendo algo extraordinario</h3>
+            <p>Dejaste tu país (por la razón que sea). Dejaste a tu familia, tus amigos, tu cultura, tu idioma. 
+            Te adaptaste a un lugar nuevo. Enfrentaste discriminación. Trabajaste duro. SOBREVIVISTE. 
+            Eso te hace INCREÍBLEMENTE FUERTE. Aunque nadie lo reconozca, nosotros SÍ lo hacemos.</p>
+        </div>
+        
+        <div class="important-message">
+            <strong>🌍 Cosas que NO diremos aquí:</strong>
+            ❌ "Volvé a tu país si no te gusta"<br>
+            ❌ Insultos racistas o xenófobos (de NINGÚN tipo)<br>
+            ❌ "Nos quitan los trabajos"<br>
+            ❌ "Son todos delincuentes"<br>
+            ❌ Generalizaciones basadas en origen o color de piel<br>
+            ❌ "Si viniste acá, bancátela"<br>
+            ❌ Minimizar experiencias de racismo
+        </div>
+        
+        <div class="you-belong">
+            <h3>🌍 La verdad que nadie dice:</h3>
+            <p>Nadie emigra por gusto. Nadie deja a su familia por placer. Nadie abandona su país felizmente. 
+            Hay RAZONES - violencia, pobreza, persecución, falta de oportunidades, necesidad. 
+            NO sos turista. Estás SOBREVIVIENDO. 🌍</p>
+        </div>
+        
+        <div class="safe-space">
+            <h3>🌟 Merecés respeto</h3>
+            <p>No importa tu color de piel. No importa tu acento. No importa de dónde vengas. 
+            Merecés respeto. Merecés dignidad. Merecés oportunidades. Merecés NO ser discriminado. 
+            Estos NO son favores. Son DERECHOS HUMANOS.</p>
+        </div>
+        
+        <div class="important-message">
+            <strong>🌍 No estás solo/a:</strong>
+            Millones de inmigrantes enfrentan lo mismo: racismo diario, xenofobia, discriminación laboral, 
+            insultos en la calle, "volvé a tu país", exclusión. NO estás exagerando. 
+            NO sos "demasiado sensible". El racismo ES REAL. La xenofobia ES REAL. Y tu dolor es VÁLIDO.
+        </div>
+        
+        <div class="you-belong">
+            <h3>🌍 Recordá siempre:</h3>
+            <p>Tu origen NO determina tu valor. Tu color de piel NO determina tus capacidades. 
+            Tu acento NO te hace "menos". Sos una PERSONA. Con dignidad. Con derechos. Con valor. 
+            Y MERECÉS RESPETO. 🌍</p>
+        </div>
+        
+        <!-- Otras Comunidades -->
+        <div class="other-communities">
+            <h3>Otras Comunidades de Apoyo</h3>
+            <div class="community-links">
+                <a href="../anti-bullying/index.html" class="community-link" style="background: linear-gradient(135deg, #60A5FA, #34D399);">
+                    🛡️ Anti-Bullying
+                </a>
+                <a href="../discapacidad/index.html" class="community-link" style="background: linear-gradient(135deg, #8B5CF6, #A78BFA);">
+                    ♿ Personas con Discapacidad
+                </a>
+                <a href="../hombres-sobrevivientes/index.html" class="community-link" style="background: linear-gradient(135deg, #3B82F6, #1E40AF);">
+                    💙 Hombres Sobrevivientes
+                </a>
+                <a href="../mujeres-sobrevivientes/index.html" class="community-link" style="background: linear-gradient(135deg, #C084FC, #E879F9);">
+                    💜 Mujeres Sobrevivientes
+                </a>
+                <a href="../lgbtq-experiencias/index.html" class="community-link" style="background: linear-gradient(135deg, #FF6B6B, #FF8E53);">
+                    🏳️‍🌈 Experiencias LGBTQ+
+                </a>
+                <a href="../otakus-anime-manga/index.html" class="community-link" style="background: linear-gradient(135deg, #FF6B9D, #C471ED);">
+                    🌸 Otakus
+                </a>
+                <a href="../gamers-videojuegos/index.html" class="community-link" style="background: linear-gradient(135deg, #6366F1, #8B5CF6);">
+                    🎮 Gamers
+                </a>
+                <a href="../../cresalia-jobs/index.html" class="community-link" style="background: linear-gradient(135deg, #F59E0B, #EAB308);">
+                    💼 Cresalia Jobs
+                </a>
+            </div>
+        </div>
+        
+        <p style="margin-top: 40px; font-size: 0.9rem; color: #9CA3AF;">
+            🌍 Parte del ecosistema Cresalia - Respeto y dignidad sin importar tu origen
+        </p>
+        
+        <p style="margin-top: 10px; font-size: 0.85rem; color: #9CA3AF; font-style: italic;">
+            "Todos estamos sobreviviendo. Algunos solo tienen que luchar más duro." 🌍
+        </p>
+        
+        <!-- Mensaje de Protección -->
+        <div style="margin-top: 30px; padding: 20px; background: linear-gradient(135deg, rgba(217, 119, 6, 0.1), rgba(245, 158, 11, 0.1)); border-radius: 12px; border: 2px solid #F59E0B;">
+            <p style="color: #D97706; font-weight: 600; font-size: 0.95rem; margin: 0;">
+                🛡️ <strong>Tu privacidad es sagrada:</strong> NO usaremos tu historia sin tu permiso explícito. 
+                NO la compartiremos para marketing. NO la monetizaremos. Tu experiencia NO está en venta. 
+                Gracias por confiar en nosotros. 🌍
+            </p>
+        </div>
+    </div>
+    
+    <!-- Watermark de protección -->
+    <div style="position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%) rotate(-45deg); font-size: 5em; color: rgba(245, 158, 11, 0.03); pointer-events: none; z-index: 1; font-weight: bold;">
+        CONFIDENCIAL
+    </div>
+    
+    <!-- Advertencia de copia -->
+    <div id="copyWarning" style="position: fixed; top: 20px; right: 20px; background: #DC2626; color: white; padding: 15px 25px; border-radius: 10px; display: none; z-index: 9999; animation: slideIn 0.3s ease;">
+        ⚠️ Este contenido está protegido. No copies historias ajenas.
+    </div>
+    
+    <script>
+        // PROTECCIÓN: Detectar y advertir intentos de copiar
+        document.addEventListener('copy', function(e) {
+            e.preventDefault();
+            const copyWarning = document.getElementById('copyWarning');
+            copyWarning.style.display = 'block';
+            setTimeout(() => {
+                copyWarning.style.display = 'none';
+            }, 3000);
+            return false;
+        });
+        
+        // PROTECCIÓN: Prevenir clic derecho
+        document.addEventListener('contextmenu', function(e) {
+            e.preventDefault();
+            alert('⚠️ El menú contextual está desactivado para proteger el contenido compartido.');
+            return false;
+        });
+        
+        // PROTECCIÓN: Detectar Print Screen
+        document.addEventListener('keyup', function(e) {
+            if (e.key === 'PrintScreen') {
+                navigator.clipboard.writeText('');
+                alert('⚠️ Las capturas de pantalla están desactivadas para proteger las historias compartidas.');
+            }
+        });
+        
+        // Mensaje de bienvenida en consola
+        console.log('%c🌍 Bienvenido/a a Cresalia - Inmigrantes y Personas Racializadas', 'color: #F59E0B; font-size: 18px; font-weight: bold;');
+        console.log('%c🛡️ Este contenido está protegido. No copies historias de otros usuarios.', 'font-size: 14px;');
+        console.log('%cExplotar el dolor ajeno es inaceptable. Gracias por respetar esta comunidad. 🌍', 'font-size: 14px; font-weight: bold;');
+    </script>
+    
+    <!-- Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="../../config-supabase-seguro.js"></script>
+    <script src="../../js/sistema-alertas-comunidades.js"></script>
+    <script>
+        // Inicializar sistema de alertas
+        let alertasComunidad;
+        document.addEventListener('DOMContentLoaded', () => {
+            setTimeout(() => {
+                alertasComunidad = new SistemaAlertasComunidades('inmigrantes-racializados');
+                window.alertasComunidad = alertasComunidad;
+            }, 500);
+        });
+        
+        // Registrar Service Worker para PWA
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('../../sw.js')
+                    .then(registration => {
+                        console.log('✅ Service Worker registrado');
+                    })
+                    .catch(error => {
+                        console.log('⚠️ Service Worker no disponible');
+                    });
+            });
+        }
+    </script>
+</body>
+</html>
+

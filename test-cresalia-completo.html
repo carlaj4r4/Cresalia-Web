@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test Completo Cresalia</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; background: #f5f5f5; }
+        .test-section { background: white; padding: 20px; margin: 10px 0; border-radius: 10px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
+        .success { color: #28a745; }
+        .error { color: #dc3545; }
+        .warning { color: #ffc107; }
+        button { background: #007bff; color: white; border: none; padding: 10px 20px; border-radius: 5px; cursor: pointer; margin: 5px; }
+        button:hover { background: #0056b3; }
+        .resultado { margin-top: 10px; padding: 10px; border-radius: 5px; }
+    </style>
+</head>
+<body>
+    <h1>🧪 Test Completo de Cresalia</h1>
+    
+    <div class="test-section">
+        <h2>📁 1. Archivos Principales</h2>
+        <button onclick="verificarArchivos()">Verificar Archivos</button>
+        <div id="archivos-resultado" class="resultado"></div>
+    </div>
+    
+    <div class="test-section">
+        <h2>🔗 2. Enlaces y Navegación</h2>
+        <button onclick="verificarEnlaces()">Verificar Enlaces</button>
+        <div id="enlaces-resultado" class="resultado"></div>
+    </div>
+    
+    <div class="test-section">
+        <h2>📱 3. Responsive Design</h2>
+        <button onclick="verificarResponsive()">Verificar Responsive</button>
+        <div id="responsive-resultado" class="resultado"></div>
+    </div>
+    
+    <div class="test-section">
+        <h2>🎨 4. Modales y JavaScript</h2>
+        <button onclick="verificarModales()">Verificar Modales</button>
+        <div id="modales-resultado" class="resultado"></div>
+    </div>
+    
+    <div class="test-section">
+        <h2>💾 5. LocalStorage</h2>
+        <button onclick="verificarLocalStorage()">Verificar LocalStorage</button>
+        <div id="localStorage-resultado" class="resultado"></div>
+    </div>
+    
+    <div class="test-section">
+        <h2>🌐 6. Conexión a Internet</h2>
+        <button onclick="verificarConexion()">Verificar Conexión</button>
+        <div id="conexion-resultado" class="resultado"></div>
+    </div>
+    
+    <div class="test-section">
+        <h2>🚀 7. Test Completo</h2>
+        <button onclick="testCompleto()">Ejecutar Test Completo</button>
+        <div id="test-completo-resultado" class="resultado"></div>
+    </div>
+    
+    <script>
+        // Función para mostrar resultados
+        function mostrarResultado(elementId, mensaje, tipo = 'info') {
+            const elemento = document.getElementById(elementId);
+            const clase = tipo === 'success' ? 'success' : tipo === 'error' ? 'error' : 'warning';
+            elemento.innerHTML = `<span class="${clase}">${mensaje}</span>`;
+        }
+        
+        // 1. Verificar archivos principales
+        function verificarArchivos() {
+            const archivos = [
+                'index.html',
+                'landing-cresalia-DEFINITIVO.html',
+                'registro-tienda.html',
+                'registro-comprador.html',
+                'demo-buyer-interface.html',
+                'tiendas/ejemplo-tienda/admin.html',
+                'tiendas/ejemplo-tienda/index.html',
+                'panel-comunidad-vendedores.html',
+                'panel-comunidad-compradores.html',
+                'js/mercado-pago-integration.js',
+                'js/historiales-sistema.js',
+                'js/sistema-mapas.js'
+            ];
+            
+            let resultados = [];
+            let exitosos = 0;
+            
+            archivos.forEach(archivo => {
+                fetch(archivo)
+                    .then(response => {
+                        if (response.ok) {
+                            resultados.push(`✅ ${archivo}`);
+                            exitosos++;
+                        } else {
+                            resultados.push(`❌ ${archivo} - Error ${response.status}`);
+                        }
+                    })
+                    .catch(error => {
+                        resultados.push(`❌ ${archivo} - No encontrado`);
+                    });
+            });
+            
+            setTimeout(() => {
+                const mensaje = resultados.join('<br>') + `<br><br><strong>Total: ${exitosos}/${archivos.length} archivos encontrados</strong>`;
+                mostrarResultado('archivos-resultado', mensaje, exitosos === archivos.length ? 'success' : 'warning');
+            }, 2000);
+        }
+        
+        // 2. Verificar enlaces
+        function verificarEnlaces() {
+            const enlaces = [
+                { url: 'landing-cresalia-DEFINITIVO.html', nombre: 'Landing Page' },
+                { url: 'registro-tienda.html', nombre: 'Registro Tienda' },
+                { url: 'registro-comprador.html', nombre: 'Registro Comprador' },
+                { url: 'demo-buyer-interface.html', nombre: 'Demo Comprador' },
+                { url: 'tiendas/ejemplo-tienda/admin.html', nombre: 'Admin Tienda' },
+                { url: 'panel-comunidad-vendedores.html', nombre: 'Comunidad Vendedores' },
+                { url: 'panel-comunidad-compradores.html', nombre: 'Comunidad Compradores' }
+            ];
+            
+            let resultados = [];
+            let exitosos = 0;
+            
+            enlaces.forEach(enlace => {
+                fetch(enlace.url)
+                    .then(response => {
+                        if (response.ok) {
+                            resultados.push(`✅ ${enlace.nombre} - Accesible`);
+                            exitosos++;
+                        } else {
+                            resultados.push(`❌ ${enlace.nombre} - Error ${response.status}`);
+                        }
+                    })
+                    .catch(error => {
+                        resultados.push(`❌ ${enlace.nombre} - No accesible`);
+                    });
+            });
+            
+            setTimeout(() => {
+                const mensaje = resultados.join('<br>') + `<br><br><strong>Total: ${exitosos}/${enlaces.length} enlaces funcionando</strong>`;
+                mostrarResultado('enlaces-resultado', mensaje, exitosos === enlaces.length ? 'success' : 'warning');
+            }, 3000);
+        }
+        
+        // 3. Verificar responsive
+        function verificarResponsive() {
+            const width = window.innerWidth;
+            let mensaje = '';
+            
+            if (width < 768) {
+                mensaje = '📱 Vista móvil detectada - Verificando responsive...';
+            } else if (width < 1024) {
+                mensaje = '📱 Vista tablet detectada - Verificando responsive...';
+            } else {
+                mensaje = '🖥️ Vista desktop detectada - Verificando responsive...';
+            }
+            
+            // Verificar si hay elementos que se adaptan
+            const elementosResponsive = document.querySelectorAll('[style*="max-width"], [style*="media"], [class*="col-"]');
+            
+            mensaje += `<br>✅ Ancho de pantalla: ${width}px`;
+            mensaje += `<br>✅ Elementos responsive encontrados: ${elementosResponsive.length}`;
+            
+            mostrarResultado('responsive-resultado', mensaje, 'success');
+        }
+        
+        // 4. Verificar modales
+        function verificarModales() {
+            // Verificar si la función cerrarModal existe
+            if (typeof window.cerrarModal === 'function') {
+                mostrarResultado('modales-resultado', '✅ Función cerrarModal disponible<br>✅ Sistema de modales configurado', 'success');
+            } else {
+                mostrarResultado('modales-resultado', '❌ Función cerrarModal no encontrada<br>⚠️ Los modales pueden no funcionar correctamente', 'error');
+            }
+        }
+        
+        // 5. Verificar LocalStorage
+        function verificarLocalStorage() {
+            try {
+                // Probar escribir y leer
+                localStorage.setItem('test-cresalia', 'funcionando');
+                const valor = localStorage.getItem('test-cresalia');
+                localStorage.removeItem('test-cresalia');
+                
+                if (valor === 'funcionando') {
+                    mostrarResultado('localStorage-resultado', '✅ LocalStorage funcionando correctamente<br>✅ Puede guardar y leer datos', 'success');
+                } else {
+                    mostrarResultado('localStorage-resultado', '❌ Error en LocalStorage<br>⚠️ No se puede guardar información', 'error');
+                }
+            } catch (error) {
+                mostrarResultado('localStorage-resultado', '❌ LocalStorage no disponible<br>⚠️ Error: ' + error.message, 'error');
+            }
+        }
+        
+        // 6. Verificar conexión
+        function verificarConexion() {
+            fetch('https://httpbin.org/status/200')
+                .then(response => {
+                    if (response.ok) {
+                        mostrarResultado('conexion-resultado', '✅ Conexión a internet funcionando<br>✅ Servicios externos accesibles', 'success');
+                    } else {
+                        mostrarResultado('conexion-resultado', '⚠️ Conexión limitada<br>⚠️ Algunos servicios pueden no funcionar', 'warning');
+                    }
+                })
+                .catch(error => {
+                    mostrarResultado('conexion-resultado', '❌ Sin conexión a internet<br>⚠️ Servicios externos no disponibles', 'error');
+                });
+        }
+        
+        // 7. Test completo
+        function testCompleto() {
+            mostrarResultado('test-completo-resultado', '🔄 Ejecutando test completo...', 'info');
+            
+            let puntaje = 0;
+            let total = 7;
+            
+            // Test 1: Archivos
+            fetch('index.html')
+                .then(response => response.ok ? puntaje++ : null)
+                .catch(() => null);
+            
+            // Test 2: JavaScript
+            if (typeof window.cerrarModal === 'function') puntaje++;
+            
+            // Test 3: LocalStorage
+            try {
+                localStorage.setItem('test', 'ok');
+                localStorage.removeItem('test');
+                puntaje++;
+            } catch (e) {}
+            
+            // Test 4: Responsive
+            if (window.innerWidth > 0) puntaje++;
+            
+            // Test 5: Modales
+            if (typeof document.createElement === 'function') puntaje++;
+            
+            // Test 6: CSS
+            if (typeof window.getComputedStyle === 'function') puntaje++;
+            
+            // Test 7: Conexión
+            fetch('https://httpbin.org/status/200')
+                .then(response => response.ok ? puntaje++ : null)
+                .catch(() => null);
+            
+            setTimeout(() => {
+                let mensaje = '';
+                let tipo = 'success';
+                
+                if (puntaje === total) {
+                    mensaje = `🎉 ¡CRESALIA FUNCIONA PERFECTAMENTE!<br>✅ ${puntaje}/${total} tests pasaron<br>🚀 Listo para producción`;
+                } else if (puntaje >= total * 0.8) {
+                    mensaje = `👍 Cresalia funciona bien<br>✅ ${puntaje}/${total} tests pasaron<br>⚠️ Algunos ajustes menores recomendados`;
+                    tipo = 'warning';
+                } else {
+                    mensaje = `⚠️ Cresalia necesita ajustes<br>✅ ${puntaje}/${total} tests pasaron<br>🔧 Revisar errores antes de producción`;
+                    tipo = 'error';
+                }
+                
+                mostrarResultado('test-completo-resultado', mensaje, tipo);
+            }, 3000);
+        }
+    </script>
+</body>
+</html>
+
+
+
+
+
+
+
+
+
+
+

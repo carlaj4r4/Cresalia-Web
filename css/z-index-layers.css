@@ -1,0 +1,150 @@
+/* ===== ORGANIZACIÓN DE Z-INDEX PARA CRESALIA ===== */
+
+/* 
+   JERARQUÍA DE CAPAS (de menor a mayor profundidad):
+   
+   1-100    : Elementos base (cards, botones, etc.)
+   100-500  : Elementos flotantes (tooltips, dropdowns)
+   500-1000 : Elementos importantes (navbars, headers)
+   1000-5000: Modales y overlays
+   5000-9000: Sistema de soporte (chatbot, apoyo emocional)
+   9000+    : Elementos críticos del sistema
+*/
+
+/* ===== ELEMENTOS BASE ===== */
+.producto-card,
+.tienda-card,
+.oferta-card,
+.combo-card {
+    z-index: 1;
+}
+
+.btn,
+.nav-btn,
+.action-btn {
+    z-index: 2;
+}
+
+/* ===== ELEMENTOS FLOTANTES ===== */
+.floating-cart {
+    z-index: 999; /* Debajo del chatbot y soporte */
+}
+
+.product-badge,
+.store-badge,
+.offer-badge {
+    z-index: 10;
+}
+
+.tooltip,
+.dropdown {
+    z-index: 100;
+}
+
+/* ===== ELEMENTOS IMPORTANTES ===== */
+.navbar,
+.header,
+.admin-header {
+    z-index: 1000;
+}
+
+.notification {
+    z-index: 2000;
+}
+
+/* ===== MODALES Y OVERLAYS ===== */
+.modal-overlay,
+.modal-backdrop {
+    z-index: 5000;
+}
+
+.modal-content,
+.modal-dialog {
+    z-index: 5001;
+}
+
+.cart-modal {
+    z-index: 5002;
+}
+
+/* ===== SISTEMA DE SOPORTE ===== */
+.chatbot-ia-button {
+    z-index: 8000;
+}
+
+.emotional-support-button {
+    z-index: 8001;
+}
+
+.chatbot-ia-modal,
+.emotional-support-modal {
+    z-index: 8002;
+}
+
+/* ===== ELEMENTOS CRÍTICOS ===== */
+.loading-overlay,
+.system-critical {
+    z-index: 9999;
+}
+
+/* ===== MEDIA QUERIES PARA RESPONSIVE ===== */
+@media (max-width: 768px) {
+    .floating-cart {
+        z-index: 998; /* Un poco más bajo en móviles */
+    }
+    
+    .chatbot-ia-button,
+    .emotional-support-button {
+        z-index: 8000; /* Mantener prioridad en móviles */
+    }
+}
+
+/* ===== ESTADOS ESPECIALES ===== */
+.floating-cart:hover {
+    z-index: 1000; /* Elevar al hover */
+}
+
+.modal-open .floating-cart {
+    z-index: 4999; /* Debajo del modal cuando está abierto */
+}
+
+/* ===== VARIABLES CSS PARA FÁCIL MANTENIMIENTO ===== */
+:root {
+    --z-base: 1;
+    --z-floating: 999;
+    --z-important: 1000;
+    --z-modal: 5000;
+    --z-support: 8000;
+    --z-critical: 9999;
+}
+
+/* ===== CLASES UTILITARIAS ===== */
+.z-base { z-index: var(--z-base); }
+.z-floating { z-index: var(--z-floating); }
+.z-important { z-index: var(--z-important); }
+.z-modal { z-index: var(--z-modal); }
+.z-support { z-index: var(--z-support); }
+.z-critical { z-index: var(--z-critical); }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

@@ -1,0 +1,1378 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>👑 Panel Master - CRESALIA</title>
+    
+    <!-- Favicon -->
+    <link rel="icon" type="image/png" href="assets/logo/logo-cresalia.png">
+    <link rel="apple-touch-icon" href="assets/logo/logo-cresalia.png">
+    
+    <!-- Supabase -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Sistema de Interconexiones -->
+    <script src="js/sistema-interconexiones-global.js"></script>
+    
+    <!-- Sistema de Alertas de Emergencia -->
+    <script src="js/sistema-alertas-emergencia-global.js"></script>
+    
+    <!-- Click Derecho Personalizado -->
+    <script src="js/click-derecho-personalizado.js"></script>
+    
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: #0f172a;
+            color: white;
+        }
+        
+        /* ===== PANTALLA DE LOGIN ===== */
+        .login-screen {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(135deg, #1e1b4b 0%, #312e81 100%);
+        }
+        
+        .login-card {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 25px;
+            padding: 50px;
+            max-width: 450px;
+            width: 90%;
+            box-shadow: 0 25px 50px rgba(0,0,0,0.5);
+            animation: slideIn 0.6s ease-out;
+        }
+        
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(-50px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .login-header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+        
+        .crown-icon {
+            width: 100px;
+            height: 100px;
+            background: linear-gradient(135deg, #fbbf24, #f59e0b);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 20px;
+            animation: pulse 2s infinite;
+        }
+        
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(251, 191, 36, 0.7); }
+            50% { transform: scale(1.05); box-shadow: 0 0 0 20px rgba(251, 191, 36, 0); }
+        }
+        
+        .crown-icon i {
+            font-size: 45px;
+            color: white;
+        }
+        
+        .login-header h1 {
+            color: #1e293b;
+            font-size: 28px;
+            margin-bottom: 10px;
+        }
+        
+        .login-header p {
+            color: #64748b;
+            font-size: 14px;
+        }
+        
+        .form-group {
+            margin-bottom: 25px;
+        }
+        
+        .form-group label {
+            display: block;
+            color: #334155;
+            font-weight: 600;
+            margin-bottom: 10px;
+            font-size: 14px;
+        }
+        
+        .password-input {
+            position: relative;
+        }
+        
+        .password-input input {
+            width: 100%;
+            padding: 15px 50px 15px 20px;
+            border: 2px solid #e2e8f0;
+            border-radius: 12px;
+            font-size: 16px;
+            transition: all 0.3s ease;
+        }
+        
+        .password-input input:focus {
+            outline: none;
+            border-color: #fbbf24;
+            box-shadow: 0 0 0 3px rgba(251, 191, 36, 0.1);
+        }
+        
+        .password-toggle {
+            position: absolute;
+            right: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: none;
+            border: none;
+            color: #64748b;
+            cursor: pointer;
+            font-size: 18px;
+        }
+        
+        .btn-login {
+            width: 100%;
+            padding: 16px;
+            background: linear-gradient(135deg, #fbbf24, #f59e0b);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .btn-login:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 15px 30px rgba(251, 191, 36, 0.3);
+        }
+        
+        /* ===== PANEL PRINCIPAL ===== */
+        .panel-container {
+            display: none;
+            animation: fadeIn 0.5s ease-out;
+        }
+        
+        .panel-container.active {
+            display: block;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        
+        /* Header */
+        .master-header {
+            background: linear-gradient(135deg, #1e293b, #0f172a);
+            padding: 25px 40px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+        }
+        
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+        
+        .avatar {
+            width: 60px;
+            height: 60px;
+            background: linear-gradient(135deg, #fbbf24, #f59e0b);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+        }
+        
+        .avatar i {
+            font-size: 28px;
+            color: white;
+        }
+        
+        .status-indicator {
+            position: absolute;
+            bottom: 0;
+            right: 0;
+            width: 18px;
+            height: 18px;
+            background: #10b981;
+            border: 3px solid #1e293b;
+            border-radius: 50%;
+            animation: blink 2s infinite;
+        }
+        
+        @keyframes blink {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+        
+        .header-info h2 {
+            font-size: 22px;
+            margin-bottom: 5px;
+        }
+        
+        .header-info p {
+            font-size: 13px;
+            opacity: 0.7;
+        }
+        
+        .header-right {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        
+        .refresh-btn, .logout-btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+        
+        .refresh-btn {
+            background: rgba(255,255,255,0.1);
+            color: white;
+        }
+        
+        .refresh-btn:hover {
+            background: rgba(255,255,255,0.2);
+        }
+        
+        .logout-btn {
+            background: #ef4444;
+            color: white;
+        }
+        
+        .logout-btn:hover {
+            background: #dc2626;
+        }
+        
+        /* Navegación */
+        .master-nav {
+            background: #1e293b;
+            padding: 20px 40px;
+            display: flex;
+            gap: 10px;
+            overflow-x: auto;
+            border-bottom: 2px solid #334155;
+        }
+        
+        .nav-btn {
+            padding: 12px 24px;
+            background: rgba(255,255,255,0.05);
+            border: none;
+            border-radius: 10px;
+            color: white;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            white-space: nowrap;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .nav-btn:hover {
+            background: rgba(255,255,255,0.1);
+            transform: translateY(-2px);
+        }
+        
+        .nav-btn.active {
+            background: linear-gradient(135deg, #fbbf24, #f59e0b);
+            box-shadow: 0 4px 15px rgba(251, 191, 36, 0.3);
+        }
+        
+        /* Contenido */
+        .master-content {
+            padding: 40px;
+            max-width: 1600px;
+            margin: 0 auto;
+        }
+        
+        .section {
+            display: none;
+            animation: slideInUp 0.4s ease-out;
+        }
+        
+        .section.active {
+            display: block;
+        }
+        
+        @keyframes slideInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        /* Stats Grid */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 25px;
+            margin-bottom: 40px;
+        }
+        
+        .stat-card {
+            background: linear-gradient(135deg, rgba(255,255,255,0.1), rgba(255,255,255,0.05));
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 20px;
+            padding: 30px;
+            position: relative;
+            overflow: hidden;
+            transition: all 0.3s ease;
+        }
+        
+        .stat-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.1), transparent);
+            transition: left 0.6s ease;
+        }
+        
+        .stat-card:hover::before {
+            left: 100%;
+        }
+        
+        .stat-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 40px rgba(0,0,0,0.4);
+        }
+        
+        .stat-icon {
+            width: 60px;
+            height: 60px;
+            border-radius: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 15px;
+            font-size: 24px;
+        }
+        
+        .stat-card.compradores .stat-icon { background: linear-gradient(135deg, #EF4444, #F43F5E); }
+        .stat-card.vendedores .stat-icon { background: linear-gradient(135deg, #667eea, #764ba2); }
+        .stat-card.tickets .stat-icon { background: linear-gradient(135deg, #f59e0b, #ea580c); }
+        .stat-card.ingresos .stat-icon { background: linear-gradient(135deg, #10b981, #059669); }
+        
+        .stat-label {
+            font-size: 13px;
+            opacity: 0.7;
+            margin-bottom: 10px;
+        }
+        
+        .stat-number {
+            font-size: 42px;
+            font-weight: 700;
+            margin-bottom: 5px;
+        }
+        
+        .stat-change {
+            font-size: 12px;
+            opacity: 0.6;
+        }
+        
+        /* Secciones de contenido */
+        .content-section {
+            background: rgba(255,255,255,0.05);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 20px;
+            padding: 30px;
+            margin-bottom: 30px;
+        }
+        
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+        }
+        
+        .section-header h2 {
+            font-size: 24px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        
+        /* Tabla */
+        table {
+            width: 100%;
+            border-collapse: separate;
+            border-spacing: 0 10px;
+        }
+        
+        table th {
+            background: rgba(255,255,255,0.05);
+            padding: 15px;
+            text-align: left;
+            font-weight: 600;
+            font-size: 13px;
+            opacity: 0.8;
+            border: none;
+        }
+        
+        table td {
+            background: rgba(255,255,255,0.03);
+            padding: 18px 15px;
+            border: none;
+            font-size: 14px;
+        }
+        
+        table tr {
+            transition: all 0.3s ease;
+        }
+        
+        table tbody tr:hover td {
+            background: rgba(255,255,255,0.08);
+            transform: scale(1.01);
+        }
+        
+        /* Badges */
+        .badge {
+            padding: 6px 14px;
+            border-radius: 20px;
+            font-size: 11px;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+        
+        .badge.comprador { background: rgba(239, 68, 68, 0.2); color: #fca5a5; border: 1px solid #ef4444; }
+        .badge.vendedor { background: rgba(102, 126, 234, 0.2); color: #a5b4fc; border: 1px solid #667eea; }
+        .badge.abierto { background: rgba(245, 158, 11, 0.2); color: #fbbf24; border: 1px solid #f59e0b; }
+        .badge.resuelto { background: rgba(16, 185, 129, 0.2); color: #6ee7b7; border: 1px solid #10b981; }
+        .badge.basico { background: rgba(148, 163, 184, 0.2); color: #cbd5e1; }
+        .badge.pro { background: rgba(139, 92, 246, 0.2); color: #c4b5fd; }
+        .badge.premium { background: rgba(251, 191, 36, 0.2); color: #fde68a; }
+        
+        /* Botones */
+        .btn {
+            padding: 10px 18px;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            font-size: 13px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+        
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(102, 126, 234, 0.4);
+        }
+        
+        .btn-success {
+            background: linear-gradient(135deg, #10b981, #059669);
+            color: white;
+        }
+        
+        .btn-danger {
+            background: linear-gradient(135deg, #ef4444, #dc2626);
+            color: white;
+        }
+        
+        /* Notificaciones */
+        .notification {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            padding: 20px 25px;
+            border-radius: 15px;
+            background: rgba(16, 185, 129, 0.95);
+            color: white;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+            animation: slideInRight 0.4s ease-out;
+            z-index: 99999;
+        }
+        
+        @keyframes slideInRight {
+            from {
+                opacity: 0;
+                transform: translateX(100px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+        
+        .notification.error {
+            background: rgba(239, 68, 68, 0.95);
+        }
+        
+        /* Loading */
+        .loading {
+            text-align: center;
+            padding: 60px;
+            opacity: 0.6;
+        }
+        
+        .spinner {
+            width: 50px;
+            height: 50px;
+            border: 4px solid rgba(255,255,255,0.1);
+            border-top-color: #fbbf24;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 20px;
+        }
+        
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+    <!-- Pantalla de Login -->
+    <div id="loginScreen" class="login-screen">
+        <div class="login-card">
+            <div class="login-header">
+                <div class="crown-icon">
+                    <i class="fas fa-crown"></i>
+                </div>
+                <h1>👑 Panel Master</h1>
+                <p>Sistema Exclusivo de Administración CRESALIA</p>
+                <p style="margin-top: 10px; font-size: 12px; color: #94a3b8;">Solo accesible por Crisla</p>
+            </div>
+            
+            <form id="loginForm">
+                <div class="form-group">
+                    <label for="password">
+                        <i class="fas fa-lock"></i> Contraseña de Acceso
+                    </label>
+                    <div class="password-input">
+                        <input type="password" id="password" placeholder="Ingresa tu contraseña master" required autocomplete="current-password">
+                        <button type="button" onclick="togglePassword()" class="password-toggle">
+                            <i class="fas fa-eye" id="toggleIcon"></i>
+                        </button>
+                    </div>
+                </div>
+                
+                <button type="submit" class="btn-login">
+                    <i class="fas fa-sign-in-alt"></i> Acceder al Panel Master
+                </button>
+            </form>
+        </div>
+    </div>
+    
+    <!-- Panel Principal -->
+    <div id="panelMaster" class="panel-container">
+        <!-- Header -->
+        <header class="master-header">
+            <div class="header-left">
+                <div class="avatar">
+                    <i class="fas fa-crown"></i>
+                    <span class="status-indicator"></span>
+                </div>
+                <div class="header-info">
+                    <h2>👑 Crisla's Master Panel</h2>
+                    <p>Sistema de Administración Total - CRESALIA</p>
+                </div>
+            </div>
+            
+            <div class="header-right">
+                <button onclick="refrescarDatos()" class="refresh-btn">
+                    <i class="fas fa-sync-alt"></i> Actualizar
+                </button>
+                <button onclick="cerrarSesion()" class="logout-btn">
+                    <i class="fas fa-sign-out-alt"></i> Salir
+                </button>
+            </div>
+        </header>
+        
+        <!-- Navegación -->
+        <nav class="master-nav">
+            <button class="nav-btn active" onclick="mostrarSeccion('dashboard')">
+                <i class="fas fa-tachometer-alt"></i> Dashboard
+            </button>
+            <button class="nav-btn" onclick="mostrarSeccion('compradores')">
+                <i class="fas fa-users"></i> Compradores
+            </button>
+            <button class="nav-btn" onclick="mostrarSeccion('tiendas')">
+                <i class="fas fa-store"></i> Tiendas
+            </button>
+            <button class="nav-btn" onclick="mostrarSeccion('tickets')">
+                <i class="fas fa-ticket-alt"></i> Soporte
+            </button>
+            <button class="nav-btn" onclick="mostrarSeccion('diarios')">
+                <i class="fas fa-heart"></i> Diarios
+            </button>
+            <button class="nav-btn" onclick="mostrarSeccion('feedbacks')">
+                <i class="fas fa-comment-dots"></i> Feedbacks
+            </button>
+            <button class="nav-btn" onclick="mostrarSeccion('chats')">
+                <i class="fas fa-comments"></i> Chats
+            </button>
+            <button class="nav-btn" onclick="mostrarSeccion('estadisticas')">
+                <i class="fas fa-chart-bar"></i> Estadísticas
+            </button>
+            <button class="nav-btn" onclick="window.open('comunidades/panel-moderacion-foro-comunidades.html', '_blank')">
+                <i class="fas fa-shield-alt"></i> Moderación Foros
+            </button>
+            <button class="nav-btn" onclick="window.open('panel-gestion-alertas-global.html', '_blank')">
+                <i class="fas fa-exclamation-triangle"></i> Gestionar Alertas Global
+            </button>
+        </nav>
+        
+        <!-- Contenido -->
+        <main class="master-content">
+            <!-- Dashboard -->
+            <section id="dashboard" class="section active">
+                <div class="stats-grid">
+                    <div class="stat-card compradores">
+                        <div class="stat-icon">
+                            <i class="fas fa-users"></i>
+                        </div>
+                        <div class="stat-label">Total Compradores</div>
+                        <div class="stat-number" id="totalCompradores">0</div>
+                        <div class="stat-change">↑ Registrados en el sistema</div>
+                    </div>
+                    
+                    <div class="stat-card vendedores">
+                        <div class="stat-icon">
+                            <i class="fas fa-store"></i>
+                        </div>
+                        <div class="stat-label">Total Tiendas</div>
+                        <div class="stat-number" id="totalTiendas">0</div>
+                        <div class="stat-change">↑ Tiendas activas</div>
+                    </div>
+                    
+                    <div class="stat-card tickets">
+                        <div class="stat-icon">
+                            <i class="fas fa-ticket-alt"></i>
+                        </div>
+                        <div class="stat-label">Tickets Pendientes</div>
+                        <div class="stat-number" id="totalTickets">0</div>
+                        <div class="stat-change">Requieren atención</div>
+                    </div>
+                    
+                    <div class="stat-card ingresos">
+                        <div class="stat-icon">
+                            <i class="fas fa-dollar-sign"></i>
+                        </div>
+                        <div class="stat-label">Ingresos Mensuales</div>
+                        <div class="stat-number" id="totalIngresos">$0</div>
+                        <div class="stat-change">Proyección del mes</div>
+                    </div>
+                </div>
+                
+                <!-- Actividad Reciente -->
+                <div class="content-section">
+                    <div class="section-header">
+                        <h2><i class="fas fa-clock"></i> Actividad Reciente</h2>
+                    </div>
+                    <div id="actividadReciente">
+                        <div class="loading">
+                            <div class="spinner"></div>
+                            <p>Cargando actividad reciente...</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+            
+            <!-- Compradores -->
+            <section id="compradores" class="section">
+                <div class="content-section">
+                    <div class="section-header">
+                        <h2><i class="fas fa-users"></i> Lista de Compradores</h2>
+                        <button class="btn btn-success" onclick="exportarCompradores()">
+                            <i class="fas fa-download"></i> Exportar
+                        </button>
+                    </div>
+                    <table id="tablaCompradores">
+                        <thead>
+                            <tr>
+                                <th>Nombre</th>
+                                <th>Email</th>
+                                <th>Fecha Registro</th>
+                                <th>Compras</th>
+                                <th>Estado</th>
+                                <th>Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr><td colspan="6"><div class="loading"><div class="spinner"></div>Cargando...</div></td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+            
+            <!-- Tiendas -->
+            <section id="tiendas" class="section">
+                <div class="content-section">
+                    <div class="section-header">
+                        <h2><i class="fas fa-store"></i> Tiendas Activas</h2>
+                        <button class="btn btn-success" onclick="exportarTiendas()">
+                            <i class="fas fa-download"></i> Exportar
+                        </button>
+                    </div>
+                    <table id="tablaTiendas">
+                        <thead>
+                            <tr>
+                                <th>Nombre Tienda</th>
+                                <th>Email Dueño</th>
+                                <th>Plan</th>
+                                <th>Subdomain</th>
+                                <th>Fecha</th>
+                                <th>Estado</th>
+                                <th>Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr><td colspan="7"><div class="loading"><div class="spinner"></div>Cargando...</div></td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+            
+            <!-- Tickets -->
+            <section id="tickets" class="section">
+                <div class="content-section">
+                    <div class="section-header">
+                        <h2><i class="fas fa-ticket-alt"></i> Tickets de Soporte</h2>
+                        <button class="btn btn-primary" onclick="refrescarTickets()">
+                            <i class="fas fa-sync-alt"></i> Actualizar
+                        </button>
+                    </div>
+                    <table id="tablaTickets">
+                        <thead>
+                            <tr>
+                                <th>Usuario</th>
+                                <th>Tipo</th>
+                                <th>Asunto</th>
+                                <th>Categoría</th>
+                                <th>Prioridad</th>
+                                <th>Estado</th>
+                                <th>Fecha</th>
+                                <th>Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr><td colspan="8"><div class="loading"><div class="spinner"></div>Cargando...</div></td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+            
+            <!-- Diarios Emocionales -->
+            <section id="diarios" class="section">
+                <div class="content-section">
+                    <div class="section-header">
+                        <h2><i class="fas fa-heart"></i> Diarios Emocionales</h2>
+                        <button class="btn btn-primary" onclick="cargarDiarios()">
+                            <i class="fas fa-sync-alt"></i> Actualizar
+                        </button>
+                    </div>
+                    <table id="tablaDiarios">
+                        <thead>
+                            <tr>
+                                <th>Tienda</th>
+                                <th>Fecha</th>
+                                <th>Emoción</th>
+                                <th>Reflexión</th>
+                                <th>Leído</th>
+                                <th>Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr><td colspan="6"><div class="loading"><div class="spinner"></div>Cargando diarios...</div></td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+            
+            <!-- Feedbacks de Usuarios -->
+            <section id="feedbacks" class="section">
+                <div class="content-section">
+                    <div class="section-header">
+                        <h2><i class="fas fa-comment-dots"></i> Feedbacks de Usuarios</h2>
+                        <button class="btn btn-primary" onclick="cargarFeedbacks()">
+                            <i class="fas fa-sync-alt"></i> Actualizar
+                        </button>
+                    </div>
+                    <table id="tablaFeedbacks">
+                        <thead>
+                            <tr>
+                                <th>Tipo</th>
+                                <th>Usuario</th>
+                                <th>Asunto</th>
+                                <th>Fecha</th>
+                                <th>Estado</th>
+                                <th>Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr><td colspan="6"><div class="loading"><div class="spinner"></div>Cargando feedbacks...</div></td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+            
+            <!-- Chats en Vivo -->
+            <section id="chats" class="section">
+                <div class="content-section">
+                    <div class="section-header">
+                        <h2><i class="fas fa-comments"></i> Chats en Vivo</h2>
+                        <button class="btn btn-success" onclick="cargarChats()">
+                            <i class="fas fa-sync-alt"></i> Actualizar
+                        </button>
+                    </div>
+                    <table id="tablaChats">
+                        <thead>
+                            <tr>
+                                <th>Usuario</th>
+                                <th>Tipo</th>
+                                <th>Último Mensaje</th>
+                                <th>Estado</th>
+                                <th>Sin Leer</th>
+                                <th>Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr><td colspan="6"><div class="loading"><div class="spinner"></div>Cargando chats...</div></td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+            
+            <!-- Estadísticas -->
+            <section id="estadisticas" class="section">
+                <div class="content-section">
+                    <div class="section-header">
+                        <h2><i class="fas fa-chart-bar"></i> Estadísticas y Analytics</h2>
+                    </div>
+                    <p style="opacity: 0.6; text-align: center; padding: 40px;">
+                        Gráficos y estadísticas avanzadas - Próximamente 📊
+                    </p>
+                </div>
+            </section>
+        </main>
+    </div>
+    
+    <!-- Scripts -->
+    <script src="auth/supabase-config.js"></script>
+    
+    <script>
+        // No redeclarar supabase - ya está en supabase-config.js
+        const MASTER_PASSWORD = 'CREDENTIAL_REMOVED'; // La misma que tu admin
+        
+        // Toggle password visibility
+        function togglePassword() {
+            const passwordField = document.getElementById('password');
+            const toggleIcon = document.getElementById('toggleIcon');
+            
+            if (passwordField.type === 'password') {
+                passwordField.type = 'text';
+                toggleIcon.classList.remove('fa-eye');
+                toggleIcon.classList.add('fa-eye-slash');
+            } else {
+                passwordField.type = 'password';
+                toggleIcon.classList.remove('fa-eye-slash');
+                toggleIcon.classList.add('fa-eye');
+            }
+        }
+        
+        // Login
+        document.getElementById('loginForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const password = document.getElementById('password').value;
+            
+            if (password === MASTER_PASSWORD) {
+                document.getElementById('loginScreen').style.display = 'none';
+                document.getElementById('panelMaster').classList.add('active');
+                
+                // Inicializar Supabase y cargar datos
+                inicializarPanel();
+            } else {
+                mostrarNotificacion('❌ Contraseña incorrecta', 'error');
+            }
+        });
+        
+        // Inicializar panel
+        async function inicializarPanel() {
+            // Supabase ya está inicializado en supabase-config.js
+            if (typeof supabase === 'undefined' || !supabase) {
+                supabase = initSupabase();
+            }
+            await cargarTodosDatos();
+            
+            // Auto-actualizar cada 30 segundos
+            setInterval(() => {
+                cargarEstadisticas();
+                cargarActividadReciente();
+            }, 30000);
+        }
+        
+        // Cargar todos los datos
+        async function cargarTodosDatos() {
+            await cargarEstadisticas();
+            await cargarCompradores();
+            await cargarTiendas();
+            await cargarTickets();
+            await cargarDiarios();
+            await cargarChats();
+            await cargarActividadReciente();
+        }
+        
+        // Refrescar datos
+        async function refrescarDatos() {
+            mostrarNotificacion('🔄 Actualizando datos...', 'success');
+            await cargarTodosDatos();
+        }
+        
+        // Cargar estadísticas
+        async function cargarEstadisticas() {
+            try {
+                const { count: compradores } = await supabase
+                    .from('compradores')
+                    .select('*', { count: 'exact', head: true });
+                
+                const { count: tiendas } = await supabase
+                    .from('tiendas')
+                    .select('*', { count: 'exact', head: true });
+                
+                const { count: tickets } = await supabase
+                    .from('tickets_soporte')
+                    .select('*', { count: 'exact', head: true })
+                    .in('estado', ['abierto', 'en_proceso']);
+                
+                document.getElementById('totalCompradores').textContent = compradores || 0;
+                document.getElementById('totalTiendas').textContent = tiendas || 0;
+                document.getElementById('totalTickets').textContent = tickets || 0;
+                
+                // Calcular ingresos (ejemplo: $10/tienda Pro)
+                const { data: tiendasPro } = await supabase
+                    .from('tiendas')
+                    .select('plan')
+                    .eq('activa', true);
+                
+                let ingresos = 0;
+                if (tiendasPro) {
+                    tiendasPro.forEach(t => {
+                        if (t.plan === 'pro') ingresos += 9.99;
+                        if (t.plan === 'premium') ingresos += 19.99;
+                    });
+                }
+                
+                document.getElementById('totalIngresos').textContent = `$${ingresos.toFixed(2)}`;
+                
+            } catch (error) {
+                console.error('Error cargando estadísticas:', error);
+            }
+        }
+        
+        // Cargar compradores
+        async function cargarCompradores() {
+            try {
+                const { data, error } = await supabase
+                    .from('compradores')
+                    .select('*')
+                    .order('fecha_registro', { ascending: false });
+                
+                const tbody = document.querySelector('#tablaCompradores tbody');
+                
+                if (!data || data.length === 0) {
+                    tbody.innerHTML = '<tr><td colspan="6" style="text-align: center; padding: 40px; opacity: 0.6;">No hay compradores registrados aún</td></tr>';
+                    return;
+                }
+                
+                tbody.innerHTML = data.map(c => `
+                    <tr>
+                        <td><strong>${c.nombre_completo || 'Sin nombre'}</strong></td>
+                        <td>${c.email}</td>
+                        <td>${new Date(c.fecha_registro).toLocaleDateString('es-AR')}</td>
+                        <td>${c.total_compras || 0}</td>
+                        <td><span class="badge ${c.activo ? 'resuelto' : 'abierto'}">${c.activo ? 'Activo' : 'Inactivo'}</span></td>
+                        <td>
+                            <button class="btn btn-primary" onclick="verDetalleComprador('${c.id}')">
+                                <i class="fas fa-eye"></i> Ver
+                            </button>
+                        </td>
+                    </tr>
+                `).join('');
+                
+            } catch (error) {
+                console.error('Error cargando compradores:', error);
+            }
+        }
+        
+        // Cargar tiendas
+        async function cargarTiendas() {
+            try {
+                const { data, error } = await supabase
+                    .from('tiendas')
+                    .select('*')
+                    .order('fecha_creacion', { ascending: false });
+                
+                const tbody = document.querySelector('#tablaTiendas tbody');
+                
+                if (!data || data.length === 0) {
+                    tbody.innerHTML = '<tr><td colspan="7" style="text-align: center; padding: 40px; opacity: 0.6;">No hay tiendas registradas aún</td></tr>';
+                    return;
+                }
+                
+                tbody.innerHTML = data.map(t => `
+                    <tr>
+                        <td><strong>${t.nombre_tienda}</strong></td>
+                        <td>${t.email}</td>
+                        <td><span class="badge ${t.plan}">${t.plan.toUpperCase()}</span></td>
+                        <td>${t.subdomain}</td>
+                        <td>${new Date(t.fecha_creacion).toLocaleDateString('es-AR')}</td>
+                        <td><span class="badge ${t.activa ? 'resuelto' : 'abierto'}">${t.activa ? 'Activa' : 'Inactiva'}</span></td>
+                        <td>
+                            <button class="btn btn-primary" onclick="verDetalleTienda('${t.id}')">
+                                <i class="fas fa-eye"></i> Ver
+                            </button>
+                        </td>
+                    </tr>
+                `).join('');
+                
+            } catch (error) {
+                console.error('Error cargando tiendas:', error);
+            }
+        }
+        
+        // Cargar tickets
+        async function cargarTickets() {
+            try {
+                const { data, error } = await supabase
+                    .from('tickets_soporte')
+                    .select('*')
+                    .order('fecha_creacion', { ascending: false })
+                    .limit(100);
+                
+                const tbody = document.querySelector('#tablaTickets tbody');
+                
+                if (error && error.code === 'PGRST116') {
+                    tbody.innerHTML = '<tr><td colspan="8" style="text-align: center; padding: 40px;"><p style="opacity: 0.6;">✅ Tabla de tickets no existe aún</p><p style="font-size: 12px; margin-top: 10px;">Ejecuta <code>supabase-soporte.sql</code> en Supabase</p></td></tr>';
+                    return;
+                }
+                
+                if (!data || data.length === 0) {
+                    tbody.innerHTML = '<tr><td colspan="8" style="text-align: center; padding: 40px; color: #10b981;">✅ No hay tickets pendientes - ¡Todo funcionando perfecto! 💜</td></tr>';
+                    return;
+                }
+                
+                tbody.innerHTML = data.map(ticket => `
+                    <tr>
+                        <td>${ticket.nombre_usuario || ticket.email_usuario}</td>
+                        <td><span class="badge ${ticket.tipo_usuario}">${ticket.tipo_usuario}</span></td>
+                        <td><strong>${ticket.asunto}</strong></td>
+                        <td>${ticket.categoria.replace('_', ' ')}</td>
+                        <td><span class="badge ${ticket.prioridad === 'urgente' ? 'abierto' : ''}">${ticket.prioridad}</span></td>
+                        <td><span class="badge ${ticket.estado}">${ticket.estado.replace('_', ' ')}</span></td>
+                        <td>${new Date(ticket.fecha_creacion).toLocaleDateString('es-AR')}</td>
+                        <td>
+                            <button class="btn btn-primary" onclick="verTicket('${ticket.id}')">
+                                <i class="fas fa-eye"></i> Ver
+                            </button>
+                        </td>
+                    </tr>
+                `).join('');
+                
+            } catch (error) {
+                console.error('Error cargando tickets:', error);
+            }
+        }
+        
+        // Cargar actividad reciente
+        async function cargarActividadReciente() {
+            const container = document.getElementById('actividadReciente');
+            
+            try {
+                // Obtener actividad reciente de las tablas (sin necesitar service key)
+                const actividades = [];
+                
+                // Últimas tiendas creadas
+                const { data: tiendas } = await supabase
+                    .from('tiendas')
+                    .select('nombre_tienda, fecha_creacion, plan')
+                    .order('fecha_creacion', { ascending: false })
+                    .limit(5);
+                
+                if (tiendas) {
+                    tiendas.forEach(t => {
+                        actividades.push({
+                            tipo: 'tienda',
+                            texto: `🏪 Nueva tienda: <strong>${t.nombre_tienda}</strong> (${t.plan})`,
+                            fecha: new Date(t.fecha_creacion)
+                        });
+                    });
+                }
+                
+                // Últimos compradores
+                const { data: compradores } = await supabase
+                    .from('compradores')
+                    .select('nombre_completo, fecha_registro')
+                    .order('fecha_registro', { ascending: false })
+                    .limit(5);
+                
+                if (compradores) {
+                    compradores.forEach(c => {
+                        actividades.push({
+                            tipo: 'comprador',
+                            texto: `👤 Nuevo comprador: <strong>${c.nombre_completo}</strong>`,
+                            fecha: new Date(c.fecha_registro)
+                        });
+                    });
+                }
+                
+                // Últimos tickets
+                const { data: tickets } = await supabase
+                    .from('tickets_soporte')
+                    .select('asunto, fecha_creacion, prioridad')
+                    .order('fecha_creacion', { ascending: false })
+                    .limit(3);
+                
+                if (tickets) {
+                    tickets.forEach(t => {
+                        const emoji = t.prioridad === 'urgente' ? '🚨' : '🎫';
+                        actividades.push({
+                            tipo: 'ticket',
+                            texto: `${emoji} Ticket: <strong>${t.asunto}</strong>`,
+                            fecha: new Date(t.fecha_creacion)
+                        });
+                    });
+                }
+                
+                // Ordenar por fecha
+                actividades.sort((a, b) => b.fecha - a.fecha);
+                
+                // Mostrar
+                if (actividades.length === 0) {
+                    container.innerHTML = '<p style="text-align: center; opacity: 0.6; padding: 40px;">No hay actividad reciente aún</p>';
+                } else {
+                    container.innerHTML = actividades.slice(0, 10).map(act => `
+                        <div style="padding: 15px; margin-bottom: 10px; background: rgba(255,255,255,0.03); border-radius: 10px; border-left: 3px solid ${act.tipo === 'tienda' ? '#667eea' : act.tipo === 'comprador' ? '#EF4444' : '#f59e0b'};">
+                            <p style="margin: 0;">${act.texto}</p>
+                            <small style="opacity: 0.6; font-size: 12px;">${act.fecha.toLocaleString('es-AR')}</small>
+                        </div>
+                    `).join('');
+                }
+                
+            } catch (error) {
+                console.log('Info: Algunas tablas aún no tienen datos');
+                container.innerHTML = '<p style="text-align: center; opacity: 0.6; padding: 40px;">📊 Actividad aparecerá cuando haya registros</p>';
+            }
+        }
+        
+        // Cargar diarios emocionales
+        async function cargarDiarios() {
+            try {
+                const { data, error } = await supabase
+                    .from('diarios_emocionales')
+                    .select(`
+                        *,
+                        tiendas (nombre_tienda)
+                    `)
+                    .order('fecha_creacion', { ascending: false })
+                    .limit(50);
+                
+                const tbody = document.querySelector('#tablaDiarios tbody');
+                
+                if (error && error.code === 'PGRST116') {
+                    tbody.innerHTML = '<tr><td colspan="6" style="text-align: center; padding: 40px;"><p style="opacity: 0.6;">📖 Tabla de diarios no existe aún</p><p style="font-size: 12px; margin-top: 10px;">Ejecuta <code>supabase-diario-emocional.sql</code></p></td></tr>';
+                    return;
+                }
+                
+                if (!data || data.length === 0) {
+                    tbody.innerHTML = '<tr><td colspan="6" style="text-align: center; padding: 40px; opacity: 0.6;">No hay entradas de diario aún</td></tr>';
+                    return;
+                }
+                
+                tbody.innerHTML = data.map(d => {
+                    const emojiEmocion = {
+                        'feliz': '😊',
+                        'motivado': '💪',
+                        'neutral': '😐',
+                        'estresado': '😰',
+                        'preocupado': '😟',
+                        'frustrado': '😤',
+                        'ansioso': '😨'
+                    };
+                    
+                    return `
+                        <tr>
+                            <td><strong>${d.tiendas?.nombre_tienda || 'Desconocido'}</strong></td>
+                            <td>${new Date(d.fecha_entrada).toLocaleDateString('es-AR')}</td>
+                            <td>${emojiEmocion[d.emocion] || ''}  ${d.emocion}</td>
+                            <td style="max-width: 300px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">${d.reflexion.substring(0, 50)}...</td>
+                            <td><span class="badge ${d.leido_por_soporte ? 'resuelto' : 'abierto'}">${d.leido_por_soporte ? 'Leído' : 'Nuevo'}</span></td>
+                            <td>
+                                <button class="btn btn-primary" onclick="verDiario('${d.id}')">
+                                    <i class="fas fa-eye"></i> Ver
+                                </button>
+                            </td>
+                        </tr>
+                    `;
+                }).join('');
+                
+            } catch (error) {
+                console.error('Error cargando diarios:', error);
+            }
+        }
+        
+        // Cargar chats en vivo
+        async function cargarChats() {
+            try {
+                const { data, error } = await supabase
+                    .from('conversaciones')
+                    .select('*')
+                    .order('fecha_ultimo_mensaje', { ascending: false })
+                    .limit(50);
+                
+                const tbody = document.querySelector('#tablaChats tbody');
+                
+                if (error && error.code === 'PGRST116') {
+                    tbody.innerHTML = '<tr><td colspan="6" style="text-align: center; padding: 40px;"><p style="opacity: 0.6;">💬 Tabla de chats no existe aún</p><p style="font-size: 12px; margin-top: 10px;">Ejecuta <code>supabase-chat.sql</code></p></td></tr>';
+                    return;
+                }
+                
+                if (!data || data.length === 0) {
+                    tbody.innerHTML = '<tr><td colspan="6" style="text-align: center; padding: 40px; opacity: 0.6;">No hay conversaciones activas</td></tr>';
+                    return;
+                }
+                
+                // Obtener conteo de mensajes no leídos
+                const chatsConMensajes = await Promise.all(data.map(async (chat) => {
+                    const { count } = await supabase
+                        .from('mensajes_chat')
+                        .select('*', { count: 'exact', head: true })
+                        .eq('conversacion_id', chat.id)
+                        .eq('leido', false)
+                        .eq('remitente', 'usuario');
+                    
+                    return { ...chat, mensajes_sin_leer: count || 0 };
+                }));
+                
+                tbody.innerHTML = chatsConMensajes.map(chat => `
+                    <tr style="${!chat.leida_por_soporte ? 'background: rgba(239, 68, 68, 0.1);' : ''}">
+                        <td><strong>${chat.nombre_usuario}</strong></td>
+                        <td><span class="badge ${chat.tipo_usuario}">${chat.tipo_usuario}</span></td>
+                        <td>${new Date(chat.fecha_ultimo_mensaje).toLocaleString('es-AR')}</td>
+                        <td><span class="badge ${chat.estado === 'activa' ? 'abierto' : 'resuelto'}">${chat.estado}</span></td>
+                        <td><strong style="color: ${chat.mensajes_sin_leer > 0 ? '#ef4444' : 'inherit'}">${chat.mensajes_sin_leer}</strong></td>
+                        <td>
+                            <button class="btn btn-primary" onclick="abrirChat('${chat.id}')">
+                                <i class="fas fa-comment"></i> Responder
+                            </button>
+                        </td>
+                    </tr>
+                `).join('');
+                
+            } catch (error) {
+                console.error('Error cargando chats:', error);
+            }
+        }
+        
+        // Ver detalle de diario
+        function verDiario(id) {
+            mostrarNotificacion('📖 Abriendo diario emocional...', 'success');
+            // TODO: Implementar modal de detalle
+        }
+        
+        // Abrir chat
+        function abrirChat(id) {
+            mostrarNotificacion('💬 Abriendo chat...', 'success');
+            // TODO: Implementar interfaz de chat
+        }
+        
+        // Mostrar secciones
+        function mostrarSeccion(seccionId) {
+            // Ocultar todas las secciones
+            document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+            document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+            
+            // Mostrar sección seleccionada
+            document.getElementById(seccionId).classList.add('active');
+            document.querySelector(`[onclick="mostrarSeccion('${seccionId}')"]`).classList.add('active');
+        }
+        
+        // Funciones de acción
+        function verDetalleComprador(id) {
+            mostrarNotificacion('Ver detalle de comprador - ID: ' + id, 'success');
+        }
+        
+        function verDetalleTienda(id) {
+            mostrarNotificacion('Ver detalle de tienda - ID: ' + id, 'success');
+        }
+        
+        function verTicket(id) {
+            mostrarNotificacion('Ver ticket - ID: ' + id, 'success');
+        }
+        
+        function exportarCompradores() {
+            mostrarNotificacion('📥 Exportando compradores...', 'success');
+        }
+        
+        function exportarTiendas() {
+            mostrarNotificacion('📥 Exportando tiendas...', 'success');
+        }
+        
+        function refrescarTickets() {
+            cargarTickets();
+            mostrarNotificacion('✅ Tickets actualizados', 'success');
+        }
+        
+        function cerrarSesion() {
+            if (confirm('¿Cerrar sesión del Panel Master?')) {
+                location.reload();
+            }
+        }
+        
+        // Notificaciones
+        function mostrarNotificacion(mensaje, tipo) {
+            const notif = document.createElement('div');
+            notif.className = `notification ${tipo}`;
+            notif.textContent = mensaje;
+            document.body.appendChild(notif);
+            
+            setTimeout(() => notif.remove(), 3000);
+        }
+    </script>
+</body>
+</html>
+

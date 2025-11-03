@@ -1,0 +1,1562 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Panel de Moderación - Foro de Comunidades | Cresalia</title>
+    <link rel="icon" type="image/x-icon" href="../favicon.ico">
+    <link rel="icon" type="image/png" href="../assets/logo/logo-cresalia.png">
+    <link rel="apple-touch-icon" href="../assets/logo/logo-cresalia.png">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+        }
+        
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+            padding-bottom: 20px;
+            border-bottom: 3px solid #667eea;
+        }
+        
+        .header h1 {
+            color: #374151;
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+        }
+        
+        .header p {
+            color: #6B7280;
+            font-size: 1.1rem;
+        }
+        
+        .tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 30px;
+            flex-wrap: wrap;
+            border-bottom: 2px solid #E5E7EB;
+        }
+        
+        .tab {
+            padding: 15px 30px;
+            background: #F3F4F6;
+            border: none;
+            border-radius: 10px 10px 0 0;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            color: #6B7280;
+            transition: all 0.3s ease;
+        }
+        
+        .tab.active {
+            background: #667eea;
+            color: white;
+        }
+        
+        .tab:hover:not(.active) {
+            background: #E5E7EB;
+        }
+        
+        .tab-content {
+            display: none;
+        }
+        
+        .tab-content.active {
+            display: block;
+        }
+        
+        .filters {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 30px;
+            flex-wrap: wrap;
+            align-items: center;
+        }
+        
+        .filter-group {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+        
+        .filter-group label {
+            font-weight: 600;
+            color: #374151;
+            font-size: 0.9rem;
+        }
+        
+        .filter-group select,
+        .filter-group input {
+            padding: 10px;
+            border: 2px solid #E5E7EB;
+            border-radius: 8px;
+            font-size: 1rem;
+            min-width: 200px;
+        }
+        
+        .btn {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 10px;
+            font-weight: 600;
+            cursor: pointer;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+        
+        .btn-danger {
+            background: linear-gradient(135deg, #EF4444 0%, #DC2626 100%);
+            color: white;
+        }
+        
+        .btn-danger:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(239, 68, 68, 0.4);
+        }
+        
+        .btn-warning {
+            background: linear-gradient(135deg, #F59E0B 0%, #D97706 100%);
+            color: white;
+        }
+        
+        .btn-success {
+            background: linear-gradient(135deg, #10B981 0%, #059669 100%);
+            color: white;
+        }
+        
+        .btn-secondary {
+            background: #E5E7EB;
+            color: #374151;
+        }
+        
+        .btn-secondary:hover {
+            background: #D1D5DB;
+        }
+        
+        .posts-list {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+        
+        .post-card {
+            background: #F9FAFB;
+            border-radius: 15px;
+            padding: 25px;
+            border-left: 4px solid #667eea;
+            transition: all 0.3s ease;
+        }
+        
+        .post-card:hover {
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+        
+        .post-card.oculto {
+            border-left-color: #F59E0B;
+            opacity: 0.7;
+        }
+        
+        .post-card.eliminado {
+            border-left-color: #EF4444;
+            opacity: 0.5;
+        }
+        
+        .post-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 15px;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+        
+        .post-info {
+            flex: 1;
+        }
+        
+        .post-info strong {
+            color: #374151;
+            font-size: 1.2rem;
+            display: block;
+            margin-bottom: 5px;
+        }
+        
+        .post-meta {
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+            color: #6B7280;
+            font-size: 0.9rem;
+        }
+        
+        .post-meta span {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+        
+        .post-hash {
+            font-family: 'Courier New', monospace;
+            background: #E5E7EB;
+            padding: 5px 10px;
+            border-radius: 5px;
+            font-size: 0.85rem;
+            word-break: break-all;
+            cursor: copy;
+        }
+        
+        .post-actions {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+        
+        .post-content {
+            color: #4B5563;
+            line-height: 1.8;
+            margin-bottom: 15px;
+            white-space: pre-wrap;
+            background: white;
+            padding: 15px;
+            border-radius: 10px;
+        }
+        
+        .post-estado {
+            display: inline-block;
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            margin-left: 10px;
+        }
+        
+        .estado-publicado {
+            background: #D1FAE5;
+            color: #065F46;
+        }
+        
+        .estado-oculto {
+            background: #FEF3C7;
+            color: #92400E;
+        }
+        
+        .estado-eliminado {
+            background: #FEE2E2;
+            color: #991B1B;
+        }
+        
+        .estado-moderado {
+            background: #DBEAFE;
+            color: #1E40AF;
+        }
+        
+        .comentarios-section {
+            margin-top: 20px;
+            padding-top: 20px;
+            border-top: 1px solid #E5E7EB;
+        }
+        
+        .comentarios-section h4 {
+            color: #374151;
+            margin-bottom: 15px;
+        }
+        
+        .comentario-item {
+            background: white;
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 10px;
+            border-left: 3px solid #DBEAFE;
+        }
+        
+        .comentario-header {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 10px;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+        
+        .comentario-hash {
+            font-family: 'Courier New', monospace;
+            background: #E5E7EB;
+            padding: 3px 8px;
+            border-radius: 5px;
+            font-size: 0.8rem;
+            cursor: copy;
+        }
+        
+        .comentario-actions {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+        
+        .comentario-content {
+            color: #4B5563;
+            line-height: 1.6;
+            white-space: pre-wrap;
+        }
+        
+        .baneados-list {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+        
+        .baneado-card {
+            background: #FEE2E2;
+            border-radius: 15px;
+            padding: 20px;
+            border-left: 4px solid #EF4444;
+        }
+        
+        .baneado-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 15px;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+        
+        .baneado-info strong {
+            color: #374151;
+            font-size: 1.1rem;
+            display: block;
+            margin-bottom: 5px;
+        }
+        
+        .baneado-meta {
+            color: #6B7280;
+            font-size: 0.9rem;
+        }
+        
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+        
+        .stat-card {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 25px;
+            border-radius: 15px;
+            text-align: center;
+        }
+        
+        .stat-card h3 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+        }
+        
+        .stat-card p {
+            font-size: 1rem;
+            opacity: 0.9;
+        }
+        
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.7);
+            z-index: 10000;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+        
+        .modal.active {
+            display: flex;
+        }
+        
+        .modal-content {
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            max-width: 600px;
+            width: 100%;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+        
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+        }
+        
+        .modal-header h3 {
+            color: #374151;
+            margin: 0;
+        }
+        
+        .cerrar-modal {
+            background: none;
+            border: none;
+            font-size: 28px;
+            cursor: pointer;
+            color: #6B7280;
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            color: #374151;
+            font-weight: 600;
+        }
+        
+        .form-group input,
+        .form-group textarea,
+        .form-group select {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #E5E7EB;
+            border-radius: 10px;
+            font-family: inherit;
+            font-size: 1rem;
+        }
+        
+        .form-group textarea {
+            min-height: 100px;
+            resize: vertical;
+        }
+        
+        .loading {
+            text-align: center;
+            padding: 60px 20px;
+            color: #6B7280;
+        }
+        
+        .empty {
+            text-align: center;
+            padding: 60px 20px;
+            color: #6B7280;
+        }
+        
+        .empty h3 {
+            color: #374151;
+            margin-bottom: 15px;
+        }
+        
+        .alert {
+            padding: 15px 20px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+        }
+        
+        .alert-success {
+            background: #D1FAE5;
+            color: #065F46;
+            border: 2px solid #10B981;
+        }
+        
+        .alert-error {
+            background: #FEE2E2;
+            color: #991B1B;
+            border: 2px solid #EF4444;
+        }
+        
+        @media (max-width: 768px) {
+            .container {
+                padding: 20px;
+            }
+            
+            .header h1 {
+                font-size: 2rem;
+            }
+            
+            .filters {
+                flex-direction: column;
+                align-items: stretch;
+            }
+            
+            .filter-group select,
+            .filter-group input {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🛡️ Panel de Moderación - Foro de Comunidades</h1>
+            <p>Panel de administración para CRISLA - Moderar contenido y banear usuarios</p>
+        </div>
+        
+        <div id="alert-container"></div>
+        
+        <!-- Estadísticas -->
+        <div class="stats-grid" id="stats-container">
+            <div class="stat-card">
+                <h3 id="stat-total-posts">-</h3>
+                <p>Posts Totales</p>
+            </div>
+            <div class="stat-card">
+                <h3 id="stat-publicados">-</h3>
+                <p>Publicados</p>
+            </div>
+            <div class="stat-card">
+                <h3 id="stat-ocultos">-</h3>
+                <p>Ocultos</p>
+            </div>
+            <div class="stat-card">
+                <h3 id="stat-baneados">-</h3>
+                <p>Usuarios Baneados</p>
+            </div>
+        </div>
+        
+        <!-- Tabs -->
+        <div class="tabs">
+            <button class="tab active" data-tab="posts">📝 Posts</button>
+            <button class="tab" data-tab="comentarios">💬 Comentarios</button>
+            <button class="tab" data-tab="validaciones">✅ Validaciones</button>
+            <button class="tab" data-tab="baneados">🚫 Usuarios Baneados</button>
+            <button class="tab" data-tab="acciones">📊 Acciones de Moderación</button>
+        </div>
+        
+        <!-- Filtros -->
+        <div class="filters">
+            <div class="filter-group">
+                <label>Comunidad:</label>
+                <select id="filter-comunidad">
+                    <option value="">Todas las comunidades</option>
+                </select>
+            </div>
+            <div class="filter-group">
+                <label>Estado:</label>
+                <select id="filter-estado">
+                    <option value="">Todos los estados</option>
+                    <option value="publicado">Publicado</option>
+                    <option value="oculto">Oculto</option>
+                    <option value="eliminado">Eliminado</option>
+                    <option value="moderado">Moderado</option>
+                </select>
+            </div>
+            <div class="filter-group">
+                <label>Buscar por Hash:</label>
+                <input type="text" id="filter-hash" placeholder="Pegar hash del usuario...">
+            </div>
+            <div class="filter-group">
+                <button class="btn btn-primary" onclick="cargarDatos()">
+                    <i class="fas fa-search"></i> Buscar
+                </button>
+            </div>
+        </div>
+        
+        <!-- Tab: Posts -->
+        <div class="tab-content active" id="tab-posts">
+            <div id="posts-container" class="posts-list">
+                <div class="loading">💜 Cargando posts...</div>
+            </div>
+        </div>
+        
+        <!-- Tab: Comentarios -->
+        <div class="tab-content" id="tab-comentarios">
+            <div id="comentarios-container" class="posts-list">
+                <div class="loading">💜 Cargando comentarios...</div>
+            </div>
+        </div>
+        
+        <!-- Tab: Validaciones -->
+        <div class="tab-content" id="tab-validaciones">
+            <div id="validaciones-container" class="posts-list">
+                <div class="loading">💜 Cargando solicitudes de verificación...</div>
+            </div>
+        </div>
+        
+        <!-- Tab: Usuarios Baneados -->
+        <div class="tab-content" id="tab-baneados">
+            <div style="margin-bottom: 20px;">
+                <button class="btn btn-danger" onclick="mostrarModalBanear()">
+                    <i class="fas fa-ban"></i> Banear Usuario
+                </button>
+            </div>
+            <div id="baneados-container" class="baneados-list">
+                <div class="loading">💜 Cargando usuarios baneados...</div>
+            </div>
+        </div>
+        
+        <!-- Tab: Acciones de Moderación -->
+        <div class="tab-content" id="tab-acciones">
+            <div id="acciones-container" class="posts-list">
+                <div class="loading">💜 Cargando acciones...</div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Modal: Moderar Post/Comentario -->
+    <div class="modal" id="modal-moderar">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 id="modal-moderar-titulo">Moderar Contenido</h3>
+                <button class="cerrar-modal" onclick="cerrarModal('modal-moderar')">&times;</button>
+            </div>
+            <form id="form-moderar">
+                <div class="form-group">
+                    <label>Acción:</label>
+                    <select id="moderar-accion" required>
+                        <option value="">Seleccionar acción...</option>
+                        <option value="ocultar">Ocultar</option>
+                        <option value="eliminar">Eliminar</option>
+                        <option value="restaurar">Restaurar (cambiar a publicado)</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Motivo: *</label>
+                    <textarea id="moderar-motivo" placeholder="Explicar por qué se modera este contenido..." required></textarea>
+                </div>
+                <input type="hidden" id="moderar-tipo" value=""> <!-- 'post' o 'comentario' -->
+                <input type="hidden" id="moderar-id" value=""> <!-- UUID -->
+                <div style="display: flex; gap: 10px; justify-content: flex-end;">
+                    <button type="button" class="btn btn-secondary" onclick="cerrarModal('modal-moderar')">Cancelar</button>
+                    <button type="submit" class="btn btn-danger">
+                        <i class="fas fa-check"></i> Confirmar
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+    
+    <!-- Modal: Banear Usuario -->
+    <div class="modal" id="modal-banear">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>🚫 Banear Usuario</h3>
+                <button class="cerrar-modal" onclick="cerrarModal('modal-banear')">&times;</button>
+            </div>
+            <form id="form-banear">
+                <div class="form-group">
+                    <label>Hash del Usuario: *</label>
+                    <input type="text" id="banear-hash" placeholder="Pegar el hash del usuario..." required>
+                    <small style="color: #6B7280; margin-top: 5px; display: block;">El hash es el código único que identifica al usuario (ej: a3f5b2c9...)</small>
+                </div>
+                <div class="form-group">
+                    <label>Comunidad:</label>
+                    <select id="banear-comunidad">
+                        <option value="">Todas las comunidades (ban global)</option>
+                    </select>
+                    <small style="color: #6B7280; margin-top: 5px; display: block;">Dejar en blanco para banear de TODAS las comunidades</small>
+                </div>
+                <div class="form-group">
+                    <label>Motivo: *</label>
+                    <textarea id="banear-motivo" placeholder="Explicar por qué se banea a este usuario..." required></textarea>
+                </div>
+                <div style="display: flex; gap: 10px; justify-content: flex-end;">
+                    <button type="button" class="btn btn-secondary" onclick="cerrarModal('modal-banear')">Cancelar</button>
+                    <button type="submit" class="btn btn-danger">
+                        <i class="fas fa-ban"></i> Banear Usuario
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+    
+    <!-- Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="../config-supabase-seguro.js"></script>
+    <script>
+        let supabase = null;
+        let comunidades = [];
+        let datosActuales = {
+            posts: [],
+            comentarios: [],
+            baneados: [],
+            acciones: []
+        };
+        
+        // Inicializar Supabase
+        async function init() {
+            try {
+                const config = window.SUPABASE_CONFIG || {};
+                if (config.url && config.anonKey && !config.anonKey.includes('REEMPLAZA')) {
+                    supabase = window.supabase.createClient(config.url, config.anonKey);
+                    console.log('✅ Supabase inicializado');
+                } else {
+                    mostrarAlerta('⚠️ Supabase no configurado. Configurá config-supabase-seguro.js', 'error');
+                }
+                
+                // Cargar comunidades
+                await cargarComunidades();
+                
+                // Cargar datos iniciales
+                await cargarDatos();
+                await cargarEstadisticas();
+                
+                // Configurar tabs
+                document.querySelectorAll('.tab').forEach(tab => {
+                    tab.addEventListener('click', () => {
+                        const tabId = tab.dataset.tab;
+                        cambiarTab(tabId);
+                    });
+                });
+                
+                // Configurar formularios
+                document.getElementById('form-moderar').addEventListener('submit', moderarContenido);
+                document.getElementById('form-banear').addEventListener('submit', banearUsuario);
+                
+            } catch (error) {
+                console.error('Error inicializando:', error);
+                mostrarAlerta('❌ Error al inicializar: ' + error.message, 'error');
+            }
+        }
+        
+        // Cargar lista de comunidades
+        async function cargarComunidades() {
+            if (!supabase) return;
+            
+            try {
+                const { data, error } = await supabase
+                    .from('comunidades')
+                    .select('*')
+                    .eq('activa', true)
+                    .order('nombre');
+                
+                if (error) throw error;
+                
+                comunidades = data || [];
+                
+                // Llenar selects
+                const selectComunidad = document.getElementById('filter-comunidad');
+                const selectBanear = document.getElementById('banear-comunidad');
+                
+                comunidades.forEach(c => {
+                    const option1 = document.createElement('option');
+                    option1.value = c.slug;
+                    option1.textContent = c.nombre;
+                    selectComunidad.appendChild(option1);
+                    
+                    const option2 = document.createElement('option');
+                    option2.value = c.slug;
+                    option2.textContent = c.nombre;
+                    selectBanear.appendChild(option2);
+                });
+            } catch (error) {
+                console.error('Error cargando comunidades:', error);
+            }
+        }
+        
+        // Cargar estadísticas
+        async function cargarEstadisticas() {
+            if (!supabase) return;
+            
+            try {
+                // Total posts
+                const { count: totalPosts } = await supabase
+                    .from('posts_comunidades')
+                    .select('*', { count: 'exact', head: true });
+                
+                // Posts publicados
+                const { count: publicados } = await supabase
+                    .from('posts_comunidades')
+                    .select('*', { count: 'exact', head: true })
+                    .eq('estado', 'publicado');
+                
+                // Posts ocultos
+                const { count: ocultos } = await supabase
+                    .from('posts_comunidades')
+                    .select('*', { count: 'exact', head: true })
+                    .eq('estado', 'oculto');
+                
+                // Usuarios baneados
+                const { count: baneados } = await supabase
+                    .from('usuarios_baneados_foro')
+                    .select('*', { count: 'exact', head: true })
+                    .eq('estado', 'activo');
+                
+                document.getElementById('stat-total-posts').textContent = totalPosts || 0;
+                document.getElementById('stat-publicados').textContent = publicados || 0;
+                document.getElementById('stat-ocultos').textContent = ocultos || 0;
+                document.getElementById('stat-baneados').textContent = baneados || 0;
+            } catch (error) {
+                console.error('Error cargando estadísticas:', error);
+            }
+        }
+        
+        // Cargar datos según filtros
+        async function cargarDatos() {
+            const tabActiva = document.querySelector('.tab.active')?.dataset.tab || 'posts';
+            
+            if (tabActiva === 'posts') await cargarPosts();
+            else if (tabActiva === 'comentarios') await cargarComentarios();
+            else if (tabActiva === 'validaciones') await cargarValidaciones();
+            else if (tabActiva === 'baneados') await cargarBaneados();
+            else if (tabActiva === 'acciones') await cargarAcciones();
+        }
+        
+        // Cargar posts
+        async function cargarPosts() {
+            if (!supabase) {
+                document.getElementById('posts-container').innerHTML = '<div class="empty"><h3>❌ Supabase no configurado</h3></div>';
+                return;
+            }
+            
+            const container = document.getElementById('posts-container');
+            container.innerHTML = '<div class="loading">💜 Cargando posts...</div>';
+            
+            try {
+                const comunidad = document.getElementById('filter-comunidad').value;
+                const estado = document.getElementById('filter-estado').value;
+                const hash = document.getElementById('filter-hash').value.trim();
+                
+                let query = supabase
+                    .from('posts_comunidades')
+                    .select('*')
+                    .order('created_at', { ascending: false })
+                    .limit(100);
+                
+                if (comunidad) query = query.eq('comunidad_slug', comunidad);
+                if (estado) query = query.eq('estado', estado);
+                else query = query.neq('estado', 'eliminado'); // Por defecto no mostrar eliminados
+                if (hash) query = query.eq('autor_hash', hash);
+                
+                const { data, error } = await query;
+                
+                if (error) throw error;
+                
+                datosActuales.posts = data || [];
+                renderizarPosts(datosActuales.posts);
+            } catch (error) {
+                console.error('Error cargando posts:', error);
+                container.innerHTML = `<div class="empty"><h3>❌ Error</h3><p>${error.message}</p></div>`;
+            }
+        }
+        
+        // Renderizar posts
+        function renderizarPosts(posts) {
+            const container = document.getElementById('posts-container');
+            
+            if (posts.length === 0) {
+                container.innerHTML = '<div class="empty"><h3>💜 No hay posts</h3><p>No se encontraron posts con los filtros seleccionados.</p></div>';
+                return;
+            }
+            
+            container.innerHTML = posts.map(post => {
+                const comunidad = comunidades.find(c => c.slug === post.comunidad_slug);
+                const estadoClass = `estado-${post.estado}`;
+                
+                return `
+                    <div class="post-card ${post.estado}">
+                        <div class="post-header">
+                            <div class="post-info">
+                                <strong>
+                                    ${post.titulo || '(Sin título)'}
+                                    <span class="post-estado ${estadoClass}">${post.estado}</span>
+                                </strong>
+                                <div class="post-meta">
+                                    <span><i class="fas fa-user"></i> ${post.autor_alias || 'Anónimo'}</span>
+                                    <span><i class="fas fa-calendar"></i> ${formatearFecha(post.created_at)}</span>
+                                    <span><i class="fas fa-users"></i> ${comunidad?.nombre || post.comunidad_slug}</span>
+                                    <span><i class="fas fa-comments"></i> ${post.num_comentarios || 0} comentarios</span>
+                                </div>
+                                <div style="margin-top: 10px;">
+                                    <strong>Hash del usuario:</strong>
+                                    <span class="post-hash" onclick="copiarAlPortapapeles('${post.autor_hash}')" title="Click para copiar">
+                                        ${post.autor_hash}
+                                    </span>
+                                </div>
+                                ${post.motivo_moderacion ? `<div style="margin-top: 10px; color: #F59E0B;"><strong>Motivo moderación:</strong> ${post.motivo_moderacion}</div>` : ''}
+                            </div>
+                            <div class="post-actions">
+                                ${post.estado !== 'oculto' ? `<button class="btn btn-warning" onclick="abrirModalModerar('post', '${post.id}', 'ocultar')"><i class="fas fa-eye-slash"></i> Ocultar</button>` : ''}
+                                ${post.estado !== 'eliminado' ? `<button class="btn btn-danger" onclick="abrirModalModerar('post', '${post.id}', 'eliminar')"><i class="fas fa-trash"></i> Eliminar</button>` : ''}
+                                ${post.estado !== 'publicado' ? `<button class="btn btn-success" onclick="abrirModalModerar('post', '${post.id}', 'restaurar')"><i class="fas fa-undo"></i> Restaurar</button>` : ''}
+                                <button class="btn btn-danger" onclick="banearPorHash('${post.autor_hash}')"><i class="fas fa-ban"></i> Banear Usuario</button>
+                            </div>
+                        </div>
+                        <div class="post-content">${escapeHtml(post.contenido)}</div>
+                    </div>
+                `;
+            }).join('');
+        }
+        
+        // Cargar comentarios
+        async function cargarComentarios() {
+            if (!supabase) {
+                document.getElementById('comentarios-container').innerHTML = '<div class="empty"><h3>❌ Supabase no configurado</h3></div>';
+                return;
+            }
+            
+            const container = document.getElementById('comentarios-container');
+            container.innerHTML = '<div class="loading">💜 Cargando comentarios...</div>';
+            
+            try {
+                const hash = document.getElementById('filter-hash').value.trim();
+                
+                let query = supabase
+                    .from('comentarios_comunidades')
+                    .select('*, posts_comunidades!inner(comunidad_slug, titulo)')
+                    .order('created_at', { ascending: false })
+                    .limit(100);
+                
+                if (hash) query = query.eq('autor_hash', hash);
+                
+                const { data, error } = await query;
+                
+                if (error) throw error;
+                
+                datosActuales.comentarios = data || [];
+                renderizarComentarios(datosActuales.comentarios);
+            } catch (error) {
+                console.error('Error cargando comentarios:', error);
+                container.innerHTML = `<div class="empty"><h3>❌ Error</h3><p>${error.message}</p></div>`;
+            }
+        }
+        
+        // Renderizar comentarios
+        function renderizarComentarios(comentarios) {
+            const container = document.getElementById('comentarios-container');
+            
+            if (comentarios.length === 0) {
+                container.innerHTML = '<div class="empty"><h3>💜 No hay comentarios</h3><p>No se encontraron comentarios con los filtros seleccionados.</p></div>';
+                return;
+            }
+            
+            container.innerHTML = comentarios.map(comentario => {
+                const post = comentario.posts_comunidades;
+                const estadoClass = `estado-${comentario.estado}`;
+                
+                return `
+                    <div class="comentario-item">
+                        <div class="comentario-header">
+                            <div>
+                                <strong>${comentario.autor_alias || 'Anónimo'}</strong>
+                                <span class="post-estado ${estadoClass}" style="margin-left: 10px;">${comentario.estado}</span>
+                                <div style="margin-top: 5px; font-size: 0.9rem; color: #6B7280;">
+                                    <i class="fas fa-calendar"></i> ${formatearFecha(comentario.created_at)} | 
+                                    <i class="fas fa-file-alt"></i> Post: ${post?.titulo || '(Sin título)'} (${post?.comunidad_slug || 'N/A'})
+                                </div>
+                                <div style="margin-top: 5px;">
+                                    <strong>Hash:</strong>
+                                    <span class="comentario-hash" onclick="copiarAlPortapapeles('${comentario.autor_hash}')" title="Click para copiar">
+                                        ${comentario.autor_hash}
+                                    </span>
+                                </div>
+                            </div>
+                            <div class="comentario-actions">
+                                ${comentario.estado !== 'oculto' ? `<button class="btn btn-warning" style="padding: 8px 15px; font-size: 0.9rem;" onclick="abrirModalModerar('comentario', '${comentario.id}', 'ocultar')"><i class="fas fa-eye-slash"></i> Ocultar</button>` : ''}
+                                ${comentario.estado !== 'eliminado' ? `<button class="btn btn-danger" style="padding: 8px 15px; font-size: 0.9rem;" onclick="abrirModalModerar('comentario', '${comentario.id}', 'eliminar')"><i class="fas fa-trash"></i> Eliminar</button>` : ''}
+                                ${comentario.estado !== 'publicado' ? `<button class="btn btn-success" style="padding: 8px 15px; font-size: 0.9rem;" onclick="abrirModalModerar('comentario', '${comentario.id}', 'restaurar')"><i class="fas fa-undo"></i> Restaurar</button>` : ''}
+                                <button class="btn btn-danger" style="padding: 8px 15px; font-size: 0.9rem;" onclick="banearPorHash('${comentario.autor_hash}')"><i class="fas fa-ban"></i> Banear</button>
+                            </div>
+                        </div>
+                        <div class="comentario-content">${escapeHtml(comentario.contenido)}</div>
+                        ${comentario.motivo_moderacion ? `<div style="margin-top: 10px; color: #F59E0B; font-size: 0.9rem;"><strong>Motivo:</strong> ${comentario.motivo_moderacion}</div>` : ''}
+                    </div>
+                `;
+            }).join('');
+        }
+        
+        // Cargar solicitudes de validación
+        async function cargarValidaciones() {
+            if (!supabase) {
+                document.getElementById('validaciones-container').innerHTML = '<div class="empty"><h3>❌ Supabase no configurado</h3></div>';
+                return;
+            }
+            
+            const container = document.getElementById('validaciones-container');
+            container.innerHTML = '<div class="loading">💜 Cargando solicitudes...</div>';
+            
+            try {
+                const comunidad = document.getElementById('filter-comunidad').value;
+                const estado = document.getElementById('filter-estado').value || 'pendiente';
+                
+                let query = supabase
+                    .from('solicitudes_verificacion')
+                    .select('*')
+                    .order('created_at', { ascending: false })
+                    .limit(100);
+                
+                if (comunidad) query = query.eq('comunidad_slug', comunidad);
+                if (estado && estado !== 'Todos los estados') query = query.eq('estado', estado);
+                
+                const { data, error } = await query;
+                
+                if (error) throw error;
+                
+                renderizarValidaciones(data || []);
+            } catch (error) {
+                console.error('Error cargando validaciones:', error);
+                container.innerHTML = `<div class="empty"><h3>❌ Error</h3><p>${error.message}</p></div>`;
+            }
+        }
+        
+        // Renderizar solicitudes de validación
+        function renderizarValidaciones(solicitudes) {
+            const container = document.getElementById('validaciones-container');
+            
+            if (solicitudes.length === 0) {
+                container.innerHTML = '<div class="empty"><h3>💜 No hay solicitudes</h3><p>No hay solicitudes de verificación pendientes.</p></div>';
+                return;
+            }
+            
+            container.innerHTML = solicitudes.map(sol => {
+                const comunidad = comunidades.find(c => c.slug === sol.comunidad_slug);
+                const estadoClass = `estado-${sol.estado}`;
+                
+                return `
+                    <div class="post-card ${sol.estado}">
+                        <div class="post-header">
+                            <div class="post-info">
+                                <strong>
+                                    Solicitud de Verificación
+                                    <span class="post-estado ${estadoClass}">${sol.estado}</span>
+                                </strong>
+                                <div class="post-meta">
+                                    <span><i class="fas fa-user"></i> ${sol.autor_alias || 'Anónimo'}</span>
+                                    <span><i class="fas fa-calendar"></i> ${formatearFecha(sol.created_at)}</span>
+                                    <span><i class="fas fa-users"></i> ${comunidad?.nombre || sol.comunidad_slug}</span>
+                                    <span><i class="fas fa-key"></i> Método: ${sol.metodo_verificacion.replace('_', ' ')}</span>
+                                </div>
+                                <div style="margin-top: 10px;">
+                                    <strong>Hash del usuario:</strong>
+                                    <span class="post-hash" onclick="copiarAlPortapapeles('${sol.autor_hash}')" title="Click para copiar">
+                                        ${sol.autor_hash}
+                                    </span>
+                                </div>
+                                ${sol.motivo_rechazo ? `<div style="margin-top: 10px; color: #EF4444;"><strong>Motivo rechazo:</strong> ${sol.motivo_rechazo}</div>` : ''}
+                            </div>
+                            <div class="post-actions">
+                                ${sol.estado === 'pendiente' || sol.estado === 'en_revision' ? `
+                                    <button class="btn btn-success" onclick="aprobarValidacion('${sol.id}', '${sol.autor_hash}', '${sol.comunidad_slug}', '${sol.metodo_verificacion}')">
+                                        <i class="fas fa-check"></i> Aprobar
+                                    </button>
+                                    <button class="btn btn-danger" onclick="rechazarValidacion('${sol.id}')">
+                                        <i class="fas fa-times"></i> Rechazar
+                                    </button>
+                                ` : ''}
+                            </div>
+                        </div>
+                        <div class="post-content">
+                            <strong>Descripción de la evidencia:</strong><br>
+                            ${escapeHtml(sol.descripcion_evidencia || 'No proporcionada')}
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+        
+        // Aprobar validación
+        async function aprobarValidacion(solicitudId, autorHash, comunidadSlug, metodoUsado) {
+            if (!confirm(`¿Aprobar la verificación de este usuario?\n\nHash: ${autorHash.substring(0, 20)}...\nComunidad: ${comunidades.find(c => c.slug === comunidadSlug)?.nombre || comunidadSlug}`)) return;
+            
+            if (!supabase) {
+                mostrarAlerta('❌ Supabase no configurado', 'error');
+                return;
+            }
+            
+            try {
+                // Actualizar estado de solicitud
+                const { error: updateError } = await supabase
+                    .from('solicitudes_verificacion')
+                    .update({
+                        estado: 'verificado',
+                        verificador_email: 'CRISLA',
+                        fecha_verificacion: new Date().toISOString()
+                    })
+                    .eq('id', solicitudId);
+                
+                if (updateError) throw updateError;
+                
+                // Crear registro en usuarios_verificados_comunidades
+                const { error: insertError } = await supabase
+                    .from('usuarios_verificados_comunidades')
+                    .upsert([{
+                        comunidad_slug: comunidadSlug,
+                        autor_hash: autorHash,
+                        nivel_verificacion: 'basico',
+                        metodo_usado: metodoUsado,
+                        verificador_email: 'CRISLA',
+                        activo: true
+                    }], {
+                        onConflict: 'comunidad_slug,autor_hash'
+                    });
+                
+                if (insertError) throw insertError;
+                
+                // Marcar datos como eliminados en la solicitud
+                await supabase
+                    .from('solicitudes_verificacion')
+                    .update({ datos_eliminados: true })
+                    .eq('id', solicitudId);
+                
+                mostrarAlerta('✅ Usuario verificado exitosamente. El badge aparecerá en sus posts.', 'success');
+                
+                // Recargar
+                await cargarValidaciones();
+            } catch (error) {
+                console.error('Error aprobando validación:', error);
+                mostrarAlerta('❌ Error al aprobar: ' + error.message, 'error');
+            }
+        }
+        
+        // Rechazar validación
+        async function rechazarValidacion(solicitudId) {
+            const motivo = prompt('Motivo del rechazo:');
+            if (!motivo || motivo.trim() === '') {
+                alert('⚠️ Debes proporcionar un motivo');
+                return;
+            }
+            
+            if (!supabase) {
+                mostrarAlerta('❌ Supabase no configurado', 'error');
+                return;
+            }
+            
+            try {
+                const { error } = await supabase
+                    .from('solicitudes_verificacion')
+                    .update({
+                        estado: 'rechazado',
+                        motivo_rechazo: motivo.trim(),
+                        verificador_email: 'CRISLA'
+                    })
+                    .eq('id', solicitudId);
+                
+                if (error) throw error;
+                
+                mostrarAlerta('✅ Solicitud rechazada', 'success');
+                
+                // Recargar
+                await cargarValidaciones();
+            } catch (error) {
+                console.error('Error rechazando validación:', error);
+                mostrarAlerta('❌ Error al rechazar: ' + error.message, 'error');
+            }
+        }
+        
+        // Cargar usuarios baneados
+        async function cargarBaneados() {
+            if (!supabase) {
+                document.getElementById('baneados-container').innerHTML = '<div class="empty"><h3>❌ Supabase no configurado</h3></div>';
+                return;
+            }
+            
+            const container = document.getElementById('baneados-container');
+            container.innerHTML = '<div class="loading">💜 Cargando usuarios baneados...</div>';
+            
+            try {
+                const { data, error } = await supabase
+                    .from('usuarios_baneados_foro')
+                    .select('*')
+                    .eq('estado', 'activo')
+                    .order('fecha_baneo', { ascending: false });
+                
+                if (error) throw error;
+                
+                datosActuales.baneados = data || [];
+                renderizarBaneados(datosActuales.baneados);
+            } catch (error) {
+                console.error('Error cargando baneados:', error);
+                container.innerHTML = `<div class="empty"><h3>❌ Error</h3><p>${error.message}</p></div>`;
+            }
+        }
+        
+        // Renderizar usuarios baneados
+        function renderizarBaneados(baneados) {
+            const container = document.getElementById('baneados-container');
+            
+            if (baneados.length === 0) {
+                container.innerHTML = '<div class="empty"><h3>💜 No hay usuarios baneados</h3><p>Ningún usuario ha sido baneado aún.</p></div>';
+                return;
+            }
+            
+            container.innerHTML = baneados.map(baneado => {
+                const comunidad = baneado.comunidad_slug 
+                    ? comunidades.find(c => c.slug === baneado.comunidad_slug)?.nombre || baneado.comunidad_slug
+                    : 'TODAS las comunidades';
+                
+                return `
+                    <div class="baneado-card">
+                        <div class="baneado-header">
+                            <div class="baneado-info">
+                                <strong>Hash del Usuario:</strong>
+                                <span class="post-hash" onclick="copiarAlPortapapeles('${baneado.autor_hash}')" title="Click para copiar" style="margin-top: 5px; display: inline-block;">
+                                    ${baneado.autor_hash}
+                                </span>
+                                <div class="baneado-meta" style="margin-top: 10px;">
+                                    <div><strong>Comunidad:</strong> ${comunidad}</div>
+                                    <div><strong>Motivo:</strong> ${baneado.motivo}</div>
+                                    <div><strong>Moderador:</strong> ${baneado.moderador || 'CRISLA'}</div>
+                                    <div><strong>Fecha:</strong> ${formatearFecha(baneado.fecha_baneo)}</div>
+                                    ${baneado.fecha_desbaneo ? `<div><strong>Desbaneo:</strong> ${formatearFecha(baneado.fecha_desbaneo)}</div>` : ''}
+                                </div>
+                            </div>
+                            <div>
+                                <button class="btn btn-success" onclick="desbanearUsuario('${baneado.autor_hash}')">
+                                    <i class="fas fa-unlock"></i> Desbanear
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+        
+        // Cargar acciones de moderación
+        async function cargarAcciones() {
+            if (!supabase) {
+                document.getElementById('acciones-container').innerHTML = '<div class="empty"><h3>❌ Supabase no configurado</h3></div>';
+                return;
+            }
+            
+            const container = document.getElementById('acciones-container');
+            container.innerHTML = '<div class="loading">💜 Cargando acciones...</div>';
+            
+            try {
+                const { data, error } = await supabase
+                    .from('acciones_moderacion')
+                    .select('*')
+                    .order('fecha_accion', { ascending: false })
+                    .limit(100);
+                
+                if (error) throw error;
+                
+                datosActuales.acciones = data || [];
+                renderizarAcciones(datosActuales.acciones);
+            } catch (error) {
+                console.error('Error cargando acciones:', error);
+                container.innerHTML = `<div class="empty"><h3>❌ Error</h3><p>${error.message}</p></div>`;
+            }
+        }
+        
+        // Renderizar acciones
+        function renderizarAcciones(acciones) {
+            const container = document.getElementById('acciones-container');
+            
+            if (acciones.length === 0) {
+                container.innerHTML = '<div class="empty"><h3>💜 No hay acciones registradas</h3><p>Aún no se han realizado acciones de moderación.</p></div>';
+                return;
+            }
+            
+            container.innerHTML = acciones.map(accion => {
+                return `
+                    <div class="post-card">
+                        <div class="post-header">
+                            <div class="post-info">
+                                <strong>${accion.tipo_accion.replace('_', ' ').toUpperCase()}</strong>
+                                <div class="post-meta">
+                                    <span><i class="fas fa-user"></i> ${accion.moderador_email}</span>
+                                    <span><i class="fas fa-calendar"></i> ${formatearFecha(accion.fecha_accion)}</span>
+                                    <span><i class="fas fa-users"></i> ${accion.comunidad_slug || 'Todas'}</span>
+                                    ${accion.autor_hash ? `<span><i class="fas fa-fingerprint"></i> Hash: ${accion.autor_hash.substring(0, 20)}...</span>` : ''}
+                                </div>
+                                ${accion.post_id ? `<div style="margin-top: 5px;"><strong>Post ID:</strong> ${accion.post_id}</div>` : ''}
+                                ${accion.comentario_id ? `<div style="margin-top: 5px;"><strong>Comentario ID:</strong> ${accion.comentario_id}</div>` : ''}
+                            </div>
+                        </div>
+                        <div class="post-content">
+                            <strong>Motivo:</strong><br>
+                            ${escapeHtml(accion.motivo)}
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+        
+        // Moderar contenido (post o comentario)
+        async function moderarContenido(e) {
+            e.preventDefault();
+            
+            const tipo = document.getElementById('moderar-tipo').value;
+            const id = document.getElementById('moderar-id').value;
+            const accion = document.getElementById('moderar-accion').value;
+            const motivo = document.getElementById('moderar-motivo').value.trim();
+            
+            if (!supabase || !tipo || !id || !accion || !motivo) {
+                mostrarAlerta('⚠️ Por favor completá todos los campos', 'error');
+                return;
+            }
+            
+            try {
+                let nuevoEstado = '';
+                if (accion === 'ocultar') nuevoEstado = 'oculto';
+                else if (accion === 'eliminar') nuevoEstado = 'eliminado';
+                else if (accion === 'restaurar') nuevoEstado = 'publicado';
+                
+                const tabla = tipo === 'post' ? 'posts_comunidades' : 'comentarios_comunidades';
+                
+                // Actualizar estado
+                const { error: updateError } = await supabase
+                    .from(tabla)
+                    .update({
+                        estado: nuevoEstado,
+                        motivo_moderacion: motivo
+                    })
+                    .eq('id', id);
+                
+                if (updateError) throw updateError;
+                
+                // Registrar acción de moderación
+                const { data: contenidoData } = await supabase
+                    .from(tabla)
+                    .select('autor_hash, comunidad_slug')
+                    .eq('id', id)
+                    .single();
+                
+                const tipoAccion = tipo === 'post' 
+                    ? (accion === 'restaurar' ? 'restaurar_post' : accion === 'ocultar' ? 'ocultar_post' : 'eliminar_post')
+                    : (accion === 'restaurar' ? 'restaurar_comentario' : accion === 'ocultar' ? 'ocultar_comentario' : 'eliminar_comentario');
+                
+                await supabase
+                    .from('acciones_moderacion')
+                    .insert([{
+                        moderador_email: 'CRISLA',
+                        tipo_accion: tipoAccion,
+                        [tipo === 'post' ? 'post_id' : 'comentario_id']: id,
+                        autor_hash: contenidoData?.autor_hash,
+                        motivo: motivo,
+                        comunidad_slug: contenidoData?.comunidad_slug
+                    }]);
+                
+                mostrarAlerta(`✅ ${tipo === 'post' ? 'Post' : 'Comentario'} ${accion === 'restaurar' ? 'restaurado' : accion === 'ocultar' ? 'oculto' : 'eliminado'} exitosamente`, 'success');
+                cerrarModal('modal-moderar');
+                
+                // Recargar datos
+                await cargarDatos();
+                await cargarEstadisticas();
+            } catch (error) {
+                console.error('Error moderando:', error);
+                mostrarAlerta('❌ Error al moderar: ' + error.message, 'error');
+            }
+        }
+        
+        // Banear usuario
+        async function banearUsuario(e) {
+            e.preventDefault();
+            
+            const hash = document.getElementById('banear-hash').value.trim();
+            const comunidad = document.getElementById('banear-comunidad').value || null;
+            const motivo = document.getElementById('banear-motivo').value.trim();
+            
+            if (!supabase || !hash || !motivo) {
+                mostrarAlerta('⚠️ Por favor completá todos los campos obligatorios', 'error');
+                return;
+            }
+            
+            try {
+                // Verificar si ya está baneado
+                const { data: existente } = await supabase
+                    .from('usuarios_baneados_foro')
+                    .select('*')
+                    .eq('autor_hash', hash)
+                    .eq('estado', 'activo')
+                    .single();
+                
+                if (existente) {
+                    mostrarAlerta('⚠️ Este usuario ya está baneado', 'error');
+                    return;
+                }
+                
+                // Banear
+                const { error: banError } = await supabase
+                    .from('usuarios_baneados_foro')
+                    .insert([{
+                        autor_hash: hash,
+                        comunidad_slug: comunidad,
+                        motivo: motivo,
+                        moderador: 'CRISLA',
+                        estado: 'activo'
+                    }]);
+                
+                if (banError) throw banError;
+                
+                // Registrar acción
+                await supabase
+                    .from('acciones_moderacion')
+                    .insert([{
+                        moderador_email: 'CRISLA',
+                        tipo_accion: 'banear_usuario',
+                        autor_hash: hash,
+                        motivo: motivo,
+                        comunidad_slug: comunidad
+                    }]);
+                
+                mostrarAlerta(`✅ Usuario baneado exitosamente${comunidad ? ` de ${comunidades.find(c => c.slug === comunidad)?.nombre}` : ' de todas las comunidades'}`, 'success');
+                cerrarModal('modal-banear');
+                
+                // Limpiar formulario
+                document.getElementById('form-banear').reset();
+                
+                // Recargar datos
+                await cargarBaneados();
+                await cargarEstadisticas();
+            } catch (error) {
+                console.error('Error baneando:', error);
+                mostrarAlerta('❌ Error al banear: ' + error.message, 'error');
+            }
+        }
+        
+        // Desbanear usuario
+        async function desbanearUsuario(hash) {
+            if (!confirm(`¿Estás segura de desbanear a este usuario?\n\nHash: ${hash}`)) return;
+            
+            if (!supabase) {
+                mostrarAlerta('❌ Supabase no configurado', 'error');
+                return;
+            }
+            
+            try {
+                const { error } = await supabase
+                    .from('usuarios_baneados_foro')
+                    .update({
+                        estado: 'levantado',
+                        fecha_desbaneo: new Date().toISOString()
+                    })
+                    .eq('autor_hash', hash)
+                    .eq('estado', 'activo');
+                
+                if (error) throw error;
+                
+                // Registrar acción
+                await supabase
+                    .from('acciones_moderacion')
+                    .insert([{
+                        moderador_email: 'CRISLA',
+                        tipo_accion: 'desbanear_usuario',
+                        autor_hash: hash,
+                        motivo: 'Ban levantado manualmente',
+                        comunidad_slug: null
+                    }]);
+                
+                mostrarAlerta('✅ Usuario desbaneado exitosamente', 'success');
+                
+                // Recargar datos
+                await cargarBaneados();
+                await cargarEstadisticas();
+            } catch (error) {
+                console.error('Error desbaneando:', error);
+                mostrarAlerta('❌ Error al desbanear: ' + error.message, 'error');
+            }
+        }
+        
+        // Abrir modal de moderar
+        function abrirModalModerar(tipo, id, accion) {
+            document.getElementById('moderar-tipo').value = tipo;
+            document.getElementById('moderar-id').value = id;
+            document.getElementById('moderar-accion').value = accion;
+            document.getElementById('moderar-motivo').value = '';
+            
+            const titulo = accion === 'ocultar' ? 'Ocultar' : accion === 'eliminar' ? 'Eliminar' : 'Restaurar';
+            document.getElementById('modal-moderar-titulo').textContent = `${titulo} ${tipo === 'post' ? 'Post' : 'Comentario'}`;
+            
+            document.getElementById('modal-moderar').classList.add('active');
+        }
+        
+        // Mostrar modal banear (con hash prellenado)
+        function banearPorHash(hash) {
+            document.getElementById('banear-hash').value = hash;
+            mostrarModalBanear();
+        }
+        
+        function mostrarModalBanear() {
+            document.getElementById('modal-banear').classList.add('active');
+        }
+        
+        // Cerrar modal
+        function cerrarModal(modalId) {
+            document.getElementById(modalId).classList.remove('active');
+        }
+        
+        // Cambiar tab
+        function cambiarTab(tabId) {
+            // Actualizar tabs
+            document.querySelectorAll('.tab').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            document.querySelector(`[data-tab="${tabId}"]`).classList.add('active');
+            
+            // Actualizar contenido
+            document.querySelectorAll('.tab-content').forEach(content => {
+                content.classList.remove('active');
+            });
+            document.getElementById(`tab-${tabId}`).classList.add('active');
+            
+            // Cargar datos del tab
+            cargarDatos();
+        }
+        
+        // Utilidades
+        function formatearFecha(fecha) {
+            if (!fecha) return 'N/A';
+            const d = new Date(fecha);
+            return d.toLocaleString('es-AR');
+        }
+        
+        function escapeHtml(text) {
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+        
+        function copiarAlPortapapeles(texto) {
+            navigator.clipboard.writeText(texto).then(() => {
+                mostrarAlerta('✅ Hash copiado al portapapeles', 'success');
+            }).catch(() => {
+                mostrarAlerta('❌ Error al copiar', 'error');
+            });
+        }
+        
+        function mostrarAlerta(mensaje, tipo) {
+            const container = document.getElementById('alert-container');
+            const alert = document.createElement('div');
+            alert.className = `alert alert-${tipo}`;
+            alert.textContent = mensaje;
+            container.appendChild(alert);
+            
+            setTimeout(() => {
+                alert.remove();
+            }, 5000);
+        }
+        
+        // Inicializar al cargar
+        document.addEventListener('DOMContentLoaded', init);
+    </script>
+</body>
+</html>
+

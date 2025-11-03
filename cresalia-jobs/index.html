@@ -1,0 +1,392 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cresalia Jobs - Marketplace Ético de Empleo</title>
+    <link rel="icon" type="image/x-icon" href="../../favicon.ico">
+    <link rel="icon" type="image/png" href="../../assets/logo/logo-cresalia.png">
+    <link rel="apple-touch-icon" href="../../assets/logo/logo-cresalia.png">
+    
+    <!-- PWA Manifest -->
+    <link rel="manifest" href="../comunidades/manifest-comunidades.json">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    <meta name="apple-mobile-web-app-title" content="Cresalia Jobs">
+    <meta name="theme-color" content="#F59E0B">
+    
+    <!-- Protección Anti-DevTools -->
+    <script src="../core/proteccion-devtools-avanzada.js?v=2.0"></script>
+    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #F59E0B 0%, #EAB308 50%, #FCD34D 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+        
+        .container {
+            background: white;
+            border-radius: 24px;
+            padding: 60px 40px;
+            max-width: 700px;
+            text-align: center;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+        }
+        
+        .icon {
+            font-size: 80px;
+            margin-bottom: 20px;
+        }
+        
+        h1 {
+            color: #374151;
+            margin-bottom: 10px;
+            font-size: 2.5rem;
+        }
+        
+        .subtitle {
+            background: linear-gradient(135deg, #F59E0B, #EAB308);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            font-weight: 700;
+            font-size: 1.4rem;
+            margin-bottom: 30px;
+        }
+        
+        p {
+            color: #6B7280;
+            font-size: 1.1rem;
+            line-height: 1.8;
+            margin-bottom: 25px;
+        }
+        
+        .ethical-box {
+            background: linear-gradient(135deg, rgba(245, 158, 11, 0.1), rgba(234, 179, 8, 0.1));
+            padding: 30px;
+            border-radius: 15px;
+            margin: 30px 0;
+            border-left: 5px solid #F59E0B;
+        }
+        
+        .ethical-box h3 {
+            color: #B45309;
+            margin-bottom: 15px;
+            font-size: 1.5rem;
+        }
+        
+        .ethical-box p {
+            margin-bottom: 0;
+            color: #374151;
+            font-weight: 500;
+        }
+        
+        .important-message {
+            background: linear-gradient(135deg, #F59E0B, #EAB308);
+            color: white;
+            padding: 25px;
+            border-radius: 15px;
+            margin: 30px 0;
+            font-weight: 500;
+            line-height: 1.8;
+        }
+        
+        .important-message strong {
+            font-size: 1.2em;
+            display: block;
+            margin-bottom: 10px;
+        }
+        
+        .btn {
+            display: inline-block;
+            background: linear-gradient(135deg, #F59E0B, #EAB308);
+            color: white;
+            padding: 15px 40px;
+            border-radius: 12px;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 1.1rem;
+            transition: all 0.3s ease;
+            margin: 5px;
+        }
+        
+        .btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 30px rgba(245, 158, 11, 0.4);
+        }
+        
+        .btn-home {
+            background: linear-gradient(135deg, #EC4899, #F9A8D4);
+        }
+        
+        .btn-home:hover {
+            box-shadow: 0 10px 30px rgba(236, 72, 153, 0.4);
+        }
+        
+        .features {
+            margin-top: 40px;
+            padding-top: 40px;
+            border-top: 2px solid #E5E7EB;
+        }
+        
+        .feature {
+            margin-bottom: 20px;
+            color: #374151;
+            font-size: 1rem;
+            text-align: left;
+            padding-left: 20px;
+        }
+        
+        .feature i {
+            color: #F59E0B;
+            margin-right: 10px;
+            font-size: 1.2rem;
+        }
+        
+        .divider {
+            height: 3px;
+            background: linear-gradient(90deg, #F59E0B, #EAB308, #FCD34D, #EAB308, #F59E0B);
+            border-radius: 2px;
+            margin: 30px 0;
+        }
+        
+        .other-communities {
+            margin-top: 50px;
+            padding-top: 30px;
+            border-top: 2px solid #E5E7EB;
+        }
+        
+        .other-communities h3 {
+            color: #374151;
+            margin-bottom: 20px;
+        }
+        
+        .community-links {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            justify-content: center;
+        }
+        
+        .community-link {
+            display: inline-block;
+            padding: 10px 20px;
+            color: white;
+            text-decoration: none;
+            border-radius: 8px;
+            font-size: 0.9rem;
+            transition: all 0.3s ease;
+        }
+        
+        .community-link:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        }
+        
+        .coming-soon {
+            background: white;
+            border: 3px solid #F59E0B;
+            padding: 25px;
+            border-radius: 15px;
+            margin: 30px 0;
+            box-shadow: 0 5px 20px rgba(245, 158, 11, 0.2);
+        }
+        
+        .coming-soon h3 {
+            color: #B45309;
+            margin-bottom: 15px;
+            font-size: 1.8rem;
+        }
+        
+        .coming-soon p {
+            color: #374151;
+            font-weight: 600;
+            margin-bottom: 0;
+            font-size: 1.2rem;
+        }
+        
+        @media (max-width: 768px) {
+            .container {
+                padding: 40px 25px;
+            }
+            
+            h1 {
+                font-size: 2rem;
+            }
+            
+            .icon {
+                font-size: 60px;
+            }
+            
+            .feature {
+                text-align: center;
+                padding-left: 0;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="icon">💼</div>
+        <h1>Cresalia Jobs</h1>
+        <p class="subtitle">Marketplace Ético de Empleo</p>
+        
+        <p>Un espacio donde empleadores y buscadores de empleo se conectan con ÉTICA, RESPETO y TRANSPARENCIA. 
+        Porque el empleo digno es un derecho, no un privilegio.</p>
+        
+        <div class="coming-soon">
+            <h3>🚧 PRÓXIMAMENTE 🚧</h3>
+            <p>Estamos construyendo algo diferente. Algo mejor. Algo ético. Volvé pronto.</p>
+        </div>
+        
+        <div class="ethical-box">
+            <h3>✨ Nuestra Promesa Ética</h3>
+            <p><strong>NO explotación laboral.</strong> NO salarios abusivos. NO condiciones indignas. 
+            Solo empleos que respeten tu dignidad, tu tiempo y tu bienestar. 
+            Porque creemos que TODOS merecen trabajar sin ser explotados.</p>
+        </div>
+        
+        <div class="divider"></div>
+        
+        <div class="important-message">
+            <strong>💼 ¿Qué hace diferente a Cresalia Jobs?</strong>
+            No somos una plataforma más. Somos una plataforma con VALORES. 
+            Verificamos empleadores. Rechazamos ofertas abusivas. Priorizamos el bienestar humano sobre las ganancias. 
+            Porque el trabajo digno NO es negociable.
+        </div>
+        
+        <a href="../../index-cresalia.html" class="btn btn-home">
+            <i class="fas fa-home"></i> Volver a Cresalia
+        </a>
+        
+        <div class="features">
+            <h3 style="color: #374151; margin-bottom: 25px; text-align: center;">Lo que encontrarás cuando lancemos:</h3>
+            <div class="feature">
+                <i class="fas fa-briefcase"></i> <strong>Empleos verificados:</strong> Chequeamos cada oferta para evitar estafas o explotación
+            </div>
+            <div class="feature">
+                <i class="fas fa-dollar-sign"></i> <strong>Salarios transparentes:</strong> No más "a convenir". Salarios claros desde el inicio
+            </div>
+            <div class="feature">
+                <i class="fas fa-balance-scale"></i> <strong>Condiciones justas:</strong> Solo empleos que respeten derechos laborales
+            </div>
+            <div class="feature">
+                <i class="fas fa-shield-alt"></i> <strong>Protección contra abusos:</strong> Sistema de reporte de empleadores abusivos
+            </div>
+            <div class="feature">
+                <i class="fas fa-heart"></i> <strong>Prioridad a los más vulnerables:</strong> Apoyo especial para personas con hijos, múltiples trabajos, etc.
+            </div>
+            <div class="feature">
+                <i class="fas fa-clock"></i> <strong>Horarios razonables:</strong> No normalizamos la explotación laboral
+            </div>
+            <div class="feature">
+                <i class="fas fa-home"></i> <strong>Trabajos remotos e inclusivos:</strong> Opciones para personas con movilidad reducida, cuidadores, etc.
+            </div>
+            <div class="feature">
+                <i class="fas fa-flag"></i> <strong>Sin discriminación:</strong> Todos los géneros, orientaciones, edades - TODOS merecen oportunidades
+            </div>
+            <div class="feature">
+                <i class="fas fa-handshake"></i> <strong>Conexión directa:</strong> Sin intermediarios que se lleven comisiones abusivas
+            </div>
+            <div class="feature">
+                <i class="fas fa-star"></i> <strong>Sistema de reputación:</strong> Empleadores y empleados pueden valorarse mutuamente (con respeto)
+            </div>
+        </div>
+        
+        <div class="divider"></div>
+        
+        <div class="ethical-box">
+            <h3>🌟 Nuestra Filosofía</h3>
+            <p>Creemos que el empleo es la forma de AYUDAR a las personas a crecer, no de explotarlas. 
+            Creemos que TODOS merecen un trabajo digno. Creemos que la ética importa más que las ganancias. 
+            Y construimos esta plataforma con esos valores en el corazón.</p>
+        </div>
+        
+        <div class="important-message">
+            <strong>💼 Para Empleadores:</strong>
+            Si buscás explotar, este NO es tu lugar. Si buscás pagar mal, este NO es tu lugar. 
+            Pero si buscás construir un equipo con RESPETO y DIGNIDAD, entonces sí, este ES tu lugar. 
+            Bienvenido/a.
+        </div>
+        
+        <div class="important-message">
+            <strong>✨ Para Buscadores de Empleo:</strong>
+            Merecés respeto. Merecés un salario justo. Merecés condiciones dignas. 
+            Y aquí vamos a ayudarte a encontrar eso. Porque tu tiempo vale. Tu esfuerzo vale. VOS valés.
+        </div>
+        
+        <!-- Otras Comunidades -->
+        <div class="other-communities">
+            <h3>Comunidades de Apoyo</h3>
+            <div class="community-links">
+                <a href="../comunidades/estres-laboral/index.html" class="community-link" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
+                    💼 Estrés Laboral
+                </a>
+                <a href="../comunidades/lgbtq-experiencias/index.html" class="community-link" style="background: linear-gradient(135deg, #FF6B6B, #FF8E53);">
+                    🏳️‍🌈 Experiencias LGBTQ+
+                </a>
+                <a href="../comunidades/mujeres-sobrevivientes/index.html" class="community-link" style="background: linear-gradient(135deg, #C084FC, #E879F9);">
+                    💜 Mujeres Sobrevivientes
+                </a>
+                <a href="../comunidades/hombres-sobrevivientes/index.html" class="community-link" style="background: linear-gradient(135deg, #3B82F6, #1E40AF);">
+                    💙 Hombres Sobrevivientes
+                </a>
+                <a href="../comunidades/anti-bullying/index.html" class="community-link" style="background: linear-gradient(135deg, #60A5FA, #34D399);">
+                    🛡️ Anti-Bullying
+                </a>
+                <a href="../comunidades/discapacidad/index.html" class="community-link" style="background: linear-gradient(135deg, #8B5CF6, #A78BFA);">
+                    ♿ Personas con Discapacidad
+                </a>
+                <a href="../comunidades/inmigrantes-racializados/index.html" class="community-link" style="background: linear-gradient(135deg, #D97706, #F59E0B);">
+                    🌍 Inmigrantes y Racializados
+                </a>
+                <a href="../comunidades/adultos-mayores/index.html" class="community-link" style="background: linear-gradient(135deg, #F59E0B, #FBBF24);">
+                    👴👵 Adultos Mayores
+                </a>
+                <a href="../comunidades/cuidadores/index.html" class="community-link" style="background: linear-gradient(135deg, #10B981, #34D399);">
+                    🤲 Cuidadores
+                </a>
+                <a href="../comunidades/enfermedades-cronicas/index.html" class="community-link" style="background: linear-gradient(135deg, #EF4444, #F87171);">
+                    🏥 Enfermedades Crónicas
+                </a>
+            </div>
+        </div>
+        
+        <p style="margin-top: 40px; font-size: 0.9rem; color: #9CA3AF;">
+            💼✨ Parte del ecosistema Cresalia - Empleo ético para todos
+        </p>
+        
+        <p style="margin-top: 10px; font-size: 0.85rem; color: #9CA3AF; font-style: italic;">
+            "El trabajo digno no es un lujo. Es un derecho." 💼
+        </p>
+    </div>
+    
+    <script>
+        // Registrar Service Worker para PWA
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('../sw.js')
+                    .then(registration => {
+                        console.log('✅ Service Worker registrado');
+                    })
+                    .catch(error => {
+                        console.log('⚠️ Service Worker no disponible');
+                    });
+            });
+        }
+    </script>
+</body>
+</html>

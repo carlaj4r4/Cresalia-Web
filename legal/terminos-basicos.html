@@ -1,0 +1,439 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Términos de Servicio - Cresalia</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: linear-gradient(135deg, #FDF2F8 0%, #FCE7F3 100%);
+            color: #374151;
+            line-height: 1.7;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 40px 20px;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+            padding: 40px 0;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 8px 32px rgba(236, 72, 153, 0.1);
+        }
+
+        .logo {
+            width: 60px;
+            height: 60px;
+            margin: 0 auto 20px;
+            background: linear-gradient(135deg, #7C3AED, #EC4899);
+            border-radius: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 24px;
+            font-weight: 800;
+        }
+
+        h1 {
+            font-size: 32px;
+            font-weight: 800;
+            background: linear-gradient(135deg, #7C3AED, #EC4899);
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 16px;
+        }
+
+        .subtitle {
+            color: #6B7280;
+            font-size: 16px;
+        }
+
+        .language-toggle {
+            margin: 20px 0;
+        }
+
+        .btn-lang {
+            background: linear-gradient(135deg, #7C3AED, #A78BFA);
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            margin: 0 5px;
+            transition: all 0.3s ease;
+        }
+
+        .btn-lang:hover {
+            transform: translateY(-2px);
+        }
+
+        .btn-lang.active {
+            background: linear-gradient(135deg, #EC4899, #F9A8D4);
+        }
+
+        .content {
+            background: white;
+            padding: 40px;
+            border-radius: 20px;
+            box-shadow: 0 8px 32px rgba(236, 72, 153, 0.1);
+            margin-bottom: 20px;
+        }
+
+        .section {
+            margin-bottom: 30px;
+        }
+
+        h2 {
+            font-size: 24px;
+            font-weight: 700;
+            color: #7C3AED;
+            margin-bottom: 16px;
+            border-bottom: 2px solid #F3F4F6;
+            padding-bottom: 8px;
+        }
+
+        h3 {
+            font-size: 20px;
+            font-weight: 600;
+            color: #EC4899;
+            margin-bottom: 12px;
+            margin-top: 24px;
+        }
+
+        p {
+            margin-bottom: 16px;
+            font-size: 15px;
+        }
+
+        ul {
+            margin: 16px 0;
+            padding-left: 20px;
+        }
+
+        li {
+            margin-bottom: 8px;
+            font-size: 15px;
+        }
+
+        .highlight {
+            background: linear-gradient(135deg, #FDF2F8, #FCE7F3);
+            padding: 20px;
+            border-radius: 12px;
+            border-left: 4px solid #EC4899;
+            margin: 20px 0;
+        }
+
+        .highlight p {
+            margin-bottom: 0;
+            font-weight: 600;
+            color: #7C3AED;
+        }
+
+        .footer-info {
+            text-align: center;
+            background: white;
+            padding: 30px;
+            border-radius: 20px;
+            box-shadow: 0 8px 32px rgba(236, 72, 153, 0.1);
+        }
+
+        .footer-info h3 {
+            color: #7C3AED;
+            margin-bottom: 16px;
+        }
+
+        .contact-info {
+            display: flex;
+            justify-content: center;
+            gap: 30px;
+            margin-top: 20px;
+        }
+
+        .contact-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: #6B7280;
+            font-size: 14px;
+        }
+
+        .contact-item i {
+            color: #EC4899;
+        }
+
+        .back-btn {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            background: linear-gradient(135deg, #7C3AED, #A78BFA);
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 25px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 12px rgba(124, 58, 237, 0.3);
+        }
+
+        .back-btn:hover {
+            transform: translateY(-2px);
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 20px 10px;
+            }
+            
+            .content {
+                padding: 20px;
+            }
+            
+            .contact-info {
+                flex-direction: column;
+                gap: 15px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <button class="back-btn" onclick="window.history.back()">
+        <i class="fas fa-arrow-left"></i> Volver
+    </button>
+
+    <div class="container">
+        <div class="header">
+            <div class="logo">C</div>
+            <h1 data-es="Términos de Servicio" data-en="Terms of Service">Términos de Servicio</h1>
+            <p class="subtitle" data-es="Última actualización: Enero 2025" data-en="Last updated: January 2025">Última actualización: Enero 2025</p>
+            
+            <div class="language-toggle">
+                <button class="btn-lang active" onclick="changeLanguage('es')">🇪🇸 Español</button>
+                <button class="btn-lang" onclick="changeLanguage('en')">🇺🇸 English</button>
+            </div>
+        </div>
+
+        <div class="content">
+            <div class="section">
+                <h2 data-es="1. Aceptación de Términos" data-en="1. Acceptance of Terms">1. Aceptación de Términos</h2>
+                <p data-es="Al usar Cresalia, aceptas estos términos. Si no estás de acuerdo con algún punto, te invitamos a contactarnos para que podamos mejorar nuestro servicio juntos." data-en="By using Cresalia, you accept these terms. If you don't agree with any point, we invite you to contact us so we can improve our service together.">
+                    Al usar Cresalia, aceptas estos términos. Si no estás de acuerdo con algún punto, te invitamos a contactarnos para que podamos mejorar nuestro servicio juntos.
+                </p>
+            </div>
+
+            <div class="section">
+                <h2 data-es="2. Descripción del Servicio" data-en="2. Service Description">2. Descripción del Servicio</h2>
+                <p data-es="Cresalia es una plataforma SaaS que te permite crear y gestionar tu tienda online, incluyendo:" data-en="Cresalia is a SaaS platform that allows you to create and manage your online store, including:">
+                    Cresalia es una plataforma SaaS que te permite crear y gestionar tu tienda online, incluyendo:
+                </p>
+                <ul>
+                    <li data-es="• Gestión de productos y catálogo" data-en="• Product and catalog management">• Gestión de productos y catálogo</li>
+                    <li data-es="• Sistema de pagos integrado" data-en="• Integrated payment system">• Sistema de pagos integrado</li>
+                    <li data-es="• Chatbot con inteligencia artificial" data-en="• AI-powered chatbot">• Chatbot con inteligencia artificial</li>
+                    <li data-es="• Soporte multi-idioma (6 idiomas)" data-en="• Multi-language support (6 languages)">• Soporte multi-idioma (6 idiomas)</li>
+                    <li data-es="• Sistema de respaldo emocional para emprendedores" data-en="• Emotional support system for entrepreneurs">• Sistema de respaldo emocional para emprendedores</li>
+                </ul>
+            </div>
+
+            <div class="section">
+                <h2 data-es="3. Planes y Precios" data-en="3. Plans and Pricing">3. Planes y Precios</h2>
+                
+                <h3 data-es="Plan FREE" data-en="FREE Plan">Plan FREE</h3>
+                <ul>
+                    <li data-es="• Hasta 50 productos" data-en="• Up to 50 products">• Hasta 50 productos</li>
+                    <li data-es="• Hasta 100 órdenes por mes" data-en="• Up to 100 orders per month">• Hasta 100 órdenes por mes</li>
+                    <li data-es="• 2 idiomas" data-en="• 2 languages">• 2 idiomas</li>
+                    <li data-es="• Sistema de respaldo emocional" data-en="• Emotional support system">• Sistema de respaldo emocional</li>
+                </ul>
+
+                <h3 data-es="Plan BASIC ($29/mes)" data-en="BASIC Plan ($29/month)">Plan BASIC ($29/mes)</h3>
+                <ul>
+                    <li data-es="• Hasta 500 productos" data-en="• Up to 500 products">• Hasta 500 productos</li>
+                    <li data-es="• Hasta 1,000 órdenes por mes" data-en="• Up to 1,000 orders per month">• Hasta 1,000 órdenes por mes</li>
+                    <li data-es="• 3 idiomas + dominio personalizado" data-en="• 3 languages + custom domain">• 3 idiomas + dominio personalizado</li>
+                    <li data-es="• Soporte WhatsApp" data-en="• WhatsApp support">• Soporte WhatsApp</li>
+                </ul>
+
+                <h3 data-es="Plan PRO ($79/mes)" data-en="PRO Plan ($79/month)">Plan PRO ($79/mes)</h3>
+                <ul>
+                    <li data-es="• Productos y órdenes ilimitadas" data-en="• Unlimited products and orders">• Productos y órdenes ilimitadas</li>
+                    <li data-es="• 6 idiomas + chatbot IA" data-en="• 6 languages + AI chatbot">• 6 idiomas + chatbot IA</li>
+                    <li data-es="• Soporte prioritario 24/7" data-en="• Priority 24/7 support">• Soporte prioritario 24/7</li>
+                    <li data-es="• API completa" data-en="• Full API access">• API completa</li>
+                </ul>
+            </div>
+
+            <div class="section">
+                <h2 data-es="4. Sistema de Respaldo Emocional" data-en="4. Emotional Support System">4. Sistema de Respaldo Emocional</h2>
+                <div class="highlight">
+                    <p data-es="<strong>Importante:</strong> Este sistema no sustituye ayuda profesional de salud mental. Es un servicio de apoyo emocional, no tratamiento médico." data-en="<strong>Important:</strong> This system does not replace professional mental health help. It's an emotional support service, not medical treatment.">
+                        <strong>Importante:</strong> Este sistema no sustituye ayuda profesional de salud mental. Es un servicio de apoyo emocional, no tratamiento médico.
+                    </p>
+                </div>
+                <p data-es="Nuestro sistema único incluye:" data-en="Our unique system includes:">
+                    Nuestro sistema único incluye:
+                </p>
+                <ul>
+                    <li data-es="• Diario emocional privado y anónimo" data-en="• Private and anonymous emotional journal">• Diario emocional privado y anónimo</li>
+                    <li data-es="• Recursos de bienestar emocional" data-en="• Emotional wellness resources">• Recursos de bienestar emocional</li>
+                    <li data-es="• Sistema de urgencias emocionales" data-en="• Emotional emergency system">• Sistema de urgencias emocionales</li>
+                    <li data-es="• Datos completamente anonimizados" data-en="• Completely anonymized data">• Datos completamente anonimizados</li>
+                </ul>
+            </div>
+
+            <div class="section">
+                <h2 data-es="5. Uso Aceptable" data-en="5. Acceptable Use">5. Uso Aceptable</h2>
+                <p data-es="<strong>Permitido:</strong>" data-en="<strong>Allowed:</strong>">
+                    <strong>Permitido:</strong>
+                </p>
+                <ul>
+                    <li data-es="• Venta de productos legales" data-en="• Selling legal products">• Venta de productos legales</li>
+                    <li data-es="• Cumplimiento de leyes locales" data-en="• Compliance with local laws">• Cumplimiento de leyes locales</li>
+                    <li data-es="• Uso responsable de recursos" data-en="• Responsible use of resources">• Uso responsable de recursos</li>
+                </ul>
+                
+                <p data-es="<strong>Prohibido:</strong>" data-en="<strong>Prohibited:</strong>">
+                    <strong>Prohibido:</strong>
+                </p>
+                <ul>
+                    <li data-es="• Productos ilegales o peligrosos" data-en="• Illegal or dangerous products">• Productos ilegales o peligrosos</li>
+                    <li data-es="• Spam o marketing abusivo" data-en="• Spam or abusive marketing">• Spam o marketing abusivo</li>
+                    <li data-es="• Actividades fraudulentas" data-en="• Fraudulent activities">• Actividades fraudulentas</li>
+                </ul>
+            </div>
+
+            <div class="section">
+                <h2 data-es="6. Privacidad y Datos" data-en="6. Privacy and Data">6. Privacidad y Datos</h2>
+                <p data-es="• Tus datos están protegidos y encriptados" data-en="• Your data is protected and encrypted">
+                    • Tus datos están protegidos y encriptados
+                </p>
+                <p data-es="• No vendemos tu información personal" data-en="• We don't sell your personal information">
+                    • No vendemos tu información personal
+                </p>
+                <p data-es="• Cumplimos con GDPR y leyes de privacidad" data-en="• We comply with GDPR and privacy laws">
+                    • Cumplimos con GDPR y leyes de privacidad
+                </p>
+                <p data-es="• Puedes exportar tus datos en cualquier momento" data-en="• You can export your data at any time">
+                    • Puedes exportar tus datos en cualquier momento
+                </p>
+            </div>
+
+            <div class="section">
+                <h2 data-es="7. Limitación de Responsabilidad" data-en="7. Limitation of Liability">7. Limitación de Responsabilidad</h2>
+                <p data-es="• Nos esforzamos por mantener 99.9% de disponibilidad" data-en="• We strive to maintain 99.9% availability">
+                    • Nos esforzamos por mantener 99.9% de disponibilidad
+                </p>
+                <p data-es="• No garantizamos resultados específicos de ventas" data-en="• We don't guarantee specific sales results">
+                    • No garantizamos resultados específicos de ventas
+                </p>
+                <p data-es="• Nuestra responsabilidad máxima es el costo de un mes de servicio" data-en="• Our maximum liability is one month's service cost">
+                    • Nuestra responsabilidad máxima es el costo de un mes de servicio
+                </p>
+            </div>
+
+            <div class="section">
+                <h2 data-es="8. Cancelación" data-en="8. Cancellation">8. Cancelación</h2>
+                <p data-es="• Puedes cancelar tu cuenta en cualquier momento" data-en="• You can cancel your account at any time">
+                    • Puedes cancelar tu cuenta en cualquier momento
+                </p>
+                <p data-es="• 30 días de garantía de devolución" data-en="• 30-day money-back guarantee">
+                    • 30 días de garantía de devolución
+                </p>
+                <p data-es="• Eliminamos tus datos en 30 días" data-en="• We delete your data within 30 days">
+                    • Eliminamos tus datos en 30 días
+                </p>
+            </div>
+        </div>
+
+        <div class="footer-info">
+            <h3 data-es="¿Tienes preguntas?" data-en="Have questions?">¿Tienes preguntas?</h3>
+            <p data-es="Contáctanos para cualquier duda sobre estos términos. Estamos aquí para ayudarte y mejorar juntos." data-en="Contact us for any questions about these terms. We're here to help and improve together.">
+                Contáctanos para cualquier duda sobre estos términos. Estamos aquí para ayudarte y mejorar juntos.
+            </p>
+            
+            <div class="highlight" style="margin: 20px 0; padding: 20px; background: linear-gradient(135deg, #FDF2F8, #FCE7F3); border-radius: 15px; border-left: 5px solid #EC4899;">
+                <h4 style="color: #7C3AED; margin-bottom: 10px;">💜 Nuestro Compromiso Contigo</h4>
+                <p style="margin: 0; color: #6B7280;">
+                    En Cresalia, creemos en la transparencia y el crecimiento conjunto. Si algo en estos términos no te parece justo o claro, 
+                    <strong>no dudes en contactarnos</strong>. Tu feedback nos ayuda a ser mejores y a crear una plataforma que realmente sirva a tu negocio.
+                </p>
+            </div>
+            
+            <div class="contact-info">
+                <div class="contact-item">
+                    <i class="fas fa-envelope"></i>
+                    <span>crisla965@gmail.com</span>
+                </div>
+                <div class="contact-item">
+                    <i class="fas fa-heart"></i>
+                    <span data-es="Soporte 24/7" data-en="24/7 Support">Soporte 24/7</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Sistema de cambio de idioma
+        let currentLanguage = 'es';
+        
+        function changeLanguage(lang) {
+            currentLanguage = lang;
+            
+            // Actualizar botones
+            document.querySelectorAll('.btn-lang').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            event.target.classList.add('active');
+            
+            // Actualizar contenido
+            const elementsWithLang = document.querySelectorAll('[data-es][data-en]');
+            elementsWithLang.forEach(element => {
+                const content = element.getAttribute(`data-${lang}`);
+                if (content) {
+                    element.innerHTML = content;
+                }
+            });
+            
+            // Actualizar título de la página
+            document.title = lang === 'es' ? 'Términos de Servicio - Cresalia' : 'Terms of Service - Cresalia';
+        }
+    </script>
+</body>
+</html>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

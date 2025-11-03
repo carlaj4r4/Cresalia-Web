@@ -1,0 +1,764 @@
+/* ===== SISTEMA DE PROTECCIÓN BIDIRECCIONAL CRESALIA ===== */
+/* Version 1.0 - Estilos para protección equitativa */
+/* Co-fundadores: CRISLA & Claude */
+/* Filosofía: "Escuchamos las dos campanas" */
+
+/* ===== MODAL BIDIRECCIONAL ===== */
+.modal-reporte-bidireccional {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 10000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.modal-backdrop-bidireccional {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.8);
+    backdrop-filter: blur(5px);
+}
+
+.modal-content-bidireccional {
+    position: relative;
+    background: white;
+    border-radius: 20px;
+    max-width: 700px;
+    width: 90%;
+    max-height: 90vh;
+    overflow-y: auto;
+    box-shadow: 0 25px 80px rgba(0, 0, 0, 0.3);
+    animation: modalSlideIn 0.3s ease;
+}
+
+.modal-header-bidireccional {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    padding: 25px;
+    border-radius: 20px 20px 0 0;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.modal-header-bidireccional h3 {
+    margin: 0;
+    font-size: 1.4rem;
+    font-weight: 600;
+}
+
+.btn-cerrar-modal {
+    background: none;
+    border: none;
+    color: white;
+    font-size: 1.5rem;
+    cursor: pointer;
+    padding: 8px;
+    border-radius: 50%;
+    transition: background 0.3s ease;
+}
+
+.btn-cerrar-modal:hover {
+    background: rgba(255, 255, 255, 0.2);
+}
+
+.modal-body-bidireccional {
+    padding: 30px;
+}
+
+/* ===== ADVERTENCIA IMPORTANTE ===== */
+.advertencia-importante {
+    background: linear-gradient(135deg, #E8F5E8, #C8E6C9);
+    border: 2px solid #4CAF50;
+    border-radius: 15px;
+    padding: 20px;
+    margin-bottom: 25px;
+    display: flex;
+    align-items: flex-start;
+    gap: 15px;
+}
+
+.advertencia-importante i {
+    color: #4CAF50;
+    font-size: 1.5rem;
+    margin-top: 2px;
+    flex-shrink: 0;
+}
+
+.advertencia-importante strong {
+    color: #2E7D32;
+    font-size: 1.1rem;
+    display: block;
+    margin-bottom: 5px;
+}
+
+.advertencia-importante p {
+    color: #2E7D32;
+    margin: 0;
+    font-size: 0.95rem;
+}
+
+/* ===== SECCIONES DEL FORMULARIO ===== */
+.label-principal {
+    display: block;
+    font-weight: 600;
+    color: #495057;
+    margin-bottom: 15px;
+    font-size: 1.1rem;
+}
+
+.seccion-tipo-problema {
+    margin-bottom: 30px;
+}
+
+.opciones-problema {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.opcion-problema {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    background: #F8F9FA;
+    border: 2px solid #E9ECEF;
+    border-radius: 12px;
+    padding: 15px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.opcion-problema:hover {
+    border-color: #667eea;
+    background: #F0F4FF;
+}
+
+.opcion-problema input[type="radio"] {
+    margin-top: 2px;
+    flex-shrink: 0;
+}
+
+.opcion-problema input[type="radio"]:checked + .contenido-opcion {
+    color: #667eea;
+}
+
+.opcion-problema input[type="radio"]:checked {
+    accent-color: #667eea;
+}
+
+.contenido-opcion {
+    flex: 1;
+}
+
+.titulo-opcion {
+    font-weight: 600;
+    color: #495057;
+    margin-bottom: 5px;
+    font-size: 1rem;
+}
+
+.descripcion-opcion {
+    color: #6C757D;
+    font-size: 0.9rem;
+    line-height: 1.4;
+}
+
+/* ===== SECCIÓN DETALLES ===== */
+.seccion-detalles {
+    margin-bottom: 30px;
+}
+
+.seccion-detalles textarea {
+    width: 100%;
+    padding: 15px;
+    border: 2px solid #E9ECEF;
+    border-radius: 12px;
+    font-family: 'Poppins', sans-serif;
+    font-size: 14px;
+    resize: vertical;
+    transition: border-color 0.3s ease;
+}
+
+.seccion-detalles textarea:focus {
+    outline: none;
+    border-color: #667eea;
+    box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+}
+
+/* ===== SECCIÓN EVIDENCIA ===== */
+.seccion-evidencia {
+    margin-bottom: 30px;
+}
+
+.evidencia-placeholder {
+    background: #F8F9FA;
+    border: 2px dashed #DEE2E6;
+    border-radius: 12px;
+    padding: 20px;
+    text-align: center;
+    color: #6C757D;
+    font-style: italic;
+}
+
+.evidencia-necesaria {
+    background: #E3F2FD;
+    border: 2px solid #2196F3;
+    border-radius: 12px;
+    padding: 20px;
+}
+
+.evidencia-necesaria h4 {
+    color: #1565C0;
+    margin-bottom: 15px;
+    font-size: 1rem;
+}
+
+.evidencia-necesaria ul {
+    margin: 0;
+    padding-left: 20px;
+    color: #1976D2;
+}
+
+.evidencia-necesaria li {
+    margin-bottom: 8px;
+    line-height: 1.4;
+}
+
+.upload-evidencia {
+    margin-top: 20px;
+}
+
+.upload-evidencia input[type="file"] {
+    display: none;
+}
+
+.btn-upload {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    background: linear-gradient(135deg, #4CAF50, #45A049);
+    color: white;
+    padding: 12px 25px;
+    border-radius: 25px;
+    cursor: pointer;
+    font-weight: 500;
+    transition: all 0.3s ease;
+    border: none;
+    font-size: 14px;
+}
+
+.btn-upload:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(76, 175, 80, 0.3);
+}
+
+/* ===== SECCIÓN COMPROMISO ===== */
+.seccion-compromiso {
+    margin-bottom: 30px;
+}
+
+.checkbox-compromiso {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    background: #FFF3E0;
+    border: 2px solid #FF9800;
+    border-radius: 12px;
+    padding: 20px;
+    cursor: pointer;
+    transition: background 0.3s ease;
+}
+
+.checkbox-compromiso:hover {
+    background: #FFF8E1;
+}
+
+.checkbox-compromiso input[type="checkbox"] {
+    margin-top: 2px;
+    flex-shrink: 0;
+}
+
+.checkbox-compromiso span {
+    color: #E65100;
+    font-weight: 500;
+    line-height: 1.4;
+}
+
+/* ===== BOTONES MODAL ===== */
+.botones-modal {
+    display: flex;
+    gap: 15px;
+    justify-content: flex-end;
+    padding-top: 20px;
+    border-top: 1px solid #E9ECEF;
+}
+
+.btn-enviar-reporte {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    border: none;
+    padding: 15px 30px;
+    border-radius: 25px;
+    cursor: pointer;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    transition: all 0.3s ease;
+    font-size: 1rem;
+}
+
+.btn-enviar-reporte:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(102, 126, 234, 0.3);
+}
+
+.btn-cancelar {
+    background: #6C757D;
+    color: white;
+    border: none;
+    padding: 15px 30px;
+    border-radius: 25px;
+    cursor: pointer;
+    font-weight: 600;
+    transition: all 0.3s ease;
+}
+
+.btn-cancelar:hover {
+    background: #5A6268;
+    transform: translateY(-1px);
+}
+
+.btn-ok {
+    background: linear-gradient(135deg, #4CAF50, #45A049);
+    color: white;
+    border: none;
+    padding: 15px 40px;
+    border-radius: 25px;
+    cursor: pointer;
+    font-weight: 600;
+    margin-top: 20px;
+    transition: all 0.3s ease;
+}
+
+.btn-ok:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(76, 175, 80, 0.3);
+}
+
+/* ===== COMUNIDAD DE VENDEDORES ===== */
+.seccion-comunidad-vendedores {
+    background: white;
+    border-radius: 20px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+    overflow: hidden;
+    margin: 25px 0;
+}
+
+.header-comunidad {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    padding: 25px;
+    text-align: center;
+}
+
+.header-comunidad h3 {
+    margin: 0 0 10px 0;
+    font-size: 1.5rem;
+    font-weight: 600;
+}
+
+.header-comunidad p {
+    margin: 0;
+    opacity: 0.9;
+    font-size: 1rem;
+}
+
+.tabs-comunidad {
+    display: flex;
+    background: #F8F9FA;
+    border-bottom: 1px solid #E9ECEF;
+}
+
+.tabs-comunidad button {
+    flex: 1;
+    background: none;
+    border: none;
+    padding: 15px 20px;
+    cursor: pointer;
+    font-weight: 500;
+    color: #6C757D;
+    transition: all 0.3s ease;
+    border-bottom: 3px solid transparent;
+}
+
+.tabs-comunidad button:hover {
+    background: #E9ECEF;
+    color: #495057;
+}
+
+.tabs-comunidad button.tab-activo {
+    color: #667eea;
+    border-bottom-color: #667eea;
+    background: white;
+}
+
+.contenido-tabs {
+    min-height: 400px;
+}
+
+.tab-content {
+    display: none;
+    padding: 25px;
+}
+
+.tab-content.activo {
+    display: block;
+}
+
+/* ===== ALERTAS COMUNITARIAS ===== */
+.crear-alerta {
+    margin-bottom: 25px;
+    text-align: center;
+}
+
+.btn-crear-alerta {
+    background: linear-gradient(135deg, #FF9800, #F57C00);
+    color: white;
+    border: none;
+    padding: 15px 30px;
+    border-radius: 25px;
+    cursor: pointer;
+    font-weight: 600;
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    transition: all 0.3s ease;
+}
+
+.btn-crear-alerta:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(255, 152, 0, 0.3);
+}
+
+.lista-alertas {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.alerta-item {
+    background: white;
+    border-radius: 12px;
+    padding: 20px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    border-left: 4px solid #ddd;
+    transition: all 0.3s ease;
+}
+
+.alerta-item:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15);
+}
+
+.alerta-item.severidad-alta {
+    border-left-color: #F44336;
+}
+
+.alerta-item.severidad-media {
+    border-left-color: #FF9800;
+}
+
+.alerta-item.severidad-baja {
+    border-left-color: #4CAF50;
+}
+
+.alerta-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 10px;
+}
+
+.alerta-tipo {
+    font-weight: 600;
+    color: #495057;
+    font-size: 1rem;
+}
+
+.alerta-fecha {
+    color: #6C757D;
+    font-size: 0.9rem;
+}
+
+.alerta-descripcion {
+    color: #495057;
+    line-height: 1.5;
+    margin-bottom: 15px;
+}
+
+.alerta-acciones {
+    display: flex;
+    gap: 10px;
+}
+
+.btn-util,
+.btn-compartir {
+    background: #F8F9FA;
+    border: 1px solid #E9ECEF;
+    color: #6C757D;
+    padding: 8px 15px;
+    border-radius: 20px;
+    cursor: pointer;
+    font-size: 0.9rem;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    transition: all 0.3s ease;
+}
+
+.btn-util:hover,
+.btn-compartir:hover {
+    background: #E9ECEF;
+    color: #495057;
+}
+
+.btn-util.marcado {
+    background: #4CAF50;
+    color: white;
+    border-color: #4CAF50;
+}
+
+.sin-alertas {
+    text-align: center;
+    color: #6C757D;
+    font-style: italic;
+    padding: 40px;
+    background: #F8F9FA;
+    border-radius: 12px;
+}
+
+/* ===== EXPERIENCIAS VENDEDORES ===== */
+.crear-experiencia {
+    background: #F8F9FA;
+    border-radius: 12px;
+    padding: 20px;
+    margin-bottom: 25px;
+}
+
+.crear-experiencia textarea {
+    width: 100%;
+    border: 2px solid #E9ECEF;
+    border-radius: 10px;
+    padding: 15px;
+    font-family: 'Poppins', sans-serif;
+    resize: vertical;
+    margin-bottom: 15px;
+}
+
+.btn-compartir-experiencia {
+    background: linear-gradient(135deg, #4CAF50, #45A049);
+    color: white;
+    border: none;
+    padding: 12px 25px;
+    border-radius: 25px;
+    cursor: pointer;
+    font-weight: 500;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    transition: all 0.3s ease;
+}
+
+.btn-compartir-experiencia:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 15px rgba(76, 175, 80, 0.3);
+}
+
+/* ===== CONSEJOS VENDEDORES ===== */
+.consejos-vendedores h4 {
+    color: #495057;
+    margin-bottom: 20px;
+    font-size: 1.2rem;
+}
+
+.lista-consejos {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.consejo-item {
+    background: #E3F2FD;
+    border: 1px solid #BBDEFB;
+    border-radius: 12px;
+    padding: 20px;
+    transition: all 0.3s ease;
+}
+
+.consejo-item:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 15px rgba(33, 150, 243, 0.1);
+}
+
+.consejo-titulo {
+    font-weight: 600;
+    color: #1565C0;
+    margin-bottom: 10px;
+    font-size: 1rem;
+}
+
+.consejo-contenido {
+    color: #1976D2;
+    line-height: 1.5;
+}
+
+/* ===== BOTONES DE REPORTE ===== */
+.btn-reportar-comprador,
+.btn-reportar-vendedor {
+    background: rgba(244, 67, 54, 0.1);
+    border: 2px solid rgba(244, 67, 54, 0.3);
+    color: #F44336;
+    padding: 8px 15px;
+    border-radius: 20px;
+    cursor: pointer;
+    font-size: 12px;
+    font-weight: 500;
+    transition: all 0.3s ease;
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+}
+
+.btn-reportar-comprador:hover,
+.btn-reportar-vendedor:hover {
+    background: rgba(244, 67, 54, 0.2);
+    border-color: #F44336;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(244, 67, 54, 0.2);
+}
+
+/* ===== SCORING VISUAL ===== */
+.usuario-score {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    background: #F8F9FA;
+    padding: 5px 12px;
+    border-radius: 15px;
+    font-size: 0.9rem;
+    font-weight: 500;
+}
+
+.score-alto {
+    color: #4CAF50;
+    background: #E8F5E8;
+}
+
+.score-medio {
+    color: #FF9800;
+    background: #FFF3E0;
+}
+
+.score-bajo {
+    color: #F44336;
+    background: #FFEBEE;
+}
+
+/* ===== ANIMACIONES ===== */
+@keyframes modalSlideIn {
+    from {
+        opacity: 0;
+        transform: translateY(-50px) scale(0.9);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+}
+
+/* ===== RESPONSIVE ===== */
+@media (max-width: 768px) {
+    .modal-content-bidireccional {
+        width: 95%;
+        margin: 10px;
+    }
+    
+    .modal-body-bidireccional {
+        padding: 20px;
+    }
+    
+    .botones-modal {
+        flex-direction: column;
+    }
+    
+    .tabs-comunidad {
+        flex-direction: column;
+    }
+    
+    .tabs-comunidad button {
+        border-bottom: 1px solid #E9ECEF;
+        border-right: none;
+    }
+    
+    .tabs-comunidad button.tab-activo {
+        border-bottom-color: #E9ECEF;
+        border-left: 3px solid #667eea;
+    }
+    
+    .alerta-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 5px;
+    }
+    
+    .alerta-acciones {
+        flex-wrap: wrap;
+    }
+}
+
+/* ===== TEMA OSCURO (OPCIONAL) ===== */
+@media (prefers-color-scheme: dark) {
+    .modal-content-bidireccional {
+        background: #2D3748;
+        color: #E2E8F0;
+    }
+    
+    .seccion-comunidad-vendedores {
+        background: #2D3748;
+    }
+    
+    .tabs-comunidad {
+        background: #1A202C;
+    }
+    
+    .tab-content {
+        background: #2D3748;
+    }
+    
+    .alerta-item {
+        background: #4A5568;
+        color: #E2E8F0;
+    }
+}
+
+
+
+
+
+
+
+
+
+
+
+
+

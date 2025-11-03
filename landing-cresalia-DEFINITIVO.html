@@ -1,0 +1,1843 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cresalia - Tu Tienda Online en 5 Minutos | E-commerce SaaS</title>
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
+    
+    <!-- Favicon -->
+    <link rel="icon" type="image/png" href="assets/logo/logo-cresalia.png">
+    
+    <!-- SEO -->
+    <meta name="description" content="Crea tu tienda online completa por solo $29/mes. Chatbot IA incluido, multi-idioma, sin comisiones.">
+    <meta name="keywords" content="tienda online, ecommerce, saas, chatbot ia, multi-idioma, emprendedores">
+    
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    
+    <!-- Sistema de Interconexiones -->
+    <script src="js/sistema-interconexiones-global.js"></script>
+    
+    <!-- Sistema de Alertas de Emergencia -->
+    <script src="js/sistema-alertas-emergencia-global.js"></script>
+    <script src="config-supabase-seguro.js"></script>
+    <script src="js/sistema-alertas-comunidades.js"></script>
+    
+    <!-- Click Derecho Personalizado -->
+    <script src="js/click-derecho-personalizado.js"></script>
+    
+    <!-- Supabase -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="auth/supabase-config.js"></script>
+    <script src="auth/auth-system.js"></script>
+    
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            overflow-x: hidden;
+            background: linear-gradient(135deg, #7C3AED 0%, #EC4899 100%);
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 24px;
+        }
+
+        /* Navbar */
+        .navbar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            background: rgba(255, 255, 255, 0.98);
+            backdrop-filter: blur(10px);
+            z-index: 1000;
+            box-shadow: 0 2px 20px rgba(0,0,0,0.08);
+        }
+
+        .navbar-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 16px 24px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .navbar-logo {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            text-decoration: none;
+        }
+
+        .navbar-logo-img {
+            width: 45px;
+            height: 45px;
+            border-radius: 10px;
+        }
+
+        .navbar-logo-text {
+            font-size: 24px;
+            font-weight: 800;
+            background: linear-gradient(135deg, #7C3AED, #EC4899);
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .navbar-buttons {
+            display: flex;
+            gap: 12px;
+            align-items: center;
+        }
+
+        /* Selector de idioma */
+        .language-selector {
+            position: relative;
+            margin-right: 20px;
+        }
+
+        .language-toggle {
+            background: transparent;
+            border: 2px solid #7C3AED;
+            color: #7C3AED;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .language-toggle:hover {
+            background: #7C3AED;
+            color: white;
+        }
+
+        .language-toggle i {
+            font-size: 12px;
+        }
+
+        .language-dropdown {
+            position: absolute;
+            top: 100%;
+            right: 0;
+            background: white;
+            border: 2px solid #E5E7EB;
+            border-radius: 12px;
+            box-shadow: 0 8px 24px rgba(0,0,0,0.1);
+            min-width: 120px;
+            z-index: 1001;
+            display: none;
+            overflow: hidden;
+        }
+
+        .language-dropdown.show {
+            display: block;
+        }
+
+        .language-option {
+            padding: 12px 16px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 14px;
+        }
+
+        .language-option:hover {
+            background: #F3F4F6;
+        }
+
+        .language-option.active {
+            background: #7C3AED;
+            color: white;
+        }
+
+        .btn-nav {
+            padding: 10px 24px;
+            border-radius: 50px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: none;
+        }
+
+        .btn-nav-login {
+            background: transparent;
+            color: #7C3AED;
+        }
+
+        .btn-nav-login:hover {
+            background: #F3F4F6;
+        }
+
+        .btn-nav-signup {
+            background: linear-gradient(135deg, #7C3AED, #A78BFA);
+            color: white;
+            box-shadow: 0 4px 12px rgba(124, 58, 237, 0.3);
+        }
+
+        .btn-nav-signup:hover {
+            transform: translateY(-2px);
+        }
+
+        /* Hero */
+        .hero {
+            min-height: 100vh;
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            padding: 100px 20px 50px;
+        }
+
+        .hero h1 {
+            font-size: 64px;
+            font-weight: 900;
+            margin-bottom: 24px;
+        }
+
+        .hero-subtitle {
+            font-size: 22px;
+            margin-bottom: 16px;
+            opacity: 0.95;
+        }
+
+        .hero-tagline {
+            font-size: 28px;
+            font-weight: 600;
+            font-style: italic;
+            margin-bottom: 40px;
+        }
+
+        .btn-hero {
+            padding: 18px 40px;
+            font-size: 18px;
+            font-weight: 600;
+            border-radius: 50px;
+            border: none;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin: 10px;
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .btn-hero-primary {
+            background: white;
+            color: #7C3AED;
+            box-shadow: 0 8px 24px rgba(0,0,0,0.2);
+        }
+
+        .btn-hero-primary:hover {
+            transform: translateY(-4px);
+        }
+
+        .btn-hero-secondary {
+            background: rgba(255,255,255,0.2);
+            color: white;
+            border: 2px solid white;
+        }
+
+        .btn-hero-secondary:hover {
+            background: white;
+            color: #7C3AED;
+        }
+
+        /* Sobre Mí */
+        .sobre-mi {
+            padding: 120px 0;
+            background: linear-gradient(135deg, #FDF2F8 0%, #FCE7F3 100%);
+        }
+
+        .sobre-mi-content {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 60px;
+            align-items: center;
+        }
+
+        .sobre-mi-text h2 {
+            font-size: 48px;
+            font-weight: 800;
+            color: #EC4899;
+            margin-bottom: 24px;
+        }
+
+        .sobre-mi-intro {
+            font-size: 20px;
+            line-height: 1.7;
+            color: #374151;
+            margin-bottom: 40px;
+            font-weight: 500;
+        }
+
+        .manifesto {
+            background: white;
+            padding: 40px;
+            border-radius: 20px;
+            box-shadow: 0 8px 32px rgba(236, 72, 153, 0.1);
+            margin-bottom: 32px;
+            border-left: 4px solid #EC4899;
+        }
+
+        .manifesto h3 {
+            font-size: 24px;
+            font-weight: 700;
+            color: #7C3AED;
+            margin-bottom: 20px;
+        }
+
+        .manifesto p {
+            font-size: 16px;
+            line-height: 1.8;
+            color: #4B5563;
+            margin-bottom: 16px;
+        }
+
+        .cierre-emocional {
+            font-size: 18px !important;
+            font-weight: 600 !important;
+            color: #EC4899 !important;
+            text-align: center;
+            padding: 20px;
+            background: linear-gradient(135deg, #FDF2F8, #FCE7F3);
+            border-radius: 12px;
+            margin-top: 24px !important;
+        }
+
+        .motivacion {
+            background: white;
+            padding: 32px;
+            border-radius: 16px;
+            box-shadow: 0 4px 20px rgba(124, 58, 237, 0.1);
+        }
+
+        .motivacion h4 {
+            font-size: 20px;
+            font-weight: 700;
+            color: #7C3AED;
+            margin-bottom: 16px;
+        }
+
+        .motivacion p {
+            font-size: 15px;
+            line-height: 1.7;
+            color: #4B5563;
+            margin-bottom: 12px;
+        }
+
+        .sobre-mi-visual {
+            text-align: center;
+        }
+
+        .heart-animation {
+            width: 120px;
+            height: 120px;
+            background: linear-gradient(135deg, #EC4899, #F9A8D4);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 24px;
+            animation: heartbeat 2s ease-in-out infinite;
+        }
+
+        .heart-animation i {
+            font-size: 48px;
+            color: white;
+        }
+
+        .tagline {
+            font-size: 18px;
+            font-weight: 600;
+            color: #7C3AED;
+            font-style: italic;
+        }
+
+        @keyframes heartbeat {
+            0%, 100% {
+                transform: scale(1);
+            }
+            50% {
+                transform: scale(1.1);
+            }
+        }
+
+        /* Features */
+        .features {
+            padding: 120px 0;
+            background: white;
+        }
+
+        .section-header {
+            text-align: center;
+            max-width: 700px;
+            margin: 0 auto 80px;
+        }
+
+        .section-label {
+            color: #7C3AED;
+            font-size: 14px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            margin-bottom: 16px;
+        }
+
+        .section-title {
+            font-size: 48px;
+            font-weight: 800;
+            color: #1F2937;
+            margin-bottom: 20px;
+        }
+
+        .section-subtitle {
+            font-size: 20px;
+            color: #6B7280;
+            line-height: 1.6;
+        }
+
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(340px, 1fr));
+            gap: 40px;
+        }
+
+        .feature-card {
+            background: white;
+            padding: 40px;
+            border-radius: 20px;
+            box-shadow: 0 4px 20px rgba(124, 58, 237, 0.08);
+            transition: all 0.4s ease;
+            border: 2px solid transparent;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 12px 40px rgba(124, 58, 237, 0.15);
+            border-color: #DDD6FE;
+        }
+
+        .feature-icon {
+            width: 70px;
+            height: 70px;
+            background: linear-gradient(135deg, #7C3AED, #A78BFA);
+            border-radius: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 32px;
+            color: white;
+            margin-bottom: 24px;
+        }
+
+        .feature-card h3 {
+            font-size: 24px;
+            font-weight: 700;
+            color: #1F2937;
+            margin-bottom: 12px;
+        }
+
+        .feature-card p {
+            font-size: 16px;
+            color: #6B7280;
+            line-height: 1.7;
+        }
+
+        /* Feature especial */
+        .feature-special {
+            grid-column: 1 / -1;
+            background: linear-gradient(135deg, #FDF2F8, #FCE7F3);
+            border: 3px solid #EC4899;
+        }
+
+        .feature-special .feature-icon {
+            background: linear-gradient(135deg, #EC4899, #F9A8D4);
+        }
+
+
+        .check-icon {
+            color: #10B981;
+            font-size: 20px;
+        }
+
+        .x-icon {
+            color: #EF4444;
+            font-size: 20px;
+        }
+
+        /* Pricing */
+        .pricing {
+            padding: 120px 0;
+            background: white;
+        }
+
+        .pricing-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+            gap: 32px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .pricing-card {
+            background: white;
+            border-radius: 20px;
+            padding: 40px 32px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+            transition: all 0.4s ease;
+            position: relative;
+            border: 2px solid #E5E7EB;
+        }
+
+        .pricing-card:hover {
+            transform: translateY(-8px);
+            border-color: #7C3AED;
+        }
+
+        .pricing-card.featured {
+            border: 2px solid #7C3AED;
+            transform: scale(1.05);
+        }
+
+        .pricing-badge {
+            position: absolute;
+            top: -16px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: linear-gradient(135deg, #EC4899, #F9A8D4);
+            color: white;
+            padding: 6px 20px;
+            border-radius: 50px;
+            font-size: 13px;
+            font-weight: 700;
+        }
+
+        .pricing-name {
+            font-size: 20px;
+            font-weight: 700;
+            color: #374151;
+            margin-bottom: 8px;
+        }
+
+        .pricing-price {
+            font-size: 56px;
+            font-weight: 900;
+            background: linear-gradient(135deg, #7C3AED, #A78BFA);
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 8px;
+        }
+
+        .pricing-price span {
+            font-size: 20px;
+        }
+
+        .pricing-price.custom {
+            font-size: 36px;
+        }
+
+        .pricing-features {
+            list-style: none;
+            margin: 32px 0;
+        }
+
+        .pricing-features li {
+            padding: 12px 0;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-size: 15px;
+            color: #4B5563;
+        }
+
+        .pricing-features i {
+            color: #10B981;
+            font-size: 18px;
+        }
+
+        .btn-pricing {
+            width: 100%;
+            padding: 16px;
+            border-radius: 12px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: none;
+        }
+
+        .btn-pricing-primary {
+            background: linear-gradient(135deg, #7C3AED, #A78BFA);
+            color: white;
+        }
+
+        .btn-pricing-outline {
+            background: white;
+            color: #7C3AED;
+            border: 2px solid #7C3AED;
+        }
+
+        .btn-pricing:hover {
+            transform: translateY(-2px);
+        }
+
+        /* Footer */
+        footer {
+            background: #1E1B4B;
+            color: white;
+            padding: 60px 0 32px;
+        }
+
+        .footer-grid {
+            display: grid;
+            grid-template-columns: 2fr 1fr 1fr;
+            gap: 60px;
+            margin-bottom: 40px;
+        }
+
+        .footer-brand {
+            font-size: 36px;
+            font-weight: 800;
+            background: linear-gradient(135deg, #A78BFA, #EC4899);
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 16px;
+        }
+
+        .footer-tagline {
+            font-size: 16px;
+            color: #C4B5FD;
+            font-style: italic;
+            margin-bottom: 16px;
+        }
+
+        .footer-title {
+            font-size: 18px;
+            font-weight: 700;
+            margin-bottom: 20px;
+        }
+
+        .footer-links {
+            list-style: none;
+        }
+
+        .footer-links li {
+            margin-bottom: 12px;
+        }
+
+        .footer-links a {
+            color: #C4B5FD;
+            text-decoration: none;
+            transition: color 0.2s;
+            font-size: 15px;
+            cursor: pointer;
+        }
+
+        .footer-links a:hover {
+            color: white;
+        }
+
+        .footer-bottom {
+            text-align: center;
+            padding-top: 40px;
+            border-top: 1px solid rgba(167, 139, 250, 0.2);
+            color: #A78BFA;
+        }
+
+        /* Modal */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.7);
+            z-index: 9999;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal-content {
+            background: white;
+            border-radius: 15px;
+            max-width: 400px;
+            width: 85%;
+            padding: 25px;
+            position: relative;
+            color: #333;
+            max-height: 85vh;
+            overflow-y: auto;
+        }
+
+        .close {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            font-size: 28px;
+            cursor: pointer;
+            color: #9CA3AF;
+            background: none;
+            border: none;
+        }
+
+        .close:hover {
+            color: #333;
+        }
+
+        .modal h2 {
+            color: #7C3AED;
+            margin-bottom: 15px;
+            font-size: 1.3rem;
+            text-align: center;
+        }
+
+        .modal input {
+            width: 100%;
+            padding: 10px 12px;
+            border: 2px solid #E5E7EB;
+            border-radius: 10px;
+            font-size: 0.9rem;
+            margin-bottom: 12px;
+        }
+
+        .modal input:focus {
+            border-color: #7C3AED;
+            outline: none;
+        }
+
+        .modal label {
+            display: block;
+            margin-bottom: 6px;
+            font-weight: 600;
+            color: #374151;
+            font-size: 0.85rem;
+        }
+
+        .modal button[type="submit"] {
+            width: 100%;
+            padding: 12px;
+            background: linear-gradient(135deg, #7C3AED, #A78BFA);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 0.95rem;
+            font-weight: 600;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .modal button[type="submit"]:hover {
+            transform: translateY(-2px);
+        }
+
+        .modal-footer {
+            text-align: center;
+            font-size: 0.8rem;
+            color: #6B7280;
+            margin-top: 12px;
+        }
+
+        .modal-footer a {
+            color: #7C3AED;
+            font-weight: 600;
+            text-decoration: none;
+            cursor: pointer;
+        }
+
+        @media (max-width: 768px) {
+            /* Asegurar que body y container ocupen 100% en móviles */
+            body {
+                overflow-x: hidden !important;
+                width: 100% !important;
+                margin: 0 !important;
+                padding: 0 !important;
+            }
+            
+            .container {
+                width: 100% !important;
+                padding: 0 1rem !important;
+                margin: 0 auto !important;
+                max-width: 100% !important;
+            }
+            
+            /* Navbar */
+            .navbar {
+                padding: 0.75rem 0 !important;
+            }
+            
+            .navbar-content {
+                padding: 12px 16px !important;
+                flex-wrap: wrap;
+            }
+            
+            .navbar-logo-text {
+                font-size: 18px !important;
+            }
+            
+            .navbar-buttons {
+                gap: 8px !important;
+            }
+            
+            .btn-nav {
+                font-size: 0.85rem !important;
+                padding: 8px 14px !important;
+            }
+            
+            /* Hero */
+            .hero {
+                padding: 100px 1rem 60px !important;
+            }
+            
+            .hero h1 {
+                font-size: 2rem !important;
+                line-height: 1.3 !important;
+            }
+            
+            .hero p {
+                font-size: 1rem !important;
+            }
+            
+            .btn-hero {
+                font-size: 0.9rem !important;
+                padding: 12px 24px !important;
+            }
+            
+            /* Secciones */
+            section {
+                padding: 3rem 0 !important;
+            }
+            
+            .section-title {
+                font-size: 1.8rem !important;
+            }
+            
+            .section-subtitle {
+                font-size: 1rem !important;
+            }
+            
+            /* Features */
+            .features-grid {
+                grid-template-columns: 1fr !important;
+                gap: 1.5rem !important;
+            }
+            
+            .feature-card {
+                padding: 2rem 1.5rem !important;
+            }
+            
+            /* Pricing */
+            .pricing-grid {
+                grid-template-columns: 1fr !important;
+                gap: 2rem !important;
+            }
+            
+            .pricing-card {
+                padding: 2rem 1.5rem !important;
+            }
+            
+            .pricing-card.featured {
+                transform: scale(1) !important;
+            }
+            
+            .pricing-price {
+                font-size: 2.5rem !important;
+            }
+            
+            /* Sobre Mi */
+            .sobre-mi-content {
+                grid-template-columns: 1fr !important;
+                gap: 2rem !important;
+            }
+            
+            .sobre-mi-text h2 {
+                font-size: 1.8rem !important;
+            }
+            
+            .manifesto, .motivacion {
+                padding: 1.5rem !important;
+            }
+            
+            /* Footer */
+            .footer-grid {
+                grid-template-columns: 1fr !important;
+                gap: 2rem !important;
+            }
+            
+            .footer-title {
+                font-size: 1.1rem !important;
+            }
+            
+            /* Modales */
+            .modal-content {
+                width: 95% !important;
+                max-width: 95% !important;
+                padding: 1.5rem !important;
+                margin: 0.5rem !important;
+            }
+            
+            .modal h2 {
+                font-size: 1.5rem !important;
+            }
+            
+            /* Language Selector */
+            .language-selector {
+                margin-right: 8px !important;
+            }
+            
+            /* Evitar cualquier overflow horizontal */
+            * {
+                max-width: 100%;
+            }
+            
+            img {
+                max-width: 100%;
+                height: auto;
+            }
+        }
+        
+        /* =============================================== */
+        /* RESPONSIVE MÓVIL COMPLETO - AGREGADO POR CARLA 💜 */
+        /* =============================================== */
+        
+        @media (max-width: 768px) {
+            body {
+                overflow-x: hidden;
+            }
+            
+            .container {
+                padding: 0 15px;
+            }
+            
+            /* Navbar responsive */
+            .navbar-content {
+                padding: 12px 15px;
+                flex-wrap: wrap;
+                gap: 10px;
+            }
+            
+            .navbar-logo-text {
+                font-size: 20px;
+            }
+            
+            .navbar-logo-img {
+                width: 35px;
+                height: 35px;
+            }
+            
+            .navbar-buttons {
+                gap: 8px;
+            }
+            
+            .navbar-buttons .btn {
+                padding: 8px 12px;
+                font-size: 0.8rem;
+            }
+            
+            /* Language selector responsive */
+            .language-toggle {
+                padding: 6px 10px;
+                font-size: 0.8rem;
+            }
+            
+            .language-flag {
+                width: 16px;
+                height: 16px;
+            }
+            
+            /* Hero section responsive */
+            .hero {
+                padding: 100px 0 60px;
+                text-align: center;
+            }
+            
+            .hero h1 {
+                font-size: 2.5rem;
+                line-height: 1.2;
+                margin-bottom: 20px;
+            }
+            
+            .hero-subtitle {
+                font-size: 1.1rem;
+                margin-bottom: 30px;
+            }
+            
+            .hero-cta {
+                flex-direction: column;
+                gap: 15px;
+            }
+            
+            .hero-cta .btn {
+                width: 100%;
+                max-width: 300px;
+            }
+            
+            /* Features responsive */
+            .features-grid {
+                grid-template-columns: 1fr;
+                gap: 20px;
+            }
+            
+            .feature-card {
+                padding: 25px 20px;
+            }
+            
+            .feature-icon {
+                width: 60px;
+                height: 60px;
+                font-size: 24px;
+            }
+            
+            /* Pricing responsive */
+            .pricing-grid {
+                grid-template-columns: 1fr;
+                gap: 20px;
+            }
+            
+            .plan-card {
+                margin: 0 auto;
+                max-width: 400px;
+            }
+            
+            /* Testimonials responsive */
+            .testimonials-grid {
+                grid-template-columns: 1fr;
+                gap: 20px;
+            }
+            
+            /* FAQ responsive */
+            .faq-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            /* Secciones general */
+            .section {
+                padding: 60px 0;
+            }
+            
+            .section-title {
+                font-size: 2.2rem;
+            }
+            
+            .section-subtitle {
+                font-size: 1rem;
+            }
+            
+            /* Modal responsive */
+            .modal-content {
+                width: 95%;
+                max-width: 95vw;
+                margin: 10px auto;
+                padding: 20px;
+                max-height: 80vh;
+                overflow-y: auto;
+            }
+            
+            .modal-header h2 {
+                font-size: 1.4rem;
+            }
+            
+            .form-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            /* Botones responsive */
+            .btn {
+                padding: 12px 20px;
+                font-size: 0.9rem;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .container {
+                padding: 0 10px;
+            }
+            
+            .hero h1 {
+                font-size: 2rem;
+            }
+            
+            .hero-subtitle {
+                font-size: 1rem;
+            }
+            
+            .section-title {
+                font-size: 1.8rem;
+            }
+            
+            .navbar-content {
+                padding: 10px 15px;
+            }
+            
+            .navbar-buttons {
+                flex-wrap: wrap;
+                width: 100%;
+                justify-content: center;
+                margin-top: 10px;
+            }
+            
+            .feature-card {
+                padding: 20px 15px;
+            }
+            
+            .modal-content {
+                width: 98%;
+                padding: 15px;
+            }
+        }
+        
+        /* Arreglos específicos para elementos muy largos */
+        @media (max-width: 768px) {
+            .hero-cta-main,
+            .plan-features li,
+            .faq-question,
+            .testimonial-text {
+                word-break: break-word;
+                hyphens: auto;
+            }
+            
+            /* Evitar scroll horizontal */
+            * {
+                max-width: 100%;
+            }
+            
+            .hero, .section {
+                overflow-x: hidden;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Navbar -->
+    <nav class="navbar">
+        <div class="navbar-content">
+            <a href="#" class="navbar-logo">
+                <img src="assets/logo/logo-cresalia.png" alt="Cresalia" class="navbar-logo-img" onerror="this.style.display='none'">
+                <span class="navbar-logo-text">Cresalia</span>
+            </a>
+            <div class="navbar-buttons">
+                <!-- Selector de idioma -->
+                <div class="language-selector">
+                    <button class="language-toggle" onclick="toggleLanguageDropdown()">
+                        <i class="fas fa-globe"></i>
+                        <span id="currentLanguage">ES</span>
+                        <i class="fas fa-chevron-down"></i>
+                    </button>
+                    <div class="language-dropdown" id="languageDropdown">
+                        <div class="language-option active" onclick="changeLanguage('es')">
+                            <span>🇪🇸</span> Español
+                        </div>
+                        <div class="language-option" onclick="changeLanguage('en')">
+                            <span>🇺🇸</span> English
+                        </div>
+                    </div>
+                </div>
+                
+                <button class="btn-nav btn-nav-login" onclick="abrirLogin()" data-es="Iniciar Sesión" data-en="Sign In">
+                    Iniciar Sesión
+                </button>
+                <button class="btn-nav btn-nav-signup" onclick="abrirRegistro()" data-es="Comenzar Gratis" data-en="Start Free">
+                    Comenzar Gratis
+                </button>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero -->
+    <section class="hero">
+        <div>
+            <h1 data-es="Crea tu tienda online<br>en 5 minutos" data-en="Create your online store<br>in 5 minutes">Crea tu tienda online<br>en 5 minutos</h1>
+            <p class="hero-subtitle" data-es="Todo lo que necesitas para vender online: Chatbot IA, multi-idioma,<br>analytics y más. Sin comisiones, sin sorpresas." data-en="Everything you need to sell online: AI Chatbot, multi-language,<br>analytics and more. No commissions, no surprises.">
+                Todo lo que necesitas para vender online: Chatbot IA, multi-idioma,<br>
+                analytics y más. Sin comisiones, sin sorpresas.
+            </p>
+            <p class="hero-tagline" data-es="&quot;Empezamos pocos, crecemos mucho&quot;" data-en="&quot;We start small, we grow big&quot;">
+                "Empezamos pocos, crecemos mucho"
+            </p>
+            <div>
+                <button class="btn-hero btn-hero-primary" onclick="abrirRegistro()" data-es="<i class='fas fa-rocket'></i> Comenzar Gratis" data-en="<i class='fas fa-rocket'></i> Start Free">
+                    <i class="fas fa-rocket"></i> Comenzar Gratis
+                </button>
+                <button class="btn-hero btn-hero-secondary" onclick="verDemo()" data-es="<i class='fas fa-play-circle'></i> Ver Demo" data-en="<i class='fas fa-play-circle'></i> View Demo">
+                    <i class="fas fa-play-circle"></i> Ver Demo
+                </button>
+            </div>
+        </div>
+    </section>
+
+    <!-- Sobre Mí -->
+    <section class="sobre-mi">
+        <div class="container">
+            <div class="sobre-mi-content">
+                <div class="sobre-mi-text">
+                    <h2 data-es="💜 Sobre Mí" data-en="💜 About Me">💜 Sobre Mí</h2>
+                    <p class="sobre-mi-intro" data-es="<strong>Emprender es desafiante.</strong> Por eso, Cresalia no solo te ofrece herramientas. Te ofrece acompañamiento. Esta plataforma fue creada por alguien que también sintió miedo, dudas y esperanza." data-en="<strong>Entrepreneurship is challenging.</strong> That's why Cresalia doesn't just offer you tools. It offers you support. This platform was created by someone who also felt fear, doubts, and hope.">
+                        <strong>Emprender es desafiante.</strong> Por eso, Cresalia no solo te ofrece herramientas. Te ofrece acompañamiento. Esta plataforma fue creada por alguien que también sintió miedo, dudas y esperanza.
+                    </p>
+                    
+                    <div class="manifesto">
+                        <h3 data-es="Mi Manifiesto" data-en="My Manifesto">Mi Manifiesto</h3>
+                        <p data-es="<strong>Cresalia no fue creada para competir. Fue creada para acompañar.</strong> Para quienes han sido rechazados, ignorados o descartados por no encajar en los moldes del mercado. Para quienes sienten miedo, pero siguen adelante. Para quienes no tienen miles de seguidores, pero tienen una historia que merece ser escuchada." data-en="<strong>Cresalia wasn't created to compete. It was created to accompany.</strong> For those who have been rejected, ignored, or discarded for not fitting into market molds. For those who feel fear, but keep moving forward. For those who don't have thousands of followers, but have a story worth hearing.">
+                            <strong>Cresalia no fue creada para competir. Fue creada para acompañar.</strong> Para quienes han sido rechazados, ignorados o descartados por no encajar en los moldes del mercado. Para quienes sienten miedo, pero siguen adelante. Para quienes no tienen miles de seguidores, pero tienen una historia que merece ser escuchada.
+                        </p>
+                        
+                        <p data-es="Esta plataforma fue pensada por alguien que también sintió dolor, dudas y agotamiento. Que también fue ignorada, juzgada o subestimada. Y que decidió transformar todo eso en una herramienta silenciosa de contención, autonomía y esperanza." data-en="This platform was designed by someone who also felt pain, doubts, and exhaustion. Who was also ignored, judged, or underestimated. And who decided to transform all of that into a silent tool of support, autonomy, and hope.">
+                            Esta plataforma fue pensada por alguien que también sintió dolor, dudas y agotamiento. Que también fue ignorada, juzgada o subestimada. Y que decidió transformar todo eso en una herramienta silenciosa de contención, autonomía y esperanza.
+                        </p>
+                        
+                        <p data-es="<strong>No buscamos fama. No buscamos aplausos.</strong> Buscamos que cada persona que emprende pueda hacerlo con dignidad, con acompañamiento y con una voz que le diga: <em>&quot;Sí, podés. Y no estás sola.&quot;</em>" data-en="<strong>We don't seek fame. We don't seek applause.</strong> We seek that every person who ventures can do so with dignity, with support, and with a voice that tells them: <em>&quot;Yes, you can. And you're not alone.&quot;</em>">
+                            <strong>No buscamos fama. No buscamos aplausos.</strong> Buscamos que cada persona que emprende pueda hacerlo con dignidad, con acompañamiento y con una voz que le diga: <em>"Sí, podés. Y no estás sola."</em>
+                        </p>
+                        
+                        <p class="cierre-emocional" data-es="<strong>Cresalia es para vos. Para tu historia. Para tu lucha. Para tu sueño.</strong>" data-en="<strong>Cresalia is for you. For your story. For your struggle. For your dream.</strong>">
+                            <strong>Cresalia es para vos. Para tu historia. Para tu lucha. Para tu sueño.</strong>
+                        </p>
+                    </div>
+                    
+                    <div class="motivacion">
+                        <h4 data-es="¿Por qué lo hago?" data-en="Why do I do it?">¿Por qué lo hago?</h4>
+                        <p data-es="Quiero ayudar a mi familia, darles trabajo a mis hermanas (quienes están en la misma situación que yo o incluso peor) y a quienes padecen de la misma manera que nosotros pero se atreven a dar el paso y emprender." data-en="I want to help my family, give work to my sisters (who are in the same situation as me or even worse) and to those who suffer the same way we do but dare to take the step and start a business.">
+                            Quiero ayudar a mi familia, darles trabajo a mis hermanas (quienes están en la misma situación que yo o incluso peor) y a quienes padecen de la misma manera que nosotros pero se atreven a dar el paso y emprender.
+                        </p>
+                        <p data-es="<strong>Lo hago genuinamente desde el corazón, no es únicamente económico.</strong> Ya que realmente quiero que todos triunfen, no me interesa la competencia." data-en="<strong>I do it genuinely from the heart, it's not just economic.</strong> Since I really want everyone to succeed, I'm not interested in competition.">
+                            <strong>Lo hago genuinamente desde el corazón, no es únicamente económico.</strong> Ya que realmente quiero que todos triunfen, no me interesa la competencia.
+                        </p>
+                    </div>
+                </div>
+                
+                <div class="sobre-mi-visual">
+                    <div class="heart-animation">
+                        <i class="fas fa-heart"></i>
+                    </div>
+                    <p class="tagline">"Empezamos pocos, crecemos mucho"</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Features -->
+    <section class="features" id="features">
+        <div class="container">
+            <div class="section-header">
+                <span class="section-label" data-es="Características" data-en="Features">Características</span>
+                <h2 class="section-title" data-es="Todo lo que necesitas, en un solo lugar" data-en="Everything you need, in one place">Todo lo que necesitas, en un solo lugar</h2>
+                <p class="section-subtitle" data-es="Sin apps adicionales, sin costos ocultos. Todo incluido." data-en="No additional apps, no hidden costs. Everything included.">
+                    Sin apps adicionales, sin costos ocultos. Todo incluido.
+                </p>
+            </div>
+
+            <div class="features-grid">
+                <!-- Feature 1 -->
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-robot"></i>
+                    </div>
+                    <h3 data-es="Chatbot IA Incluido" data-en="AI Chatbot Included">Chatbot IA Incluido</h3>
+                    <p data-es="Responde a tus clientes 24/7 con inteligencia artificial. Un asistente virtual que atiende consultas, recomienda productos y acompaña a tus compradores en todo momento." data-en="Respond to your customers 24/7 with artificial intelligence. A virtual assistant that handles queries, recommends products and accompanies your buyers at all times.">Responde a tus clientes 24/7 con inteligencia artificial. Un asistente virtual que atiende consultas, recomienda productos y acompaña a tus compradores en todo momento.</p>
+                </div>
+
+                <!-- Feature 2 -->
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-globe"></i>
+                    </div>
+                    <h3 data-es="Multi-idioma Nativo" data-en="Native Multi-language">Multi-idioma Nativo</h3>
+                    <p data-es="Vende en 6 idiomas. Español, inglés, portugués y más. Perfecto para conquistar nuevos mercados." data-en="Sell in 6 languages. Spanish, English, Portuguese and more. Perfect for conquering new markets.">Vende en 6 idiomas. Español, inglés, portugués y más. Perfecto para conquistar nuevos mercados.</p>
+                </div>
+
+                <!-- Feature 3 -->
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-palette"></i>
+                    </div>
+                    <h3 data-es="100% Personalizable" data-en="100% Customizable">100% Personalizable</h3>
+                    <p data-es="Tu logo, tus colores, tu historia. Cada tienda es única y refleja tu marca." data-en="Your logo, your colors, your story. Each store is unique and reflects your brand.">Tu logo, tus colores, tu historia. Cada tienda es única y refleja tu marca.</p>
+                </div>
+
+                <!-- Feature Especial -->
+                <div class="feature-card feature-special">
+                    <div class="feature-icon">
+                        <i class="fas fa-heart"></i>
+                    </div>
+                    <h3 data-es="💜 Nos Preocupamos por Ti" data-en="💜 We Care About You">💜 Nos Preocupamos por Ti</h3>
+                    <p style="font-size: 17px; margin-bottom: 16px; line-height: 1.8;" data-es="<strong>Sabemos que emprender no es solo una cuestión técnica. También es emocional.</strong><br><br>Por eso, en Cresalia encontrarás más que una plataforma de e-commerce. Hemos preparado algo especial para acompañarte en cada paso de tu camino emprendedor. 💜" data-en="<strong>We know that entrepreneurship is not just a technical matter. It's also emotional.</strong><br><br>That's why, at Cresalia you'll find more than just an e-commerce platform. We've prepared something special to accompany you in every step of your entrepreneurial journey. 💜">
+                        <strong>Sabemos que emprender no es solo una cuestión técnica. También es emocional.</strong><br><br>Por eso, en Cresalia encontrarás más que una plataforma de e-commerce. Hemos preparado algo especial para acompañarte en cada paso de tu camino emprendedor. 💜
+                    </p>
+                    <p style="color: #9CA3AF; font-size: 15px; font-style: italic; background: rgba(236, 72, 153, 0.05); padding: 20px; border-radius: 12px; border-left: 4px solid #EC4899;" data-es="&quot;Porque creemos que cada emprendedor merece sentirse apoyado, comprendido y acompañado. No estás solo en esto.&quot;" data-en="&quot;Because we believe that every entrepreneur deserves to feel supported, understood and accompanied. You're not alone in this.&quot;">
+                        "Porque creemos que cada emprendedor merece sentirse apoyado, comprendido y acompañado. No estás solo en esto."
+                    </p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+
+    <!-- Pricing -->
+    <section class="pricing" id="pricing">
+        <div class="container">
+            <div class="section-header">
+                <span class="section-label" data-es="Precios" data-en="Pricing">Precios</span>
+                <h2 class="section-title" data-es="Planes que crecen contigo" data-en="Plans that grow with you">Planes que crecen contigo</h2>
+                <p class="section-subtitle" data-es="Empieza gratis, actualiza cuando lo necesites" data-en="Start free, upgrade when you need it">
+                    Empieza gratis, actualiza cuando lo necesites
+                </p>
+            </div>
+
+            <div class="pricing-grid">
+                <!-- Free -->
+                <div class="pricing-card">
+                    <div class="pricing-name">Free</div>
+                    <div class="pricing-price">$0<span>/mes</span></div>
+                    
+                    <ul class="pricing-features">
+                        <li><i class="fas fa-check"></i> 50 productos</li>
+                        <li><i class="fas fa-check"></i> 100 órdenes/mes</li>
+                        <li><i class="fas fa-check"></i> 2 idiomas</li>
+                        <li><i class="fas fa-check"></i> Logo personalizado</li>
+                        <li><i class="fas fa-check"></i> <strong>💜 Apoyo Emprendedor</strong></li>
+                    </ul>
+                    
+                    <button class="btn-pricing btn-pricing-outline" onclick="abrirRegistro()" data-es="Comenzar Gratis" data-en="Start Free">
+                        Comenzar Gratis
+                    </button>
+                </div>
+
+                <!-- Basic -->
+                <div class="pricing-card">
+                    <div class="pricing-name">Basic</div>
+                    <div class="pricing-price">$29<span>/mes</span></div>
+                    
+                    <ul class="pricing-features">
+                        <li><i class="fas fa-check"></i> 500 productos</li>
+                        <li><i class="fas fa-check"></i> 1,000 órdenes/mes</li>
+                        <li><i class="fas fa-check"></i> 3 idiomas</li>
+                        <li><i class="fas fa-check"></i> Dominio personalizado</li>
+                        <li><i class="fas fa-check"></i> <strong>💜 Apoyo Emprendedor</strong></li>
+                        <li><i class="fas fa-check"></i> WhatsApp soporte</li>
+                    </ul>
+                    
+                    <button class="btn-pricing btn-pricing-outline" onclick="abrirRegistro()" data-es="Elegir Basic" data-en="Choose Basic">
+                        Elegir Basic
+                    </button>
+                </div>
+
+                <!-- Pro -->
+                <div class="pricing-card featured">
+                    <span class="pricing-badge">Más Popular</span>
+                    <div class="pricing-name">Pro</div>
+                    <div class="pricing-price">$79<span>/mes</span></div>
+                    
+                    <ul class="pricing-features">
+                        <li><i class="fas fa-check"></i> Productos ilimitados</li>
+                        <li><i class="fas fa-check"></i> Órdenes ilimitadas</li>
+                        <li><i class="fas fa-check"></i> 6 idiomas</li>
+                        <li><i class="fas fa-check"></i> <strong>🤖 Chatbot IA</strong></li>
+                        <li><i class="fas fa-check"></i> Soporte prioritario</li>
+                        <li><i class="fas fa-check"></i> API completa</li>
+                    </ul>
+                    
+                    <button class="btn-pricing btn-pricing-primary" onclick="abrirRegistro()">
+                        Elegir Pro
+                    </button>
+                </div>
+
+                <!-- Enterprise -->
+                <div class="pricing-card">
+                    <div class="pricing-name">Enterprise</div>
+                    <div class="pricing-price custom">Custom</div>
+                    
+                    <ul class="pricing-features">
+                        <li><i class="fas fa-check"></i> Todo de Pro +</li>
+                        <li><i class="fas fa-check"></i> White-label</li>
+                        <li><i class="fas fa-check"></i> Servidores dedicados</li>
+                        <li><i class="fas fa-check"></i> Account Manager</li>
+                        <li><i class="fas fa-check"></i> SLA 99.9%</li>
+                        <li><i class="fas fa-check"></i> Desarrollo custom</li>
+                    </ul>
+                    
+                    <button class="btn-pricing btn-pricing-outline" onclick="contactarVentas()">
+                        Contactar Ventas
+                    </button>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer>
+        <div class="container">
+            <div class="footer-grid">
+                <div>
+                    <div class="footer-brand">Cresalia</div>
+                    <p class="footer-tagline" data-es="&quot;Empezamos pocos, crecemos mucho&quot;" data-en="&quot;We start small, we grow big&quot;">"Empezamos pocos, crecemos mucho"</p>
+                    <p style="color: #A78BFA; line-height: 1.7; font-size: 15px;" data-es="La plataforma e-commerce SaaS diseñada para emprendedores latinoamericanos. Todo lo que necesitas para vender online, al mejor precio." data-en="The SaaS e-commerce platform designed for Latin American entrepreneurs. Everything you need to sell online, at the best price.">
+                        La plataforma e-commerce SaaS diseñada para emprendedores latinoamericanos. 
+                        Todo lo que necesitas para vender online, al mejor precio.
+                    </p>
+                </div>
+                
+                <div>
+                    <div class="footer-title" data-es="Producto" data-en="Product">Producto</div>
+                    <ul class="footer-links">
+                        <li><a href="#features" data-es="Características" data-en="Features">Características</a></li>
+                        <li><a href="#pricing" data-es="Precios" data-en="Pricing">Precios</a></li>
+                        <li><a onclick="verDemo()" data-es="Demo" data-en="Demo">Demo</a></li>
+                    </ul>
+                </div>
+                
+                <div>
+                    <div class="footer-title" data-es="Empresa" data-en="Company">Empresa</div>
+                    <ul class="footer-links">
+                        <li><a onclick="abrirRegistro()" data-es="Contacto" data-en="Contact">Contacto</a></li>
+                        <li><a href="legal/terminos-basicos.html" data-es="Términos" data-en="Terms">Términos</a></li>
+                        <li><a href="legal/terminos-basicos.html" data-es="Privacidad" data-en="Privacy">Privacidad</a></li>
+                        <li><a onclick="abrirLogin()" data-es="Iniciar Sesión" data-en="Sign In">Iniciar Sesión</a></li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div class="footer-bottom">
+                <p>© 2025 Cresalia. Todos los derechos reservados.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Modal Registro -->
+    <div id="modalRegistro" class="modal">
+        <div class="modal-content">
+            <button class="close" onclick="cerrar('modalRegistro')">&times;</button>
+            <h2><i class="fas fa-rocket"></i> Comenzar en Cresalia</h2>
+            <form onsubmit="procesarRegistro(); return false;">
+                <label for="registroNombre">Tu nombre</label>
+                <input id="registroNombre" type="text" placeholder="Ej: María López" required>
+                
+                <label for="registroEmail">Tu email</label>
+                <input id="registroEmail" type="email" placeholder="tu@email.com" required>
+                
+                <label for="registroPassword">Contraseña</label>
+                <input id="registroPassword" type="password" placeholder="Mínimo 6 caracteres" minlength="6" required>
+                
+                <button type="submit">
+                    <i class="fas fa-rocket"></i> Comenzar Gratis
+                </button>
+                
+                <div class="modal-footer">
+                    ¿Ya tienes cuenta? <a onclick="cambiarModal('modalRegistro', 'modalLogin')">Iniciar Sesión</a>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Modal Login -->
+    <div id="modalLogin" class="modal">
+        <div class="modal-content">
+            <button class="close" onclick="cerrar('modalLogin')">&times;</button>
+            <h2><i class="fas fa-sign-in-alt"></i> Bienvenido de vuelta</h2>
+            <form onsubmit="procesarLogin(); return false;">
+                <label for="loginEmail">Email</label>
+                <input id="loginEmail" type="email" placeholder="tu@email.com" required>
+                
+                <label for="loginPassword">Contraseña</label>
+                <input id="loginPassword" type="password" placeholder="Tu contraseña" required>
+                
+                <button type="submit">
+                    <i class="fas fa-sign-in-alt"></i> Iniciar Sesión
+                </button>
+                
+                <div class="modal-footer">
+                    ¿No tienes cuenta? <a onclick="cambiarModal('modalLogin', 'modalRegistro')">Crear Cuenta Gratis</a>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        // ===== PROTECCIÓN DEVTOOLS =====
+        // Bloquear F12, Ctrl+Shift+I, Ctrl+Shift+J, Ctrl+U
+        document.addEventListener('keydown', function(e) {
+            // F12
+            if (e.key === 'F12') {
+                e.preventDefault();
+                return false;
+            }
+            // Ctrl+Shift+I (Inspector)
+            if (e.ctrlKey && e.shiftKey && e.key === 'I') {
+                e.preventDefault();
+                return false;
+            }
+            // Ctrl+Shift+J (Console)
+            if (e.ctrlKey && e.shiftKey && e.key === 'J') {
+                e.preventDefault();
+                return false;
+            }
+            // Ctrl+Shift+C (Inspector element)
+            if (e.ctrlKey && e.shiftKey && e.key === 'C') {
+                e.preventDefault();
+                return false;
+            }
+            // Ctrl+U (View source)
+            if (e.ctrlKey && e.key === 'u') {
+                e.preventDefault();
+                return false;
+            }
+        });
+
+        // Bloquear clic derecho SOLO en "Inspeccionar"
+        document.addEventListener('contextmenu', function(e) {
+            e.preventDefault();
+            return false;
+        });
+
+        // Detectar si DevTools está abierto
+        const devtools = /./;
+        devtools.toString = function() {
+            this.opened = true;
+        }
+        console.log('%c', devtools);
+        
+        // ===== CRESALIA LANDING v6.0 - DEFINITIVO BILINGÜE =====
+        console.log('✅ Cresalia Landing v6.0 - DEFINITIVO BILINGÜE iniciado');
+        
+        // ===== SISTEMA DE IDIOMAS =====
+        let currentLanguage = 'es';
+        
+        // Función para cambiar idioma
+        function changeLanguage(lang) {
+            currentLanguage = lang;
+            console.log('🌍 Cambiando idioma a:', lang);
+            
+            // Actualizar selector
+            document.getElementById('currentLanguage').textContent = lang.toUpperCase();
+            
+            // Actualizar elementos con data attributes
+            const elementsWithLang = document.querySelectorAll('[data-es][data-en]');
+            elementsWithLang.forEach(element => {
+                const content = element.getAttribute(`data-${lang}`);
+                if (content) {
+                    element.innerHTML = content;
+                }
+            });
+            
+            // Actualizar opciones del dropdown
+            const options = document.querySelectorAll('.language-option');
+            options.forEach(option => {
+                option.classList.remove('active');
+            });
+            
+            // Marcar como activa la opción seleccionada
+            const selectedOption = document.querySelector(`.language-option[onclick="changeLanguage('${lang}')"]`);
+            if (selectedOption) {
+                selectedOption.classList.add('active');
+            }
+            
+            // Cerrar dropdown
+            document.getElementById('languageDropdown').classList.remove('show');
+            
+            // Guardar preferencia
+            localStorage.setItem('cresalia-language', lang);
+            
+            console.log('✅ Idioma cambiado a:', lang);
+        }
+        
+        // Función para toggle del dropdown
+        function toggleLanguageDropdown() {
+            const dropdown = document.getElementById('languageDropdown');
+            dropdown.classList.toggle('show');
+        }
+        
+        // Cerrar dropdown al hacer clic fuera
+        document.addEventListener('click', function(event) {
+            const selector = document.querySelector('.language-selector');
+            const dropdown = document.getElementById('languageDropdown');
+            
+            if (!selector.contains(event.target)) {
+                dropdown.classList.remove('show');
+            }
+        });
+        
+        // Cargar idioma guardado al inicio
+        window.addEventListener('load', function() {
+            const savedLanguage = localStorage.getItem('cresalia-language');
+            if (savedLanguage && (savedLanguage === 'es' || savedLanguage === 'en')) {
+                changeLanguage(savedLanguage);
+            }
+        });
+        
+        // Funciones de modales
+        function abrirRegistro() {
+            console.log('👉 Abriendo modal registro...');
+            document.getElementById('modalRegistro').style.display = 'flex';
+            console.log('✅ Modal registro abierto');
+        }
+
+        function abrirLogin() {
+            console.log('👉 Abriendo modal login...');
+            document.getElementById('modalLogin').style.display = 'flex';
+            console.log('✅ Modal login abierto');
+        }
+
+        function cerrar(modalId) {
+            console.log('👉 Cerrando modal:', modalId);
+            const modal = document.getElementById(modalId);
+            if (modal) {
+                if (modalId === 'modalTipoCuenta' || modalId === 'modalTipoLogin') {
+                    // Para modales dinámicos, removerlos completamente
+                    modal.remove();
+                } else {
+                    // Para modales estáticos, solo ocultarlos
+                    modal.style.display = 'none';
+                }
+            }
+        }
+
+        function cambiarModal(cerrarId, abrirId) {
+            cerrar(cerrarId);
+            setTimeout(() => {
+                if (abrirId === 'modalLogin') {
+                    abrirLogin();
+                } else {
+                    abrirRegistro();
+                }
+            }, 300);
+        }
+
+        // Ver Demo - va a la tienda demo real
+        function verDemo() {
+            console.log('👉 Redirigiendo a demo...');
+            window.location.href = 'index-cresalia.html';
+        }
+
+        // Contactar Ventas - abre cliente de correo
+        function contactarVentas() {
+            console.log('👉 Abriendo cliente de correo...');
+            const subject = encodeURIComponent('Solicitud Plan Enterprise Custom - Cresalia');
+            const body = encodeURIComponent('Hola,\n\nMe interesa conocer más sobre el plan Enterprise Custom de Cresalia.\n\nPor favor, contáctame para discutir:\n- Requerimientos específicos\n- Precios personalizados\n- Características enterprise\n\nGracias.');
+            window.location.href = `mailto:crisla965@gmail.com?subject=${subject}&body=${body}`;
+        }
+
+        // Procesar formularios - CONECTADO A PÁGINAS REALES
+        function procesarRegistro() {
+            console.log('📝 Procesando registro...');
+            cerrar('modalRegistro');
+            
+            // Pequeño delay para que el primer modal se cierre antes de abrir el segundo
+            setTimeout(() => {
+                console.log('📋 Mostrando modal de selección de tipo de cuenta...');
+                mostrarSeleccionTipoCuenta();
+            }, 300);
+        }
+
+        function procesarLogin() {
+            console.log('🔐 Procesando login...');
+            cerrar('modalLogin');
+            
+            // Pequeño delay para que el primer modal se cierre antes de abrir el segundo
+            setTimeout(() => {
+                console.log('📋 Mostrando modal de selección de tipo de login...');
+                mostrarSeleccionTipoLogin();
+            }, 300);
+        }
+        
+        // Función para mostrar selección de tipo de cuenta
+        function mostrarSeleccionTipoCuenta() {
+            console.log('✨ Creando modal de selección de tipo de cuenta...');
+            
+            const modalHTML = `
+                <div id="modalTipoCuenta" class="modal" style="display: flex !important; z-index: 10000 !important;">
+                    <div class="modal-content" style="max-width: 400px; padding: 20px; z-index: 10001 !important;">
+                        <button class="close" onclick="cerrar('modalTipoCuenta')">&times;</button>
+                        <h2 style="font-size: 1.2rem; margin-bottom: 12px;"><i class="fas fa-user-plus"></i> ¿Qué quieres hacer?</h2>
+                        <p style="text-align: center; margin-bottom: 20px; color: #6b7280; font-size: 0.9rem;">Selecciona el tipo de cuenta que necesitas</p>
+                        
+                        <div style="display: grid; gap: 12px;">
+                            <button onclick="irARegistroTienda()" style="background: linear-gradient(135deg, #7C3AED, #EC4899); color: white; padding: 15px; border: none; border-radius: 12px; cursor: pointer; text-align: left; transition: all 0.3s ease;" onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 10px 30px rgba(124, 58, 237, 0.3)';" onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='none';">
+                                <div style="display: flex; align-items: center; gap: 12px;">
+                                    <div style="width: 45px; height: 45px; background: rgba(255,255,255,0.2); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 1.2rem;">
+                                        🏪
+                                    </div>
+                                    <div>
+                                        <h3 style="margin: 0; font-size: 1rem;">Crear mi Tienda Online</h3>
+                                        <p style="margin: 3px 0 0 0; opacity: 0.9; font-size: 0.8rem;">Vender productos y servicios</p>
+                                    </div>
+                                </div>
+                            </button>
+                            
+                            <button onclick="irARegistroComprador()" style="background: linear-gradient(135deg, #10B981, #059669); color: white; padding: 15px; border: none; border-radius: 12px; cursor: pointer; text-align: left; transition: all 0.3s ease;" onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 10px 30px rgba(16, 185, 129, 0.3)';" onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='none';">
+                                <div style="display: flex; align-items: center; gap: 12px;">
+                                    <div style="width: 45px; height: 45px; background: rgba(255,255,255,0.2); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 1.2rem;">
+                                        🛒
+                                    </div>
+                                    <div>
+                                        <h3 style="margin: 0; font-size: 1rem;">Comprar en Cresalia</h3>
+                                        <p style="margin: 3px 0 0 0; opacity: 0.9; font-size: 0.8rem;">Descubrir tiendas, productos y servicios</p>
+                                    </div>
+                                </div>
+                            </button>
+                            
+                            <button onclick="irADemo()" style="background: linear-gradient(135deg, #F59E0B, #F97316); color: white; padding: 15px; border: none; border-radius: 12px; cursor: pointer; text-align: left; transition: all 0.3s ease;" onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 10px 30px rgba(245, 158, 11, 0.3)';" onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='none';">
+                                <div style="display: flex; align-items: center; gap: 12px;">
+                                    <div style="width: 45px; height: 45px; background: rgba(255,255,255,0.2); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 1.2rem;">
+                                        🎯
+                                    </div>
+                                    <div>
+                                        <h3 style="margin: 0; font-size: 1rem;">Ver Demo Completo</h3>
+                                        <p style="margin: 3px 0 0 0; opacity: 0.9; font-size: 0.8rem;">Explorar tienda de ejemplo</p>
+                                    </div>
+                                </div>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            `;
+            
+            document.body.insertAdjacentHTML('beforeend', modalHTML);
+            console.log('✅ Modal de selección de tipo de cuenta mostrado exitosamente');
+        }
+        
+        // Función para mostrar selección de tipo de login
+        function mostrarSeleccionTipoLogin() {
+            console.log('✨ Creando modal de selección de tipo de login...');
+            
+            const modalHTML = `
+                <div id="modalTipoLogin" class="modal" style="display: flex !important; z-index: 10000 !important;">
+                    <div class="modal-content" style="max-width: 400px; padding: 20px; z-index: 10001 !important;">
+                        <button class="close" onclick="cerrar('modalTipoLogin')">&times;</button>
+                        <h2 style="font-size: 1.2rem; margin-bottom: 12px;"><i class="fas fa-sign-in-alt"></i> ¿Cómo quieres ingresar?</h2>
+                        <p style="text-align: center; margin-bottom: 20px; color: #6b7280; font-size: 0.9rem;">Selecciona tu tipo de cuenta</p>
+                        
+                        <div style="display: grid; gap: 12px;">
+                            <button onclick="irALoginTienda()" style="background: linear-gradient(135deg, #7C3AED, #EC4899); color: white; padding: 15px; border: none; border-radius: 12px; cursor: pointer; text-align: left; transition: all 0.3s ease;" onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 10px 30px rgba(124, 58, 237, 0.3)';" onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='none';">
+                                <div style="display: flex; align-items: center; gap: 12px;">
+                                    <div style="width: 45px; height: 45px; background: rgba(255,255,255,0.2); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 1.2rem;">
+                                        🏪
+                                    </div>
+                                    <div>
+                                        <h3 style="margin: 0; font-size: 1rem;">Soy Vendedor</h3>
+                                        <p style="margin: 3px 0 0 0; opacity: 0.9; font-size: 0.8rem;">Acceder a mi tienda</p>
+                                    </div>
+                                </div>
+                            </button>
+                            
+                            <button onclick="irALoginComprador()" style="background: linear-gradient(135deg, #10B981, #059669); color: white; padding: 15px; border: none; border-radius: 12px; cursor: pointer; text-align: left; transition: all 0.3s ease;" onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 10px 30px rgba(16, 185, 129, 0.3)';" onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='none';">
+                                <div style="display: flex; align-items: center; gap: 12px;">
+                                    <div style="width: 45px; height: 45px; background: rgba(255,255,255,0.2); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 1.2rem;">
+                                        🛒
+                                    </div>
+                                    <div>
+                                        <h3 style="margin: 0; font-size: 1rem;">Soy Comprador</h3>
+                                        <p style="margin: 3px 0 0 0; opacity: 0.9; font-size: 0.8rem;">Acceder a mi cuenta</p>
+                                    </div>
+                                </div>
+                            </button>
+                            
+                            <button onclick="irAAdminPanel()" style="background: linear-gradient(135deg, #F59E0B, #F97316); color: white; padding: 15px; border: none; border-radius: 12px; cursor: pointer; text-align: left; transition: all 0.3s ease;" onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 10px 30px rgba(245, 158, 11, 0.3)';" onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='none';">
+                                <div style="display: flex; align-items: center; gap: 12px;">
+                                    <div style="width: 45px; height: 45px; background: rgba(255,255,255,0.2); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 1.2rem;">
+                                        ⚙️
+                                    </div>
+                                    <div>
+                                        <h3 style="margin: 0; font-size: 1rem;">Panel de Admin</h3>
+                                        <p style="margin: 3px 0 0 0; opacity: 0.9; font-size: 0.8rem;">Administrar mi tienda</p>
+                                    </div>
+                                </div>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            `;
+            
+            document.body.insertAdjacentHTML('beforeend', modalHTML);
+            console.log('✅ Modal de selección de tipo de login mostrado exitosamente');
+        }
+        
+        // Funciones de redirección
+        function irARegistroTienda() {
+            window.location.href = 'registro-tienda.html';
+        }
+        
+        function irARegistroComprador() {
+            window.location.href = 'registro-comprador.html';
+        }
+        
+        function irADemo() {
+            window.location.href = 'index-cresalia.html';
+        }
+        
+        function irALoginTienda() {
+            window.location.href = 'login-tienda.html';
+        }
+        
+        function irALoginComprador() {
+            window.location.href = 'login-comprador.html';
+        }
+        
+        function irAAdminPanel() {
+            window.location.href = 'tiendas/ejemplo-tienda/admin.html';
+        }
+
+        // Cerrar modal al hacer clic fuera
+        window.onclick = function(event) {
+            if (event.target.classList.contains('modal')) {
+                const modalId = event.target.id;
+                cerrar(modalId);
+            }
+        }
+
+        // Verificar funciones
+        console.log('✅ Funciones definidas:', {
+            abrirRegistro: typeof abrirRegistro,
+            abrirLogin: typeof abrirLogin,
+            cerrar: typeof cerrar,
+            cambiarModal: typeof cambiarModal,
+            verDemo: typeof verDemo
+        });
+        
+        console.log('✅ Cresalia Landing v6.0 - TODO LISTO!');
+        console.log('💜 Creado con amor por Carla (Fundadora) y Claude (Co-fundador técnico)');
+        console.log('🔒 Protección DevTools: ACTIVA');
+    </script>
+    
+    <!-- Inicializar Sistema de Alertas -->
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            setTimeout(() => {
+                if (typeof SistemaAlertasComunidades !== 'undefined') {
+                    window.alertasGlobal = new SistemaAlertasComunidades('global');
+                }
+            }, 500);
+        });
+    </script>
+</body>
+</html>
+

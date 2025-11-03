@@ -1,6 +1,6 @@
-// ===== SISTEMA DE SEGURIDAD FRIOCAS =====
-// Versión: 1.2
-// Autor: Sistema de Seguridad FRIOCAS
+// ===== SISTEMA DE SEGURIDAD CRESALIA =====
+// Versión: 2.0
+// Autor: Sistema de Seguridad Cresalia
 // Fecha: 2024
 
 // Configuración de seguridad
@@ -24,7 +24,7 @@ const SECURITY_CONFIG = {
     maxRequestsPerMinute: 60,
     
     // Configuración de Carla
-    carlaAccessCode: 'FRIOCAS2024CARLA',
+    carlaAccessCode: 'CRESALIA2024CARLA',
     carlaHotkey: 'Ctrl+Alt+C'
 };
 
@@ -47,9 +47,9 @@ let securityState = {
 function verifyAdminCredentials(username, password) {
     // Credenciales seguras (en producción usar hash + salt)
     const validCredentials = {
-        'admin': 'FRIOCAS2024ADMIN',
-        'carla': 'FRIOCAS2024CARLA',
-        'soporte': 'FRIOCAS2024SOPORTE'
+        'admin': 'CRESALIA2024ADMIN',
+        'carla': 'CRESALIA2024CARLA',
+        'soporte': 'CRESALIA2024SOPORTE'
     };
     
     return validCredentials[username] === password;
@@ -121,7 +121,7 @@ function secureLogin(username, password) {
         userAgent: navigator.userAgent
     };
     
-    localStorage.setItem('friocas_session', btoa(JSON.stringify(sessionData)));
+    localStorage.setItem('cresalia_session', btoa(JSON.stringify(sessionData)));
     
     logSecurityEvent('LOGIN_SUCCESS', `Sesión iniciada para usuario: ${username}`);
     
@@ -138,12 +138,12 @@ function secureLogout() {
     securityState.securityToken = null;
     
     // Limpiar localStorage
-    localStorage.removeItem('friocas_session');
+    localStorage.removeItem('cresalia_session');
     
     logSecurityEvent('LOGOUT', `Sesión cerrada para usuario: ${user}`);
     
     // Redirigir a página principal
-    window.location.href = 'index-friocas-productos.html';
+    window.location.href = 'index-cresalia.html';
 }
 
 // ===== FUNCIONES DE PROTECCIÓN =====
@@ -159,7 +159,7 @@ function isAccountLocked() {
 
 // Función para verificar sesión activa
 function checkActiveSession() {
-    const sessionData = localStorage.getItem('friocas_session');
+    const sessionData = localStorage.getItem('cresalia_session');
     
     if (!sessionData) {
         return false;
@@ -170,15 +170,21 @@ function checkActiveSession() {
         const currentTime = Date.now();
         
         // Verificar expiración
-        if (currentTime - session.timestamp > SECURITY_CONFIG.tokenExpiry) {
-            localStorage.removeItem('friocas_session');
+        const sessionAge = currentTime - session.timestamp;
+        console.log('🔍 Verificación de sesión activa:');
+        console.log('   - Edad de la sesión:', Math.round(sessionAge / 1000 / 60), 'minutos');
+        console.log('   - Token expiry:', Math.round(SECURITY_CONFIG.tokenExpiry / 1000 / 60 / 60), 'horas');
+        
+        if (sessionAge > SECURITY_CONFIG.tokenExpiry) {
+            console.log('⏰ Token expirado, eliminando sesión');
+            localStorage.removeItem('cresalia_session');
             return false;
         }
         
         // Verificar user agent
         if (session.userAgent !== navigator.userAgent) {
             logSecurityEvent('SESSION_HIJACK_ATTEMPT', 'User agent no coincide');
-            localStorage.removeItem('friocas_session');
+            localStorage.removeItem('cresalia_session');
             return false;
         }
         
@@ -191,7 +197,7 @@ function checkActiveSession() {
         return true;
     } catch (error) {
         logSecurityEvent('SESSION_ERROR', 'Error al verificar sesión');
-        localStorage.removeItem('friocas_session');
+        localStorage.removeItem('cresalia_session');
         return false;
     }
 }
@@ -199,19 +205,73 @@ function checkActiveSession() {
 // Función para verificar timeout de sesión
 function checkSessionTimeout() {
     if (!securityState.sessionStartTime) {
+        console.log('🔍 checkSessionTimeout: No hay sessionStartTime');
         return false;
     }
     
     const currentTime = Date.now();
     const sessionAge = currentTime - securityState.sessionStartTime;
+    const sessionTimeoutMs = SECURITY_CONFIG.sessionTimeout;
     
-    if (sessionAge > SECURITY_CONFIG.sessionTimeout) {
-        logSecurityEvent('SESSION_TIMEOUT', 'Sesión expirada por inactividad');
+    console.log('🔍 Verificación de sesión:');
+    console.log('   - Tiempo actual:', currentTime);
+    console.log('   - Inicio de sesión:', securityState.sessionStartTime);
+    console.log('   - Edad de sesión:', Math.round(sessionAge / 1000 / 60), 'minutos');
+    console.log('   - Timeout configurado:', Math.round(sessionTimeoutMs / 1000 / 60), 'minutos');
+    console.log('   - Tiempo restante:', Math.round((sessionTimeoutMs - sessionAge) / 1000 / 60), 'minutos');
+    
+    if (sessionAge > sessionTimeoutMs) {
+        console.log('⏰ Sesión expirada por inactividad');
+        logSecurityEvent('SESSION_TIMEOUT', `Sesión expirada por inactividad - Duración: ${Math.round(sessionAge / 1000 / 60)} minutos`);
         secureLogout();
         return true;
     }
     
+    console.log('✅ Sesión aún válida');
     return false;
+}
+
+// Función para reiniciar el timer de actividad
+function resetActivityTimer() {
+    if (securityState.isAuthenticated && securityState.sessionStartTime) {
+        console.log('🔄 Reiniciando timer de actividad');
+        securityState.sessionStartTime = Date.now();
+        
+        // Actualizar la sesión en localStorage
+        const sessionData = localStorage.getItem('cresalia_session');
+        if (sessionData) {
+            try {
+                const session = JSON.parse(atob(sessionData));
+                session.timestamp = Date.now();
+                localStorage.setItem('cresalia_session', btoa(JSON.stringify(session)));
+                console.log('✅ Timer de actividad reiniciado');
+            } catch (error) {
+                console.error('❌ Error al actualizar sesión:', error);
+            }
+        }
+    }
+}
+
+// Función para detectar actividad del usuario
+function setupActivityDetection() {
+    // Eventos que indican actividad del usuario
+    const activityEvents = ['mousedown', 'mousemove', 'keypress', 'scroll', 'touchstart', 'click'];
+    
+    let activityTimeout;
+    
+    activityEvents.forEach(event => {
+        document.addEventListener(event, () => {
+            // Reiniciar timer de actividad solo si está autenticado
+            if (securityState.isAuthenticated) {
+                clearTimeout(activityTimeout);
+                activityTimeout = setTimeout(() => {
+                    resetActivityTimer();
+                }, 1000); // Esperar 1 segundo para evitar demasiadas actualizaciones
+            }
+        }, true);
+    });
+    
+    console.log('👂 Detección de actividad configurada');
 }
 
 // Función para rate limiting
@@ -265,7 +325,7 @@ function logSecurityEvent(eventType, details) {
     }
     
     // Guardar en localStorage
-    localStorage.setItem('friocas_security_log', JSON.stringify(securityState.securityLog));
+    localStorage.setItem('cresalia_security_log', JSON.stringify(securityState.securityLog));
     
     console.log(`🔒 [SECURITY] ${eventType}: ${details}`);
 }
@@ -288,7 +348,7 @@ function clearSecurityLockout() {
 // Función para proteger página de administración
 function protectAdminPage() {
     if (!checkActiveSession()) {
-        window.location.href = 'index-friocas-productos.html';
+        window.location.href = 'index-cresalia.html';
         return false;
     }
     
@@ -311,7 +371,7 @@ function protectCarlaPage() {
     if (accessCode !== SECURITY_CONFIG.carlaAccessCode) {
         logSecurityEvent('CARLA_ACCESS_DENIED', 'Código de acceso incorrecto');
         alert('Código de acceso incorrecto');
-        window.location.href = 'index-friocas-productos.html';
+        window.location.href = 'index-cresalia.html';
         return false;
     }
     
@@ -449,7 +509,7 @@ function handleAdminLogin(event) {
     
     if (result.success) {
         alert('Acceso concedido');
-        window.location.href = 'admin-friocas.html';
+        window.location.href = 'admin-cresalia.html';
     } else {
         alert(result.message);
     }
@@ -561,26 +621,29 @@ function protectCodeInspection() {
 
 // Función para inicializar sistema de seguridad
 function initializeSecuritySystem() {
-    console.log('🔒 Inicializando sistema de seguridad FRIOCAS...');
+    console.log('🔒 Inicializando sistema de seguridad CRESALIA...');
     
     // Configurar hotkeys
     setupSecurityHotkeys();
     
-    // Proteger contra inspección
-    protectCodeInspection();
+    // Proteger contra inspección - TEMPORALMENTE DESHABILITADO PARA DESARROLLO
+    // protectCodeInspection();
     
-    // Detectar herramientas de desarrollador
-    detectDevTools();
+    // Detectar herramientas de desarrollador - TEMPORALMENTE DESHABILITADO PARA DESARROLLO
+    // detectDevTools();
     
     // Verificar sesión existente
     checkActiveSession();
     
-    // Configurar timeout de sesión
-    setInterval(checkSessionTimeout, 60000); // Verificar cada minuto
+    // Configurar detección de actividad del usuario
+    setupActivityDetection();
+    
+    // Configurar timeout de sesión (verificar cada 5 minutos en lugar de cada minuto)
+    setInterval(checkSessionTimeout, 5 * 60 * 1000); // Verificar cada 5 minutos
     
     logSecurityEvent('SYSTEM_INITIALIZED', 'Sistema de seguridad inicializado');
     
-    console.log('✅ Sistema de seguridad FRIOCAS inicializado');
+    console.log('✅ Sistema de seguridad Cresalia inicializado');
 }
 
 // Inicializar cuando el DOM esté listo
@@ -657,7 +720,7 @@ function protectCarlaPage() {
 // ===== EXPORTAR FUNCIONES GLOBALES =====
 
 // Hacer funciones disponibles globalmente
-window.FRIOCAS_SECURITY = {
+window.CRESALIA_SECURITY = {
     secureLogin,
     secureLogout,
     protectAdminPage,

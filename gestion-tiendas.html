@@ -1,0 +1,1509 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gestión de Tiendas - Cresalia</title>
+    
+    <!-- Favicon -->
+    <link rel="icon" type="image/png" href="assets/logo/logo-cresalia.png">
+    <link rel="shortcut icon" type="image/png" href="assets/logo/logo-cresalia.png">
+    
+    <!-- Meta Security -->
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' cdnjs.cloudflare.com; style-src 'self' 'unsafe-inline' fonts.googleapis.com cdnjs.cloudflare.com; font-src 'self' fonts.gstatic.com; img-src 'self' data:; connect-src 'self';">
+    <meta http-equiv="X-Content-Type-Options" content="nosniff">
+    <meta http-equiv="X-Frame-Options" content="DENY">
+    <meta http-equiv="X-XSS-Protection" content="1; mode=block">
+    <meta name="referrer" content="strict-origin-when-cross-origin">
+    
+    <!-- Bootstrap CSS -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css" rel="stylesheet">
+    
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Estilos -->
+    <link rel="stylesheet" href="styles-admin-cresalia.css">
+    <link rel="stylesheet" href="css/elegant-notifications.css">
+    <link rel="stylesheet" href="css/analytics-dashboard.css">
+    
+    <!-- Estilos específicos para acciones rápidas -->
+    <style>
+        /* Estilos para acciones rápidas - Cresalia Style */
+        .dashboard-actions {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+            gap: 25px;
+            margin-top: 30px;
+        }
+        
+        .action-card {
+            background: linear-gradient(135deg, #FDF2F8 0%, #FCE7F3 100%);
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 8px 32px rgba(236, 72, 153, 0.1);
+            border: 2px solid #F9A8D4;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .action-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(135deg, #7C3AED, #EC4899);
+        }
+        
+        .action-card h3 {
+            color: #7C3AED;
+            font-size: 20px;
+            font-weight: 700;
+            margin-bottom: 25px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        
+        .action-card h3 i {
+            color: #EC4899;
+        }
+        
+        .action-buttons {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+        
+        .action-btn {
+            background: linear-gradient(135deg, #7C3AED, #EC4899);
+            color: white;
+            border: none;
+            padding: 25px 30px;
+            border-radius: 15px;
+            font-size: 18px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            text-align: left;
+            min-height: 80px;
+            box-shadow: 0 4px 15px rgba(124, 58, 237, 0.2);
+            width: 100%;
+        }
+        
+        .action-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(124, 58, 237, 0.4);
+            background: linear-gradient(135deg, #EC4899, #F9A8D4);
+        }
+        
+        .action-btn i {
+            font-size: 24px;
+            width: 30px;
+            text-align: center;
+            flex-shrink: 0;
+        }
+        
+        @media (max-width: 768px) {
+            .dashboard-actions {
+                grid-template-columns: 1fr;
+                gap: 20px;
+            }
+            
+            .action-card {
+                padding: 25px;
+            }
+            
+            .action-btn {
+                padding: 20px 25px;
+                font-size: 16px;
+                min-height: 70px;
+            }
+            
+            .action-btn i {
+                font-size: 20px;
+            }
+        }
+        
+        /* Estilos para el menú de navegación - Cresalia Style */
+        .admin-nav {
+            background: linear-gradient(135deg, #FDF2F8 0%, #FCE7F3 100%);
+            border-radius: 15px;
+            padding: 15px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 20px rgba(236, 72, 153, 0.1);
+            border: 2px solid #F9A8D4;
+        }
+        
+        .nav-btn {
+            background: linear-gradient(135deg, #7C3AED, #EC4899);
+            color: white;
+            border: none;
+            padding: 15px 25px;
+            border-radius: 12px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin: 5px;
+            box-shadow: 0 2px 10px rgba(124, 58, 237, 0.2);
+        }
+        
+        .nav-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(124, 58, 237, 0.3);
+            background: linear-gradient(135deg, #EC4899, #F9A8D4);
+        }
+        
+        .nav-btn.active {
+            background: linear-gradient(135deg, #EC4899, #F9A8D4);
+            box-shadow: 0 4px 15px rgba(236, 72, 153, 0.4);
+        }
+        
+        .nav-btn i {
+            font-size: 16px;
+        }
+    </style>
+    
+    <style>
+        .tenant-card {
+            background: white;
+            border: 1px solid #E5E7EB;
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 20px;
+            transition: all 0.2s ease;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+        }
+        
+        .tenant-card:hover {
+            border-color: #D1D5DB;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
+        }
+        
+        .tenant-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 15px;
+            gap: 15px;
+        }
+        
+        .tenant-header .tenant-info {
+            flex: 1;
+            min-width: 0;
+        }
+        
+        .tenant-header .plan-badge {
+            flex-shrink: 0;
+            white-space: nowrap;
+        }
+        
+        .tenant-info h3 {
+            color: #374151;
+            margin: 0;
+            font-size: 20px;
+            font-weight: 600;
+            line-height: 1.3;
+            word-wrap: break-word;
+            overflow-wrap: break-word;
+            hyphens: auto;
+            max-width: 100%;
+        }
+        
+        .tenant-info p {
+            color: #6B7280;
+            margin: 5px 0 0 0;
+            font-size: 14px;
+            line-height: 1.4;
+            word-wrap: break-word;
+            overflow-wrap: break-word;
+        }
+        
+        .plan-badge {
+            background: #374151;
+            color: white;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+        
+        .tenant-stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+            gap: 15px;
+            margin: 15px 0;
+        }
+        
+        .stat-item {
+            text-align: center;
+            padding: 10px;
+            background: #F8FAFC;
+            border-radius: 8px;
+        }
+        
+        .stat-number {
+            font-size: 18px;
+            font-weight: 700;
+            color: #374151;
+        }
+        
+        .stat-label {
+            font-size: 12px;
+            color: #6B7280;
+        }
+        
+        .tenant-actions {
+            display: flex;
+            gap: 10px;
+            margin-top: 15px;
+        }
+        
+        .btn-sm {
+            padding: 6px 12px;
+            font-size: 12px;
+        }
+        
+        .create-tenant-form {
+            background: white;
+            border: 1px solid #E5E7EB;
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 30px;
+        }
+        
+        .form-section {
+            margin-bottom: 25px;
+        }
+        
+        .form-section h4 {
+            color: #374151;
+            margin-bottom: 15px;
+            font-size: 16px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+        }
+        
+        @media (max-width: 768px) {
+            .form-row {
+                grid-template-columns: 1fr;
+            }
+        }
+        
+        /* ===== ESTILOS PARA ANALYTICS ===== */
+        .metrics-overview {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+        
+        .metric-card {
+            background: white;
+            border: 1px solid #E5E7EB;
+            border-radius: 12px;
+            padding: 20px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+            transition: all 0.2s ease;
+        }
+        
+        .metric-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+        
+        .metric-icon {
+            width: 50px;
+            height: 50px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+            color: white;
+        }
+        
+        .metric-card:nth-child(1) .metric-icon {
+            background: linear-gradient(135deg, #7C3AED, #A78BFA);
+        }
+        
+        .metric-card:nth-child(2) .metric-icon {
+            background: linear-gradient(135deg, #10B981, #34D399);
+        }
+        
+        .metric-card:nth-child(3) .metric-icon {
+            background: linear-gradient(135deg, #F59E0B, #FBBF24);
+        }
+        
+        .metric-card:nth-child(4) .metric-icon {
+            background: linear-gradient(135deg, #EF4444, #F87171);
+        }
+        
+        .metric-card:nth-child(5) .metric-icon {
+            background: linear-gradient(135deg, #3B82F6, #60A5FA);
+        }
+        
+        .metric-card:nth-child(6) .metric-icon {
+            background: linear-gradient(135deg, #EC4899, #F9A8D4);
+        }
+        
+        .metric-info h3 {
+            font-size: 24px;
+            font-weight: 700;
+            color: #374151;
+            margin: 0;
+        }
+        
+        .metric-info p {
+            font-size: 14px;
+            color: #6B7280;
+            margin: 5px 0 0 0;
+        }
+        
+        .charts-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+        
+        .chart-card {
+            background: white;
+            border: 1px solid #E5E7EB;
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+        }
+        
+        .chart-card h3 {
+            font-size: 16px;
+            font-weight: 600;
+            color: #374151;
+            margin: 0 0 20px 0;
+        }
+        
+        .chart-card canvas {
+            max-height: 300px;
+        }
+        
+        .plan-metrics {
+            display: grid;
+            gap: 10px;
+        }
+        
+        .plan-metric {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px;
+            background: #F8FAFC;
+            border-radius: 8px;
+        }
+        
+        .plan-name {
+            font-weight: 600;
+            color: #374151;
+        }
+        
+        .plan-count {
+            font-weight: 700;
+            color: #7C3AED;
+        }
+        
+        .plan-percentage {
+            font-size: 12px;
+            color: #6B7280;
+        }
+        
+        .tenants-table-card {
+            background: white;
+            border: 1px solid #E5E7EB;
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+        }
+        
+        .tenants-table-card h3 {
+            font-size: 16px;
+            font-weight: 600;
+            color: #374151;
+            margin: 0 0 20px 0;
+        }
+        
+        .tenants-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        
+        .tenants-table th {
+            background: #F8FAFC;
+            color: #374151;
+            font-weight: 600;
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #E5E7EB;
+        }
+        
+        .tenants-table td {
+            padding: 12px;
+            border-bottom: 1px solid #F3F4F6;
+        }
+        
+        .tenant-info {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+        
+        .tenant-name {
+            font-weight: 600;
+            color: #374151;
+            word-wrap: break-word;
+            overflow-wrap: break-word;
+        }
+        
+        .tenant-email {
+            font-size: 12px;
+            color: #6B7280;
+        }
+        
+        .plan-badge {
+            padding: 4px 8px;
+            border-radius: 6px;
+            font-size: 12px;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+        
+        .plan-free {
+            background: #F3F4F6;
+            color: #374151;
+        }
+        
+        .plan-basico {
+            background: #DBEAFE;
+            color: #1E40AF;
+        }
+        
+        .plan-pro {
+            background: #EDE9FE;
+            color: #7C3AED;
+        }
+        
+        .plan-enterprise {
+            background: #FCE7F3;
+            color: #EC4899;
+        }
+        
+        .status-badge {
+            padding: 4px 8px;
+            border-radius: 6px;
+            font-size: 12px;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+        
+        .status-activo {
+            background: #D1FAE5;
+            color: #059669;
+        }
+        
+        .status-suspendido {
+            background: #FEE2E2;
+            color: #DC2626;
+        }
+        
+        .action-buttons {
+            display: flex;
+            gap: 8px;
+        }
+        
+        .btn-action {
+            width: 32px;
+            height: 32px;
+            border: 1px solid #E5E7EB;
+            background: white;
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        
+        .btn-action:hover {
+            background: #F8FAFC;
+            border-color: #D1D5DB;
+        }
+        
+        .btn-action i {
+            font-size: 12px;
+            color: #6B7280;
+        }
+        
+        /* Estilos duplicados removidos - ya están en el head */
+        
+        @media (max-width: 768px) {
+            .metrics-overview {
+                grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            }
+            
+            .dashboard-actions {
+                grid-template-columns: 1fr;
+            }
+            
+            .action-card {
+                padding: 20px;
+            }
+            
+            .action-btn {
+                padding: 18px 20px;
+                font-size: 15px;
+                min-height: 55px;
+            }
+            
+            .action-btn i {
+                font-size: 18px;
+            }
+        }
+            
+            .charts-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .chart-card {
+                padding: 15px;
+            }
+            
+            .tenants-table-card {
+                padding: 15px;
+            }
+            
+            .table-responsive {
+                overflow-x: auto;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="admin-container">
+        <!-- Header -->
+        <header class="admin-header">
+            <div class="admin-header-left">
+                <img src="assets/logo/logo-cresalia.png" alt="Cresalia" class="admin-logo">
+                <h1>Gestión de Tiendas Cresalia</h1>
+            </div>
+            <div class="admin-header-right">
+                <button class="logout-btn" onclick="window.location.href='admin-cresalia.html'">
+                    <i class="fas fa-arrow-left"></i>
+                    Volver al Admin
+                </button>
+            </div>
+        </header>
+
+        <!-- Navegación -->
+        <nav class="admin-nav">
+            <button class="nav-btn active" onclick="mostrarSeccion('dashboard')">
+                <i class="fas fa-tachometer-alt"></i>
+                Dashboard
+            </button>
+            <button class="nav-btn" onclick="mostrarSeccion('crear')">
+                <i class="fas fa-plus"></i>
+                Crear Tienda
+            </button>
+            <button class="nav-btn" onclick="mostrarSeccion('tiendas')">
+                <i class="fas fa-store"></i>
+                Ver Tiendas
+            </button>
+            <button class="nav-btn" onclick="mostrarSeccion('estadisticas')">
+                <i class="fas fa-chart-bar"></i>
+                Estadísticas
+            </button>
+        </nav>
+
+        <!-- Contenido Principal -->
+        <main class="admin-main">
+            <!-- Dashboard -->
+            <section id="dashboard" class="content-section">
+                <div class="section-header">
+                    <h2><i class="fas fa-tachometer-alt"></i> Dashboard de Gestión</h2>
+                </div>
+                
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-icon">
+                            <i class="fas fa-store"></i>
+                        </div>
+                        <div class="stat-info">
+                            <h3 id="totalTiendas">0</h3>
+                            <p>Tiendas Activas</p>
+                        </div>
+                    </div>
+                    
+                    <div class="stat-card">
+                        <div class="stat-icon">
+                            <i class="fas fa-dollar-sign"></i>
+                        </div>
+                        <div class="stat-info">
+                            <h3 id="ingresosTotales">$0</h3>
+                            <p>Ingresos Suscripciones</p>
+                        </div>
+                    </div>
+                    
+                    <div class="stat-card">
+                        <div class="stat-icon">
+                            <i class="fas fa-users"></i>
+                        </div>
+                        <div class="stat-info">
+                            <h3 id="totalClientes">0</h3>
+                            <p>Clientes Totales</p>
+                        </div>
+                    </div>
+                    
+                    <div class="stat-card">
+                        <div class="stat-icon">
+                            <i class="fas fa-crown"></i>
+                        </div>
+                        <div class="stat-info">
+                            <h3 id="planesPro">0</h3>
+                            <p>Planes Pro/Enterprise</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="dashboard-actions">
+                    <div class="action-card">
+                        <h3><i class="fas fa-bolt"></i> Acciones Rápidas</h3>
+                        <div class="action-buttons">
+                            <button class="action-btn" onclick="mostrarSeccion('crear')">
+                                <i class="fas fa-plus"></i>
+                                Crear Nueva Tienda
+                            </button>
+                            <button class="action-btn" onclick="mostrarSeccion('tiendas')">
+                                <i class="fas fa-list"></i>
+                                Ver Todas las Tiendas
+                            </button>
+                            <button class="action-btn" onclick="mostrarSeccion('estadisticas')">
+                                <i class="fas fa-chart-bar"></i>
+                                Ver Estadísticas
+                            </button>
+                            <button class="action-btn" onclick="abrirFeedbackModal()">
+                                <i class="fas fa-comment-dots"></i>
+                                Dejar Feedback
+                            </button>
+                            <button class="action-btn" onclick="exportarDatos()">
+                                <i class="fas fa-download"></i>
+                                Exportar Datos
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <div class="action-card">
+                        <h3><i class="fas fa-info-circle"></i> Información del Sistema</h3>
+                        <div style="color: #6B7280; font-size: 14px; line-height: 1.6;">
+                            <p><strong>Estado del Sistema:</strong> <span style="color: #10B981;">✅ Operativo</span></p>
+                            <p><strong>Última Actualización:</strong> Hoy</p>
+                            <p><strong>Backup Automático:</strong> Activo</p>
+                            <p><strong>Soporte 24/7:</strong> Disponible</p>
+                        </div>
+                        <div style="text-align: center; margin-top: 20px;">
+                            <button class="action-btn" onclick="contactarSoporte()" style="width: 100%; background: linear-gradient(135deg, #EC4899, #F9A8D4); min-height: 70px; padding: 20px 25px; font-size: 16px;">
+                                <i class="fas fa-headset"></i>
+                                Contactar Soporte
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Crear Tienda -->
+            <section id="crear" class="content-section">
+                <div class="section-header">
+                    <h2><i class="fas fa-plus"></i> Crear Nueva Tienda</h2>
+                </div>
+                
+                <div class="create-tenant-form">
+                    <form id="crearTiendaForm">
+                        <div class="form-section">
+                            <h4><i class="fas fa-store"></i> Información de la Tienda</h4>
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label for="nombreTienda">Nombre de la Tienda *</label>
+                                    <input type="text" id="nombreTienda" name="nombreTienda" required class="form-control">
+                                </div>
+                                <div class="form-group">
+                                    <label for="plan">Plan *</label>
+                                    <select id="plan" name="plan" required class="form-control">
+                                        <option value="free">Free</option>
+                                        <option value="basico">Básico ($29/mes)</option>
+                                        <option value="pro" selected>Pro ($79/mes)</option>
+                                        <option value="enterprise">Enterprise ($199/mes)</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label for="descripcion">Descripción de la Tienda</label>
+                                <textarea id="descripcion" name="descripcion" rows="3" class="form-control"></textarea>
+                            </div>
+                        </div>
+                        
+                        <div class="form-section">
+                            <h4><i class="fas fa-user"></i> Información del Cliente</h4>
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label for="email">Email del Cliente *</label>
+                                    <input type="email" id="email" name="email" required class="form-control">
+                                </div>
+                                <div class="form-group">
+                                    <label for="password">Contraseña *</label>
+                                    <input type="password" id="password" name="password" required class="form-control">
+                                </div>
+                            </div>
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label for="telefono">Teléfono</label>
+                                    <input type="tel" id="telefono" name="telefono" class="form-control">
+                                </div>
+                                <div class="form-group">
+                                    <label for="direccion">Dirección</label>
+                                    <input type="text" id="direccion" name="direccion" class="form-control">
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="form-section">
+                            <h4><i class="fas fa-palette"></i> Colores de la Tienda</h4>
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label for="colorPrimario">Color Primario</label>
+                                    <input type="color" id="colorPrimario" name="colorPrimario" value="#7C3AED" class="form-control">
+                                </div>
+                                <div class="form-group">
+                                    <label for="colorSecundario">Color Secundario</label>
+                                    <input type="color" id="colorSecundario" name="colorSecundario" value="#EC4899" class="form-control">
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="form-actions">
+                            <button type="button" class="btn btn-secondary" onclick="limpiarFormulario()">
+                                <i class="fas fa-eraser"></i> Limpiar
+                            </button>
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fas fa-plus"></i> Crear Tienda
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </section>
+
+            <!-- Ver Tiendas -->
+            <section id="tiendas" class="content-section">
+                <div class="section-header">
+                    <h2><i class="fas fa-store"></i> Tiendas Registradas</h2>
+                    <button class="add-btn" onclick="actualizarListaTiendas()">
+                        <i class="fas fa-sync-alt"></i>
+                        Actualizar
+                    </button>
+                </div>
+                
+                <div id="tiendasContainer">
+                    <!-- Las tiendas se cargarán dinámicamente -->
+                </div>
+            </section>
+
+            <!-- Estadísticas -->
+            <section id="estadisticas" class="content-section">
+                <div class="section-header">
+                    <h2><i class="fas fa-chart-bar"></i> Analytics y Métricas</h2>
+                    <button class="add-btn" onclick="analyticsSystem.exportMetrics()">
+                        <i class="fas fa-download"></i>
+                        Exportar Datos
+                    </button>
+                </div>
+                
+                <!-- Métricas Principales -->
+                <div class="metrics-overview">
+                    <div class="metric-card">
+                        <div class="metric-icon">
+                            <i class="fas fa-store"></i>
+                        </div>
+                        <div class="metric-info">
+                            <h3 id="totalTenants">0</h3>
+                            <p>Total Tiendas</p>
+                        </div>
+                    </div>
+                    
+                    <div class="metric-card">
+                        <div class="metric-icon">
+                            <i class="fas fa-check-circle"></i>
+                        </div>
+                        <div class="metric-info">
+                            <h3 id="activeTenants">0</h3>
+                            <p>Tiendas Activas</p>
+                        </div>
+                    </div>
+                    
+                    <div class="metric-card">
+                        <div class="metric-icon">
+                            <i class="fas fa-dollar-sign"></i>
+                        </div>
+                        <div class="metric-info">
+                            <h3 id="totalRevenue">$0</h3>
+                            <p>Ingresos Mensuales</p>
+                        </div>
+                    </div>
+                    
+                    <div class="metric-card">
+                        <div class="metric-icon">
+                            <i class="fas fa-box"></i>
+                        </div>
+                        <div class="metric-info">
+                            <h3 id="totalProducts">0</h3>
+                            <p>Total Productos</p>
+                        </div>
+                    </div>
+                    
+                    <div class="metric-card">
+                        <div class="metric-icon">
+                            <i class="fas fa-shopping-cart"></i>
+                        </div>
+                        <div class="metric-info">
+                            <h3 id="totalSales">0</h3>
+                            <p>Total Ventas</p>
+                        </div>
+                    </div>
+                    
+                    <div class="metric-card">
+                        <div class="metric-icon">
+                            <i class="fas fa-users"></i>
+                        </div>
+                        <div class="metric-info">
+                            <h3 id="totalCustomers">0</h3>
+                            <p>Total Clientes</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Gráficos -->
+                <div class="charts-grid">
+                    <div class="chart-card">
+                        <h3>Evolución de Ventas</h3>
+                        <canvas id="salesChart"></canvas>
+                    </div>
+                    
+                    <div class="chart-card">
+                        <h3>Distribución de Productos</h3>
+                        <canvas id="productsChart"></canvas>
+                    </div>
+                    
+                    <div class="chart-card">
+                        <h3>Crecimiento de Clientes</h3>
+                        <canvas id="customersChart"></canvas>
+                    </div>
+                    
+                    <div class="chart-card">
+                        <h3>Distribución por Planes</h3>
+                        <canvas id="subscriptionsChart"></canvas>
+                    </div>
+                    
+                    <div class="chart-card">
+                        <h3>Ingresos por Plan</h3>
+                        <canvas id="revenueChart"></canvas>
+                    </div>
+                    
+                    <div class="chart-card">
+                        <h3>Métricas por Plan</h3>
+                        <div id="planMetrics" class="plan-metrics">
+                            <!-- Se cargará dinámicamente -->
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Tabla de Tenants -->
+                <div class="tenants-table-card">
+                    <h3>Detalle de Tiendas</h3>
+                    <div class="table-responsive">
+                        <table class="tenants-table">
+                            <thead>
+                                <tr>
+                                    <th>Tienda</th>
+                                    <th>Plan</th>
+                                    <th>Productos</th>
+                                    <th>Ventas</th>
+                                    <th>Clientes</th>
+                                    <th>Estado</th>
+                                    <th>Acciones</th>
+                                </tr>
+                            </thead>
+                            <tbody id="tenantsTable">
+                                <!-- Se cargará dinámicamente -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <!-- Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="js/elegant-notifications.js"></script>
+    <script src="js/tenant-generator.js"></script>
+    <script src="js/analytics-system.js"></script>
+    
+    <script>
+        let tiendas = [];
+        let currentSection = 'dashboard';
+        
+        // ===== NAVEGACIÓN =====
+        function mostrarSeccion(seccion) {
+            // Ocultar todas las secciones
+            const secciones = document.querySelectorAll('.content-section');
+            secciones.forEach(sec => sec.style.display = 'none');
+            
+            // Mostrar sección seleccionada
+            const seccionElement = document.getElementById(seccion);
+            if (seccionElement) {
+                seccionElement.style.display = 'block';
+                currentSection = seccion;
+            }
+            
+            // Actualizar navegación activa
+            actualizarNavegacionActiva(seccion);
+            
+            // Cargar datos específicos de la sección
+            if (seccion === 'tiendas') {
+                cargarTiendas();
+            } else if (seccion === 'estadisticas') {
+                cargarEstadisticas();
+            } else if (seccion === 'dashboard') {
+                actualizarDashboard();
+            }
+        }
+        
+        function actualizarNavegacionActiva(seccion) {
+            const navButtons = document.querySelectorAll('.nav-btn');
+            navButtons.forEach(btn => btn.classList.remove('active'));
+            
+            const activeButton = document.querySelector(`[onclick="mostrarSeccion('${seccion}')"]`);
+            if (activeButton) {
+                activeButton.classList.add('active');
+            }
+        }
+        
+        // ===== FORMULARIO DE CREACIÓN =====
+        document.getElementById('crearTiendaForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const formData = new FormData(this);
+            const datosCliente = {
+                nombreTienda: formData.get('nombreTienda'),
+                email: formData.get('email'),
+                password: formData.get('password'),
+                plan: formData.get('plan'),
+                descripcion: formData.get('descripcion'),
+                telefono: formData.get('telefono'),
+                direccion: formData.get('direccion'),
+                colorPrimario: formData.get('colorPrimario'),
+                colorSecundario: formData.get('colorSecundario')
+            };
+            
+            try {
+                mostrarNotificacion('Creando tienda...', 'info');
+                
+                const resultado = await window.tenantGenerator.crearTienda(datosCliente);
+                
+                if (resultado.success) {
+                    mostrarNotificacion('¡Tienda creada exitosamente!', 'success');
+                    limpiarFormulario();
+                    mostrarTiendaCreada(resultado);
+                } else {
+                    throw new Error(resultado.error);
+                }
+            } catch (error) {
+                console.error('Error creando tienda:', error);
+                mostrarNotificacion('Error creando tienda: ' + error.message, 'error');
+            }
+        });
+        
+        function limpiarFormulario() {
+            document.getElementById('crearTiendaForm').reset();
+            document.getElementById('colorPrimario').value = '#7C3AED';
+            document.getElementById('colorSecundario').value = '#EC4899';
+        }
+        
+        function mostrarTiendaCreada(resultado) {
+            const modal = `
+                <div style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); display: flex; align-items: center; justify-content: center; z-index: 10000;">
+                    <div style="background: white; border-radius: 8px; padding: 20px; max-width: 500px; width: 90%;">
+                        <h3 style="color: #10B981; margin-bottom: 20px;">
+                            <i class="fas fa-check-circle"></i> ¡Tienda Creada!
+                        </h3>
+                        <p><strong>Nombre:</strong> ${resultado.tenant.nombre}</p>
+                        <p><strong>Plan:</strong> ${resultado.tenant.plan}</p>
+                        <p><strong>Email:</strong> ${resultado.tenant.email}</p>
+                        <p><strong>Slug:</strong> ${resultado.tenant.slug}</p>
+                        
+                        <div style="margin: 20px 0; padding: 15px; background: #F0F9FF; border-radius: 8px;">
+                            <h5>URLs de la Tienda:</h5>
+                            <p><strong>Tienda Pública:</strong><br>
+                            <a href="${resultado.urls.tienda}" target="_blank">${resultado.urls.tienda}</a></p>
+                            <p><strong>Panel Admin:</strong><br>
+                            <a href="${resultado.urls.admin}" target="_blank">${resultado.urls.admin}</a></p>
+                        </div>
+                        
+                        <div style="display: flex; gap: 10px; justify-content: flex-end;">
+                            <button class="btn btn-secondary" onclick="this.parentElement.parentElement.parentElement.remove()">
+                                Cerrar
+                            </button>
+                            <button class="btn btn-primary" onclick="window.open('${resultado.urls.admin}', '_blank'); this.parentElement.parentElement.parentElement.remove();">
+                                Abrir Admin
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            `;
+            
+            document.body.insertAdjacentHTML('beforeend', modal);
+        }
+        
+        // ===== CARGA DE DATOS =====
+        async function cargarTiendas() {
+            try {
+                tiendas = await window.tenantGenerator.listarTiendas();
+                mostrarTiendas();
+            } catch (error) {
+                console.error('Error cargando tiendas:', error);
+                mostrarNotificacion('Error cargando tiendas', 'error');
+            }
+        }
+        
+        function mostrarTiendas() {
+            const container = document.getElementById('tiendasContainer');
+            
+            if (tiendas.length === 0) {
+                container.innerHTML = `
+                    <div class="empty-state">
+                        <i class="fas fa-store"></i>
+                        <h3>No hay tiendas registradas</h3>
+                        <p>Crea tu primera tienda para comenzar</p>
+                        <button class="btn btn-primary" onclick="mostrarSeccion('crear')">
+                            <i class="fas fa-plus"></i> Crear Tienda
+                        </button>
+                    </div>
+                `;
+                return;
+            }
+            
+            const html = tiendas.map(tenant => `
+                <div class="tenant-card">
+                    <div class="tenant-header">
+                        <div class="tenant-info">
+                            <h3>${tenant.nombre}</h3>
+                            <p>${tenant.email} • ${tenant.plan}</p>
+                        </div>
+                        <span class="plan-badge">${tenant.plan}</span>
+                    </div>
+                    
+                    <div class="tenant-stats">
+                        <div class="stat-item">
+                            <div class="stat-number">0</div>
+                            <div class="stat-label">Productos</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-number">$0</div>
+                            <div class="stat-label">Ventas</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-number">0</div>
+                            <div class="stat-label">Clientes</div>
+                        </div>
+                    </div>
+                    
+                    <div class="tenant-actions">
+                        <button class="btn btn-primary btn-sm" onclick="abrirTienda('${tenant.slug}')">
+                            <i class="fas fa-external-link-alt"></i> Ver Tienda
+                        </button>
+                        <button class="btn btn-info btn-sm" onclick="abrirAdmin('${tenant.slug}')">
+                            <i class="fas fa-cog"></i> Admin
+                        </button>
+                        <button class="btn btn-warning btn-sm" onclick="editarTienda('${tenant.id}')">
+                            <i class="fas fa-edit"></i> Editar
+                        </button>
+                        <button class="btn btn-danger btn-sm" onclick="eliminarTienda('${tenant.id}')">
+                            <i class="fas fa-trash"></i> Eliminar
+                        </button>
+                    </div>
+                </div>
+            `).join('');
+            
+            container.innerHTML = html;
+        }
+        
+        function abrirTienda(slug) {
+            window.open(`tiendas/${slug}/index.html`, '_blank');
+        }
+        
+        function abrirAdmin(slug) {
+            window.open(`tiendas/${slug}/admin.html`, '_blank');
+        }
+        
+        function editarTienda(id) {
+            mostrarNotificacion('Función de edición en desarrollo', 'info');
+        }
+        
+        function eliminarTienda(id) {
+            if (confirm('¿Estás seguro de que quieres eliminar esta tienda?')) {
+                mostrarNotificacion('Función de eliminación en desarrollo', 'info');
+            }
+        }
+        
+        function actualizarListaTiendas() {
+            cargarTiendas();
+        }
+        
+        function actualizarDashboard() {
+            // Actualizar estadísticas del dashboard
+            document.getElementById('totalTiendas').textContent = tiendas.length;
+            document.getElementById('ingresosTotales').textContent = '$0'; // Calcular real
+            document.getElementById('totalClientes').textContent = '0'; // Calcular real
+            document.getElementById('planesPro').textContent = tiendas.filter(t => ['pro', 'enterprise'].includes(t.plan)).length;
+        }
+        
+        // ===== FUNCIONALIDAD DE SOPORTE =====
+        function contactarSoporte() {
+            // Crear modal de contacto de soporte
+            const modalHTML = `
+                <div id="soporteModal" class="modal" style="display: flex;">
+                    <div class="modal-content" style="max-width: 600px;">
+                        <div style="text-align: center; margin-bottom: 30px;">
+                            <div style="width: 80px; height: 80px; background: linear-gradient(135deg, #7C3AED, #EC4899); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 20px;">
+                                <i class="fas fa-headset" style="font-size: 32px; color: white;"></i>
+                            </div>
+                            <h2 style="color: #7C3AED; margin-bottom: 10px;">💜 Soporte Cresalia</h2>
+                            <p style="color: #6B7280;">Estamos aquí para ayudarte 24/7</p>
+                        </div>
+                        
+                        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 20px; margin-bottom: 30px;">
+                            <div style="background: linear-gradient(135deg, #FDF2F8, #FCE7F3); padding: 20px; border-radius: 15px; text-align: center; border: 2px solid #F9A8D4;">
+                                <i class="fas fa-envelope" style="font-size: 24px; color: #EC4899; margin-bottom: 10px;"></i>
+                                <h4 style="color: #7C3AED; margin-bottom: 5px;">Email</h4>
+                                <p style="color: #6B7280; font-size: 14px; margin: 0;">crisla965@gmail.com</p>
+                            </div>
+                            
+                            <div style="background: linear-gradient(135deg, #FDF2F8, #FCE7F3); padding: 20px; border-radius: 15px; text-align: center; border: 2px solid #F9A8D4;">
+                                <i class="fab fa-whatsapp" style="font-size: 24px; color: #EC4899; margin-bottom: 10px;"></i>
+                                <h4 style="color: #7C3AED; margin-bottom: 5px;">WhatsApp</h4>
+                                <p style="color: #6B7280; font-size: 14px; margin: 0;">+54 9 11 1234-5678</p>
+                            </div>
+                        </div>
+                        
+                        <div style="background: linear-gradient(135deg, #FDF2F8, #FCE7F3); padding: 20px; border-radius: 15px; border: 2px solid #F9A8D4;">
+                            <h4 style="color: #7C3AED; margin-bottom: 15px;"><i class="fas fa-clock"></i> Horarios de Atención</h4>
+                            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; font-size: 14px; color: #6B7280;">
+                                <div><strong>Lunes a Viernes:</strong> 9:00 - 18:00</div>
+                                <div><strong>Sábados:</strong> 10:00 - 14:00</div>
+                                <div><strong>Domingos:</strong> Cerrado</div>
+                                <div><strong>Emergencias:</strong> 24/7</div>
+                            </div>
+                        </div>
+                        
+                        <div style="text-align: center; margin-top: 30px;">
+                            <button onclick="cerrarSoporteModal()" style="background: linear-gradient(135deg, #7C3AED, #EC4899); color: white; border: none; padding: 15px 30px; border-radius: 12px; font-size: 16px; font-weight: 600; cursor: pointer; transition: all 0.3s ease;">
+                                <i class="fas fa-times"></i> Cerrar
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            `;
+            
+            // Agregar modal al body
+            document.body.insertAdjacentHTML('beforeend', modalHTML);
+        }
+        
+        function cerrarSoporteModal() {
+            const modal = document.getElementById('soporteModal');
+            if (modal) {
+                modal.remove();
+            }
+        }
+        
+        // ===== SISTEMA DE FEEDBACK =====
+        function abrirFeedbackModal() {
+            const modalHTML = `
+                <div id="feedbackModal" class="modal" style="display: flex;">
+                    <div class="modal-content" style="max-width: 700px;">
+                        <div style="text-align: center; margin-bottom: 30px;">
+                            <div style="width: 80px; height: 80px; background: linear-gradient(135deg, #7C3AED, #EC4899); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 20px;">
+                                <i class="fas fa-comment-dots" style="font-size: 32px; color: white;"></i>
+                            </div>
+                            <h2 style="color: #7C3AED; margin-bottom: 10px;">💜 Tu Opinión Importa</h2>
+                            <p style="color: #6B7280;">Ayúdanos a mejorar Cresalia con tu feedback</p>
+                        </div>
+                        
+                        <form id="feedbackForm" style="display: grid; gap: 20px;">
+                            <div>
+                                <label style="display: block; margin-bottom: 8px; font-weight: 600; color: #374151;">Tipo de Usuario</label>
+                                <select id="tipoUsuario" style="width: 100%; padding: 12px; border: 2px solid #E5E7EB; border-radius: 10px; font-size: 14px;">
+                                    <option value="admin">Administrador de Tienda</option>
+                                    <option value="super-admin">Super Administrador</option>
+                                </select>
+                            </div>
+                            
+                            <div>
+                                <label style="display: block; margin-bottom: 8px; font-weight: 600; color: #374151;">Tipo de Feedback</label>
+                                <select id="tipoFeedback" style="width: 100%; padding: 12px; border: 2px solid #E5E7EB; border-radius: 10px; font-size: 14px;">
+                                    <option value="sugerencia">💡 Sugerencia</option>
+                                    <option value="problema">🐛 Reportar Problema</option>
+                                    <option value="elogio">⭐ Elogio</option>
+                                    <option value="funcionalidad">⚙️ Nueva Funcionalidad</option>
+                                    <option value="diseno">🎨 Mejora de Diseño</option>
+                                    <option value="otro">📝 Otro</option>
+                                </select>
+                            </div>
+                            
+                            <div>
+                                <label style="display: block; margin-bottom: 8px; font-weight: 600; color: #374151;">Tu Nombre (opcional)</label>
+                                <input type="text" id="nombreUsuario" placeholder="¿Cómo te llamas?" style="width: 100%; padding: 12px; border: 2px solid #E5E7EB; border-radius: 10px; font-size: 14px;">
+                            </div>
+                            
+                            <div>
+                                <label style="display: block; margin-bottom: 8px; font-weight: 600; color: #374151;">Email (opcional)</label>
+                                <input type="email" id="emailUsuario" placeholder="tu@email.com" style="width: 100%; padding: 12px; border: 2px solid #E5E7EB; border-radius: 10px; font-size: 14px;">
+                            </div>
+                            
+                            <div>
+                                <label style="display: block; margin-bottom: 8px; font-weight: 600; color: #374151;">Tu Feedback</label>
+                                <textarea id="mensajeFeedback" placeholder="Cuéntanos qué piensas, qué te gustaría mejorar, o qué problema encontraste..." style="width: 100%; padding: 12px; border: 2px solid #E5E7EB; border-radius: 10px; font-size: 14px; min-height: 120px; resize: vertical;"></textarea>
+                            </div>
+                            
+                            <div style="background: linear-gradient(135deg, #FDF2F8, #FCE7F3); padding: 15px; border-radius: 10px; border: 2px solid #F9A8D4;">
+                                <p style="margin: 0; font-size: 13px; color: #6B7280; text-align: center;">
+                                    <i class="fas fa-shield-alt"></i> Tu feedback es completamente anónimo y confidencial. Solo lo usaremos para mejorar Cresalia.
+                                </p>
+                            </div>
+                        </form>
+                        
+                        <div style="display: flex; gap: 15px; margin-top: 30px;">
+                            <button onclick="cerrarFeedbackModal()" style="flex: 1; background: #6B7280; color: white; border: none; padding: 15px; border-radius: 12px; font-size: 16px; font-weight: 600; cursor: pointer;">
+                                <i class="fas fa-times"></i> Cancelar
+                            </button>
+                            <button onclick="enviarFeedback()" style="flex: 2; background: linear-gradient(135deg, #7C3AED, #EC4899); color: white; border: none; padding: 15px; border-radius: 12px; font-size: 16px; font-weight: 600; cursor: pointer;">
+                                <i class="fas fa-paper-plane"></i> Enviar Feedback
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            `;
+            
+            document.body.insertAdjacentHTML('beforeend', modalHTML);
+        }
+        
+        function cerrarFeedbackModal() {
+            const modal = document.getElementById('feedbackModal');
+            if (modal) {
+                modal.remove();
+            }
+        }
+        
+        function enviarFeedback() {
+            const tipoUsuario = document.getElementById('tipoUsuario').value;
+            const tipoFeedback = document.getElementById('tipoFeedback').value;
+            const nombre = document.getElementById('nombreUsuario').value;
+            const email = document.getElementById('emailUsuario').value;
+            const mensaje = document.getElementById('mensajeFeedback').value;
+            
+            if (!mensaje.trim()) {
+                alert('⚠️ Por favor, escribe tu feedback antes de enviar.');
+                return;
+            }
+            
+            // Simular envío (en producción iría al backend)
+            const feedback = {
+                tipoUsuario,
+                tipoFeedback,
+                nombre: nombre || 'Anónimo',
+                email: email || 'No proporcionado',
+                mensaje,
+                fecha: new Date().toLocaleString(),
+                usuario: 'Super Admin'
+            };
+            
+            console.log('📝 Feedback recibido:', feedback);
+            
+            // Mostrar confirmación
+            alert('✅ ¡Gracias por tu feedback! Tu opinión nos ayuda a mejorar Cresalia cada día. 💜');
+            
+            cerrarFeedbackModal();
+        }
+        
+        function cargarEstadisticas() {
+            // Cargar estadísticas usando el sistema de analytics
+            if (window.analyticsSystem && window.analyticsSystem.initialized) {
+                window.analyticsSystem.updateMetricsDisplay();
+                mostrarNotificacion('Analytics cargados correctamente', 'success');
+            } else {
+                // Inicializar el sistema de analytics si no está listo
+                setTimeout(() => {
+                    if (window.analyticsSystem) {
+                        window.analyticsSystem.initialize().then(() => {
+                            window.analyticsSystem.updateMetricsDisplay();
+                            mostrarNotificacion('Analytics inicializados', 'success');
+                        });
+                    }
+                }, 1000);
+            }
+        }
+        
+        function exportarDatos() {
+            const datos = {
+                tiendas,
+                fecha: new Date().toISOString(),
+                total: tiendas.length
+            };
+            
+            const blob = new Blob([JSON.stringify(datos, null, 2)], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `tiendas-cresalia-${new Date().toISOString().split('T')[0]}.json`;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            
+            URL.revokeObjectURL(url);
+            mostrarNotificacion('Datos exportados correctamente', 'success');
+        }
+        
+        function mostrarNotificacion(mensaje, tipo = 'info') {
+            if (window.elegantNotifications) {
+                window.elegantNotifications.show(mensaje, tipo);
+            } else {
+                alert(mensaje);
+            }
+        }
+        
+        // ===== INICIALIZACIÓN =====
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('🏪 Gestión de Tiendas inicializada');
+            actualizarDashboard();
+        });
+    </script>
+
+    <!-- Sistema de Seguridad -->
+    <script src="security-system.js?v=2.1"></script>
+    <script src="core/proteccion-devtools-avanzada.js?v=2.1"></script>
+    
+    <!-- Inicializar Seguridad -->
+    <script>
+        // Inicializar protección DevTools avanzada
+        if (typeof ProteccionDevToolsAvanzada !== 'undefined') {
+            new ProteccionDevToolsAvanzada();
+        }
+
+        // Configurar seguridad específica para gestión de tiendas
+        document.addEventListener('DOMContentLoaded', function() {
+            // Verificar autenticación de super admin
+            const token = localStorage.getItem('securityToken');
+            const userRole = localStorage.getItem('userRole');
+            
+            if (!token || !isValidToken(token) || userRole !== 'super_admin') {
+                alert('Acceso denegado. Solo Super Administradores pueden acceder a esta página.');
+                window.location.href = 'admin-cresalia.html';
+                return;
+            }
+
+            // Configurar timeout de sesión
+            let sessionTimeout;
+            function resetSessionTimeout() {
+                clearTimeout(sessionTimeout);
+                sessionTimeout = setTimeout(() => {
+                    localStorage.removeItem('securityToken');
+                    localStorage.removeItem('userRole');
+                    alert('Sesión expirada. Por favor, inicia sesión nuevamente.');
+                    window.location.href = 'admin-cresalia.html';
+                }, 30 * 60 * 1000); // 30 minutos
+            }
+
+            // Resetear timeout en actividad
+            ['click', 'keypress', 'scroll', 'mousemove'].forEach(event => {
+                document.addEventListener(event, resetSessionTimeout, true);
+            });
+
+            resetSessionTimeout();
+
+            // Log de acceso
+            if (typeof logSecurityEvent === 'function') {
+                logSecurityEvent('ACCESS_STORE_MANAGEMENT', 'Panel de gestión de tiendas accedido');
+            }
+
+            // Proteger datos sensibles
+            const sensitiveElements = document.querySelectorAll('.tenant-info, .store-data, .analytics-data');
+            sensitiveElements.forEach(element => {
+                element.classList.add('informacion-confidencial');
+            });
+        });
+
+        // Prevenir copia de datos sensibles
+        document.addEventListener('selectstart', function(e) {
+            if (e.target.closest('.informacion-confidencial, .tenant-info, .store-data')) {
+                e.preventDefault();
+            }
+        });
+
+        // Prevenir clic derecho en datos sensibles
+        document.addEventListener('contextmenu', function(e) {
+            if (e.target.closest('.informacion-confidencial, .tenant-info, .store-data')) {
+                e.preventDefault();
+                return false;
+            }
+        });
+
+        // Detectar intentos de inspección
+        document.addEventListener('keydown', function(e) {
+            // Bloquear F12, Ctrl+Shift+I, Ctrl+Shift+J, Ctrl+U
+            if (e.key === 'F12' || 
+                (e.ctrlKey && e.shiftKey && (e.key === 'I' || e.key === 'J')) ||
+                (e.ctrlKey && e.key === 'U')) {
+                e.preventDefault();
+                return false;
+            }
+        });
+
+        // Función para verificar token válido
+        function isValidToken(token) {
+            if (!token) return false;
+            try {
+                const tokenData = JSON.parse(atob(token.split('.')[1]));
+                return tokenData.exp > Date.now();
+            } catch {
+                return false;
+            }
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Servidor Local - Cresalia</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #8B5CF6 0%, #3B82F6 50%, #10B981 100%);
+            color: white;
+            text-align: center;
+            padding: 2rem;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+        .container {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 2rem;
+            border-radius: 20px;
+            backdrop-filter: blur(10px);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+        }
+        h1 {
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+        }
+        p {
+            font-size: 1.2rem;
+            margin-bottom: 2rem;
+            opacity: 0.9;
+        }
+        .btn {
+            display: inline-block;
+            padding: 1rem 2rem;
+            background: rgba(255, 255, 255, 0.2);
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            border-radius: 10px;
+            color: white;
+            text-decoration: none;
+            font-weight: bold;
+            transition: all 0.3s ease;
+            margin: 0.5rem;
+        }
+        .btn:hover {
+            background: rgba(255, 255, 255, 0.3);
+            transform: translateY(-2px);
+        }
+        .instructions {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 1.5rem;
+            border-radius: 15px;
+            margin-top: 2rem;
+            text-align: left;
+            max-width: 600px;
+        }
+        .instructions h3 {
+            margin-top: 0;
+            color: #F9A8D4;
+        }
+        .instructions ol {
+            margin: 1rem 0;
+            padding-left: 1.5rem;
+        }
+        .instructions li {
+            margin: 0.5rem 0;
+            line-height: 1.6;
+        }
+        .code {
+            background: rgba(0, 0, 0, 0.3);
+            padding: 0.5rem 1rem;
+            border-radius: 5px;
+            font-family: 'Courier New', monospace;
+            margin: 0.5rem 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🚀 Cresalia - Servidor Local</h1>
+        <p>Para probar Cresalia sin errores de recursos, necesitas un servidor local</p>
+        
+        <a href="index-cresalia.html" class="btn">📱 Abrir Cresalia</a>
+        <a href="index.html" class="btn">🏠 Página Principal</a>
+        
+        <div class="instructions">
+            <h3>💡 Instrucciones para Servidor Local:</h3>
+            <ol>
+                <li><strong>Opción 1 - Python (Recomendado):</strong>
+                    <div class="code">python -m http.server 8000</div>
+                    Luego ve a: <strong>http://localhost:8000</strong>
+                </li>
+                <li><strong>Opción 2 - Node.js:</strong>
+                    <div class="code">npx http-server -p 8000</div>
+                    Luego ve a: <strong>http://localhost:8000</strong>
+                </li>
+                <li><strong>Opción 3 - Live Server (VS Code):</strong>
+                    Instala la extensión "Live Server" y haz clic derecho en index-cresalia.html → "Open with Live Server"
+                </li>
+            </ol>
+            
+            <p><strong>¿Por qué necesitas un servidor?</strong><br>
+            Los navegadores bloquean recursos externos (CSS, JS) cuando abres archivos directamente (file://). 
+            Un servidor local simula un sitio web real y permite cargar todos los recursos correctamente.</p>
+        </div>
+    </div>
+</body>
+</html>
+
+
+
+

@@ -1,0 +1,615 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cresalia - Plataforma E-commerce SaaS</title>
+    
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+    
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Theme CSS -->
+    <link rel="stylesheet" href="../core/css/cresalia-theme-purple.css">
+    
+    <style>
+        /* Estilos específicos de la landing */
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+        
+        /* Hero mejorado */
+        .hero-cresalia {
+            min-height: 90vh;
+            display: flex;
+            align-items: center;
+        }
+        
+        .hero-content {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        
+        .hero-buttons {
+            display: flex;
+            gap: 16px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+        
+        /* Features section */
+        .features-section {
+            padding: 100px 0;
+            background: linear-gradient(180deg, #ffffff 0%, #faf5ff 100%);
+        }
+        
+        .section-title {
+            text-align: center;
+            margin-bottom: 60px;
+        }
+        
+        .section-title h2 {
+            font-size: 42px;
+            font-weight: 700;
+            background: var(--gradient-primary);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 12px;
+        }
+        
+        .section-title p {
+            font-size: 18px;
+            color: var(--cresalia-gray);
+        }
+        
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 32px;
+        }
+        
+        .feature-card {
+            text-align: center;
+            padding: 40px 24px;
+        }
+        
+        .feature-icon {
+            width: 80px;
+            height: 80px;
+            margin: 0 auto 24px;
+            background: var(--gradient-primary);
+            border-radius: var(--radius-xl);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 32px;
+            color: white;
+            box-shadow: var(--shadow-lg);
+        }
+        
+        .feature-card h3 {
+            font-size: 22px;
+            margin-bottom: 12px;
+            color: var(--cresalia-dark);
+        }
+        
+        .feature-card p {
+            color: var(--cresalia-gray);
+            line-height: 1.7;
+        }
+        
+        /* Pricing section */
+        .pricing-section {
+            padding: 100px 0;
+            background: white;
+        }
+        
+        .pricing-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 32px;
+            margin-top: 60px;
+        }
+        
+        .pricing-card {
+            position: relative;
+        }
+        
+        .pricing-card.featured {
+            transform: scale(1.05);
+            z-index: 1;
+        }
+        
+        .pricing-card.featured .card-cresalia {
+            border: 2px solid var(--cresalia-primary);
+        }
+        
+        .pricing-badge {
+            position: absolute;
+            top: -12px;
+            left: 50%;
+            transform: translateX(-50%);
+        }
+        
+        .pricing-header {
+            text-align: center;
+            padding-bottom: 24px;
+            border-bottom: 2px solid var(--cresalia-gray-light);
+        }
+        
+        .pricing-name {
+            font-size: 24px;
+            font-weight: 700;
+            color: var(--cresalia-dark);
+            margin-bottom: 8px;
+        }
+        
+        .pricing-price {
+            font-size: 48px;
+            font-weight: 800;
+            background: var(--gradient-primary);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        .pricing-price span {
+            font-size: 20px;
+            font-weight: 500;
+        }
+        
+        .pricing-features {
+            list-style: none;
+            padding: 24px 0;
+        }
+        
+        .pricing-features li {
+            padding: 12px 0;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        
+        .pricing-features li i {
+            color: var(--cresalia-primary);
+            font-size: 18px;
+        }
+        
+        .pricing-features li.disabled {
+            opacity: 0.4;
+        }
+        
+        .pricing-features li.disabled i {
+            color: var(--cresalia-gray);
+        }
+        
+        /* CTA Section */
+        .cta-section {
+            padding: 100px 0;
+            background: var(--gradient-primary);
+            color: white;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .cta-section::before {
+            content: '';
+            position: absolute;
+            width: 500px;
+            height: 500px;
+            background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%);
+            top: -200px;
+            right: -200px;
+            animation: float 8s ease-in-out infinite;
+        }
+        
+        .cta-content {
+            position: relative;
+            z-index: 1;
+        }
+        
+        .cta-content h2 {
+            font-size: 48px;
+            margin-bottom: 20px;
+        }
+        
+        .cta-content p {
+            font-size: 20px;
+            margin-bottom: 40px;
+            opacity: 0.95;
+        }
+        
+        /* Footer */
+        .footer {
+            background: var(--cresalia-dark);
+            color: white;
+            padding: 60px 0 30px;
+        }
+        
+        .footer-grid {
+            display: grid;
+            grid-template-columns: 2fr 1fr 1fr 1fr;
+            gap: 40px;
+            margin-bottom: 40px;
+        }
+        
+        .footer-logo {
+            font-size: 32px;
+            font-weight: 700;
+            background: var(--gradient-primary);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 16px;
+        }
+        
+        .footer-description {
+            color: var(--cresalia-secondary-lighter);
+            line-height: 1.7;
+        }
+        
+        .footer-title {
+            font-size: 18px;
+            font-weight: 600;
+            margin-bottom: 20px;
+        }
+        
+        .footer-links {
+            list-style: none;
+        }
+        
+        .footer-links li {
+            margin-bottom: 12px;
+        }
+        
+        .footer-links a {
+            color: var(--cresalia-secondary-lighter);
+            text-decoration: none;
+            transition: color var(--transition-base);
+        }
+        
+        .footer-links a:hover {
+            color: var(--cresalia-secondary);
+        }
+        
+        .footer-bottom {
+            text-align: center;
+            padding-top: 30px;
+            border-top: 1px solid rgba(167, 139, 250, 0.2);
+            color: var(--cresalia-secondary-lighter);
+        }
+        
+        /* Animaciones de entrada */
+        .animate-on-scroll {
+            opacity: 0;
+            transform: translateY(30px);
+            transition: all 0.6s ease;
+        }
+        
+        .animate-on-scroll.animated {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    </style>
+</head>
+<body>
+    <!-- Navbar -->
+    <nav class="navbar-cresalia">
+        <div class="container">
+            <div style="display: flex; justify-content: space-between; align-items: center;">
+                <div class="logo" style="font-size: 28px; font-weight: 700;">
+                    <span class="text-gradient">Cresalia</span>
+                </div>
+                
+                <div style="display: flex; gap: 8px; align-items: center;">
+                    <a href="#features" class="nav-link">Características</a>
+                    <a href="#pricing" class="nav-link">Precios</a>
+                    <a href="#" class="nav-link">Documentación</a>
+                    <button class="btn-cresalia btn-outline" onclick="window.location.href='/admin'">
+                        Iniciar Sesión
+                    </button>
+                    <button class="btn-cresalia btn-primary">
+                        Comenzar Gratis
+                    </button>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="hero-cresalia">
+        <div class="container">
+            <div class="hero-content animate-fade-in">
+                <h1>Crea tu tienda online<br>en minutos</h1>
+                <p>
+                    "Empezamos pocos, crecemos mucho" - La plataforma SaaS que te permite 
+                    lanzar tu e-commerce con personalización completa, multi-idioma y chatbot IA.
+                </p>
+                <div class="hero-buttons">
+                    <button class="btn-cresalia btn-primary" style="font-size: 18px; padding: 18px 40px;">
+                        <i class="fas fa-rocket"></i>
+                        Comenzar Gratis
+                    </button>
+                    <button class="btn-cresalia btn-ghost" style="color: white; font-size: 18px; padding: 18px 40px;">
+                        <i class="fas fa-play-circle"></i>
+                        Ver Demo
+                    </button>
+                </div>
+                
+                <div style="margin-top: 48px; display: flex; gap: 32px; justify-content: center; flex-wrap: wrap; opacity: 0.9;">
+                    <div style="text-align: center;">
+                        <div style="font-size: 32px; font-weight: 700;">500+</div>
+                        <div style="font-size: 14px;">Tiendas Activas</div>
+                    </div>
+                    <div style="text-align: center;">
+                        <div style="font-size: 32px; font-weight: 700;">6</div>
+                        <div style="font-size: 14px;">Idiomas</div>
+                    </div>
+                    <div style="text-align: center;">
+                        <div style="font-size: 32px; font-weight: 700;">99.9%</div>
+                        <div style="font-size: 14px;">Uptime</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Features Section -->
+    <section class="features-section" id="features">
+        <div class="container">
+            <div class="section-title animate-on-scroll">
+                <h2>Todo lo que necesitas para vender online</h2>
+                <p>Funcionalidades profesionales listas para usar</p>
+            </div>
+            
+            <div class="features-grid">
+                <div class="card-cresalia feature-card animate-on-scroll delay-100">
+                    <div class="feature-icon">
+                        <i class="fas fa-globe"></i>
+                    </div>
+                    <h3>Multi-idioma</h3>
+                    <p>Vende en 6 idiomas diferentes. Español, inglés, portugués y más.</p>
+                </div>
+                
+                <div class="card-cresalia feature-card animate-on-scroll delay-200">
+                    <div class="feature-icon">
+                        <i class="fas fa-robot"></i>
+                    </div>
+                    <h3>Chatbot IA</h3>
+                    <p>Asistente virtual personalizable que responde a tus clientes 24/7.</p>
+                </div>
+                
+                <div class="card-cresalia feature-card animate-on-scroll delay-300">
+                    <div class="feature-icon">
+                        <i class="fas fa-palette"></i>
+                    </div>
+                    <h3>100% Personalizable</h3>
+                    <p>Colores, logo, fuentes, historia. Todo adaptado a tu marca.</p>
+                </div>
+                
+                <div class="card-cresalia feature-card animate-on-scroll delay-100">
+                    <div class="feature-icon">
+                        <i class="fas fa-chart-line"></i>
+                    </div>
+                    <h3>Analytics Avanzado</h3>
+                    <p>Dashboard con métricas en tiempo real para tomar decisiones.</p>
+                </div>
+                
+                <div class="card-cresalia feature-card animate-on-scroll delay-200">
+                    <div class="feature-icon">
+                        <i class="fas fa-credit-card"></i>
+                    </div>
+                    <h3>Pagos Integrados</h3>
+                    <p>Mercado Pago, PayPal, Stripe. Múltiples métodos de pago.</p>
+                </div>
+                
+                <div class="card-cresalia feature-card animate-on-scroll delay-300">
+                    <div class="feature-icon">
+                        <i class="fas fa-mobile-alt"></i>
+                    </div>
+                    <h3>Mobile First</h3>
+                    <p>Diseño responsive perfecto en cualquier dispositivo.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Pricing Section -->
+    <section class="pricing-section" id="pricing">
+        <div class="container">
+            <div class="section-title animate-on-scroll">
+                <h2>Planes que crecen contigo</h2>
+                <p>Desde tiendas pequeñas hasta grandes empresas</p>
+            </div>
+            
+            <div class="pricing-grid">
+                <!-- Free -->
+                <div class="pricing-card animate-on-scroll delay-100">
+                    <div class="card-cresalia">
+                        <div class="pricing-header">
+                            <div class="pricing-name">Free</div>
+                            <div class="pricing-price">$0<span>/mes</span></div>
+                        </div>
+                        <ul class="pricing-features">
+                            <li><i class="fas fa-check"></i> 50 productos</li>
+                            <li><i class="fas fa-check"></i> 100 órdenes/mes</li>
+                            <li><i class="fas fa-check"></i> 2 idiomas</li>
+                            <li><i class="fas fa-check"></i> Logo y colores custom</li>
+                            <li class="disabled"><i class="fas fa-times"></i> Sin chatbot IA</li>
+                        </ul>
+                        <button class="btn-cresalia btn-outline" style="width: 100%;">
+                            Comenzar Gratis
+                        </button>
+                    </div>
+                </div>
+                
+                <!-- Basic -->
+                <div class="pricing-card animate-on-scroll delay-200">
+                    <div class="card-cresalia">
+                        <div class="pricing-header">
+                            <div class="pricing-name">Basic</div>
+                            <div class="pricing-price">$29<span>/mes</span></div>
+                        </div>
+                        <ul class="pricing-features">
+                            <li><i class="fas fa-check"></i> 500 productos</li>
+                            <li><i class="fas fa-check"></i> 1,000 órdenes/mes</li>
+                            <li><i class="fas fa-check"></i> 3 idiomas</li>
+                            <li><i class="fas fa-check"></i> Dominio personalizado</li>
+                            <li class="disabled"><i class="fas fa-times"></i> Sin chatbot IA</li>
+                        </ul>
+                        <button class="btn-cresalia btn-secondary" style="width: 100%;">
+                            Elegir Basic
+                        </button>
+                    </div>
+                </div>
+                
+                <!-- Pro (Featured) -->
+                <div class="pricing-card featured animate-on-scroll delay-300">
+                    <span class="pricing-badge badge-cresalia badge-accent">Popular</span>
+                    <div class="card-cresalia-gradient" style="color: white;">
+                        <div class="pricing-header" style="border-color: rgba(255,255,255,0.3);">
+                            <div class="pricing-name">Pro</div>
+                            <div class="pricing-price" style="-webkit-text-fill-color: white;">$79<span>/mes</span></div>
+                        </div>
+                        <ul class="pricing-features">
+                            <li><i class="fas fa-check"></i> Productos ilimitados</li>
+                            <li><i class="fas fa-check"></i> Órdenes ilimitadas</li>
+                            <li><i class="fas fa-check"></i> 6 idiomas</li>
+                            <li><i class="fas fa-check"></i> <strong>Chatbot IA 🤖</strong></li>
+                            <li><i class="fas fa-check"></i> Soporte 24/7</li>
+                        </ul>
+                        <button class="btn-cresalia btn-accent" style="width: 100%;">
+                            Elegir Pro
+                        </button>
+                    </div>
+                </div>
+                
+                <!-- Enterprise -->
+                <div class="pricing-card animate-on-scroll delay-400">
+                    <div class="card-cresalia">
+                        <div class="pricing-header">
+                            <div class="pricing-name">Enterprise</div>
+                            <div class="pricing-price" style="font-size: 32px;">Custom</div>
+                        </div>
+                        <ul class="pricing-features">
+                            <li><i class="fas fa-check"></i> Todo de Pro +</li>
+                            <li><i class="fas fa-check"></i> White-label</li>
+                            <li><i class="fas fa-check"></i> Servidores dedicados</li>
+                            <li><i class="fas fa-check"></i> Account Manager</li>
+                            <li><i class="fas fa-check"></i> SLA 99.9%</li>
+                        </ul>
+                        <button class="btn-cresalia btn-primary" style="width: 100%;">
+                            Contactar Ventas
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- CTA Section -->
+    <section class="cta-section">
+        <div class="container">
+            <div class="cta-content animate-on-scroll">
+                <h2>¿Listo para comenzar?</h2>
+                <p>Crea tu tienda online en menos de 5 minutos. Sin tarjeta de crédito.</p>
+                <button class="btn-cresalia" style="background: white; color: var(--cresalia-primary); font-size: 18px; padding: 18px 48px;">
+                    <i class="fas fa-rocket"></i>
+                    Crear Mi Tienda Gratis
+                </button>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-grid">
+                <div>
+                    <div class="footer-logo">Cresalia</div>
+                    <p class="footer-description">
+                        "Empezamos pocos, crecemos mucho"<br><br>
+                        La plataforma SaaS de e-commerce que te ayuda a vender más.
+                    </p>
+                </div>
+                
+                <div>
+                    <div class="footer-title">Producto</div>
+                    <ul class="footer-links">
+                        <li><a href="#features">Características</a></li>
+                        <li><a href="#pricing">Precios</a></li>
+                        <li><a href="#">Documentación</a></li>
+                        <li><a href="#">API</a></li>
+                    </ul>
+                </div>
+                
+                <div>
+                    <div class="footer-title">Empresa</div>
+                    <ul class="footer-links">
+                        <li><a href="#">Sobre Nosotros</a></li>
+                        <li><a href="#">Blog</a></li>
+                        <li><a href="#">Carreras</a></li>
+                        <li><a href="#">Contacto</a></li>
+                    </ul>
+                </div>
+                
+                <div>
+                    <div class="footer-title">Legal</div>
+                    <ul class="footer-links">
+                        <li><a href="#">Términos</a></li>
+                        <li><a href="#">Privacidad</a></li>
+                        <li><a href="#">Seguridad</a></li>
+                        <li><a href="#">Cookies</a></li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div class="footer-bottom">
+                <p>© 2025 Cresalia. Todos los derechos reservados.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Scripts -->
+    <script src="../security-config-updated.js"></script>
+    
+    <script>
+        // Animaciones on scroll
+        const observerOptions = {
+            threshold: 0.1,
+            rootMargin: '0px 0px -50px 0px'
+        };
+        
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('animated');
+                }
+            });
+        }, observerOptions);
+        
+        document.querySelectorAll('.animate-on-scroll').forEach(el => {
+            observer.observe(el);
+        });
+        
+        // Navbar scroll effect
+        window.addEventListener('scroll', () => {
+            const navbar = document.querySelector('.navbar-cresalia');
+            if (window.scrollY > 50) {
+                navbar.classList.add('scrolled');
+            } else {
+                navbar.classList.remove('scrolled');
+            }
+        });
+    </script>
+</body>
+</html>
+
+

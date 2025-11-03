@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mi Cuenta - {{NOMBRE_USUARIO}} | Cresalia</title>
+    <link rel="icon" type="image/png" href="../../assets/logo/logo-cresalia.png">
+    
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Estilos específicos del usuario -->
+    <link rel="stylesheet" href="../../styles-cresalia.css">
+    <style>
+        .user-dashboard {
+            min-height: 100vh;
+            background: linear-gradient(135deg, var(--primary-purple) 0%, var(--pink-accent) 100%);
+            padding-top: 100px;
+        }
+        .user-card {
+            background: white;
+            border-radius: 20px;
+            padding: 2rem;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            margin-bottom: 2rem;
+        }
+        .user-avatar {
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--primary-purple), var(--pink-accent));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 2rem;
+            margin: 0 auto 1rem;
+        }
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin: 2rem 0;
+        }
+        .stat-card {
+            background: var(--gray-100);
+            padding: 1.5rem;
+            border-radius: 15px;
+            text-align: center;
+        }
+        .stat-number {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--primary-purple);
+        }
+        .stat-label {
+            color: var(--gray-600);
+            font-size: 0.9rem;
+        }
+    </style>
+</head>
+<body>
+    <!-- Navbar -->
+    <nav class="navbar navbar-expand-lg fixed-top">
+        <div class="container">
+            <a class="navbar-brand" href="../../index-cresalia.html">
+                <div class="logo-container">
+                    <img src="../../assets/logo/logo-cresalia.png" alt="Cresalia" height="50" class="logo-image">
+                    <div class="logo-glow"></div>
+                </div>
+            </a>
+            
+            <div class="navbar-nav ms-auto">
+                <a class="nav-link" href="../../index-cresalia.html">
+                    <i class="fas fa-home"></i> Volver al Inicio
+                </a>
+                <a class="nav-link" href="#" onclick="cerrarSesion()">
+                    <i class="fas fa-sign-out-alt"></i> Cerrar Sesión
+                </a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Dashboard del Usuario -->
+    <div class="user-dashboard">
+        <div class="container">
+            <!-- Perfil del Usuario -->
+            <div class="user-card">
+                <div class="row align-items-center">
+                    <div class="col-md-3 text-center">
+                        <div class="user-avatar">
+                            <i class="fas fa-user"></i>
+                        </div>
+                        <h4>{{NOMBRE_USUARIO}}</h4>
+                        <p class="text-muted">{{EMAIL_USUARIO}}</p>
+                    </div>
+                    <div class="col-md-9">
+                        <div class="stats-grid">
+                            <div class="stat-card">
+                                <div class="stat-number" id="totalPedidos">0</div>
+                                <div class="stat-label">Pedidos Realizados</div>
+                            </div>
+                            <div class="stat-card">
+                                <div class="stat-number" id="totalGastado">$0</div>
+                                <div class="stat-label">Total Gastado</div>
+                            </div>
+                            <div class="stat-card">
+                                <div class="stat-number" id="productosFavoritos">0</div>
+                                <div class="stat-label">Productos Favoritos</div>
+                            </div>
+                            <div class="stat-card">
+                                <div class="stat-number" id="tiendasSeguidas">0</div>
+                                <div class="stat-label">Tiendas Seguidas</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Pestañas de Navegación -->
+            <div class="user-card">
+                <ul class="nav nav-tabs" id="userTabs" role="tablist">
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link active" id="pedidos-tab" data-bs-toggle="tab" data-bs-target="#pedidos" type="button" role="tab">
+                            <i class="fas fa-shopping-bag"></i> Mis Pedidos
+                        </button>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link" id="favoritos-tab" data-bs-toggle="tab" data-bs-target="#favoritos" type="button" role="tab">
+                            <i class="fas fa-heart"></i> Favoritos
+                        </button>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link" id="perfil-tab" data-bs-toggle="tab" data-bs-target="#perfil" type="button" role="tab">
+                            <i class="fas fa-user-cog"></i> Mi Perfil
+                        </button>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link" id="direcciones-tab" data-bs-toggle="tab" data-bs-target="#direcciones" type="button" role="tab">
+                            <i class="fas fa-map-marker-alt"></i> Direcciones
+                        </button>
+                    </li>
+                </ul>
+            </div>
+
+            <!-- Contenido de las Pestañas -->
+            <div class="tab-content" id="userTabContent">
+                <!-- Mis Pedidos -->
+                <div class="tab-pane fade show active" id="pedidos" role="tabpanel">
+                    <div class="user-card">
+                        <h5><i class="fas fa-shopping-bag"></i> Historial de Pedidos</h5>
+                        <div id="pedidosList">
+                            <div class="text-center py-5">
+                                <i class="fas fa-shopping-bag fa-3x text-muted mb-3"></i>
+                                <h5>No tienes pedidos aún</h5>
+                                <p class="text-muted">Cuando realices tu primera compra, aparecerá aquí</p>
+                                <a href="../../index-cresalia.html" class="btn btn-primary">
+                                    <i class="fas fa-shopping-cart"></i> Comenzar a Comprar
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Favoritos -->
+                <div class="tab-pane fade" id="favoritos" role="tabpanel">
+                    <div class="user-card">
+                        <h5><i class="fas fa-heart"></i> Productos Favoritos</h5>
+                        <div id="favoritosList">
+                            <div class="text-center py-5">
+                                <i class="fas fa-heart fa-3x text-muted mb-3"></i>
+                                <h5>No tienes productos favoritos</h5>
+                                <p class="text-muted">Agrega productos a tu lista de favoritos</p>
+                                <a href="../../index-cresalia.html" class="btn btn-primary">
+                                    <i class="fas fa-heart"></i> Explorar Productos
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Mi Perfil -->
+                <div class="tab-pane fade" id="perfil" role="tabpanel">
+                    <div class="user-card">
+                        <h5><i class="fas fa-user-cog"></i> Configuración del Perfil</h5>
+                        <form id="perfilForm">
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="mb-3">
+                                        <label for="nombre" class="form-label">Nombre Completo</label>
+                                        <input type="text" class="form-control" id="nombre" value="{{NOMBRE_USUARIO}}">
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="mb-3">
+                                        <label for="email" class="form-label">Email</label>
+                                        <input type="email" class="form-control" id="email" value="{{EMAIL_USUARIO}}" readonly>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="mb-3">
+                                        <label for="telefono" class="form-label">Teléfono</label>
+                                        <input type="tel" class="form-control" id="telefono" value="{{TELEFONO_USUARIO}}">
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="mb-3">
+                                        <label for="fechaNacimiento" class="form-label">Fecha de Nacimiento</label>
+                                        <input type="date" class="form-control" id="fechaNacimiento" value="{{FECHA_NACIMIENTO}}">
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="mb-3">
+                                <label for="preferencias" class="form-label">Preferencias</label>
+                                <textarea class="form-control" id="preferencias" rows="3" placeholder="Cuéntanos sobre tus preferencias de compra...">{{PREFERENCIAS_USUARIO}}</textarea>
+                            </div>
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fas fa-save"></i> Guardar Cambios
+                            </button>
+                        </form>
+                    </div>
+                </div>
+
+                <!-- Direcciones -->
+                <div class="tab-pane fade" id="direcciones" role="tabpanel">
+                    <div class="user-card">
+                        <div class="d-flex justify-content-between align-items-center mb-3">
+                            <h5><i class="fas fa-map-marker-alt"></i> Mis Direcciones</h5>
+                            <button class="btn btn-primary" onclick="agregarDireccion()">
+                                <i class="fas fa-plus"></i> Agregar Dirección
+                            </button>
+                        </div>
+                        <div id="direccionesList">
+                            <div class="text-center py-5">
+                                <i class="fas fa-map-marker-alt fa-3x text-muted mb-3"></i>
+                                <h5>No tienes direcciones guardadas</h5>
+                                <p class="text-muted">Agrega una dirección para facilitar tus compras</p>
+                                <button class="btn btn-primary" onclick="agregarDireccion()">
+                                    <i class="fas fa-plus"></i> Agregar Primera Dirección
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="../../script-cresalia.js"></script>
+    <script src="usuario-config.js"></script>
+</body>
+</html>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

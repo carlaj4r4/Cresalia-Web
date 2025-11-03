@@ -1,0 +1,166 @@
+/* ==================== NOTIFICACIONES API FRIOCAS ==================== */
+
+.api-notification {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    z-index: 9999;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    padding: 15px 20px;
+    border-radius: 12px;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    transform: translateX(400px);
+    opacity: 0;
+    transition: all 0.3s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+    max-width: 350px;
+    font-family: 'Poppins', sans-serif;
+    font-weight: 500;
+}
+
+.api-notification.show {
+    transform: translateX(0);
+    opacity: 1;
+}
+
+.api-notification-content {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.api-notification i {
+    font-size: 18px;
+    flex-shrink: 0;
+}
+
+.api-notification span {
+    font-size: 14px;
+    line-height: 1.4;
+}
+
+/* Tipos de notificación */
+.api-notification-success {
+    background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+    border-left: 4px solid #00d4aa;
+}
+
+.api-notification-error {
+    background: linear-gradient(135deg, #ff6b6b 0%, #ee5a24 100%);
+    border-left: 4px solid #ff3838;
+}
+
+.api-notification-warning {
+    background: linear-gradient(135deg, #feca57 0%, #ff9ff3 100%);
+    border-left: 4px solid #ffa502;
+    color: #2c3e50;
+}
+
+.api-notification-info {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    border-left: 4px solid #5f27cd;
+}
+
+/* Animaciones */
+@keyframes slideInRight {
+    from {
+        transform: translateX(400px);
+        opacity: 0;
+    }
+    to {
+        transform: translateX(0);
+        opacity: 1;
+    }
+}
+
+@keyframes slideOutRight {
+    from {
+        transform: translateX(0);
+        opacity: 1;
+    }
+    to {
+        transform: translateX(400px);
+        opacity: 0;
+    }
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .api-notification {
+        top: 10px;
+        right: 10px;
+        left: 10px;
+        max-width: none;
+        transform: translateY(-100px);
+    }
+    
+    .api-notification.show {
+        transform: translateY(0);
+    }
+    
+    @keyframes slideInTop {
+        from {
+            transform: translateY(-100px);
+            opacity: 0;
+        }
+        to {
+            transform: translateY(0);
+            opacity: 1;
+        }
+    }
+    
+    @keyframes slideOutTop {
+        from {
+            transform: translateY(0);
+            opacity: 1;
+        }
+        to {
+            transform: translateY(-100px);
+            opacity: 0;
+        }
+    }
+}
+
+/* Efectos hover */
+.api-notification:hover {
+    transform: translateX(-5px) scale(1.02);
+    box-shadow: 0 12px 40px rgba(0, 0, 0, 0.4);
+}
+
+/* Múltiples notificaciones */
+.api-notification + .api-notification {
+    top: 90px;
+}
+
+.api-notification + .api-notification + .api-notification {
+    top: 160px;
+}
+
+/* Modo oscuro */
+@media (prefers-color-scheme: dark) {
+    .api-notification {
+        background: linear-gradient(135deg, #2c3e50 0%, #34495e 100%);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+    }
+    
+    .api-notification-warning {
+        background: linear-gradient(135deg, #f39c12 0%, #e67e22 100%);
+        color: white;
+    }
+}
+
+/* Accesibilidad */
+@media (prefers-reduced-motion: reduce) {
+    .api-notification {
+        transition: none;
+    }
+    
+    .api-notification.show {
+        transform: none;
+    }
+}
+
+
+

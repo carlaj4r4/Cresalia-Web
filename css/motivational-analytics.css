@@ -1,0 +1,671 @@
+/* ===== SISTEMA DE MENSAJES MOTIVACIONALES ===== */
+
+/* Variables específicas para mensajes motivacionales */
+:root {
+    --motivational-primary: #7C3AED;
+    --motivational-secondary: #EC4899;
+    --motivational-success: #10B981;
+    --motivational-warning: #F59E0B;
+    --motivational-danger: #EF4444;
+    --motivational-info: #3B82F6;
+    --motivational-light: #F8FAFC;
+    --motivational-dark: #374151;
+    --motivational-border: #E5E7EB;
+    --motivational-shadow: 0 4px 16px rgba(124, 58, 237, 0.15);
+    --motivational-radius: 16px;
+    --motivational-transition: all 0.3s ease;
+}
+
+/* ===== TARJETA MOTIVACIONAL ===== */
+.motivational-card {
+    background: white;
+    border: 1px solid var(--motivational-border);
+    border-radius: var(--motivational-radius);
+    padding: 24px;
+    margin-bottom: 24px;
+    box-shadow: var(--motivational-shadow);
+    position: relative;
+    overflow: hidden;
+    animation: motivationalFadeIn 0.8s ease-out;
+}
+
+.motivational-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background: linear-gradient(90deg, var(--motivational-primary), var(--motivational-secondary));
+}
+
+.motivational-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 32px rgba(124, 58, 237, 0.2);
+}
+
+.motivational-header {
+    display: flex;
+    align-items: flex-start;
+    gap: 20px;
+    margin-bottom: 16px;
+}
+
+.motivational-icon {
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, var(--motivational-primary), var(--motivational-secondary));
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 24px;
+    color: white;
+    flex-shrink: 0;
+    animation: motivationalPulse 2s infinite;
+}
+
+.motivational-content {
+    flex: 1;
+}
+
+.motivational-title {
+    font-size: 24px;
+    font-weight: 700;
+    color: var(--motivational-dark);
+    margin: 0 0 8px 0;
+    line-height: 1.3;
+}
+
+.motivational-message {
+    font-size: 16px;
+    color: #6B7280;
+    margin: 0;
+    line-height: 1.6;
+}
+
+.motivational-suggestions {
+    margin-top: 20px;
+    padding-top: 20px;
+    border-top: 1px solid var(--motivational-border);
+}
+
+.motivational-suggestions h4 {
+    font-size: 16px;
+    font-weight: 600;
+    color: var(--motivational-dark);
+    margin: 0 0 12px 0;
+}
+
+.motivational-suggestions ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.motivational-suggestions li {
+    padding: 8px 0;
+    color: #6B7280;
+    font-size: 14px;
+    position: relative;
+    padding-left: 20px;
+}
+
+.motivational-suggestions li::before {
+    content: '💡';
+    position: absolute;
+    left: 0;
+    top: 8px;
+}
+
+/* ===== APOYO EMOCIONAL ===== */
+.emotional-support-card {
+    background: linear-gradient(135deg, #FCE7F3, #F3E8FF);
+    border: 1px solid #EC4899;
+    border-radius: var(--motivational-radius);
+    padding: 24px;
+    margin-bottom: 24px;
+    box-shadow: 0 4px 16px rgba(236, 72, 153, 0.15);
+    animation: emotionalSupportFadeIn 1s ease-out;
+}
+
+.emotional-support-header {
+    display: flex;
+    align-items: flex-start;
+    gap: 20px;
+    margin-bottom: 20px;
+}
+
+.emotional-support-icon {
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #EC4899, #F9A8D4);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 24px;
+    color: white;
+    flex-shrink: 0;
+    animation: emotionalSupportHeartbeat 2s infinite;
+}
+
+.emotional-support-content {
+    flex: 1;
+}
+
+.emotional-support-title {
+    font-size: 20px;
+    font-weight: 700;
+    color: #EC4899;
+    margin: 0 0 8px 0;
+    line-height: 1.3;
+}
+
+.emotional-support-message {
+    font-size: 16px;
+    color: #6B7280;
+    margin: 0;
+    line-height: 1.6;
+}
+
+.emotional-support-actions {
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+}
+
+.emotional-support-btn {
+    padding: 12px 20px;
+    border: none;
+    border-radius: 12px;
+    color: white;
+    font-weight: 600;
+    font-size: 14px;
+    cursor: pointer;
+    transition: var(--motivational-transition);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    text-decoration: none;
+}
+
+.emotional-support-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+}
+
+.emotional-support-btn i {
+    font-size: 16px;
+}
+
+/* ===== SUGERENCIAS PERSONALIZADAS ===== */
+.suggestions-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 20px;
+    margin-bottom: 24px;
+}
+
+.suggestion-card {
+    background: white;
+    border: 1px solid var(--motivational-border);
+    border-radius: var(--motivational-radius);
+    padding: 20px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    transition: var(--motivational-transition);
+    animation: suggestionFadeIn 0.6s ease-out;
+}
+
+.suggestion-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
+}
+
+.suggestion-card:nth-child(1) { animation-delay: 0.1s; }
+.suggestion-card:nth-child(2) { animation-delay: 0.2s; }
+.suggestion-card:nth-child(3) { animation-delay: 0.3s; }
+.suggestion-card:nth-child(4) { animation-delay: 0.4s; }
+
+.suggestion-icon {
+    width: 50px;
+    height: 50px;
+    border-radius: 12px;
+    background: linear-gradient(135deg, var(--motivational-primary), var(--motivational-secondary));
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 20px;
+    color: white;
+    margin-bottom: 16px;
+}
+
+.suggestion-content {
+    flex: 1;
+}
+
+.suggestion-title {
+    font-size: 18px;
+    font-weight: 600;
+    color: var(--motivational-dark);
+    margin: 0 0 8px 0;
+}
+
+.suggestion-message {
+    font-size: 14px;
+    color: #6B7280;
+    margin: 0 0 16px 0;
+    line-height: 1.5;
+}
+
+.suggestion-action {
+    padding: 8px 16px;
+    border: 1px solid var(--motivational-primary);
+    background: white;
+    color: var(--motivational-primary);
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: var(--motivational-transition);
+}
+
+.suggestion-action:hover {
+    background: var(--motivational-primary);
+    color: white;
+    transform: translateY(-1px);
+}
+
+.no-suggestions {
+    text-align: center;
+    color: #6B7280;
+    font-style: italic;
+    padding: 40px 20px;
+    background: #F8FAFC;
+    border-radius: var(--motivational-radius);
+    border: 2px dashed var(--motivational-border);
+}
+
+/* ===== MODAL DE MENSAJES ===== */
+.message-modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.8);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 10000;
+    animation: modalFadeIn 0.3s ease-out;
+}
+
+.modal-content {
+    background: white;
+    border-radius: var(--motivational-radius);
+    padding: 32px;
+    max-width: 500px;
+    width: 90%;
+    text-align: center;
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+    animation: modalSlideIn 0.3s ease-out;
+}
+
+.modal-content h3 {
+    font-size: 24px;
+    font-weight: 700;
+    color: var(--motivational-dark);
+    margin: 0 0 16px 0;
+}
+
+.modal-content p {
+    font-size: 16px;
+    color: #6B7280;
+    margin: 0 0 24px 0;
+    line-height: 1.6;
+}
+
+.modal-content .form-group {
+    margin-bottom: 20px;
+}
+
+.modal-content label {
+    display: block;
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--motivational-dark);
+    margin-bottom: 8px;
+}
+
+.modal-content textarea,
+.modal-content input[type="email"] {
+    width: 100%;
+    padding: 12px;
+    border: 1px solid var(--motivational-border);
+    border-radius: 8px;
+    font-size: 14px;
+    font-family: inherit;
+    transition: var(--motivational-transition);
+}
+
+.modal-content textarea:focus,
+.modal-content input[type="email"]:focus {
+    outline: none;
+    border-color: var(--motivational-primary);
+    box-shadow: 0 0 0 3px rgba(124, 58, 237, 0.1);
+}
+
+.modal-content textarea {
+    resize: vertical;
+    min-height: 100px;
+}
+
+.modal-actions {
+    display: flex;
+    gap: 12px;
+    justify-content: center;
+}
+
+.modal-actions button {
+    padding: 12px 24px;
+    border: 1px solid var(--motivational-primary);
+    background: var(--motivational-primary);
+    color: white;
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: var(--motivational-transition);
+}
+
+.modal-actions button:hover {
+    background: #6D28D9;
+    border-color: #6D28D9;
+    transform: translateY(-1px);
+}
+
+/* ===== ANIMACIONES ===== */
+@keyframes motivationalFadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes motivationalPulse {
+    0%, 100% {
+        transform: scale(1);
+    }
+    50% {
+        transform: scale(1.05);
+    }
+}
+
+@keyframes emotionalSupportFadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes emotionalSupportHeartbeat {
+    0%, 100% {
+        transform: scale(1);
+    }
+    50% {
+        transform: scale(1.1);
+    }
+}
+
+@keyframes suggestionFadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(15px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes modalFadeIn {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
+}
+
+@keyframes modalSlideIn {
+    from {
+        opacity: 0;
+        transform: translateY(-20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* ===== RESPONSIVE DESIGN ===== */
+@media (max-width: 768px) {
+    .motivational-card {
+        padding: 20px;
+    }
+    
+    .motivational-header {
+        flex-direction: column;
+        text-align: center;
+        gap: 16px;
+    }
+    
+    .motivational-icon {
+        width: 50px;
+        height: 50px;
+        font-size: 20px;
+    }
+    
+    .motivational-title {
+        font-size: 20px;
+    }
+    
+    .emotional-support-card {
+        padding: 20px;
+    }
+    
+    .emotional-support-header {
+        flex-direction: column;
+        text-align: center;
+        gap: 16px;
+    }
+    
+    .emotional-support-icon {
+        width: 50px;
+        height: 50px;
+        font-size: 20px;
+    }
+    
+    .emotional-support-actions {
+        flex-direction: column;
+    }
+    
+    .emotional-support-btn {
+        justify-content: center;
+    }
+    
+    .suggestions-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .suggestion-card {
+        padding: 16px;
+    }
+    
+    .modal-content {
+        padding: 24px;
+    }
+    
+    .modal-content h3 {
+        font-size: 20px;
+    }
+}
+
+@media (max-width: 480px) {
+    .motivational-card {
+        padding: 16px;
+    }
+    
+    .motivational-title {
+        font-size: 18px;
+    }
+    
+    .motivational-message {
+        font-size: 14px;
+    }
+    
+    .emotional-support-card {
+        padding: 16px;
+    }
+    
+    .emotional-support-title {
+        font-size: 18px;
+    }
+    
+    .emotional-support-message {
+        font-size: 14px;
+    }
+    
+    .suggestion-card {
+        padding: 12px;
+    }
+    
+    .suggestion-title {
+        font-size: 16px;
+    }
+    
+    .suggestion-message {
+        font-size: 13px;
+    }
+    
+    .modal-content {
+        padding: 20px;
+    }
+    
+    .modal-content h3 {
+        font-size: 18px;
+    }
+    
+    .modal-content p {
+        font-size: 14px;
+    }
+}
+
+/* ===== ESTADOS ESPECIALES ===== */
+.motivational-card.excellent {
+    border-left-color: var(--motivational-success);
+}
+
+.motivational-card.excellent .motivational-icon {
+    background: linear-gradient(135deg, var(--motivational-success), #34D399);
+}
+
+.motivational-card.good {
+    border-left-color: var(--motivational-info);
+}
+
+.motivational-card.good .motivational-icon {
+    background: linear-gradient(135deg, var(--motivational-info), #60A5FA);
+}
+
+.motivational-card.regular {
+    border-left-color: var(--motivational-warning);
+}
+
+.motivational-card.regular .motivational-icon {
+    background: linear-gradient(135deg, var(--motivational-warning), #FBBF24);
+}
+
+.motivational-card.low {
+    border-left-color: var(--motivational-danger);
+}
+
+.motivational-card.low .motivational-icon {
+    background: linear-gradient(135deg, var(--motivational-danger), #F87171);
+}
+
+.motivational-card.critical {
+    border-left-color: var(--motivational-secondary);
+}
+
+.motivational-card.critical .motivational-icon {
+    background: linear-gradient(135deg, var(--motivational-secondary), #F9A8D4);
+}
+
+/* ===== EFECTOS HOVER ===== */
+.motivational-card:hover .motivational-icon {
+    transform: scale(1.1);
+}
+
+.motivational-card:hover .motivational-title {
+    color: var(--motivational-primary);
+}
+
+.emotional-support-card:hover .emotional-support-icon {
+    transform: scale(1.1);
+}
+
+.suggestion-card:hover .suggestion-icon {
+    transform: scale(1.1);
+}
+
+/* ===== UTILIDADES ===== */
+.motivational-text-center { text-align: center; }
+.motivational-text-left { text-align: left; }
+.motivational-text-right { text-align: right; }
+
+.motivational-mb-0 { margin-bottom: 0; }
+.motivational-mb-1 { margin-bottom: 8px; }
+.motivational-mb-2 { margin-bottom: 16px; }
+.motivational-mb-3 { margin-bottom: 24px; }
+.motivational-mb-4 { margin-bottom: 32px; }
+
+.motivational-mt-0 { margin-top: 0; }
+.motivational-mt-1 { margin-top: 8px; }
+.motivational-mt-2 { margin-top: 16px; }
+.motivational-mt-3 { margin-top: 24px; }
+.motivational-mt-4 { margin-top: 32px; }
+
+.motivational-p-0 { padding: 0; }
+.motivational-p-1 { padding: 8px; }
+.motivational-p-2 { padding: 16px; }
+.motivational-p-3 { padding: 24px; }
+.motivational-p-4 { padding: 32px; }
+
+.motivational-d-flex { display: flex; }
+.motivational-d-grid { display: grid; }
+.motivational-d-block { display: block; }
+.motivational-d-inline-block { display: inline-block; }
+.motivational-d-none { display: none; }
+
+.motivational-justify-center { justify-content: center; }
+.motivational-justify-between { justify-content: space-between; }
+.motivational-justify-around { justify-content: space-around; }
+
+.motivational-items-center { align-items: center; }
+.motivational-items-start { align-items: flex-start; }
+.motivational-items-end { align-items: flex-end; }
+
+.motivational-gap-1 { gap: 8px; }
+.motivational-gap-2 { gap: 16px; }
+.motivational-gap-3 { gap: 24px; }
+.motivational-gap-4 { gap: 32px; }

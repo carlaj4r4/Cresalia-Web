@@ -1,0 +1,509 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cresalia - Comunidad de Enfermedades Crónicas</title>
+    <link rel="icon" type="image/x-icon" href="../../favicon.ico">
+    <link rel="icon" type="image/png" href="../../assets/logo/logo-cresalia.png">
+    <link rel="apple-touch-icon" href="../../assets/logo/logo-cresalia.png">
+    
+    <!-- PWA Manifest -->
+    <link rel="manifest" href="../../comunidades/manifest-comunidades.json">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    <meta name="apple-mobile-web-app-title" content="Cresalia Comunidades">
+    <meta name="theme-color" content="#EF4444">
+    
+    <!-- Protección Anti-DevTools -->
+    <script src="../../core/proteccion-devtools-avanzada.js?v=2.0"></script>
+    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            -webkit-user-select: none;
+            -moz-user-select: none;
+            -ms-user-select: none;
+            user-select: none;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #EF4444 0%, #F87171 50%, #FCA5A5 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+        
+        .container {
+            background: white;
+            border-radius: 24px;
+            padding: 60px 40px;
+            max-width: 700px;
+            text-align: center;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+        }
+        
+        .icon {
+            font-size: 80px;
+            margin-bottom: 20px;
+        }
+        
+        h1 {
+            color: #374151;
+            margin-bottom: 10px;
+            font-size: 2.5rem;
+        }
+        
+        .subtitle {
+            background: linear-gradient(135deg, #EF4444, #F87171);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            font-weight: 700;
+            font-size: 1.5rem;
+            margin-bottom: 30px;
+        }
+        
+        p {
+            color: #6B7280;
+            font-size: 1.1rem;
+            line-height: 1.8;
+            margin-bottom: 25px;
+        }
+        
+        .safe-space {
+            background: linear-gradient(135deg, rgba(239, 68, 68, 0.1), rgba(248, 113, 113, 0.1));
+            padding: 30px;
+            border-radius: 15px;
+            margin: 30px 0;
+            border-left: 5px solid #EF4444;
+        }
+        
+        .safe-space h3 {
+            color: #DC2626;
+            margin-bottom: 15px;
+            font-size: 1.5rem;
+        }
+        
+        .safe-space p {
+            margin-bottom: 0;
+            color: #374151;
+            font-weight: 500;
+        }
+        
+        .important-message {
+            background: linear-gradient(135deg, #EF4444, #F87171);
+            color: white;
+            padding: 25px;
+            border-radius: 15px;
+            margin: 30px 0;
+            font-weight: 500;
+            line-height: 1.8;
+        }
+        
+        .important-message strong {
+            font-size: 1.2em;
+            display: block;
+            margin-bottom: 10px;
+        }
+        
+        .btn {
+            display: inline-block;
+            background: linear-gradient(135deg, #EF4444, #F87171);
+            color: white;
+            padding: 15px 40px;
+            border-radius: 12px;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 1.1rem;
+            transition: all 0.3s ease;
+            margin: 5px;
+        }
+        
+        .btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 30px rgba(239, 68, 68, 0.4);
+        }
+        
+        .btn-rules {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+        
+        .btn-rules:hover {
+            box-shadow: 0 10px 30px rgba(102, 126, 234, 0.4);
+        }
+        
+        .btn-home {
+            background: linear-gradient(135deg, #EC4899, #F9A8D4);
+        }
+        
+        .btn-home:hover {
+            box-shadow: 0 10px 30px rgba(236, 72, 153, 0.4);
+        }
+        
+        .features {
+            margin-top: 40px;
+            padding-top: 40px;
+            border-top: 2px solid #E5E7EB;
+        }
+        
+        .feature {
+            margin-bottom: 20px;
+            color: #374151;
+            font-size: 1rem;
+            text-align: left;
+            padding-left: 20px;
+        }
+        
+        .feature i {
+            color: #EF4444;
+            margin-right: 10px;
+            font-size: 1.2rem;
+        }
+        
+        .divider {
+            height: 3px;
+            background: linear-gradient(90deg, #EF4444, #F87171, #EF4444);
+            border-radius: 2px;
+            margin: 30px 0;
+        }
+        
+        .you-are-seen {
+            background: white;
+            border: 3px solid #EF4444;
+            padding: 25px;
+            border-radius: 15px;
+            margin: 30px 0;
+            box-shadow: 0 5px 20px rgba(239, 68, 68, 0.2);
+        }
+        
+        .you-are-seen h3 {
+            color: #DC2626;
+            margin-bottom: 15px;
+            font-size: 1.8rem;
+        }
+        
+        .you-are-seen p {
+            color: #374151;
+            font-weight: 600;
+            margin-bottom: 0;
+            font-size: 1.2rem;
+        }
+        
+        .other-communities {
+            margin-top: 50px;
+            padding-top: 30px;
+            border-top: 2px solid #E5E7EB;
+        }
+        
+        .other-communities h3 {
+            color: #374151;
+            margin-bottom: 20px;
+        }
+        
+        .community-links {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            justify-content: center;
+        }
+        
+        .community-link {
+            display: inline-block;
+            padding: 10px 20px;
+            color: white;
+            text-decoration: none;
+            border-radius: 8px;
+            font-size: 0.9rem;
+            transition: all 0.3s ease;
+        }
+        
+        .community-link:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        }
+        
+        @media (max-width: 768px) {
+            .container {
+                padding: 40px 25px;
+            }
+            
+            h1 {
+                font-size: 2rem;
+            }
+            
+            .icon {
+                font-size: 60px;
+            }
+            
+            .feature {
+                text-align: center;
+                padding-left: 0;
+            }
+        }
+        
+        .trigger-warning {
+            background: #FEF3C7;
+            border: 2px solid #F59E0B;
+            padding: 20px;
+            border-radius: 12px;
+            margin: 25px 0;
+            color: #92400E;
+            font-weight: 500;
+        }
+        
+        .trigger-warning strong {
+            color: #B45309;
+            display: block;
+            margin-bottom: 8px;
+            font-size: 1.1em;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="icon">🏥</div>
+        <h1>Cresalia</h1>
+        <p class="subtitle">Comunidad de Enfermedades Crónicas y Dolor Crónico</p>
+        
+        <div class="trigger-warning">
+            <strong>⚠️ Advertencia de Contenido:</strong>
+            Esta comunidad puede contener contenido sensible sobre experiencias difíciles y traumas. 
+            Si estás en un momento vulnerable, por favor considerá tu bienestar emocional antes de participar. 
+            No estás obligado/a a leer nada que te haga daño. Tu bienestar es lo más importante.
+        </div>
+        
+        <p>Un espacio seguro y compasivo para personas que viven con dolor crónico o enfermedades crónicas invisibles. Fibromialgia, migrañas, artritis, fatiga crónica, dolor neuropático - TODAS son válidas. Tu dolor es REAL aunque no se vea.</p>
+        
+        <div class="you-are-seen">
+            <h3>❤️ TU DOLOR ES REAL ❤️</h3>
+            <p>"No se te nota" NO significa que no duele. "Pero te ves bien" NO significa que estás bien. 
+            Tu dolor INVISIBLE es tan REAL como cualquier dolor visible. TE CREEMOS.</p>
+        </div>
+        
+        <div class="safe-space">
+            <h3>🛡️ Este es TU refugio</h3>
+            <p>Aquí no hay "sos exagerado/a", no hay "es en tu cabeza", no hay "probá con yoga". 
+            Aquí hay VALIDACIÓN, COMPRENSIÓN y RESPETO. Tu dolor es REAL. Tu agotamiento es REAL. Tu frustración es VÁLIDA.</p>
+        </div>
+        
+        <div class="divider"></div>
+        
+        <div class="important-message">
+            <strong>🏥 Lo que la sociedad no entiende:</strong>
+            Vivir con dolor constante es AGOTADOR. No solo físicamente - MENTALMENTE. La frustración de cancelar planes. 
+            El aislamiento porque "siempre estás enfermo/a". La culpa de no poder trabajar tiempo completo. 
+            El estigma de "es psicológico". <strong>TODO ESO ES REAL. TODO ESO DUELE. Y AQUÍ LO VALIDAMOS.</strong>
+        </div>
+        
+        <a href="../reglas-comunidad.html" class="btn btn-rules">
+            <i class="fas fa-shield-alt"></i> Leer Reglas (IMPORTANTE)
+        </a>
+        
+        <a href="../../index-cresalia.html" class="btn btn-home">
+            <i class="fas fa-home"></i> Volver a Cresalia
+        </a>
+        
+        <div class="features">
+            <h3 style="color: #374151; margin-bottom: 25px; text-align: center;">Lo que encontrarás próximamente:</h3>
+            <div class="feature">
+                <i class="fas fa-comment-dots"></i> <strong>Espacio para compartir</strong> tu dolor sin ser minimizado o juzgado
+            </div>
+            <div class="feature">
+                <i class="fas fa-user-secret"></i> <strong>Anonimato total</strong> - Tu identidad está protegida
+            </div>
+            <div class="feature">
+                <i class="fas fa-users"></i> <strong>Otros con dolor crónico</strong> que entienden porque VIVEN lo mismo
+            </div>
+            <div class="feature">
+                <i class="fas fa-heart"></i> <strong>Validación de tu dolor</strong> - NO estás exagerando, NO es "en tu cabeza"
+            </div>
+            <div class="feature">
+                <i class="fas fa-lightbulb"></i> <strong>Consejos de afrontamiento</strong> de otros que aprendieron a vivir con dolor
+            </div>
+            <div class="feature">
+                <i class="fas fa-pills"></i> <strong>Información sobre tratamientos</strong> - Qué funciona, qué no (desde experiencias reales)
+            </div>
+            <div class="feature">
+                <i class="fas fa-brain"></i> <strong>Recursos de salud mental</strong> - Depresión, ansiedad por dolor crónico
+            </div>
+            <div class="feature">
+                <i class="fas fa-briefcase"></i> <strong>Ayuda laboral</strong> - Cómo manejar trabajo con dolor crónico
+            </div>
+            <div class="feature">
+                <i class="fas fa-lock"></i> <strong>Sin explotación</strong> - Tu historia NO será usada para marketing
+            </div>
+            <div class="feature">
+                <i class="fas fa-edit"></i> <strong>Control total</strong> - Editá o borrá tus mensajes cuando quieras
+            </div>
+        </div>
+        
+        <div class="divider"></div>
+        
+        <div class="safe-space">
+            <h3>💪 No estás exagerando</h3>
+            <p>Te dicen "sos exagerado/a", "es en tu cabeza", "probá con actitud positiva". 
+            PARÁ. Tu dolor es REAL. Tu enfermedad es REAL. No necesitás que "se te note" para que sea válido. 
+            El dolor invisible es TAN REAL como el visible. Y aquí lo reconocemos.</p>
+        </div>
+        
+        <div class="important-message">
+            <strong>❤️ Cosas que NO diremos aquí:</strong>
+            ❌ "Sos exagerado/a"<br>
+            ❌ "Es en tu cabeza" / "Es psicológico"<br>
+            ❌ "Probá con yoga/meditación/actitud positiva"<br>
+            ❌ "Pero te ves bien"<br>
+            ❌ "Otros lo tienen peor"<br>
+            ❌ "Si querés, podés" (minimizar limitaciones)<br>
+            ❌ Comparar dolores o enfermedades
+        </div>
+        
+        <div class="you-are-seen">
+            <h3>🏥 La verdad que nadie dice:</h3>
+            <p>El dolor constante DESTRUYE. Cancelar planes duele (socialmente). No poder trabajar duele (económicamente). 
+            Que nadie te crea duele (emocionalmente). El aislamiento duele (mentalmente). 
+            Tu dolor es MULTICAPA. Y TODO es VÁLIDO. 🏥</p>
+        </div>
+        
+        <div class="safe-space">
+            <h3>🌟 Tipos de dolor/enfermedades que reconocemos</h3>
+            <p><strong>Fibromialgia, Migrañas Crónicas, Artritis, Dolor Neuropático, Fatiga Crónica, 
+            Enfermedades Autoinmunes, Endometriosis, Síndrome de Dolor Regional Complejo, 
+            Dolor de Espalda Crónico, y MUCHAS MÁS.</strong><br><br>
+            Si tu enfermedad/dolor es invisible, ES VÁLIDA. Si tu médico te creyó, ES VÁLIDA. 
+            Si tu médico NO te creyó pero VOS SABÉS que es real, TAMBIÉN ES VÁLIDA.</p>
+        </div>
+        
+        <div class="important-message">
+            <strong>🏥 No estás solo/a:</strong>
+            Millones de personas viven con dolor/enfermedades crónicas invisibles. Enfrentan: 
+            minimización médica, estigma social, aislamiento, depresión, pérdida laboral, 
+            incredulidad de familia/amigos. NO estás exagerando. Tu dolor es REAL. Y MERECE ser validado.
+        </div>
+        
+        <div class="you-are-seen">
+            <h3>❤️ Recordá siempre:</h3>
+            <p>Tu dolor NO necesita ser visible para ser válido. NO necesitás "probarlo" a nadie. 
+            NO necesitás sufrir "lo suficiente" para merecer descanso. Tu dolor es REAL. 
+            Tu experiencia es VÁLIDA. Y aquí TE CREEMOS. ❤️</p>
+        </div>
+        
+        <!-- Otras Comunidades -->
+        <div class="other-communities">
+            <h3>Otras Comunidades de Apoyo</h3>
+            <div class="community-links">
+                <a href="../cuidadores/index.html" class="community-link" style="background: linear-gradient(135deg, #10B981, #34D399);">
+                    🤲 Cuidadores
+                </a>
+                <a href="../adultos-mayores/index.html" class="community-link" style="background: linear-gradient(135deg, #F59E0B, #FBBF24);">
+                    👴👵 Adultos Mayores
+                </a>
+                <a href="../discapacidad/index.html" class="community-link" style="background: linear-gradient(135deg, #8B5CF6, #A78BFA);">
+                    ♿ Personas con Discapacidad
+                </a>
+                <a href="../estres-laboral/index.html" class="community-link" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
+                    💼 Estrés Laboral
+                </a>
+                <a href="../otakus-anime-manga/index.html" class="community-link" style="background: linear-gradient(135deg, #FF6B9D, #C471ED);">
+                    🌸 Otakus
+                </a>
+                <a href="../gamers-videojuegos/index.html" class="community-link" style="background: linear-gradient(135deg, #6366F1, #8B5CF6);">
+                    🎮 Gamers
+                </a>
+                <a href="../../cresalia-jobs/index.html" class="community-link" style="background: linear-gradient(135deg, #F59E0B, #EAB308);">
+                    💼 Cresalia Jobs
+                </a>
+            </div>
+        </div>
+        
+        <p style="margin-top: 40px; font-size: 0.9rem; color: #9CA3AF;">
+            🏥❤️ Parte del ecosistema Cresalia - Validación y comprensión para el dolor invisible
+        </p>
+        
+        <p style="margin-top: 10px; font-size: 0.85rem; color: #9CA3AF; font-style: italic;">
+            "Tu dolor no necesita ser visible para ser válido. TE CREEMOS." 🏥
+        </p>
+        
+        <!-- Mensaje de Protección -->
+        <div style="margin-top: 30px; padding: 20px; background: linear-gradient(135deg, rgba(239, 68, 68, 0.1), rgba(248, 113, 113, 0.1)); border-radius: 12px; border: 2px solid #EF4444;">
+            <p style="color: #DC2626; font-weight: 600; font-size: 0.95rem; margin: 0;">
+                🛡️ <strong>Tu privacidad es sagrada:</strong> NO usaremos tu historia sin tu permiso explícito. 
+                NO la compartiremos para marketing. NO la monetizaremos. Tu dolor NO está en venta. 
+                Gracias por confiar en nosotros. 🏥
+            </p>
+        </div>
+    </div>
+    
+    <!-- Watermark de protección -->
+    <div style="position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%) rotate(-45deg); font-size: 5em; color: rgba(239, 68, 68, 0.03); pointer-events: none; z-index: 1; font-weight: bold;">
+        CONFIDENCIAL
+    </div>
+    
+    <!-- Advertencia de copia -->
+    <div id="copyWarning" style="position: fixed; top: 20px; right: 20px; background: #DC2626; color: white; padding: 15px 25px; border-radius: 10px; display: none; z-index: 9999;">
+        ⚠️ Este contenido está protegido. No copies historias ajenas.
+    </div>
+    
+    <script>
+        document.addEventListener('copy', function(e) {
+            e.preventDefault();
+            document.getElementById('copyWarning').style.display = 'block';
+            setTimeout(() => document.getElementById('copyWarning').style.display = 'none', 3000);
+            return false;
+        });
+        
+        document.addEventListener('contextmenu', function(e) {
+            e.preventDefault();
+            alert('⚠️ El menú contextual está desactivado para proteger el contenido compartido.');
+            return false;
+        });
+        
+        document.addEventListener('keyup', function(e) {
+            if (e.key === 'PrintScreen') {
+                navigator.clipboard.writeText('');
+                alert('⚠️ Las capturas de pantalla están desactivadas para proteger las historias compartidas.');
+            }
+        });
+        
+        console.log('%c🏥❤️ Bienvenido/a a Cresalia - Enfermedades Crónicas', 'color: #EF4444; font-size: 18px; font-weight: bold;');
+        console.log('%c🛡️ Este contenido está protegido. No copies historias de otros usuarios.', 'font-size: 14px;');
+        console.log('%cExplotar el dolor ajeno es inaceptable. Gracias por respetar esta comunidad. 🏥', 'font-size: 14px; font-weight: bold;');
+    </script>
+    
+    <!-- Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="../../config-supabase-seguro.js"></script>
+    <script src="../../js/sistema-alertas-comunidades.js"></script>
+    <script>
+        // Inicializar sistema de alertas
+        let alertasComunidad;
+        document.addEventListener('DOMContentLoaded', () => {
+            setTimeout(() => {
+                alertasComunidad = new SistemaAlertasComunidades('enfermedades-cronicas');
+                window.alertasComunidad = alertasComunidad;
+            }, 500);
+        });
+        
+        // Registrar Service Worker para PWA
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('../../sw.js')
+                    .then(registration => {
+                        console.log('✅ Service Worker registrado');
+                    })
+                    .catch(error => {
+                        console.log('⚠️ Service Worker no disponible');
+                    });
+            });
+        }
+    </script>
+</body>
+</html>
+

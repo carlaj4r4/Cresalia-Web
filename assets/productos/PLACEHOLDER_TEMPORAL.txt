@@ -1,0 +1,25 @@
+Para el placeholder de productos:
+
+Opción 1 (30 segundos):
+━━━━━━━━━━━━━━━━━━━━━━
+1. Descargá esta imagen:
+   https://via.placeholder.com/400/7C3AED/FFFFFF?text=Producto
+
+2. Guardá como:
+   C:\Users\carla\Cresalia-Web\assets\productos\placeholder.jpg
+
+
+Opción 2 (Paint - 1 minuto):
+━━━━━━━━━━━━━━━━━━━━━━
+1. Abrí Paint
+2. Nuevo → Redimensionar a 400x400
+3. Rellenar con morado
+4. Guardar como: placeholder.jpg (aquí en esta carpeta)
+
+
+Por ahora, este error NO rompe nada.
+Solo que productos sin imagen se ven rotos.
+
+NO es crítico para lanzar ✅
+
+

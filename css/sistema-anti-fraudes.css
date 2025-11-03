@@ -1,0 +1,525 @@
+/* ===== SISTEMA ANTI-FRAUDES CRESALIA ===== */
+/* Version 1.0 - Estilos para Seguridad y Validación */
+/* Co-fundadores: CRISLA & Claude */
+
+/* ===== CONTENEDOR MENSAJES VALIDACIÓN ===== */
+.mensajes-validacion-container {
+    margin-bottom: 20px;
+    padding: 0;
+}
+
+.mensaje-validacion {
+    background: linear-gradient(135deg, #E3F2FD, #BBDEFB);
+    border: 2px solid #2196F3;
+    border-radius: 10px;
+    padding: 12px 15px;
+    margin-bottom: 10px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 14px;
+    color: #1565C0;
+    animation: slideInDown 0.3s ease;
+}
+
+.mensaje-validacion i {
+    color: #2196F3;
+    font-size: 16px;
+}
+
+.mensaje-validacion.warning {
+    background: linear-gradient(135deg, #FFF3E0, #FFE0B2);
+    border-color: #FF9800;
+    color: #E65100;
+}
+
+.mensaje-validacion.warning i {
+    color: #FF9800;
+}
+
+.mensaje-validacion.error {
+    background: linear-gradient(135deg, #FFEBEE, #FFCDD2);
+    border-color: #F44336;
+    color: #C62828;
+}
+
+.mensaje-validacion.error i {
+    color: #F44336;
+}
+
+/* ===== PREGUNTAS FILTRO ===== */
+.seccion-filtro-cresalia {
+    background: linear-gradient(135deg, #F8F9FA, #E9ECEF);
+    border: 2px solid #DEE2E6;
+    border-radius: 15px;
+    padding: 25px;
+    margin: 25px 0;
+    position: relative;
+}
+
+.seccion-filtro-cresalia::before {
+    content: "🛡️";
+    position: absolute;
+    top: -15px;
+    left: 20px;
+    background: white;
+    padding: 5px 10px;
+    font-size: 1.2rem;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+
+.titulo-filtro {
+    color: #495057;
+    font-weight: 600;
+    margin-bottom: 20px;
+    text-align: center;
+}
+
+.pregunta-filtro {
+    margin-bottom: 20px;
+}
+
+.pregunta-filtro label {
+    display: block;
+    font-weight: 500;
+    color: #495057;
+    margin-bottom: 8px;
+    font-size: 1rem;
+}
+
+.pregunta-filtro input,
+.pregunta-filtro textarea,
+.pregunta-filtro select {
+    width: 100%;
+    padding: 12px 15px;
+    border: 2px solid #DEE2E6;
+    border-radius: 10px;
+    font-size: 14px;
+    transition: all 0.3s ease;
+    font-family: 'Poppins', sans-serif;
+    background: white; /* Fondo blanco para contraste */
+    color: #2c3e50; /* Texto oscuro legible */
+}
+
+.pregunta-filtro input:focus,
+.pregunta-filtro textarea:focus,
+.pregunta-filtro select:focus {
+    outline: none;
+    border-color: #007BFF;
+    box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.1);
+    transform: translateY(-1px);
+}
+
+.pregunta-filtro textarea {
+    resize: vertical;
+    min-height: 80px;
+}
+
+/* ===== TEXTAREA ESPECIAL CON FONDO CRESALIA ===== */
+.seccion-filtro-cresalia .pregunta-filtro textarea {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;
+    color: white !important; /* Letras blancas como pidió la co-fundadora 💜 */
+    border: 2px solid rgba(255, 255, 255, 0.3) !important;
+    font-weight: 500;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1); /* Sombra sutil para mejor legibilidad */
+}
+
+.seccion-filtro-cresalia .pregunta-filtro textarea::placeholder {
+    color: rgba(255, 255, 255, 0.8) !important; /* Placeholder también blanco */
+    font-style: italic;
+}
+
+.seccion-filtro-cresalia .pregunta-filtro textarea:focus {
+    border-color: rgba(255, 255, 255, 0.6) !important;
+    box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.2) !important;
+    transform: translateY(-1px);
+}
+
+/* ===== INPUT ESPECIAL CON FONDO CRESALIA (para objetivo) ===== */
+.seccion-filtro-cresalia .pregunta-filtro input[type="text"] {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;
+    color: white !important; /* Letras blancas como pidió la co-fundadora 💜 */
+    border: 2px solid rgba(255, 255, 255, 0.3) !important;
+    font-weight: 500;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1); /* Sombra sutil para mejor legibilidad */
+}
+
+.seccion-filtro-cresalia .pregunta-filtro input[type="text"]::placeholder {
+    color: rgba(255, 255, 255, 0.8) !important; /* Placeholder también blanco */
+    font-style: italic;
+}
+
+.seccion-filtro-cresalia .pregunta-filtro input[type="text"]:focus {
+    border-color: rgba(255, 255, 255, 0.6) !important;
+    box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.2) !important;
+    transform: translateY(-1px);
+}
+
+.opciones-radio {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 10px;
+    margin-top: 10px;
+}
+
+.opciones-radio label {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background: white;
+    padding: 10px 15px;
+    border: 2px solid #E9ECEF;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-weight: normal;
+    margin-bottom: 0;
+}
+
+.opciones-radio label:hover {
+    border-color: #007BFF;
+    background: #F8F9FA;
+}
+
+.opciones-radio input[type="radio"] {
+    width: auto;
+    margin: 0;
+}
+
+.opciones-radio input[type="radio"]:checked + span {
+    color: #007BFF;
+    font-weight: 600;
+}
+
+/* ===== ADVERTENCIAS EDUCATIVAS ===== */
+.advertencias-educativas {
+    background: linear-gradient(135deg, #E8F5E8, #C8E6C9);
+    border: 2px solid #4CAF50;
+    border-radius: 12px;
+    padding: 20px;
+    margin: 20px 0;
+}
+
+.advertencias-educativas h4 {
+    color: #2E7D32;
+    margin-bottom: 15px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.advertencia-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    margin-bottom: 10px;
+    color: #2E7D32;
+}
+
+.advertencia-item:last-child {
+    margin-bottom: 0;
+}
+
+.advertencia-item i {
+    color: #4CAF50;
+    margin-top: 2px;
+    flex-shrink: 0;
+}
+
+/* ===== BOTÓN REPORTAR ===== */
+.reporte-tienda {
+    position: absolute;
+    top: 15px;
+    right: 15px;
+    z-index: 100;
+}
+
+.btn-reportar {
+    background: rgba(244, 67, 54, 0.1);
+    border: 2px solid rgba(244, 67, 54, 0.3);
+    color: #F44336;
+    padding: 8px 12px;
+    border-radius: 20px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    font-size: 12px;
+    font-weight: 500;
+    transition: all 0.3s ease;
+    backdrop-filter: blur(10px);
+}
+
+.btn-reportar:hover {
+    background: rgba(244, 67, 54, 0.2);
+    border-color: #F44336;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(244, 67, 54, 0.2);
+}
+
+.btn-reportar i {
+    font-size: 14px;
+}
+
+/* ===== MODAL REPORTE ===== */
+.modal-reporte {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.8);
+    backdrop-filter: blur(5px);
+    z-index: 10000;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    animation: fadeIn 0.3s ease;
+}
+
+.modal-reporte .modal-content {
+    background: white;
+    border-radius: 20px;
+    max-width: 500px;
+    width: 90%;
+    max-height: 90vh;
+    overflow-y: auto;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+    animation: slideInUp 0.3s ease;
+}
+
+.modal-reporte .modal-header {
+    background: linear-gradient(135deg, #F44336, #D32F2F);
+    color: white;
+    padding: 20px;
+    border-radius: 20px 20px 0 0;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.modal-reporte .modal-header h3 {
+    margin: 0;
+    font-size: 1.3rem;
+}
+
+.modal-reporte .btn-cerrar {
+    background: none;
+    border: none;
+    color: white;
+    font-size: 1.5rem;
+    cursor: pointer;
+    padding: 5px;
+    border-radius: 50%;
+    transition: background 0.3s ease;
+}
+
+.modal-reporte .btn-cerrar:hover {
+    background: rgba(255, 255, 255, 0.2);
+}
+
+.modal-reporte .modal-body {
+    padding: 25px;
+}
+
+.opciones-reporte {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    margin: 20px 0;
+}
+
+.opciones-reporte label {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 12px 15px;
+    background: #F8F9FA;
+    border: 2px solid #E9ECEF;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-weight: 500;
+}
+
+.opciones-reporte label:hover {
+    border-color: #F44336;
+    background: #FFEBEE;
+}
+
+.opciones-reporte input[type="radio"]:checked + span {
+    color: #F44336;
+}
+
+.modal-reporte textarea {
+    width: 100%;
+    padding: 12px 15px;
+    border: 2px solid #E9ECEF;
+    border-radius: 10px;
+    font-family: 'Poppins', sans-serif;
+    font-size: 14px;
+    margin: 15px 0;
+    resize: vertical;
+}
+
+.botones-modal {
+    display: flex;
+    gap: 15px;
+    justify-content: flex-end;
+    padding-top: 20px;
+    border-top: 1px solid #E9ECEF;
+}
+
+.btn-enviar {
+    background: linear-gradient(135deg, #F44336, #D32F2F);
+    color: white;
+    border: none;
+    padding: 12px 25px;
+    border-radius: 25px;
+    cursor: pointer;
+    font-weight: 600;
+    transition: all 0.3s ease;
+}
+
+.btn-enviar:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(244, 67, 54, 0.3);
+}
+
+.btn-cancelar {
+    background: #6C757D;
+    color: white;
+    border: none;
+    padding: 12px 25px;
+    border-radius: 25px;
+    cursor: pointer;
+    font-weight: 600;
+    transition: all 0.3s ease;
+}
+
+.btn-cancelar:hover {
+    background: #5A6268;
+    transform: translateY(-1px);
+}
+
+.btn-ok {
+    background: linear-gradient(135deg, #4CAF50, #45A049);
+    color: white;
+    border: none;
+    padding: 12px 30px;
+    border-radius: 25px;
+    cursor: pointer;
+    font-weight: 600;
+    margin-top: 20px;
+}
+
+/* ===== INDICADORES DE ESTADO ===== */
+.tienda-suspendida::after {
+    content: "🚫 SUSPENDIDA";
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    background: #F44336;
+    color: white;
+    padding: 5px 10px;
+    border-radius: 12px;
+    font-size: 11px;
+    font-weight: 600;
+    z-index: 10;
+}
+
+.tienda-en-revision::after {
+    content: "⏳ EN REVISIÓN";
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    background: #FF9800;
+    color: white;
+    padding: 5px 10px;
+    border-radius: 12px;
+    font-size: 11px;
+    font-weight: 600;
+    z-index: 10;
+}
+
+/* ===== ANIMACIONES ===== */
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+@keyframes slideInUp {
+    from {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes slideInDown {
+    from {
+        opacity: 0;
+        transform: translateY(-20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* ===== RESPONSIVE ===== */
+@media (max-width: 768px) {
+    .seccion-filtro-cresalia {
+        padding: 20px 15px;
+        margin: 20px 0;
+    }
+    
+    .opciones-radio {
+        grid-template-columns: 1fr;
+    }
+    
+    .modal-reporte .modal-content {
+        width: 95%;
+        margin: 10px;
+    }
+    
+    .botones-modal {
+        flex-direction: column;
+    }
+    
+    .btn-reportar {
+        font-size: 11px;
+        padding: 6px 10px;
+    }
+}
+
+/* ===== TEMA OSCURO (OPCIONAL) ===== */
+@media (prefers-color-scheme: dark) {
+    .seccion-filtro-cresalia {
+        background: linear-gradient(135deg, #2D3748, #1A202C);
+        border-color: #4A5568;
+    }
+    
+    .titulo-filtro,
+    .pregunta-filtro label {
+        color: #E2E8F0;
+    }
+    
+    .pregunta-filtro input,
+    .pregunta-filtro textarea,
+    .pregunta-filtro select {
+        background: #2D3748;
+        border-color: #4A5568;
+        color: #E2E8F0;
+    }
+    
+    .opciones-radio label {
+        background: #2D3748;
+        border-color: #4A5568;
+        color: #E2E8F0;
+    }
+}

@@ -1,0 +1,1178 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>💜 Centro de Respaldo Emocional - Crisla | Cresalia</title>
+    
+    <!-- Favicon -->
+    <link rel="icon" type="image/png" href="assets/logo/logo-cresalia.png">
+    <link rel="apple-touch-icon" href="assets/logo/logo-cresalia.png">
+    
+    <!-- Meta Security -->
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' cdnjs.cloudflare.com; style-src 'self' 'unsafe-inline' fonts.googleapis.com cdnjs.cloudflare.com; font-src 'self' fonts.gstatic.com; img-src 'self' data:; connect-src 'self';">
+    <meta http-equiv="X-Content-Type-Options" content="nosniff">
+    <meta http-equiv="X-Frame-Options" content="DENY">
+    <meta http-equiv="X-XSS-Protection" content="1; mode=block">
+    <meta name="referrer" content="strict-origin-when-cross-origin">
+    
+    <!-- Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    
+    <!-- Sistema de Interconexiones -->
+    <script src="js/sistema-interconexiones-global.js"></script>
+    
+    <!-- Sistema de Alertas de Emergencia -->
+    <script src="js/sistema-alertas-emergencia-global.js"></script>
+    
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <link rel="stylesheet" href="core/css/cresalia-theme-purple.css">
+    
+    <style>
+        body {
+            background: linear-gradient(135deg, #FDF2F8, #FCE7F3);
+            margin: 0;
+            padding: 24px;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        /* Header */
+        .header {
+            background: linear-gradient(135deg, #EC4899, #F9A8D4);
+            color: white;
+            padding: 32px;
+            border-radius: 20px;
+            margin-bottom: 32px;
+            box-shadow: 0 8px 32px rgba(236, 72, 153, 0.3);
+        }
+
+        .header h1 {
+            font-size: 36px;
+            font-weight: 800;
+            margin: 0 0 8px 0;
+            display: flex;
+            align-items: center;
+            gap: 14px;
+        }
+
+        .header p {
+            opacity: 0.95;
+            font-size: 16px;
+            margin: 0;
+        }
+
+        /* Stats */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 20px;
+            margin-bottom: 32px;
+        }
+
+        .stat-card {
+            background: white;
+            padding: 24px;
+            border-radius: 16px;
+            box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
+        }
+
+        .stat-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+        }
+
+        .stat-label {
+            font-size: 13px;
+            color: #6B7280;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .stat-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+        }
+
+        .stat-icon.critica {
+            background: linear-gradient(135deg, #EF4444, #F87171);
+            color: white;
+        }
+
+        .stat-icon.alta {
+            background: linear-gradient(135deg, #F59E0B, #FBBF24);
+            color: white;
+        }
+
+        .stat-icon.media {
+            background: linear-gradient(135deg, #3B82F6, #60A5FA);
+            color: white;
+        }
+
+        .stat-icon.baja {
+            background: linear-gradient(135deg, #10B981, #34D399);
+            color: white;
+        }
+
+        .stat-value {
+            font-size: 40px;
+            font-weight: 800;
+            color: #1F2937;
+        }
+
+        /* Filtros */
+        .filtros {
+            background: white;
+            padding: 20px;
+            border-radius: 16px;
+            margin-bottom: 24px;
+            display: flex;
+            gap: 16px;
+            flex-wrap: wrap;
+            align-items: center;
+            box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
+        }
+
+        .filtro-label {
+            font-weight: 600;
+            color: #374151;
+            font-size: 14px;
+        }
+
+        .filtro-btn {
+            padding: 8px 16px;
+            background: #F3F4F6;
+            border: 2px solid transparent;
+            border-radius: 20px;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-size: 14px;
+            font-weight: 500;
+            color: #4B5563;
+        }
+
+        .filtro-btn:hover {
+            background: #E5E7EB;
+        }
+
+        .filtro-btn.active {
+            background: linear-gradient(135deg, #7C3AED, #A78BFA);
+            color: white;
+            border-color: transparent;
+        }
+
+        .filtro-btn.critica.active {
+            background: linear-gradient(135deg, #EF4444, #F87171);
+        }
+
+        .filtro-btn.alta.active {
+            background: linear-gradient(135deg, #F59E0B, #FBBF24);
+        }
+
+        /* Mensajes List */
+        .mensajes-container {
+            display: grid;
+            gap: 20px;
+        }
+
+        .mensaje-card {
+            background: white;
+            border-radius: 16px;
+            overflow: hidden;
+            box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
+            transition: all 0.3s ease;
+            border-left: 6px solid #E5E7EB;
+        }
+
+        .mensaje-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+        }
+
+        .mensaje-card.critica {
+            border-left-color: #EF4444;
+            background: linear-gradient(135deg, #FFFBEB 0%, #FFFFFF 50%);
+        }
+
+        .mensaje-card.alta {
+            border-left-color: #F59E0B;
+        }
+
+        .mensaje-card.respondido {
+            opacity: 0.7;
+        }
+
+        .mensaje-header {
+            padding: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            border-bottom: 1px solid #F3F4F6;
+        }
+
+        .mensaje-info {
+            flex: 1;
+        }
+
+        .mensaje-tenant {
+            font-size: 18px;
+            font-weight: 700;
+            color: #1F2937;
+            margin-bottom: 4px;
+        }
+
+        .mensaje-meta {
+            display: flex;
+            gap: 16px;
+            font-size: 13px;
+            color: #6B7280;
+            flex-wrap: wrap;
+        }
+
+        .mensaje-meta-item {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .mensaje-badges {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+
+        .badge {
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .badge-urgencia-critica {
+            background: linear-gradient(135deg, #FEE2E2, #FECACA);
+            color: #991B1B;
+        }
+
+        .badge-urgencia-alta {
+            background: linear-gradient(135deg, #FEF3C7, #FDE68A);
+            color: #92400E;
+        }
+
+        .badge-urgencia-media {
+            background: linear-gradient(135deg, #DBEAFE, #BFDBFE);
+            color: #1E40AF;
+        }
+
+        .badge-urgencia-baja {
+            background: linear-gradient(135deg, #D1FAE5, #A7F3D0);
+            color: #065F46;
+        }
+
+        .badge-emocion {
+            background: #F3F4F6;
+            color: #4B5563;
+        }
+
+        .badge-anonimo {
+            background: linear-gradient(135deg, #FEF3C7, #FDE68A);
+            color: #92400E;
+        }
+
+        .badge-plan {
+            background: #EDE9FE;
+            color: #6D28D9;
+        }
+
+        .mensaje-body {
+            padding: 24px;
+        }
+
+        .mensaje-texto {
+            font-size: 15px;
+            line-height: 1.7;
+            color: #374151;
+            margin-bottom: 20px;
+            padding: 16px;
+            background: #F9FAFB;
+            border-radius: 12px;
+            border-left: 3px solid #EC4899;
+        }
+
+        .mensaje-metricas {
+            display: flex;
+            gap: 24px;
+            margin-bottom: 20px;
+            padding: 16px;
+            background: #FEF3C7;
+            border-radius: 12px;
+        }
+
+        .metrica-mini {
+            text-align: center;
+        }
+
+        .metrica-mini-value {
+            font-size: 24px;
+            font-weight: 700;
+            color: #92400E;
+        }
+
+        .metrica-mini-label {
+            font-size: 11px;
+            color: #78350F;
+        }
+
+        /* Respuesta */
+        .respuesta-existente {
+            background: linear-gradient(135deg, #D1FAE5, #A7F3D0);
+            padding: 20px;
+            border-radius: 12px;
+            margin-bottom: 20px;
+            border-left: 4px solid #10B981;
+        }
+
+        .respuesta-existente-header {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 12px;
+            align-items: center;
+        }
+
+        .respuesta-existente-header i {
+            color: #059669;
+            font-size: 20px;
+        }
+
+        .respuesta-existente-header strong {
+            color: #065F46;
+        }
+
+        .respuesta-existente-texto {
+            color: #047857;
+            line-height: 1.6;
+        }
+
+        .mensaje-actions {
+            padding: 20px;
+            border-top: 1px solid #F3F4F6;
+            display: flex;
+            gap: 12px;
+        }
+
+        .btn-action {
+            flex: 1;
+            padding: 12px 20px;
+            border-radius: 10px;
+            border: none;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .btn-responder {
+            background: linear-gradient(135deg, #EC4899, #F9A8D4);
+            color: white;
+        }
+
+        .btn-responder:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(236, 72, 153, 0.4);
+        }
+
+        .btn-marcar-respondido {
+            background: #10B981;
+            color: white;
+        }
+
+        .btn-derivar {
+            background: #F3F4F6;
+            color: #4B5563;
+        }
+
+        /* Modal de respuesta */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.7);
+            backdrop-filter: blur(4px);
+            z-index: 10000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal-content {
+            background: white;
+            border-radius: 20px;
+            padding: 32px;
+            max-width: 600px;
+            width: 90%;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+        }
+
+        .modal-header {
+            margin-bottom: 24px;
+        }
+
+        .modal-header h3 {
+            font-size: 24px;
+            color: #1F2937;
+            margin-bottom: 8px;
+        }
+
+        .modal-header p {
+            color: #6B7280;
+            font-size: 14px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            font-weight: 600;
+            color: #374151;
+            margin-bottom: 8px;
+            font-size: 14px;
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 12px 16px;
+            border: 2px solid #E5E7EB;
+            border-radius: 10px;
+            font-family: inherit;
+            font-size: 14px;
+            resize: vertical;
+        }
+
+        .form-control:focus {
+            outline: none;
+            border-color: #EC4899;
+        }
+
+        .modal-buttons {
+            display: flex;
+            gap: 12px;
+            margin-top: 24px;
+        }
+
+        /* Empty state */
+        .empty-state {
+            text-align: center;
+            padding: 80px 20px;
+        }
+
+        .empty-state i {
+            font-size: 80px;
+            color: #DDD6FE;
+            margin-bottom: 20px;
+        }
+
+        .empty-state h3 {
+            font-size: 24px;
+            color: #1F2937;
+            margin-bottom: 12px;
+        }
+
+        .empty-state p {
+            color: #6B7280;
+            font-size: 16px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <div class="header">
+            <h1>
+                <i class="fas fa-heart"></i>
+                Centro de Respaldo Emocional
+            </h1>
+            <p>Aquí puedes ver y responder a los mensajes de emprendedores que necesitan apoyo</p>
+        </div>
+
+        <!-- Stats -->
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-header">
+                    <span class="stat-label">Urgencia Crítica</span>
+                    <div class="stat-icon critica">
+                        <i class="fas fa-exclamation-triangle"></i>
+                    </div>
+                </div>
+                <div class="stat-value" id="stat-critica">0</div>
+            </div>
+
+            <div class="stat-card">
+                <div class="stat-header">
+                    <span class="stat-label">Urgencia Alta</span>
+                    <div class="stat-icon alta">
+                        <i class="fas fa-exclamation-circle"></i>
+                    </div>
+                </div>
+                <div class="stat-value" id="stat-alta">0</div>
+            </div>
+
+            <div class="stat-card">
+                <div class="stat-header">
+                    <span class="stat-label">Urgencia Media</span>
+                    <div class="stat-icon media">
+                        <i class="fas fa-info-circle"></i>
+                    </div>
+                </div>
+                <div class="stat-value" id="stat-media">0</div>
+            </div>
+
+            <div class="stat-card">
+                <div class="stat-header">
+                    <span class="stat-label">Urgencia Baja</span>
+                    <div class="stat-icon baja">
+                        <i class="fas fa-check-circle"></i>
+                    </div>
+                </div>
+                <div class="stat-value" id="stat-baja">0</div>
+            </div>
+
+            <div class="stat-card">
+                <div class="stat-header">
+                    <span class="stat-label">Pendientes</span>
+                    <div class="stat-icon" style="background: linear-gradient(135deg, #EC4899, #F9A8D4); color: white;">
+                        <i class="fas fa-clock"></i>
+                    </div>
+                </div>
+                <div class="stat-value" id="stat-pendientes">0</div>
+            </div>
+
+            <div class="stat-card">
+                <div class="stat-header">
+                    <span class="stat-label">Respondidos Hoy</span>
+                    <div class="stat-icon" style="background: linear-gradient(135deg, #7C3AED, #A78BFA); color: white;">
+                        <i class="fas fa-check-double"></i>
+                    </div>
+                </div>
+                <div class="stat-value" id="stat-respondidos">0</div>
+            </div>
+        </div>
+
+        <!-- Filtros -->
+        <div class="filtros">
+            <span class="filtro-label">Filtrar por:</span>
+            
+            <button class="filtro-btn active" data-filtro="all" onclick="filtrarMensajes('all')">
+                Todos
+            </button>
+            <button class="filtro-btn critica" data-filtro="critica" onclick="filtrarMensajes('critica')">
+                🔴 Crítica
+            </button>
+            <button class="filtro-btn alta" data-filtro="alta" onclick="filtrarMensajes('alta')">
+                🟠 Alta
+            </button>
+            <button class="filtro-btn" data-filtro="media" onclick="filtrarMensajes('media')">
+                🟡 Media
+            </button>
+            <button class="filtro-btn" data-filtro="baja" onclick="filtrarMensajes('baja')">
+                🟢 Baja
+            </button>
+            
+            <div style="margin-left: auto; display: flex; gap: 8px;">
+                <button class="filtro-btn" data-filtro="pendiente" onclick="filtrarMensajes('pendiente')">
+                    ⏳ Pendientes
+                </button>
+                <button class="filtro-btn" data-filtro="respondido" onclick="filtrarMensajes('respondido')">
+                    ✅ Respondidos
+                </button>
+            </div>
+        </div>
+
+        <!-- Lista de Mensajes -->
+        <div class="mensajes-container" id="mensajes-container">
+            <div class="empty-state">
+                <i class="fas fa-inbox"></i>
+                <h3>No hay mensajes por mostrar</h3>
+                <p>Los mensajes de apoyo aparecerán aquí</p>
+            </div>
+        </div>
+    </div>
+
+    <script src="security-config-updated.js"></script>
+    <script>
+        let todosMensajes = [];
+        let filtroActual = 'all';
+
+        // Cargar mensajes
+        async function cargarMensajes() {
+            try {
+                const response = await fetch('http://localhost:3001/api/apoyo/mensajes');
+                const data = await response.json();
+                todosMensajes = data.mensajes;
+                
+                actualizarStats(todosMensajes);
+                renderMensajes(todosMensajes);
+            } catch (error) {
+                console.error('Error cargando mensajes:', error);
+            }
+        }
+
+        // Actualizar estadísticas
+        function actualizarStats(mensajes) {
+            const stats = {
+                critica: mensajes.filter(m => m.urgencia === 'critica').length,
+                alta: mensajes.filter(m => m.urgencia === 'alta').length,
+                media: mensajes.filter(m => m.urgencia === 'media').length,
+                baja: mensajes.filter(m => m.urgencia === 'baja').length,
+                pendientes: mensajes.filter(m => m.estado === 'pendiente').length,
+                respondidos: mensajes.filter(m => m.estado === 'respondido' && esHoy(m.respondido_at)).length
+            };
+
+            document.getElementById('stat-critica').textContent = stats.critica;
+            document.getElementById('stat-alta').textContent = stats.alta;
+            document.getElementById('stat-media').textContent = stats.media;
+            document.getElementById('stat-baja').textContent = stats.baja;
+            document.getElementById('stat-pendientes').textContent = stats.pendientes;
+            document.getElementById('stat-respondidos').textContent = stats.respondidos;
+        }
+
+        // Renderizar mensajes
+        function renderMensajes(mensajes) {
+            const container = document.getElementById('mensajes-container');
+            
+            if (mensajes.length === 0) {
+                container.innerHTML = `
+                    <div class="empty-state">
+                        <i class="fas fa-inbox"></i>
+                        <h3>No hay mensajes con este filtro</h3>
+                        <p>Intenta con otro filtro</p>
+                    </div>
+                `;
+                return;
+            }
+
+            container.innerHTML = mensajes.map(m => `
+                <div class="mensaje-card ${m.urgencia} ${m.estado}" data-id="${m.id}">
+                    <div class="mensaje-header">
+                        <div class="mensaje-info">
+                            <div class="mensaje-tenant">
+                                ${m.anonimo ? '🔒 Emprendedor Anónimo' : m.nombre_empresa}
+                                ${!m.anonimo ? `<span style="font-size: 14px; color: #9CA3AF; font-weight: 400;"> (${m.slug})</span>` : ''}
+                            </div>
+                            <div class="mensaje-meta">
+                                <span class="mensaje-meta-item">
+                                    <i class="fas fa-clock"></i>
+                                    ${formatearTiempo(m.created_at)}
+                                </span>
+                                <span class="mensaje-meta-item">
+                                    <i class="fas fa-chart-line"></i>
+                                    ${m.metricas?.ventas_mes || 0} ventas/mes
+                                </span>
+                                <span class="mensaje-meta-item">
+                                    <i class="fas fa-box"></i>
+                                    ${m.metricas?.total_productos || 0} productos
+                                </span>
+                            </div>
+                        </div>
+                        <div class="mensaje-badges">
+                            <span class="badge badge-urgencia-${m.urgencia}">
+                                ${getUrgenciaIcon(m.urgencia)} ${m.urgencia.toUpperCase()}
+                            </span>
+                            <span class="badge badge-emocion">
+                                ${getEmocionEmoji(m.emocion)} ${capitalize(m.emocion)}
+                            </span>
+                            ${m.anonimo ? '<span class="badge badge-anonimo"><i class="fas fa-user-secret"></i> Anónimo</span>' : ''}
+                            <span class="badge badge-plan">
+                                ${m.plan.toUpperCase()}
+                            </span>
+                        </div>
+                    </div>
+
+                    <div class="mensaje-body">
+                        <div class="mensaje-texto">
+                            "${m.mensaje}"
+                        </div>
+
+                        ${m.metricas ? `
+                        <div class="mensaje-metricas">
+                            <div class="metrica-mini">
+                                <div class="metrica-mini-value">${m.metricas.ventas_mes || 0}</div>
+                                <div class="metrica-mini-label">Ventas/mes</div>
+                            </div>
+                            <div class="metrica-mini">
+                                <div class="metrica-mini-value">${m.metricas.total_productos || 0}</div>
+                                <div class="metrica-mini-label">Productos</div>
+                            </div>
+                            <div class="metrica-mini">
+                                <div class="metrica-mini-value">${m.metricas.dias_activo || '?'}</div>
+                                <div class="metrica-mini-label">Días activo</div>
+                            </div>
+                        </div>
+                        ` : ''}
+
+                        ${m.respuesta ? `
+                        <div class="respuesta-existente">
+                            <div class="respuesta-existente-header">
+                                <i class="fas fa-check-circle"></i>
+                                <strong>Tu respuesta (${formatearFecha(m.respondido_at)}):</strong>
+                            </div>
+                            <div class="respuesta-existente-texto">"${m.respuesta}"</div>
+                        </div>
+                        ` : ''}
+                    </div>
+
+                    <div class="mensaje-actions">
+                        ${!m.respuesta ? `
+                        <button class="btn-action btn-responder" onclick="abrirModalRespuesta(${m.id}, '${m.nombre_empresa}', ${m.anonimo})">
+                            <i class="fas fa-reply"></i>
+                            Responder
+                        </button>
+                        ` : `
+                        <button class="btn-action btn-marcar-respondido" disabled style="opacity: 0.6;">
+                            <i class="fas fa-check-double"></i>
+                            Ya Respondido
+                        </button>
+                        `}
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        // Filtrar mensajes
+        function filtrarMensajes(filtro) {
+            filtroActual = filtro;
+            
+            // Actualizar botones
+            document.querySelectorAll('.filtro-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            document.querySelector(`[data-filtro="${filtro}"]`).classList.add('active');
+
+            // Filtrar
+            let mensajesFiltrados = todosMensajes;
+            
+            if (filtro !== 'all') {
+                if (['critica', 'alta', 'media', 'baja'].includes(filtro)) {
+                    mensajesFiltrados = todosMensajes.filter(m => m.urgencia === filtro);
+                } else if (filtro === 'pendiente') {
+                    mensajesFiltrados = todosMensajes.filter(m => m.estado === 'pendiente');
+                } else if (filtro === 'respondido') {
+                    mensajesFiltrados = todosMensajes.filter(m => m.estado === 'respondido');
+                }
+            }
+
+            renderMensajes(mensajesFiltrados);
+        }
+
+        // Abrir modal de respuesta
+        function abrirModalRespuesta(mensajeId, tenantNombre, anonimo) {
+            const modal = document.createElement('div');
+            modal.className = 'modal-overlay';
+            modal.id = 'modal-respuesta';
+            modal.innerHTML = `
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h3>💜 Responder a ${anonimo ? 'Emprendedor Anónimo' : tenantNombre}</h3>
+                        <p>Tu respuesta será enviada de forma privada y confidencial</p>
+                    </div>
+
+                    <form id="form-respuesta">
+                        <div class="form-group">
+                            <label>Tu mensaje de apoyo:</label>
+                            <textarea 
+                                id="respuesta-texto"
+                                class="form-control"
+                                rows="8"
+                                placeholder="Escribe tu respuesta con empatía y calidez...&#10;&#10;Recuerda:&#10;• Ser empática y comprensiva&#10;• Ofrecer consejos prácticos&#10;• Motivar a seguir adelante&#10;• Recordarles que no están solos"
+                                required
+                            ></textarea>
+                        </div>
+
+                        <div class="modal-buttons">
+                            <button type="button" class="btn-action btn-derivar" onclick="cerrarModal()">
+                                Cancelar
+                            </button>
+                            <button type="submit" class="btn-action btn-responder">
+                                <i class="fas fa-paper-plane"></i>
+                                Enviar Respuesta
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            `;
+
+            document.body.appendChild(modal);
+
+            // Submit
+            document.getElementById('form-respuesta').addEventListener('submit', async (e) => {
+                e.preventDefault();
+                await enviarRespuesta(mensajeId);
+            });
+        }
+
+        // Enviar respuesta
+        async function enviarRespuesta(mensajeId) {
+            const respuesta = document.getElementById('respuesta-texto').value.trim();
+            
+            if (!respuesta) {
+                alert('Por favor escribe tu respuesta');
+                return;
+            }
+
+            try {
+                const response = await fetch(`http://localhost:3001/api/apoyo/responder/${mensajeId}`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ respuesta })
+                });
+
+                const data = await response.json();
+
+                if (data.success) {
+                    alert('✅ Respuesta enviada exitosamente');
+                    cerrarModal();
+                    cargarMensajes(); // Recargar
+                } else {
+                    alert('Error al enviar respuesta');
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                alert('Error de conexión');
+            }
+        }
+
+        // Cerrar modal
+        function cerrarModal() {
+            const modal = document.getElementById('modal-respuesta');
+            if (modal) modal.remove();
+        }
+
+        // Helpers
+        function formatearTiempo(timestamp) {
+            const fecha = new Date(timestamp);
+            const ahora = new Date();
+            const diff = ahora - fecha;
+            const minutos = Math.floor(diff / 60000);
+            const horas = Math.floor(diff / 3600000);
+            const dias = Math.floor(diff / 86400000);
+
+            if (minutos < 60) return `Hace ${minutos} min`;
+            if (horas < 24) return `Hace ${horas} hora${horas > 1 ? 's' : ''}`;
+            return `Hace ${dias} día${dias > 1 ? 's' : ''}`;
+        }
+
+        function formatearFecha(timestamp) {
+            const fecha = new Date(timestamp);
+            return fecha.toLocaleString('es-ES');
+        }
+
+        function getUrgenciaIcon(urgencia) {
+            const icons = {
+                critica: '🔴',
+                alta: '🟠',
+                media: '🟡',
+                baja: '🟢'
+            };
+            return icons[urgencia] || '⚪';
+        }
+
+        function getEmocionEmoji(emocion) {
+            const emojis = {
+                excelente: '🚀',
+                bien: '😊',
+                regular: '😐',
+                dificil: '😔',
+                abrumado: '😰'
+            };
+            return emojis[emocion] || '😐';
+        }
+
+        function capitalize(str) {
+            return str.charAt(0).toUpperCase() + str.slice(1);
+        }
+
+        function esHoy(timestamp) {
+            if (!timestamp) return false;
+            const fecha = new Date(timestamp);
+            const hoy = new Date();
+            return fecha.toDateString() === hoy.toDateString();
+        }
+
+        // Auto-refresh cada 30 segundos
+        setInterval(cargarMensajes, 30000);
+
+        // Cargar al iniciar
+        cargarMensajes();
+    </script>
+
+    <!-- Sistema de Seguridad -->
+    <script src="security-system.js?v=2.0"></script>
+    <script src="core/proteccion-devtools-avanzada.js?v=2.0"></script>
+    
+    <!-- Inicializar Seguridad -->
+    <script>
+        // Inicializar protección DevTools avanzada
+        if (typeof ProteccionDevToolsAvanzada !== 'undefined') {
+            new ProteccionDevToolsAvanzada();
+        }
+
+        // Configurar seguridad específica para el panel de respaldo emocional
+        document.addEventListener('DOMContentLoaded', function() {
+            // Verificar autenticación
+            if (typeof verifyAdminCredentials === 'function') {
+                const token = localStorage.getItem('securityToken');
+                if (!token || !isValidToken(token)) {
+                    // Redirigir a login si no está autenticado
+                    window.location.href = 'admin-cresalia.html';
+                    return;
+                }
+            }
+
+            // Configurar timeout de sesión
+            let sessionTimeout;
+            function resetSessionTimeout() {
+                clearTimeout(sessionTimeout);
+                sessionTimeout = setTimeout(() => {
+                    localStorage.removeItem('securityToken');
+                    alert('Sesión expirada. Por favor, inicia sesión nuevamente.');
+                    window.location.href = 'admin-cresalia.html';
+                }, 30 * 60 * 1000); // 30 minutos
+            }
+
+            // Resetear timeout en actividad
+            ['click', 'keypress', 'scroll', 'mousemove'].forEach(event => {
+                document.addEventListener(event, resetSessionTimeout, true);
+            });
+
+            resetSessionTimeout();
+
+            // Log de acceso
+            if (typeof logSecurityEvent === 'function') {
+                logSecurityEvent('ACCESS_EMOTIONAL_BACKUP_PANEL', 'Panel de respaldo emocional accedido');
+            }
+        });
+
+        // Prevenir copia de texto sensible
+        document.addEventListener('selectstart', function(e) {
+            if (e.target.closest('.mensaje-privado, .informacion-confidencial')) {
+                e.preventDefault();
+            }
+        });
+
+        // Prevenir clic derecho en áreas sensibles
+        document.addEventListener('contextmenu', function(e) {
+            if (e.target.closest('.mensaje-privado, .informacion-confidencial')) {
+                e.preventDefault();
+                return false;
+            }
+        });
+    </script>
+    
+    <!-- Conectar con Supabase para datos en tiempo real -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="auth/supabase-config.js"></script>
+    
+    <script>
+        // ===== CONEXIÓN CON SUPABASE =====
+        let supabaseRespaldo;
+        
+        // Inicializar Supabase
+        document.addEventListener('DOMContentLoaded', function() {
+            supabaseRespaldo = initSupabase();
+            
+            // Cargar datos reales cada 20 segundos
+            cargarDatosRealesSupabase();
+            setInterval(cargarDatosRealesSupabase, 20000);
+        });
+        
+        // Cargar datos reales de Supabase
+        async function cargarDatosRealesSupabase() {
+            try {
+                // Obtener diarios con emociones negativas (urgentes)
+                const { data: diariosUrgentes } = await supabaseRespaldo
+                    .from('diarios_emocionales')
+                    .select(`
+                        *,
+                        tiendas (nombre_tienda, email)
+                    `)
+                    .in('emocion', ['estresado', 'preocupado', 'frustrado', 'ansioso'])
+                    .eq('leido_por_soporte', false)
+                    .order('fecha_creacion', { ascending: false });
+                
+                // Obtener tickets urgentes
+                const { data: ticketsUrgentes } = await supabaseRespaldo
+                    .from('tickets_soporte')
+                    .select('*')
+                    .in('prioridad', ['alta', 'urgente'])
+                    .in('estado', ['abierto', 'en_proceso'])
+                    .order('fecha_creacion', { ascending: false });
+                
+                // Obtener chats activos no leídos
+                const { data: chatsActivos } = await supabaseRespaldo
+                    .from('conversaciones')
+                    .select('*')
+                    .eq('estado', 'activa')
+                    .eq('leida_por_soporte', false)
+                    .order('fecha_ultimo_mensaje', { ascending: false });
+                
+                // Actualizar estadísticas en la interfaz
+                actualizarEstadisticasEmocionales({
+                    diariosUrgentes: diariosUrgentes?.length || 0,
+                    ticketsUrgentes: ticketsUrgentes?.length || 0,
+                    chatsActivos: chatsActivos?.length || 0,
+                    totalAtencionesNecesarias: (diariosUrgentes?.length || 0) + (ticketsUrgentes?.length || 0) + (chatsActivos?.length || 0)
+                });
+                
+                console.log('✅ Datos emocionales actualizados:', {
+                    diarios: diariosUrgentes?.length || 0,
+                    tickets: ticketsUrgentes?.length || 0,
+                    chats: chatsActivos?.length || 0
+                });
+                
+                // Mostrar alerta si hay urgencias
+                if (diariosUrgentes && diariosUrgentes.length > 0) {
+                    mostrarAlertaUrgenciaEmocional(diariosUrgentes[0]);
+                }
+                
+            } catch (error) {
+                console.log('Info: Tablas de Supabase aún no creadas o sin datos');
+            }
+        }
+        
+        // Actualizar estadísticas en la UI
+        function actualizarEstadisticasEmocionales(stats) {
+            // Buscar elementos en el DOM y actualizar
+            const elemStats = document.querySelectorAll('.stat-value');
+            
+            if (elemStats.length >= 4) {
+                elemStats[0].textContent = stats.totalAtencionesNecesarias; // Total urgencias
+                elemStats[1].textContent = stats.diariosUrgentes; // Diarios urgentes
+                elemStats[2].textContent = stats.ticketsUrgentes; // Tickets urgentes
+                elemStats[3].textContent = stats.chatsActivos; // Chats activos
+            }
+            
+            // Actualizar badge de notificaciones si existe
+            const badge = document.querySelector('.notification-badge');
+            if (badge && stats.totalAtencionesNecesarias > 0) {
+                badge.textContent = stats.totalAtencionesNecesarias;
+                badge.style.display = 'block';
+            }
+        }
+        
+        // Mostrar alerta de urgencia emocional
+        function mostrarAlertaUrgenciaEmocional(diario) {
+            // Solo mostrar si no se ha mostrado antes
+            if (sessionStorage.getItem('alerta_mostrada_' + diario.id)) {
+                return;
+            }
+            
+            const emocionEmoji = {
+                'estresado': '😰',
+                'preocupado': '😟',
+                'frustrado': '😤',
+                'ansioso': '😨'
+            };
+            
+            const alertaHTML = `
+                <div id="alertaUrgencia" style="
+                    position: fixed;
+                    top: 20px;
+                    right: 20px;
+                    background: linear-gradient(135deg, #EF4444, #DC2626);
+                    color: white;
+                    padding: 25px;
+                    border-radius: 15px;
+                    box-shadow: 0 15px 40px rgba(239, 68, 68, 0.4);
+                    z-index: 999999;
+                    max-width: 400px;
+                    animation: slideInAlert 0.5s ease-out;
+                ">
+                    <h3 style="margin: 0 0 10px 0; font-size: 18px;">
+                        🚨 Atención Emocional Necesaria
+                    </h3>
+                    <p style="margin: 0 0 15px 0; font-size: 14px; opacity: 0.95;">
+                        ${emocionEmoji[diario.emocion]} <strong>${diario.tiendas?.nombre_tienda || 'Un vendedor'}</strong> necesita apoyo.
+                    </p>
+                    <p style="margin: 0 0 15px 0; font-size: 13px; opacity: 0.9;">
+                        "${diario.reflexion.substring(0, 100)}..."
+                    </p>
+                    <div style="display: flex; gap: 10px;">
+                        <button onclick="irADiarioUrgente('${diario.id}')" style="
+                            flex: 1;
+                            padding: 10px;
+                            background: white;
+                            color: #EF4444;
+                            border: none;
+                            border-radius: 8px;
+                            font-weight: 600;
+                            cursor: pointer;
+                        ">Ver Ahora</button>
+                        <button onclick="cerrarAlerta('${diario.id}')" style="
+                            padding: 10px 15px;
+                            background: rgba(255,255,255,0.2);
+                            color: white;
+                            border: none;
+                            border-radius: 8px;
+                            cursor: pointer;
+                        ">×</button>
+                    </div>
+                </div>
+                
+                <style>
+                    @keyframes slideInAlert {
+                        from {
+                            opacity: 0;
+                            transform: translateX(100px);
+                        }
+                        to {
+                            opacity: 1;
+                            transform: translateX(0);
+                        }
+                    }
+                </style>
+            `;
+            
+            document.body.insertAdjacentHTML('beforeend', alertaHTML);
+            sessionStorage.setItem('alerta_mostrada_' + diario.id, 'true');
+        }
+        
+        function irADiarioUrgente(id) {
+            // Redirigir al panel master en la sección de diarios
+            window.open('panel-master-cresalia.html#diarios', '_blank');
+            cerrarAlerta(id);
+        }
+        
+        function cerrarAlerta(id) {
+            const alerta = document.getElementById('alertaUrgencia');
+            if (alerta) {
+                alerta.remove();
+            }
+        }
+    </script>
+    
+</body>
+</html>
+
+
+

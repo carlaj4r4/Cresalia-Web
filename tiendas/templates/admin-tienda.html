@@ -1,0 +1,783 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{NOMBRE_TIENDA}} - Panel de Administración</title>
+    
+    <!-- Favicon -->
+    <link rel="icon" type="image/png" href="../../assets/logo/logo-cresalia.png">
+    <link rel="apple-touch-icon" href="../../assets/logo/logo-cresalia.png">
+    
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Estilos -->
+    <link rel="stylesheet" href="../../styles-admin-cresalia.css">
+    <link rel="stylesheet" href="../../css/admin-sections.css">
+    <link rel="stylesheet" href="../../css/elegant-notifications.css">
+    <link rel="stylesheet" href="../../css/store-analytics.css">
+    <link rel="stylesheet" href="../../css/motivational-analytics.css">
+    <link rel="stylesheet" href="../../css/emotional-resources.css">
+    
+    <style>
+        .tenant-header {
+            background: linear-gradient(135deg, {{COLOR_PRIMARIO}}, {{COLOR_SECUNDARIO}});
+            color: white;
+            padding: 20px;
+            border-radius: 15px;
+            margin-bottom: 30px;
+        }
+        
+        .tenant-info {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .tenant-logo {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+        }
+        
+        .plan-badge {
+            background: rgba(255, 255, 255, 0.2);
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 14px;
+            font-weight: 600;
+        }
+        
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin: 20px 0;
+        }
+        
+        .stat-card {
+            background: white;
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            text-align: center;
+        }
+        
+        .stat-icon {
+            font-size: 32px;
+            margin-bottom: 10px;
+            color: {{COLOR_PRIMARIO}};
+        }
+        
+        .stat-number {
+            font-size: 24px;
+            font-weight: 700;
+            color: #374151;
+            margin-bottom: 5px;
+        }
+        
+        .stat-label {
+            color: #6B7280;
+            font-size: 14px;
+        }
+    </style>
+</head>
+<body>
+    <!-- Pantalla de Login -->
+    <div id="loginScreen" class="login-container">
+        <div class="login-card">
+            <div class="login-header">
+                <img src="../../assets/logo/logo-cresalia.png" alt="Cresalia" class="login-logo">
+                <h2>{{NOMBRE_TIENDA}}</h2>
+                <p>Panel de Administración de Tienda</p>
+                <div style="background: #f8f9fa; padding: 10px; border-radius: 8px; margin-top: 10px; border: 1px solid #dee2e6;">
+                    <p style="margin: 0; font-size: 14px; color: #6c757d;">
+                        <strong>🏪 Tienda:</strong> {{NOMBRE_TIENDA}}<br>
+                        <strong>📧 Email:</strong> {{EMAIL_TIENDA}}
+                    </p>
+                </div>
+            </div>
+            
+            <form id="loginForm" class="login-form">
+                <div class="form-group">
+                    <label for="email">
+                        <i class="fas fa-envelope"></i>
+                        Email de la Tienda
+                    </label>
+                    <input type="email" id="email" name="email" value="{{EMAIL_TIENDA}}" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="password">
+                        <i class="fas fa-lock"></i>
+                        Contraseña de la Tienda
+                    </label>
+                    <input type="password" id="password" name="password" required>
+                    <div class="password-toggle">
+                        <i class="fas fa-eye" id="togglePassword"></i>
+                    </div>
+                </div>
+                
+                <button type="submit" class="login-btn">
+                    <i class="fas fa-sign-in-alt"></i>
+                    Acceder a mi Tienda
+                </button>
+            </form>
+            
+            <div class="login-footer">
+                <p><i class="fas fa-shield-alt"></i> Acceso seguro a tu tienda</p>
+                <p><small>¿Problemas? Contacta soporte: carla.crimi.95@gmail.com</small></p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Panel de Administración de Tienda -->
+    <div id="adminPanel" class="admin-container" style="display: none;">
+        <!-- Header del Panel -->
+        <header class="admin-header">
+            <div class="admin-header-left">
+                <div class="tenant-header">
+                    <div class="tenant-info">
+                        <div>
+                            <h1>{{NOMBRE_TIENDA}}</h1>
+                            <p>{{DESCRIPCION_TIENDA}}</p>
+                        </div>
+                        <div class="tenant-logo">
+                            <i class="fas fa-store"></i>
+                        </div>
+                    </div>
+                    <div class="plan-badge">
+                        <i class="fas fa-crown"></i> Plan {{PLAN_TIENDA}} - {{EMAIL_TIENDA}}
+                    </div>
+                </div>
+            </div>
+            <div class="admin-header-right">
+                <button class="logout-btn" onclick="cerrarSesion()">
+                    <i class="fas fa-sign-out-alt"></i>
+                    Cerrar Sesión
+                </button>
+            </div>
+        </header>
+
+        <!-- Navegación -->
+        <nav class="admin-nav">
+            <button class="nav-btn active" onclick="mostrarSeccion('dashboard')">
+                <i class="fas fa-tachometer-alt"></i>
+                Dashboard
+            </button>
+            <button class="nav-btn" onclick="mostrarSeccion('productos')">
+                <i class="fas fa-box"></i>
+                Mis Productos
+            </button>
+            <button class="nav-btn" onclick="mostrarSeccion('servicios')">
+                <i class="fas fa-tools"></i>
+                Mis Servicios
+            </button>
+            <button class="nav-btn" onclick="mostrarSeccion('ofertas')">
+                <i class="fas fa-tag"></i>
+                Mis Ofertas
+            </button>
+            <button class="nav-btn" onclick="mostrarSeccion('ventas')">
+                <i class="fas fa-chart-line"></i>
+                Mis Ventas
+            </button>
+            <button class="nav-btn" onclick="mostrarSeccion('analytics')">
+                <i class="fas fa-chart-bar"></i>
+                Analytics
+            </button>
+            <button class="nav-btn" onclick="mostrarSeccion('configuracion')">
+                <i class="fas fa-cog"></i>
+                Configuración
+            </button>
+            <button class="nav-btn" onclick="mostrarSeccion('pagos')">
+                <i class="fas fa-credit-card"></i>
+                Mis Pagos
+            </button>
+        </nav>
+
+        <!-- Contenido Principal -->
+        <main class="admin-main">
+            <!-- Dashboard -->
+            <section id="dashboard" class="content-section">
+                <div class="section-header">
+                    <h2><i class="fas fa-tachometer-alt"></i> Dashboard de {{NOMBRE_TIENDA}}</h2>
+                </div>
+                
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-icon">
+                            <i class="fas fa-box"></i>
+                        </div>
+                        <div class="stat-number" id="totalProductos">0</div>
+                        <div class="stat-label">Productos</div>
+                    </div>
+                    
+                    <div class="stat-card">
+                        <div class="stat-icon">
+                            <i class="fas fa-shopping-cart"></i>
+                        </div>
+                        <div class="stat-number" id="totalVentas">0</div>
+                        <div class="stat-label">Ventas este mes</div>
+                    </div>
+                    
+                    <div class="stat-card">
+                        <div class="stat-icon">
+                            <i class="fas fa-dollar-sign"></i>
+                        </div>
+                        <div class="stat-number" id="ingresosMes">$0</div>
+                        <div class="stat-label">Ingresos este mes</div>
+                    </div>
+                    
+                    <div class="stat-card">
+                        <div class="stat-icon">
+                            <i class="fas fa-users"></i>
+                        </div>
+                        <div class="stat-number" id="totalClientes">0</div>
+                        <div class="stat-label">Clientes</div>
+                    </div>
+                </div>
+                
+                <div class="dashboard-actions">
+                    <div class="action-card">
+                        <h3>Acciones Rápidas</h3>
+                        <div class="action-buttons">
+                            <button class="action-btn" onclick="mostrarSeccion('productos')">
+                                <i class="fas fa-plus"></i>
+                                Agregar Producto
+                            </button>
+                            <button class="action-btn" onclick="mostrarSeccion('ofertas')">
+                                <i class="fas fa-tag"></i>
+                                Crear Oferta
+                            </button>
+                            <button class="action-btn" onclick="verMiTienda()">
+                                <i class="fas fa-external-link-alt"></i>
+                                Ver mi Tienda
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Productos -->
+            <section id="productos" class="content-section">
+                <div class="section-header">
+                    <h2><i class="fas fa-box"></i> Mis Productos</h2>
+                    <button class="add-btn" onclick="mostrarFormularioProducto()">
+                        <i class="fas fa-plus"></i>
+                        Agregar Producto
+                    </button>
+                </div>
+                
+                <div class="productos-grid" id="productosGrid">
+                    <!-- Los productos se cargarán dinámicamente -->
+                </div>
+            </section>
+
+            <!-- Servicios -->
+            <section id="servicios" class="content-section">
+                <div class="section-header">
+                    <h2><i class="fas fa-tools"></i> Mis Servicios</h2>
+                    <button class="add-btn" onclick="mostrarFormularioServicio()">
+                        <i class="fas fa-plus"></i>
+                        Agregar Servicio
+                    </button>
+                </div>
+                
+                <div class="servicios-grid" id="serviciosGrid">
+                    <!-- Los servicios se cargarán dinámicamente -->
+                </div>
+            </section>
+
+            <!-- Ofertas -->
+            <section id="ofertas" class="content-section">
+                <div class="section-header">
+                    <h2><i class="fas fa-tag"></i> Mis Ofertas</h2>
+                    <button class="add-btn" onclick="mostrarFormularioOferta()">
+                        <i class="fas fa-plus"></i>
+                        Crear Oferta
+                    </button>
+                </div>
+                
+                <div class="ofertas-grid" id="ofertasGrid">
+                    <!-- Las ofertas se cargarán dinámicamente -->
+                </div>
+            </section>
+
+            <!-- Ventas -->
+            <section id="ventas" class="content-section">
+                <div class="section-header">
+                    <h2><i class="fas fa-chart-line"></i> Mis Ventas</h2>
+                </div>
+                
+                <div class="ventas-container">
+                    <div class="ventas-stats">
+                        <div class="stat-card">
+                            <h3>Ventas del Mes</h3>
+                            <div class="stat-number">$0</div>
+                        </div>
+                        <div class="stat-card">
+                            <h3>Productos Vendidos</h3>
+                            <div class="stat-number">0</div>
+                        </div>
+                    </div>
+                    
+                    <div class="ventas-list" id="ventasList">
+                        <!-- Las ventas se cargarán dinámicamente -->
+                    </div>
+                </div>
+            </section>
+
+            <!-- Analytics -->
+            <section id="analytics" class="content-section">
+                <div class="section-header">
+                    <h2><i class="fas fa-chart-bar"></i> Analytics de mi Tienda</h2>
+                    <button class="add-btn" onclick="exportStoreMetrics()">
+                        <i class="fas fa-download"></i>
+                        Exportar Datos
+                    </button>
+                </div>
+                
+                <!-- Mensaje Motivacional -->
+                <div id="motivationalMessage">
+                    <!-- Se cargará dinámicamente -->
+                </div>
+                
+                <!-- Apoyo Emocional -->
+                <div id="emotionalSupport">
+                    <!-- Se cargará dinámicamente -->
+                </div>
+                
+                <!-- Sugerencias Personalizadas -->
+                <div id="personalizedSuggestions">
+                    <!-- Se cargará dinámicamente -->
+                </div>
+                
+                <!-- Métricas Principales -->
+                <div class="store-metrics-grid">
+                    <div class="store-metric-card sales">
+                        <div class="store-metric-icon">
+                            <i class="fas fa-dollar-sign"></i>
+                        </div>
+                        <div class="store-metric-content">
+                            <div class="store-metric-value" id="totalSales">$0</div>
+                            <div class="store-metric-label">Ventas Totales</div>
+                        </div>
+                    </div>
+                    
+                    <div class="store-metric-card messages">
+                        <div class="store-metric-icon">
+                            <i class="fas fa-comments"></i>
+                        </div>
+                        <div class="store-metric-content">
+                            <div class="store-metric-value" id="totalMessages">0</div>
+                            <div class="store-metric-label">Mensajes Recibidos</div>
+                        </div>
+                    </div>
+                    
+                    <div class="store-metric-card messages">
+                        <div class="store-metric-icon">
+                            <i class="fas fa-reply"></i>
+                        </div>
+                        <div class="store-metric-content">
+                            <div class="store-metric-value" id="responseRate">0%</div>
+                            <div class="store-metric-label">Tasa de Respuesta</div>
+                        </div>
+                    </div>
+                    
+                    <div class="store-metric-card visits">
+                        <div class="store-metric-icon">
+                            <i class="fas fa-eye"></i>
+                        </div>
+                        <div class="store-metric-content">
+                            <div class="store-metric-value" id="totalVisits">0</div>
+                            <div class="store-metric-label">Visitas Totales</div>
+                        </div>
+                    </div>
+                    
+                    <div class="store-metric-card visits">
+                        <div class="store-metric-icon">
+                            <i class="fas fa-file-alt"></i>
+                        </div>
+                        <div class="store-metric-content">
+                            <div class="store-metric-value" id="totalPageViews">0</div>
+                            <div class="store-metric-label">Vistas de Página</div>
+                        </div>
+                    </div>
+                    
+                    <div class="store-metric-card visits">
+                        <div class="store-metric-icon">
+                            <i class="fas fa-bounce-rate"></i>
+                        </div>
+                        <div class="store-metric-content">
+                            <div class="store-metric-value" id="bounceRate">0%</div>
+                            <div class="store-metric-label">Tasa de Rebote</div>
+                        </div>
+                    </div>
+                    
+                    <div class="store-metric-card products">
+                        <div class="store-metric-icon">
+                            <i class="fas fa-box"></i>
+                        </div>
+                        <div class="store-metric-content">
+                            <div class="store-metric-value" id="totalProductViews">0</div>
+                            <div class="store-metric-label">Vistas de Productos</div>
+                        </div>
+                    </div>
+                    
+                    <div class="store-metric-card customers">
+                        <div class="store-metric-icon">
+                            <i class="fas fa-users"></i>
+                        </div>
+                        <div class="store-metric-content">
+                            <div class="store-metric-value" id="totalCustomers">0</div>
+                            <div class="store-metric-label">Total Clientes</div>
+                        </div>
+                    </div>
+                    
+                    <div class="store-metric-card customers">
+                        <div class="store-metric-icon">
+                            <i class="fas fa-user-check"></i>
+                        </div>
+                        <div class="store-metric-content">
+                            <div class="store-metric-value" id="activeCustomers">0</div>
+                            <div class="store-metric-label">Clientes Activos</div>
+                        </div>
+                    </div>
+                    
+                    <div class="store-metric-card orders">
+                        <div class="store-metric-icon">
+                            <i class="fas fa-shopping-cart"></i>
+                        </div>
+                        <div class="store-metric-content">
+                            <div class="store-metric-value" id="totalOrders">0</div>
+                            <div class="store-metric-label">Total Órdenes</div>
+                        </div>
+                    </div>
+                    
+                    <div class="store-metric-card orders">
+                        <div class="store-metric-icon">
+                            <i class="fas fa-check-circle"></i>
+                        </div>
+                        <div class="store-metric-content">
+                            <div class="store-metric-value" id="completedOrders">0</div>
+                            <div class="store-metric-label">Órdenes Completadas</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Gráficos -->
+                <div class="store-charts-section">
+                    <div class="store-chart-container">
+                        <div class="store-chart-header">
+                            <h3 class="store-chart-title">Evolución de Ventas</h3>
+                        </div>
+                        <canvas id="salesChart" class="store-chart-canvas"></canvas>
+                    </div>
+                    
+                    <div class="store-chart-container">
+                        <div class="store-chart-header">
+                            <h3 class="store-chart-title">Mensajes y Respuestas</h3>
+                        </div>
+                        <canvas id="messageChart" class="store-chart-canvas"></canvas>
+                    </div>
+                    
+                    <div class="store-chart-container">
+                        <div class="store-chart-header">
+                            <h3 class="store-chart-title">Visitas por Hora</h3>
+                        </div>
+                        <canvas id="visitChart" class="store-chart-canvas"></canvas>
+                    </div>
+                    
+                    <div class="store-chart-container">
+                        <div class="store-chart-header">
+                            <h3 class="store-chart-title">Productos Más Vistos</h3>
+                        </div>
+                        <canvas id="productViewChart" class="store-chart-canvas"></canvas>
+                    </div>
+                    
+                    <div class="store-chart-container">
+                        <div class="store-chart-header">
+                            <h3 class="store-chart-title">Crecimiento de Clientes</h3>
+                        </div>
+                        <canvas id="customerChart" class="store-chart-canvas"></canvas>
+                    </div>
+                    
+                    <div class="store-chart-container">
+                        <div class="store-chart-header">
+                            <h3 class="store-chart-title">Estado de Órdenes</h3>
+                        </div>
+                        <canvas id="orderChart" class="store-chart-canvas"></canvas>
+                    </div>
+                </div>
+                
+                <!-- Tablas de Datos -->
+                <div class="store-data-section">
+                    <div class="store-data-table-section">
+                        <div class="store-data-table-header">
+                            <h3 class="store-data-table-title">Productos Más Vistos</h3>
+                        </div>
+                        <table class="store-data-table">
+                            <thead>
+                                <tr>
+                                    <th>Producto</th>
+                                    <th>Vistas</th>
+                                    <th>Ventas</th>
+                                    <th>Conversión</th>
+                                </tr>
+                            </thead>
+                            <tbody id="productViewsTable">
+                                <!-- Se cargará dinámicamente -->
+                            </tbody>
+                        </table>
+                    </div>
+                    
+                    <div class="store-data-table-section">
+                        <div class="store-data-table-header">
+                            <h3 class="store-data-table-title">Estado de Órdenes</h3>
+                        </div>
+                        <table class="store-data-table">
+                            <thead>
+                                <tr>
+                                    <th>Estado</th>
+                                    <th>Cantidad</th>
+                                    <th>Porcentaje</th>
+                                </tr>
+                            </thead>
+                            <tbody id="ordersTable">
+                                <!-- Se cargará dinámicamente -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Configuración -->
+            <section id="configuracion" class="content-section">
+                <div class="section-header">
+                    <h2><i class="fas fa-cog"></i> Configuración de mi Tienda</h2>
+                </div>
+                
+                <div class="config-grid">
+                    <div class="config-section">
+                        <h3><i class="fas fa-store"></i> Información de la Tienda</h3>
+                        <div class="form-group">
+                            <label>Nombre de la Tienda:</label>
+                            <input type="text" id="tiendaNombre" value="{{NOMBRE_TIENDA}}" class="form-control">
+                        </div>
+                        <div class="form-group">
+                            <label>Descripción:</label>
+                            <textarea id="tiendaDescripcion" class="form-control" rows="3">{{DESCRIPCION_TIENDA}}</textarea>
+                        </div>
+                        <div class="form-group">
+                            <label>Email de Contacto:</label>
+                            <input type="email" id="tiendaEmail" value="{{EMAIL_TIENDA}}" class="form-control">
+                        </div>
+                    </div>
+                    
+                    <div class="config-section">
+                        <h3><i class="fas fa-palette"></i> Colores de la Tienda</h3>
+                        <div class="form-group">
+                            <label>Color Primario:</label>
+                            <input type="color" id="colorPrimario" value="{{COLOR_PRIMARIO}}" class="form-control">
+                        </div>
+                        <div class="form-group">
+                            <label>Color Secundario:</label>
+                            <input type="color" id="colorSecundario" value="{{COLOR_SECUNDARIO}}" class="form-control">
+                        </div>
+                    </div>
+                    
+                    <div class="config-section">
+                        <h3><i class="fas fa-shield-alt"></i> Seguridad</h3>
+                        <div class="security-info">
+                            <p><strong>Estado:</strong> <span class="status-secure">Seguro</span></p>
+                            <p><strong>Plan:</strong> {{PLAN_TIENDA}}</p>
+                            <p><strong>Última actualización:</strong> {{FECHA_ACTUALIZACION}}</p>
+                        </div>
+                        <div class="security-actions">
+                            <button class="btn btn-warning" onclick="cambiarContrasena()">
+                                <i class="fas fa-key"></i> Cambiar Contraseña
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="config-actions">
+                    <button class="btn btn-success" onclick="guardarConfiguracion()">
+                        <i class="fas fa-save"></i> Guardar Configuración
+                    </button>
+                </div>
+            </section>
+
+            <!-- Pagos -->
+            <section id="pagos" class="content-section">
+                <div class="section-header">
+                    <h2><i class="fas fa-credit-card"></i> Mis Pagos</h2>
+                </div>
+                
+                <div class="payment-config">
+                    <div class="config-card">
+                        <h3><i class="fas fa-credit-card"></i> Configuración de Pagos</h3>
+                        <p>Configura cómo recibir los pagos de tus ventas</p>
+                        
+                        <div class="payment-info">
+                            <div class="info-item">
+                                <strong>💰 Ventas:</strong> Van directamente a tu cuenta de Mercado Pago
+                            </div>
+                            <div class="info-item">
+                                <strong>🏢 Suscripción:</strong> Se paga a Cresalia (carla.crimi.95@gmail.com)
+                            </div>
+                            <div class="info-item">
+                                <strong>💳 Transparencia:</strong> 100% para ti, sin comisiones de Cresalia
+                            </div>
+                        </div>
+                        
+                        <div class="payment-actions">
+                            <button class="btn btn-primary" onclick="configurarMisPagos()">
+                                <i class="fas fa-cog"></i> Configurar Mis Pagos
+                            </button>
+                            <button class="btn btn-info" onclick="verMisIngresos()">
+                                <i class="fas fa-chart-bar"></i> Ver Mis Ingresos
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <!-- Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="../../js/elegant-notifications.js"></script>
+    <script src="../../js/admin-panel-functions.js"></script>
+    <script src="../../js/store-analytics.js"></script>
+    <script src="../../js/motivational-translations.js"></script>
+    <script src="../../js/emotional-resources.js"></script>
+    <script src="../../js/motivational-analytics.js"></script>
+    
+    <script>
+        // Variables específicas de la tienda
+        const tenantInfo = {
+            id: '{{ID_TIENDA}}',
+            nombre: '{{NOMBRE_TIENDA}}',
+            email: '{{EMAIL_TIENDA}}',
+            slug: '{{SLUG_TIENDA}}'
+        };
+        
+        // Función para exportar métricas de la tienda
+        function exportStoreMetrics() {
+            if (window.storeAnalytics) {
+                window.storeAnalytics.exportStoreMetrics();
+                mostrarNotificacion('Métricas exportadas correctamente', 'success');
+            } else {
+                mostrarNotificacion('Sistema de analytics no disponible', 'error');
+            }
+        }
+        
+        // Inicializar analytics cuando se carga la sección
+        function inicializarAnalytics() {
+            if (window.storeAnalytics && !window.storeAnalytics.initialized) {
+                window.storeAnalytics.initialize().then(() => {
+                    window.storeAnalytics.updateMetricsDisplay();
+                    
+                    // Inicializar sistema motivacional
+                    if (window.motivationalAnalytics) {
+                        window.motivationalAnalytics.updateMotivationalDisplay();
+                    }
+                    
+                    mostrarNotificacion('Analytics cargados correctamente', 'success');
+                });
+            } else if (window.storeAnalytics) {
+                window.storeAnalytics.updateMetricsDisplay();
+                
+                // Actualizar mensajes motivacionales
+                if (window.motivationalAnalytics) {
+                    window.motivationalAnalytics.updateMotivationalDisplay();
+                }
+            }
+        }
+        
+        // Guardar slug de la tienda en localStorage
+        localStorage.setItem('current_tenant_slug', tenantInfo.slug);
+        
+        // Interceptar la función mostrarSeccion para inicializar analytics
+        const originalMostrarSeccion = window.mostrarSeccion;
+        window.mostrarSeccion = function(seccion) {
+            if (originalMostrarSeccion) {
+                originalMostrarSeccion(seccion);
+            }
+            
+            // Inicializar analytics cuando se selecciona la sección
+            if (seccion === 'analytics') {
+                setTimeout(() => {
+                    inicializarAnalytics();
+                }, 100);
+            }
+        };
+        
+        // Inicializar analytics al cargar la página si ya está en la sección analytics
+        document.addEventListener('DOMContentLoaded', function() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const section = urlParams.get('section') || 'dashboard';
+            
+            if (section === 'analytics') {
+                setTimeout(() => {
+                    inicializarAnalytics();
+                }, 1000);
+            }
+        });
+        
+        // Función para ver mi tienda
+        function verMiTienda() {
+            window.open(`../../tiendas/{{SLUG_TIENDA}}/index.html`, '_blank');
+        }
+        
+        // Función para configurar mis pagos
+        function configurarMisPagos() {
+            if (window.simplePaymentSystem) {
+                window.simplePaymentSystem.setupStoreSales(tenantInfo.id);
+            } else {
+                mostrarNotificacion('Sistema de pagos no disponible', 'error');
+            }
+        }
+        
+        // Función para ver mis ingresos
+        function verMisIngresos() {
+            mostrarNotificacion('Función de ingresos en desarrollo', 'info');
+        }
+        
+        // Inicialización específica para tienda
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('🏪 Panel de tienda inicializado:', tenantInfo);
+            actualizarEstadisticas();
+        });
+        
+        function actualizarEstadisticas() {
+            // Aquí se cargarían las estadísticas reales de la tienda
+            document.getElementById('totalProductos').textContent = '0';
+            document.getElementById('totalVentas').textContent = '0';
+            document.getElementById('ingresosMes').textContent = '$0';
+            document.getElementById('totalClientes').textContent = '0';
+        }
+        
+        function mostrarNotificacion(mensaje, tipo = 'info') {
+            if (window.elegantNotifications) {
+                window.elegantNotifications.show(mensaje, tipo);
+            } else {
+                alert(mensaje);
+            }
+        }
+    </script>
+</body>
+</html>

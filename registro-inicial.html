@@ -1,0 +1,325 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Únete a CRESALIA - Compra o Vende</title>
+    
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+        
+        .container {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            max-width: 800px;
+            width: 100%;
+            padding: 50px;
+            animation: slideIn 0.5s ease-out;
+            text-align: center;
+        }
+        
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(-30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .logo {
+            margin-bottom: 30px;
+        }
+        
+        .logo img {
+            max-width: 200px;
+            height: auto;
+        }
+        
+        h1 {
+            color: #333;
+            font-size: 36px;
+            margin-bottom: 15px;
+        }
+        
+        .subtitle {
+            color: #666;
+            font-size: 18px;
+            margin-bottom: 50px;
+        }
+        
+        .opciones-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            margin-bottom: 40px;
+        }
+        
+        .opcion-card {
+            background: linear-gradient(135deg, #f8f9fa, #ffffff);
+            border: 3px solid #e0e0e0;
+            border-radius: 20px;
+            padding: 40px 30px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .opcion-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(102, 126, 234, 0.1), transparent);
+            transition: left 0.5s ease;
+        }
+        
+        .opcion-card:hover::before {
+            left: 100%;
+        }
+        
+        .opcion-card:hover {
+            transform: translateY(-10px);
+            border-color: #667eea;
+            box-shadow: 0 20px 40px rgba(102, 126, 234, 0.2);
+        }
+        
+        .opcion-icon {
+            width: 100px;
+            height: 100px;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 20px;
+            font-size: 40px;
+            color: white;
+        }
+        
+        .opcion-card:hover .opcion-icon {
+            transform: scale(1.1);
+            animation: pulse 1s infinite;
+        }
+        
+        @keyframes pulse {
+            0%, 100% { transform: scale(1.1); }
+            50% { transform: scale(1.15); }
+        }
+        
+        .opcion-card h2 {
+            color: #333;
+            font-size: 24px;
+            margin-bottom: 15px;
+        }
+        
+        .opcion-card p {
+            color: #666;
+            font-size: 16px;
+            line-height: 1.6;
+            margin-bottom: 20px;
+        }
+        
+        .opcion-card ul {
+            text-align: left;
+            list-style: none;
+            padding: 0;
+            margin-bottom: 25px;
+        }
+        
+        .opcion-card li {
+            padding: 8px 0;
+            color: #555;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .opcion-card li i {
+            color: #667eea;
+            font-size: 16px;
+        }
+        
+        .btn-opcion {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 12px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            width: 100%;
+        }
+        
+        .btn-opcion:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(102, 126, 234, 0.3);
+        }
+        
+        .login-link {
+            color: #666;
+            font-size: 14px;
+            margin-top: 30px;
+            padding-top: 30px;
+            border-top: 1px solid #e0e0e0;
+        }
+        
+        .login-link a {
+            color: #667eea;
+            text-decoration: none;
+            font-weight: 600;
+        }
+        
+        .login-link a:hover {
+            text-decoration: underline;
+        }
+        
+        @media (max-width: 768px) {
+            .opciones-grid {
+                grid-template-columns: 1fr;
+                gap: 20px;
+            }
+            
+            h1 {
+                font-size: 28px;
+            }
+            
+            .container {
+                padding: 30px 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="logo">
+            <img src="assets/logo/logo-cresalia.png" alt="CRESALIA" onerror="this.style.display='none'">
+        </div>
+        
+        <h1>Bienvenido a CRESALIA 💜</h1>
+        <p class="subtitle">¿Qué deseas hacer hoy?</p>
+        
+        <div class="opciones-grid">
+            <!-- OPCIÓN: COMPRAR -->
+            <div class="opcion-card" onclick="irARegistroComprador()">
+                <div class="opcion-icon">
+                    <i class="fas fa-shopping-cart"></i>
+                </div>
+                <h2>Quiero Comprar</h2>
+                <p>Explora productos y servicios, encuentra lo que necesitas</p>
+                <ul>
+                    <li><i class="fas fa-check"></i> Compra en tiendas locales</li>
+                    <li><i class="fas fa-check"></i> Pago seguro</li>
+                    <li><i class="fas fa-check"></i> Envío a domicilio</li>
+                    <li><i class="fas fa-check"></i> Historial de compras</li>
+                </ul>
+                <button class="btn-opcion">
+                    <i class="fas fa-user-plus"></i> Registrarme como Comprador
+                </button>
+            </div>
+            
+            <!-- OPCIÓN: VENDER -->
+            <div class="opcion-card" onclick="irARegistroVendedor()">
+                <div class="opcion-icon">
+                    <i class="fas fa-store"></i>
+                </div>
+                <h2>Quiero Vender</h2>
+                <p>Crea tu tienda online, vende productos y ofrece servicios</p>
+                <ul>
+                    <li><i class="fas fa-check"></i> Crea tu tienda en minutos</li>
+                    <li><i class="fas fa-check"></i> Vende productos y servicios</li>
+                    <li><i class="fas fa-check"></i> Recibe pagos seguros</li>
+                    <li><i class="fas fa-check"></i> Soporte personalizado</li>
+                </ul>
+                <button class="btn-opcion">
+                    <i class="fas fa-rocket"></i> Crear Mi Tienda
+                </button>
+            </div>
+        </div>
+        
+        <div class="login-link">
+            ¿Ya tienes cuenta? 
+            <a href="#" onclick="mostrarOpcionesLogin(); return false;">Inicia Sesión</a>
+        </div>
+    </div>
+    
+    <!-- Modal de opciones de login -->
+    <div id="modalLogin" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); align-items: center; justify-content: center; z-index: 9999;">
+        <div style="background: white; border-radius: 20px; padding: 40px; max-width: 500px; width: 90%; text-align: center;">
+            <h2 style="margin-bottom: 30px; color: #333;">¿Cómo deseas iniciar sesión?</h2>
+            
+            <button onclick="window.location.href='login-comprador.html'" style="width: 100%; padding: 15px; margin-bottom: 15px; background: linear-gradient(135deg, #667eea, #764ba2); color: white; border: none; border-radius: 10px; font-size: 16px; font-weight: 600; cursor: pointer;">
+                <i class="fas fa-shopping-cart"></i> Soy Comprador
+            </button>
+            
+            <button onclick="window.location.href='login-tienda.html'" style="width: 100%; padding: 15px; margin-bottom: 20px; background: linear-gradient(135deg, #f59e0b, #ea580c); color: white; border: none; border-radius: 10px; font-size: 16px; font-weight: 600; cursor: pointer;">
+                <i class="fas fa-store"></i> Soy Vendedor
+            </button>
+            
+            <button onclick="cerrarModalLogin()" style="background: #6b7280; color: white; border: none; padding: 10px 20px; border-radius: 8px; cursor: pointer;">
+                Cancelar
+            </button>
+        </div>
+    </div>
+    
+    <script>
+        function irARegistroComprador() {
+            window.location.href = 'registro-comprador.html';
+        }
+        
+        function irARegistroVendedor() {
+            window.location.href = 'registro-tienda.html';
+        }
+        
+        function mostrarOpcionesLogin() {
+            const modal = document.getElementById('modalLogin');
+            modal.style.display = 'flex';
+        }
+        
+        function cerrarModalLogin() {
+            const modal = document.getElementById('modalLogin');
+            modal.style.display = 'none';
+        }
+    </script>
+</body>
+</html>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

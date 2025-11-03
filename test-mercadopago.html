@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test Mercado Pago - Cresalia</title>
+    <script src="https://sdk.mercadopago.com/js/v2"></script>
+</head>
+<body>
+    <h1>🧪 Test de Mercado Pago</h1>
+    
+    <div id="resultado">
+        <h2>Verificando conexión...</h2>
+        <p id="status">Cargando...</p>
+    </div>
+    
+    <div id="test-pago" style="display: none;">
+        <h3>💳 Test de Pago</h3>
+        <button onclick="probarPago()">Probar Pago de $100</button>
+    </div>
+    
+    <script>
+        // Configuración de Mercado Pago
+        const MP_CONFIG = {
+            publicKey: 'TEST-xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx', // Reemplaza con tu Public Key
+            accessToken: 'TEST-xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx-xxxxxxxx-xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx' // Reemplaza con tu Access Token
+        };
+        
+        // Verificar si Mercado Pago está cargado
+        function verificarMercadoPago() {
+            const status = document.getElementById('status');
+            
+            if (typeof MercadoPago !== 'undefined') {
+                status.innerHTML = '✅ Mercado Pago SDK cargado correctamente';
+                
+                try {
+                    // Inicializar Mercado Pago
+                    const mp = new MercadoPago(MP_CONFIG.publicKey, {
+                        locale: 'es-AR'
+                    });
+                    
+                    status.innerHTML += '<br>✅ Mercado Pago inicializado correctamente';
+                    document.getElementById('test-pago').style.display = 'block';
+                    
+                } catch (error) {
+                    status.innerHTML += '<br>❌ Error al inicializar: ' + error.message;
+                }
+                
+            } else {
+                status.innerHTML = '❌ Mercado Pago SDK no está cargado';
+            }
+        }
+        
+        // Probar un pago
+        function probarPago() {
+            const mp = new MercadoPago(MP_CONFIG.publicKey, {
+                locale: 'es-AR'
+            });
+            
+            // Crear preferencia de pago
+            const preference = {
+                items: [
+                    {
+                        title: 'Test Cresalia',
+                        quantity: 1,
+                        unit_price: 100
+                    }
+                ],
+                back_urls: {
+                    success: window.location.href,
+                    failure: window.location.href,
+                    pending: window.location.href
+                }
+            };
+            
+            mp.preferences.create(preference)
+                .then(function(response) {
+                    // Abrir checkout
+                    mp.checkout({
+                        preference: {
+                            id: response.body.id
+                        }
+                    });
+                })
+                .catch(function(error) {
+                    alert('❌ Error: ' + error.message);
+                });
+        }
+        
+        // Ejecutar verificación al cargar
+        document.addEventListener('DOMContentLoaded', verificarMercadoPago);
+    </script>
+</body>
+</html>
+
+
+
+
+
+
+
+
+
+
+

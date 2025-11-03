@@ -1,0 +1,68 @@
+{
+  "version": 2,
+  "builds": [
+    {
+      "src": "**/*.html",
+      "use": "@vercel/static"
+    }
+  ],
+  "routes": [
+    {
+      "src": "/tiendas/(.*)/admin-final.html",
+      "dest": "/tiendas/$1/admin-final.html"
+    },
+    {
+      "src": "/tiendas/(.*)/index.html",
+      "dest": "/tiendas/$1/index.html"
+    },
+    {
+      "src": "/comunidades/(.*)/",
+      "dest": "/comunidades/$1/index.html"
+    },
+    {
+      "src": "/comunidades/(.*)",
+      "dest": "/comunidades/$1/index.html"
+    },
+    {
+      "src": "/index-cresalia.html",
+      "dest": "/index-cresalia.html"
+    },
+    {
+      "src": "/demo-buyer-interface.html",
+      "dest": "/demo-buyer-interface.html"
+    },
+    {
+      "src": "/(.*)",
+      "dest": "/$1"
+    }
+  ],
+  "headers": [
+    {
+      "source": "/(.*)",
+      "headers": [
+        {
+          "key": "X-Content-Type-Options",
+          "value": "nosniff"
+        },
+        {
+          "key": "X-Frame-Options",
+          "value": "DENY"
+        },
+        {
+          "key": "X-XSS-Protection",
+          "value": "1; mode=block"
+        },
+        {
+          "key": "Referrer-Policy",
+          "value": "strict-origin-when-cross-origin"
+        }
+      ]
+    }
+  ],
+  "rewrites": [
+    {
+      "source": "/webhook-mercadopago",
+      "destination": "/api/webhook-mercadopago.js"
+    }
+  ]
+}

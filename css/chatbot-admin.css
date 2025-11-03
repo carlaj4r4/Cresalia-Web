@@ -1,0 +1,503 @@
+/* ===== PANEL DE ADMINISTRACIÓN DEL CHATBOT IA ===== */
+
+.chatbot-admin-panel {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    backdrop-filter: blur(5px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 10001;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.chatbot-admin-panel.show {
+    opacity: 1;
+}
+
+.chatbot-admin-panel > div {
+    background: white;
+    border-radius: 20px;
+    max-width: 800px;
+    width: 90%;
+    max-height: 90vh;
+    overflow-y: auto;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+    transform: scale(0.9);
+    transition: transform 0.3s ease;
+}
+
+.chatbot-admin-panel.show > div {
+    transform: scale(1);
+}
+
+.chatbot-admin-header {
+    background: linear-gradient(135deg, #7C3AED, #A78BFA);
+    color: white;
+    padding: 24px;
+    border-radius: 20px 20px 0 0;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.chatbot-admin-header h3 {
+    margin: 0;
+    font-size: 24px;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.chatbot-admin-close {
+    background: rgba(255, 255, 255, 0.2);
+    border: none;
+    color: white;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s ease;
+}
+
+.chatbot-admin-close:hover {
+    background: rgba(255, 255, 255, 0.3);
+    transform: scale(1.1);
+}
+
+.chatbot-admin-content {
+    padding: 24px;
+}
+
+.admin-section {
+    margin-bottom: 32px;
+    padding: 24px;
+    background: #F8FAFC;
+    border-radius: 16px;
+    border: 1px solid #E5E7EB;
+}
+
+.admin-section h4 {
+    margin: 0 0 20px 0;
+    font-size: 18px;
+    font-weight: 600;
+    color: #1F2937;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.section-description {
+    margin: 0 0 20px 0;
+    color: #6B7280;
+    font-size: 14px;
+}
+
+.form-group {
+    margin-bottom: 20px;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 8px;
+    font-weight: 600;
+    color: #374151;
+    font-size: 14px;
+}
+
+.form-group input,
+.form-group select,
+.form-group textarea {
+    width: 100%;
+    padding: 12px 16px;
+    border: 2px solid #E5E7EB;
+    border-radius: 12px;
+    font-size: 14px;
+    font-family: 'Poppins', sans-serif;
+    transition: all 0.2s ease;
+    outline: none;
+}
+
+.form-group input:focus,
+.form-group select:focus,
+.form-group textarea:focus {
+    border-color: #7C3AED;
+    box-shadow: 0 0 0 3px rgba(124, 58, 237, 0.1);
+}
+
+.form-group textarea {
+    resize: vertical;
+    min-height: 80px;
+}
+
+.color-group {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+}
+
+.color-input-group {
+    display: flex;
+    gap: 12px;
+    align-items: center;
+}
+
+.color-input-group input[type="color"] {
+    width: 50px;
+    height: 50px;
+    border: none;
+    border-radius: 12px;
+    cursor: pointer;
+    padding: 4px;
+}
+
+.color-input-group input[type="text"] {
+    flex: 1;
+    font-family: monospace;
+    font-size: 13px;
+}
+
+.color-preview {
+    margin-top: 20px;
+    text-align: center;
+}
+
+.preview-chatbot {
+    display: inline-flex;
+    align-items: center;
+    gap: 12px;
+    padding: 16px 24px;
+    border-radius: 50px;
+    color: white;
+    font-weight: 600;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+}
+
+.preview-chatbot i {
+    font-size: 18px;
+}
+
+.knowledge-form {
+    background: white;
+    padding: 20px;
+    border-radius: 12px;
+    border: 1px solid #E5E7EB;
+    margin-bottom: 24px;
+}
+
+.btn-add-knowledge {
+    background: linear-gradient(135deg, #10B981, #34D399);
+    color: white;
+    border: none;
+    padding: 12px 24px;
+    border-radius: 12px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-top: 16px;
+}
+
+.btn-add-knowledge:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(16, 185, 129, 0.3);
+}
+
+.knowledge-list h5 {
+    margin: 0 0 16px 0;
+    font-size: 16px;
+    font-weight: 600;
+    color: #1F2937;
+}
+
+.no-knowledge {
+    text-align: center;
+    color: #6B7280;
+    font-style: italic;
+    padding: 40px 20px;
+    background: white;
+    border-radius: 12px;
+    border: 2px dashed #E5E7EB;
+}
+
+.knowledge-item {
+    background: white;
+    border: 1px solid #E5E7EB;
+    border-radius: 12px;
+    padding: 16px;
+    margin-bottom: 12px;
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 16px;
+}
+
+.knowledge-content {
+    flex: 1;
+}
+
+.knowledge-question {
+    font-weight: 600;
+    color: #1F2937;
+    margin-bottom: 8px;
+}
+
+.knowledge-answer {
+    color: #6B7280;
+    margin-bottom: 8px;
+    line-height: 1.4;
+}
+
+.knowledge-category {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.category-badge {
+    background: #E0E7FF;
+    color: #3730A3;
+    padding: 4px 8px;
+    border-radius: 6px;
+    font-size: 12px;
+    font-weight: 600;
+    text-transform: capitalize;
+}
+
+.knowledge-actions {
+    display: flex;
+    gap: 8px;
+}
+
+.btn-edit,
+.btn-delete {
+    width: 32px;
+    height: 32px;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s ease;
+}
+
+.btn-edit {
+    background: #FEF3C7;
+    color: #D97706;
+}
+
+.btn-edit:hover {
+    background: #FDE68A;
+    transform: scale(1.1);
+}
+
+.btn-delete {
+    background: #FEE2E2;
+    color: #DC2626;
+}
+
+.btn-delete:hover {
+    background: #FECACA;
+    transform: scale(1.1);
+}
+
+.admin-actions {
+    display: flex;
+    gap: 12px;
+    justify-content: center;
+    margin-top: 32px;
+    padding-top: 24px;
+    border-top: 1px solid #E5E7EB;
+}
+
+.btn-save,
+.btn-test,
+.btn-reset {
+    padding: 12px 24px;
+    border: none;
+    border-radius: 12px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.btn-save {
+    background: linear-gradient(135deg, #7C3AED, #A78BFA);
+    color: white;
+}
+
+.btn-save:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(124, 58, 237, 0.3);
+}
+
+.btn-test {
+    background: linear-gradient(135deg, #10B981, #34D399);
+    color: white;
+}
+
+.btn-test:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(16, 185, 129, 0.3);
+}
+
+.btn-reset {
+    background: #F3F4F6;
+    color: #6B7280;
+}
+
+.btn-reset:hover {
+    background: #E5E7EB;
+    color: #374151;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .chatbot-admin-panel > div {
+        width: 95%;
+        max-height: 95vh;
+    }
+    
+    .chatbot-admin-content {
+        padding: 16px;
+    }
+    
+    .admin-section {
+        padding: 16px;
+        margin-bottom: 20px;
+    }
+    
+    .color-group {
+        grid-template-columns: 1fr;
+        gap: 16px;
+    }
+    
+    .admin-actions {
+        flex-direction: column;
+        gap: 8px;
+    }
+    
+    .btn-save,
+    .btn-test,
+    .btn-reset {
+        width: 100%;
+        justify-content: center;
+    }
+}
+
+@media (max-width: 480px) {
+    .chatbot-admin-header {
+        padding: 16px;
+    }
+    
+    .chatbot-admin-header h3 {
+        font-size: 20px;
+    }
+    
+    .knowledge-item {
+        flex-direction: column;
+        gap: 12px;
+    }
+    
+    .knowledge-actions {
+        align-self: flex-end;
+    }
+}
+
+/* Scrollbar personalizada */
+.chatbot-admin-panel > div::-webkit-scrollbar {
+    width: 8px;
+}
+
+.chatbot-admin-panel > div::-webkit-scrollbar-track {
+    background: #F1F5F9;
+    border-radius: 4px;
+}
+
+.chatbot-admin-panel > div::-webkit-scrollbar-thumb {
+    background: #CBD5E1;
+    border-radius: 4px;
+}
+
+.chatbot-admin-panel > div::-webkit-scrollbar-thumb:hover {
+    background: #94A3B8;
+}
+
+/* Animaciones */
+@keyframes slideInUp {
+    from {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.admin-section {
+    animation: slideInUp 0.3s ease-out;
+}
+
+.admin-section:nth-child(1) { animation-delay: 0.1s; }
+.admin-section:nth-child(2) { animation-delay: 0.2s; }
+.admin-section:nth-child(3) { animation-delay: 0.3s; }
+
+/* Estados de carga */
+.btn-save:disabled,
+.btn-test:disabled,
+.btn-reset:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+    transform: none !important;
+}
+
+/* Mejoras de accesibilidad */
+.form-group input:focus,
+.form-group select:focus,
+.form-group textarea:focus,
+.btn-save:focus,
+.btn-test:focus,
+.btn-reset:focus,
+.btn-add-knowledge:focus {
+    outline: 2px solid #7C3AED;
+    outline-offset: 2px;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

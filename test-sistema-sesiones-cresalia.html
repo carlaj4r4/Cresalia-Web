@@ -1,0 +1,295 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test de Sistema de Sesiones - Cresalia</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            min-height: 100vh;
+        }
+        .container {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+        }
+        .status {
+            padding: 15px;
+            border-radius: 10px;
+            margin: 10px 0;
+            font-weight: bold;
+        }
+        .status.active {
+            background: rgba(34, 197, 94, 0.2);
+            border: 2px solid #22c55e;
+        }
+        .status.inactive {
+            background: rgba(239, 68, 68, 0.2);
+            border: 2px solid #ef4444;
+        }
+        .info {
+            background: rgba(59, 130, 246, 0.2);
+            border: 2px solid #3b82f6;
+            padding: 15px;
+            border-radius: 10px;
+            margin: 10px 0;
+        }
+        button {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: bold;
+            margin: 5px;
+            transition: transform 0.2s;
+        }
+        button:hover {
+            transform: translateY(-2px);
+        }
+        .log {
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 10px;
+            padding: 15px;
+            margin: 10px 0;
+            max-height: 200px;
+            overflow-y: auto;
+            font-family: monospace;
+            font-size: 12px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🧪 Test de Sistema de Sesiones - Cresalia</h1>
+        
+        <div class="info">
+            <h3>📋 Instrucciones:</h3>
+            <p>1. Haz login para iniciar una sesión</p>
+            <p>2. Observa el estado de la sesión</p>
+            <p>3. Mueve el mouse o haz clic para mantener la sesión activa</p>
+            <p>4. La sesión debería durar 30 minutos de inactividad</p>
+        </div>
+
+        <div id="sessionStatus" class="status inactive">
+            🔴 Sesión Inactiva
+        </div>
+
+        <div id="sessionInfo" class="info" style="display: none;">
+            <h4>📊 Información de Sesión:</h4>
+            <p id="sessionDetails">Cargando...</p>
+        </div>
+
+        <div>
+            <button onclick="login()">🔑 Simular Login</button>
+            <button onclick="logout()">🚪 Logout</button>
+            <button onclick="resetTimer()">🔄 Reiniciar Timer</button>
+            <button onclick="checkStatus()">🔍 Verificar Estado</button>
+            <button onclick="migrarSesion()">🔄 Migrar Sesión</button>
+            <button onclick="limpiarTodo()">🧹 Limpiar Todo</button>
+        </div>
+
+        <div class="log" id="logContainer">
+            <div>📝 Log de Actividad:</div>
+        </div>
+    </div>
+
+    <script src="fix-session-system.js"></script>
+    <script src="security-system.js?v=2.4"></script>
+    <script>
+        let logContainer = document.getElementById('logContainer');
+        let sessionStatus = document.getElementById('sessionStatus');
+        let sessionInfo = document.getElementById('sessionInfo');
+        let sessionDetails = document.getElementById('sessionDetails');
+
+        function log(message) {
+            const timestamp = new Date().toLocaleTimeString();
+            const logEntry = document.createElement('div');
+            logEntry.innerHTML = `[${timestamp}] ${message}`;
+            logContainer.appendChild(logEntry);
+            logContainer.scrollTop = logContainer.scrollHeight;
+            console.log(message);
+        }
+
+        function updateSessionDisplay() {
+            const sessionData = localStorage.getItem('cresalia_session');
+            
+            if (sessionData) {
+                try {
+                    const session = JSON.parse(atob(sessionData));
+                    const now = Date.now();
+                    const sessionAge = now - session.timestamp;
+                    const sessionTimeout = 30 * 60 * 1000; // 30 minutos
+                    const timeRemaining = sessionTimeout - sessionAge;
+                    
+                    if (timeRemaining > 0) {
+                        sessionStatus.className = 'status active';
+                        sessionStatus.innerHTML = `🟢 Sesión Activa - ${Math.round(timeRemaining / 1000 / 60)} min restantes`;
+                        sessionInfo.style.display = 'block';
+                        
+                        sessionDetails.innerHTML = `
+                            <strong>Usuario:</strong> ${session.user.nombre || 'Test User'}<br>
+                            <strong>Iniciada:</strong> ${new Date(session.timestamp).toLocaleString()}<br>
+                            <strong>Edad de sesión:</strong> ${Math.round(sessionAge / 1000 / 60)} minutos<br>
+                            <strong>Tiempo restante:</strong> ${Math.round(timeRemaining / 1000 / 60)} minutos<br>
+                            <strong>Token expiry:</strong> ${Math.round((24 * 60 * 60 * 1000 - sessionAge) / 1000 / 60 / 60)} horas
+                        `;
+                    } else {
+                        sessionStatus.className = 'status inactive';
+                        sessionStatus.innerHTML = '🔴 Sesión Expirada';
+                        sessionInfo.style.display = 'none';
+                    }
+                } catch (error) {
+                    sessionStatus.className = 'status inactive';
+                    sessionStatus.innerHTML = '🔴 Error en Sesión';
+                    sessionInfo.style.display = 'none';
+                }
+            } else {
+                sessionStatus.className = 'status inactive';
+                sessionStatus.innerHTML = '🔴 No hay Sesión';
+                sessionInfo.style.display = 'none';
+            }
+        }
+
+        function login() {
+            // Limpiar sesiones antiguas
+            localStorage.removeItem('adminSession');
+            
+            const sessionData = {
+                user: {
+                    id: 1,
+                    nombre: 'Test User',
+                    email: 'test@cresalia.com',
+                    rol: 'admin'
+                },
+                token: 'test-token-' + Date.now(),
+                timestamp: Date.now(),
+                userAgent: navigator.userAgent
+            };
+            
+            localStorage.setItem('cresalia_session', btoa(JSON.stringify(sessionData)));
+            
+            // Simular el estado de seguridad
+            if (typeof securityState !== 'undefined') {
+                securityState.isAuthenticated = true;
+                securityState.currentUser = sessionData.user;
+                securityState.securityToken = sessionData.token;
+                securityState.sessionStartTime = sessionData.timestamp;
+            }
+            
+            log('✅ Login simulado - Sesión iniciada con sistema unificado');
+            updateSessionDisplay();
+        }
+
+        function logout() {
+            localStorage.removeItem('cresalia_session');
+            
+            if (typeof securityState !== 'undefined') {
+                securityState.isAuthenticated = false;
+                securityState.currentUser = null;
+                securityState.securityToken = null;
+                securityState.sessionStartTime = null;
+            }
+            
+            log('🚪 Logout - Sesión cerrada');
+            updateSessionDisplay();
+        }
+
+        function resetTimer() {
+            const sessionData = localStorage.getItem('cresalia_session');
+            if (sessionData) {
+                try {
+                    const session = JSON.parse(atob(sessionData));
+                    session.timestamp = Date.now();
+                    localStorage.setItem('friocas_session', btoa(JSON.stringify(session)));
+                    
+                    if (typeof securityState !== 'undefined') {
+                        securityState.sessionStartTime = Date.now();
+                    }
+                    
+                    log('🔄 Timer reiniciado manualmente');
+                    updateSessionDisplay();
+                } catch (error) {
+                    log('❌ Error al reiniciar timer: ' + error.message);
+                }
+            } else {
+                log('❌ No hay sesión para reiniciar');
+            }
+        }
+
+        function checkStatus() {
+            log('🔍 Verificando estado de sesión...');
+            updateSessionDisplay();
+            
+            if (typeof checkSessionTimeout === 'function') {
+                const expired = checkSessionTimeout();
+                if (expired) {
+                    log('⏰ Sesión expirada por timeout');
+                } else {
+                    log('✅ Sesión válida');
+                }
+            }
+        }
+
+        function migrarSesion() {
+            log('🔄 Iniciando migración de sesión...');
+            
+            if (typeof migrarSesionAdmin === 'function') {
+                const success = migrarSesionAdmin();
+                if (success) {
+                    log('✅ Migración exitosa');
+                } else {
+                    log('ℹ️ No hay sesión para migrar');
+                }
+            } else {
+                log('❌ Función de migración no disponible');
+            }
+            
+            updateSessionDisplay();
+        }
+
+        function limpiarTodo() {
+            log('🧹 Limpiando todas las sesiones...');
+            localStorage.removeItem('cresalia_session');
+            localStorage.removeItem('adminSession');
+            
+            if (typeof securityState !== 'undefined') {
+                securityState.isAuthenticated = false;
+                securityState.currentUser = null;
+                securityState.securityToken = null;
+                securityState.sessionStartTime = null;
+            }
+            
+            log('✅ Todo limpiado');
+            updateSessionDisplay();
+        }
+
+        // Actualizar display cada 30 segundos
+        setInterval(updateSessionDisplay, 30000);
+        
+        // Actualizar display al cargar
+        updateSessionDisplay();
+        
+        log('🧪 Test de sistema de sesiones Cresalia iniciado');
+        
+        // Interceptar logs del sistema de seguridad
+        const originalLog = console.log;
+        console.log = function(...args) {
+            const message = args.join(' ');
+            if (message.includes('🔍') || message.includes('✅') || message.includes('⏰') || message.includes('🔄')) {
+                log(message);
+            }
+            originalLog.apply(console, args);
+        };
+    </script>
+</body>
+</html>

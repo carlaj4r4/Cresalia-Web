@@ -1,0 +1,359 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Demo: IA para Descripciones - Cresalia</title>
+    
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+        }
+        
+        h1 {
+            color: #333;
+            margin-bottom: 10px;
+            font-size: 2rem;
+        }
+        
+        .subtitle {
+            color: #666;
+            margin-bottom: 30px;
+            font-size: 1.1rem;
+        }
+        
+        .form-group {
+            margin-bottom: 25px;
+        }
+        
+        label {
+            display: block;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 8px;
+            font-size: 1rem;
+        }
+        
+        input, select, textarea {
+            width: 100%;
+            padding: 12px 15px;
+            border: 2px solid #DEE2E6;
+            border-radius: 10px;
+            font-size: 14px;
+            font-family: inherit;
+            transition: all 0.3s ease;
+        }
+        
+        input:focus, select:focus, textarea:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+        
+        textarea {
+            resize: vertical;
+            min-height: 150px;
+        }
+        
+        .btn {
+            padding: 12px 25px;
+            border: none;
+            border-radius: 10px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(102, 126, 234, 0.3);
+        }
+        
+        .btn-success {
+            background: #4CAF50;
+            color: white;
+        }
+        
+        .btn-success:hover {
+            background: #45a049;
+        }
+        
+        .sugerencias-ia {
+            margin-top: 15px;
+            padding: 20px;
+            background: linear-gradient(135deg, #E8F5E8, #C8E6C9);
+            border-radius: 12px;
+            border-left: 4px solid #4CAF50;
+            animation: slideDown 0.3s ease;
+        }
+        
+        @keyframes slideDown {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .puntaje {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 15px;
+            font-size: 1.2rem;
+        }
+        
+        .puntaje-numero {
+            font-weight: 700;
+            color: #2E7D32;
+        }
+        
+        .sugerencias-lista {
+            margin: 10px 0 0 0;
+            padding-left: 20px;
+        }
+        
+        .sugerencias-lista li {
+            color: #1B5E20;
+            margin-bottom: 8px;
+            line-height: 1.5;
+        }
+        
+        .preview {
+            margin-top: 30px;
+            padding: 25px;
+            background: #F8F9FA;
+            border-radius: 12px;
+            border: 2px solid #DEE2E6;
+        }
+        
+        .preview h3 {
+            color: #333;
+            margin-bottom: 15px;
+        }
+        
+        .preview-content {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            white-space: pre-wrap;
+            line-height: 1.8;
+            font-size: 0.95rem;
+        }
+        
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateX(100px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+        
+        @keyframes slideOut {
+            from {
+                opacity: 1;
+                transform: translateX(0);
+            }
+            to {
+                opacity: 0;
+                transform: translateX(100px);
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🤖 Asistente IA para Descripciones</h1>
+        <p class="subtitle">Mejorá automáticamente tus descripciones de productos</p>
+        
+        <form id="form-producto">
+            <div class="form-group">
+                <label for="nombre_producto">📦 Nombre del Producto</label>
+                <input type="text" id="nombre_producto" placeholder="Ej: Torta de Chocolate" required>
+            </div>
+            
+            <div class="form-group">
+                <label for="categoria">📂 Categoría</label>
+                <select id="categoria" required>
+                    <option value="">Selecciona una categoría</option>
+                    <option value="alimentos">🍽️ Alimentos y Bebidas</option>
+                    <option value="ropa">👕 Ropa y Accesorios</option>
+                    <option value="hogar">🏠 Hogar y Decoración</option>
+                    <option value="belleza">💄 Belleza y Cuidado Personal</option>
+                    <option value="tecnologia">📱 Tecnología</option>
+                    <option value="servicios">🔧 Servicios</option>
+                    <option value="artesanias">🎨 Artesanías</option>
+                    <option value="otros">📦 Otros</option>
+                </select>
+            </div>
+            
+            <div class="form-group">
+                <label for="descripcion">📝 Descripción Actual</label>
+                <textarea id="descripcion" placeholder="Escribí tu descripción actual (puede ser corta)..."></textarea>
+                <div id="sugerencias-container"></div>
+            </div>
+            
+            <button type="button" class="btn btn-primary" onclick="analizarProducto()">
+                🔍 Analizar Descripción
+            </button>
+        </form>
+        
+        <div id="preview" class="preview" style="display: none;">
+            <h3>✨ Descripción Mejorada</h3>
+            <div id="preview-content" class="preview-content"></div>
+            <button type="button" class="btn btn-success" onclick="copiarDescripcion()" style="margin-top: 15px;">
+                📋 Copiar Descripción Mejorada
+            </button>
+        </div>
+    </div>
+    
+    <!-- Script del Sistema IA -->
+    <script src="js/sistema-ia-descripciones.js"></script>
+    
+    <script>
+        // Inicializar
+        const ia = new IADescripciones();
+        let timeout;
+        
+        // Analizar en tiempo real mientras escribe
+        document.getElementById('descripcion').addEventListener('input', function() {
+            clearTimeout(timeout);
+            timeout = setTimeout(() => {
+                mostrarSugerenciasEnVivo();
+            }, 1000); // Espera 1 segundo después de dejar de escribir
+        });
+        
+        function mostrarSugerenciasEnVivo() {
+            const producto = obtenerDatosProducto();
+            if (!producto.descripcion) return;
+            
+            const analisis = ia.generarSugerencias(producto);
+            const container = document.getElementById('sugerencias-container');
+            
+            container.innerHTML = `
+                <div class="sugerencias-ia">
+                    <div class="puntaje">
+                        <span class="puntaje-numero">${analisis.mensaje_motivacional}</span>
+                    </div>
+                    
+                    ${analisis.sugerencias.length > 0 ? `
+                        <div style="margin-top: 15px;">
+                            <strong style="color: #2E7D32;">💡 Tips para hacerla brillar:</strong>
+                            <ul class="sugerencias-lista">
+                                ${analisis.sugerencias.map(s => `<li>${s}</li>`).join('')}
+                            </ul>
+                        </div>
+                    ` : ''}
+                </div>
+            `;
+        }
+        
+        function obtenerDatosProducto() {
+            return {
+                nombre: document.getElementById('nombre_producto').value,
+                categoria: document.getElementById('categoria').value,
+                descripcion_original: document.getElementById('descripcion').value,
+                descripcion: document.getElementById('descripcion').value
+            };
+        }
+        
+        function analizarProducto() {
+            const producto = obtenerDatosProducto();
+            
+            if (!producto.nombre || !producto.categoria) {
+                alert('⚠️ Por favor completá el nombre y categoría del producto');
+                return;
+            }
+            
+            // Generar descripción mejorada
+            const mejorada = ia.mejorarDescripcion(producto);
+            
+            // Mostrar preview
+            document.getElementById('preview').style.display = 'block';
+            document.getElementById('preview-content').textContent = mejorada;
+            
+            // Scroll suave al preview
+            document.getElementById('preview').scrollIntoView({ 
+                behavior: 'smooth', 
+                block: 'start' 
+            });
+            
+            // Mostrar notificación
+            mostrarNotificacion('✨ ¡Descripción mejorada generada!', 'success');
+        }
+        
+        function copiarDescripcion() {
+            const texto = document.getElementById('preview-content').textContent;
+            
+            navigator.clipboard.writeText(texto).then(() => {
+                mostrarNotificacion('📋 ¡Descripción copiada al portapapeles!', 'success');
+            }).catch(err => {
+                // Fallback para navegadores viejos
+                const textarea = document.createElement('textarea');
+                textarea.value = texto;
+                document.body.appendChild(textarea);
+                textarea.select();
+                document.execCommand('copy');
+                document.body.removeChild(textarea);
+                mostrarNotificacion('📋 ¡Descripción copiada!', 'success');
+            });
+        }
+        
+        function mostrarNotificacion(mensaje, tipo = 'info') {
+            const notif = document.createElement('div');
+            notif.textContent = mensaje;
+            notif.style.cssText = `
+                position: fixed;
+                top: 20px;
+                right: 20px;
+                padding: 15px 25px;
+                background: ${tipo === 'success' ? '#4CAF50' : '#2196F3'};
+                color: white;
+                border-radius: 10px;
+                box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+                z-index: 10000;
+                animation: slideIn 0.3s ease;
+                font-weight: 600;
+            `;
+            
+            document.body.appendChild(notif);
+            
+            setTimeout(() => {
+                notif.style.animation = 'slideOut 0.3s ease';
+                setTimeout(() => notif.remove(), 300);
+            }, 3000);
+        }
+    </script>
+</body>
+</html>
+

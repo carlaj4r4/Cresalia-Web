@@ -1,0 +1,903 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
+    <title>Comunidad de Compradores - Cresalia</title>
+    
+    <!-- Meta Security -->
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' cdnjs.cloudflare.com cdn.jsdelivr.net; style-src 'self' 'unsafe-inline' fonts.googleapis.com cdnjs.cloudflare.com cdn.jsdelivr.net; style-src-elem 'self' 'unsafe-inline' fonts.googleapis.com cdnjs.cloudflare.com cdn.jsdelivr.net; font-src 'self' fonts.gstatic.com cdnjs.cloudflare.com; img-src 'self' data: https:; connect-src 'self' https:; frame-src 'self'; object-src 'none'; base-uri 'self'; form-action 'self';">
+    <meta http-equiv="X-Content-Type-Options" content="nosniff">
+    <meta http-equiv="X-XSS-Protection" content="1; mode=block">
+    <meta name="referrer" content="strict-origin-when-cross-origin">
+    
+    <!-- Favicon -->
+    <link rel="icon" type="image/x-icon" href="favicon.ico">
+    <link rel="icon" type="image/png" href="assets/logo/logo-cresalia.png">
+    <link rel="apple-touch-icon" href="assets/logo/logo-cresalia.png">
+    
+    <!-- Bootstrap -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Sistema de Seguridad -->
+    <script src="security-system.js?v=2.0"></script>
+    <script src="core/proteccion-devtools-avanzada.js?v=2.0"></script>
+    <script src="core/proteccion-datos-sensibles.js?v=1.0"></script>
+    <script src="core/panel-monitoreo-seguridad.js?v=1.0"></script>
+    
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        /* Ocultar notificaciones molestas */
+        .notification, .alert, .toast, .popup {
+            display: none !important;
+        }
+        
+        /* Ocultar mensajes de media query */
+        [class*="media-query"], [class*="responsive"], [class*="breakpoint"] {
+            display: none !important;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #f8fafc;
+            min-height: 100vh;
+            padding: 0;
+            margin: 0;
+            width: 100%;
+            overflow-x: hidden;
+        }
+        
+        .container-main {
+            max-width: 100%;
+            margin: 0;
+            padding: 0;
+            width: 100%;
+        }
+        
+        .header {
+            background: white;
+            padding: 20px;
+            border-radius: 0;
+            margin-bottom: 0;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            text-align: center;
+        }
+        
+        .header h1 {
+            color: #333;
+            margin-bottom: 10px;
+        }
+        
+        .header p {
+            color: #666;
+            font-size: 1.1rem;
+        }
+        
+        .back-btn {
+            display: inline-block;
+            background: white;
+            color: #667eea;
+            padding: 12px 25px;
+            border-radius: 10px;
+            text-decoration: none;
+            font-weight: 600;
+            margin-bottom: 20px;
+            transition: all 0.3s ease;
+        }
+        
+        .back-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(255,255,255,0.3);
+        }
+        
+        .reportar-section {
+            background: #FEF2F2;
+            border: 2px solid #FECACA;
+            border-radius: 0;
+            padding: 25px;
+            margin-bottom: 0;
+        }
+        
+        .reportar-section h4 {
+            color: #DC2626;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 1.3rem;
+        }
+        
+        .reportar-form {
+            display: grid;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+        
+        .reportar-form input, .reportar-form textarea, .reportar-form select {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #E5E7EB;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-family: inherit;
+        }
+        
+        .reportar-form textarea {
+            resize: vertical;
+            min-height: 80px;
+        }
+        
+        .reportar-form label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #333;
+        }
+        
+        .btn-reportar {
+            background: linear-gradient(135deg, #DC2626, #EF4444);
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 10px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 1.1rem;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            justify-content: center;
+        }
+        
+        .btn-reportar:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(220, 38, 38, 0.3);
+        }
+        
+        .btn-bloquear {
+            background: linear-gradient(135deg, #8B5CF6, #A78BFA);
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 10px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 1.1rem;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            justify-content: center;
+        }
+        
+        .btn-bloquear:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(139, 92, 246, 0.3);
+        }
+        
+        .lista-reportar {
+            background: #F8F9FA;
+            border-radius: 12px;
+            padding: 20px;
+            margin-top: 20px;
+        }
+        
+        .lista-reportar h5 {
+            color: #333;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .item-reportar {
+            background: white;
+            border-radius: 10px;
+            padding: 15px;
+            margin-bottom: 10px;
+            border-left: 4px solid #DC2626;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+        
+        .item-reportar .info {
+            flex: 1;
+        }
+        
+        .item-reportar .info h6 {
+            color: #333;
+            margin: 0 0 5px 0;
+            font-size: 1.1rem;
+        }
+        
+        .item-reportar .info p {
+            color: #666;
+            margin: 0;
+            font-size: 0.9rem;
+        }
+        
+        .item-reportar .info .motivo {
+            color: #DC2626;
+            font-weight: 600;
+            font-size: 0.8rem;
+            text-transform: uppercase;
+        }
+        
+        .btn-desbloquear {
+            background: #10B981;
+            color: white;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+        
+        .btn-desbloquear:hover {
+            background: #059669;
+            transform: translateY(-1px);
+        }
+        
+        .no-reportes {
+            text-align: center;
+            color: #666;
+            padding: 40px;
+            font-style: italic;
+        }
+        
+        .info-importante {
+            background: #FEF3C7;
+            border: 2px solid #F59E0B;
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 0;
+        }
+        
+        .info-importante h5 {
+            color: #92400E;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .info-importante p {
+            color: #92400E;
+            margin: 0;
+            font-size: 0.95rem;
+        }
+        
+        /* Responsive para móvil y tablet */
+        @media (max-width: 768px) {
+            body {
+                padding: 10px;
+                margin: 0;
+                width: 100vw;
+                min-width: 100vw;
+                overflow-x: hidden;
+            }
+            
+            .container-main {
+                max-width: 100%;
+                width: 100%;
+                margin: 0;
+                padding: 0;
+            }
+            
+            .header {
+                padding: 20px 15px;
+                margin-bottom: 15px;
+            }
+            
+            .header h1 {
+                font-size: 1.5rem;
+            }
+            
+            .header p {
+                font-size: 0.9rem;
+            }
+            
+            .card {
+                padding: 20px 15px;
+                margin-bottom: 15px;
+            }
+            
+            .card h4 {
+                font-size: 1.2rem;
+            }
+            
+            .grid-2-columns {
+                display: block !important;
+                gap: 15px;
+            }
+            
+            .lista-reportar {
+                margin-bottom: 20px;
+            }
+            
+            .btn {
+                padding: 8px 12px;
+                font-size: 0.85rem;
+                margin: 5px 2px;
+            }
+            
+            .form-control {
+                padding: 8px 10px;
+                font-size: 0.9rem;
+            }
+            
+            .modal-content {
+                margin: 10px;
+                max-width: calc(100vw - 20px);
+                width: calc(100vw - 20px);
+            }
+        }
+        
+        @media (max-width: 480px) {
+            body {
+                padding: 5px;
+            }
+            
+            .header {
+                padding: 15px 10px;
+            }
+            
+            .header h1 {
+                font-size: 1.3rem;
+            }
+            
+            .card {
+                padding: 15px 10px;
+            }
+            
+            .btn {
+                padding: 6px 10px;
+                font-size: 0.8rem;
+                width: 100%;
+                margin: 3px 0;
+            }
+            
+            .modal-content {
+                margin: 5px;
+                max-width: calc(100vw - 10px);
+                width: calc(100vw - 10px);
+            }
+        }
+    </style>
+    
+    <!-- Diagnóstico Responsive -->
+    <script src="js/diagnostico-responsive.js"></script>
+</head>
+<body>
+    <div class="container-main">
+        <a href="tiendas/ejemplo-tienda/index.html" class="back-btn">
+            <i class="fas fa-arrow-left"></i> Volver a la Tienda
+        </a>
+        
+        <div class="header">
+            <h1>🛒 Comunidad de Compradores Cresalia</h1>
+            <p>Espacio seguro para protegernos y comprar con confianza 💜</p>
+        </div>
+        
+        <!-- Información importante -->
+        <div class="info-importante">
+            <h5><i class="fas fa-info-circle"></i> Información Importante</h5>
+            <p>Esta comunidad está diseñada para proteger a los compradores. Puedes reportar vendedores problemáticos y bloquearlos individualmente. Con 3+ reportes de diferentes compradores, el administrador procederá a tomar medidas.</p>
+        </div>
+        
+        <!-- Sección para Reportar Vendedores Problemáticos -->
+        <div class="reportar-section">
+            <h4><i class="fas fa-flag"></i> Sistema de Reportes: Reportar Vendedores Problemáticos</h4>
+            <p style="color: #666; margin-bottom: 20px;">Reporta vendedores que no cumplan con sus compromisos, vendan productos falsos o tengan mal comportamiento. Con 3+ reportes de diferentes compradores, el administrador procederá a tomar medidas. También puedes bloquear vendedores individualmente.</p>
+            
+            <div class="reportar-form">
+                <div>
+                    <label>Nombre del Vendedor/Tienda:</label>
+                    <input type="text" id="nombreVendedor" placeholder="Nombre de la tienda o vendedor">
+                </div>
+                
+                <div>
+                    <label>Email o Teléfono del Vendedor:</label>
+                    <input type="text" id="contactoVendedor" placeholder="Email o número de teléfono del vendedor">
+                </div>
+                
+                <div>
+                    <label>Tipo de Problema:</label>
+                    <select id="tipoProblema">
+                        <option value="">Selecciona el tipo de problema</option>
+                        <option value="producto-falso">Producto falso o de mala calidad</option>
+                        <option value="no-entrega">No entregó el producto</option>
+                        <option value="estafa">Intentó estafar</option>
+                        <option value="comportamiento-inadecuado">Comportamiento inadecuado</option>
+                        <option value="no-responde">No responde mensajes</option>
+                        <option value="cobro-extra">Cobró más de lo acordado</option>
+                        <option value="otro">Otro</option>
+                    </select>
+                </div>
+                
+                <div>
+                    <label>Descripción del Problema:</label>
+                    <textarea id="descripcionProblema" placeholder="Describe detalladamente qué pasó, cuándo y cómo..."></textarea>
+                </div>
+                
+                <div>
+                    <label>Evidencia (Capturas de pantalla):</label>
+                    <input type="file" id="evidencia" accept="image/*,.pdf,.doc,.docx" multiple style="width: 100%; padding: 12px; border: 2px solid #E5E7EB; border-radius: 8px; font-size: 1rem; font-family: inherit;">
+                    <small style="color: #666; font-size: 0.8rem;">Puedes subir múltiples archivos: imágenes, PDFs o documentos</small>
+                </div>
+                
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+                    <button class="btn-reportar" onclick="reportarVendedorProblematico()">
+                        <i class="fas fa-flag"></i> Reportar Vendedor
+                    </button>
+                    <button class="btn-bloquear" onclick="bloquearVendedorIndividual()">
+                        <i class="fas fa-user-slash"></i> Bloquear Individualmente
+                    </button>
+                </div>
+            </div>
+            
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+                <div class="lista-reportar">
+                    <h5><i class="fas fa-flag"></i> Vendedores Reportados (Esperando Revisión)</h5>
+                    <p style="color: #666; font-size: 0.85rem; margin-bottom: 15px; padding: 8px; background: #f8f9fa; border-radius: 5px;">
+                        💡 <strong>¿Has tenido una experiencia similar?</strong> Puedes responder a estos reportes para ayudar a otros compradores.
+                    </p>
+                    <div id="listaVendedoresReportados">
+                        <div class="no-reportes">
+                            <i class="fas fa-shield-alt" style="font-size: 2rem; color: #10B981; margin-bottom: 10px;"></i>
+                            <p>¡Excelente! No hay reportes pendientes.</p>
+                            <small>Mantengamos esta comunidad limpia y segura para todos.</small>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="lista-reportar">
+                    <h5><i class="fas fa-user-slash"></i> Vendedores Bloqueados (Solo Tuyos)</h5>
+                    <div id="listaVendedoresBloqueados">
+                        <div class="no-reportes">
+                            <i class="fas fa-user-check" style="font-size: 2rem; color: #8B5CF6; margin-bottom: 10px;"></i>
+                            <p>No has bloqueado ningún vendedor.</p>
+                            <small>Los bloqueos son personales y solo te afectan a ti.</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Sección de consejos para compradores -->
+        <div style="background: white; border-radius: 0; padding: 20px; margin-bottom: 0; box-shadow: 0 2px 10px rgba(0,0,0,0.1);">
+            <h4 style="color: #333; margin-bottom: 20px;"><i class="fas fa-lightbulb"></i> Consejos para Compradores Seguros</h4>
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px;">
+                <div style="background: #F0F9FF; padding: 15px; border-radius: 10px; border-left: 4px solid #3B82F6;">
+                    <h6 style="color: #1E40AF; margin-bottom: 10px;"><i class="fas fa-search"></i> Antes de Comprar</h6>
+                    <ul style="color: #1E40AF; margin: 0; padding-left: 20px; font-size: 0.9rem;">
+                        <li>Verifica las fotos del producto</li>
+                        <li>Lee las descripciones completas</li>
+                        <li>Revisa las reseñas de otros compradores</li>
+                        <li>Confirma el precio y forma de pago</li>
+                    </ul>
+                </div>
+                
+                <div style="background: #F0FDF4; padding: 15px; border-radius: 10px; border-left: 4px solid #10B981;">
+                    <h6 style="color: #059669; margin-bottom: 10px;"><i class="fas fa-handshake"></i> Durante la Compra</h6>
+                    <ul style="color: #059669; margin: 0; padding-left: 20px; font-size: 0.9rem;">
+                        <li>Pide capturas de pantalla del producto</li>
+                        <li>Confirma tiempos de entrega</li>
+                        <li>Guarda todas las conversaciones</li>
+                        <li>Usa métodos de pago seguros</li>
+                    </ul>
+                </div>
+                
+                <div style="background: #FEF3C7; padding: 15px; border-radius: 10px; border-left: 4px solid #F59E0B;">
+                    <h6 style="color: #92400E; margin-bottom: 10px;"><i class="fas fa-exclamation-triangle"></i> Si Algo Sale Mal</h6>
+                    <ul style="color: #92400E; margin: 0; padding-left: 20px; font-size: 0.9rem;">
+                        <li>Reporta inmediatamente el problema</li>
+                        <li>Proporciona evidencia (capturas, chats)</li>
+                        <li>Bloquea al vendedor si es necesario</li>
+                        <li>Comparte tu experiencia con la comunidad</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        // ===== SISTEMA DE REPORTAR VENDEDORES PROBLEMÁTICOS =====
+        
+        // Función para convertir archivos a base64
+        function convertirArchivosABase64(archivos) {
+            return new Promise((resolve, reject) => {
+                const archivosBase64 = [];
+                let archivosProcesados = 0;
+                
+                if (archivos.length === 0) {
+                    resolve([]);
+                    return;
+                }
+                
+                Array.from(archivos).forEach((archivo, index) => {
+                    const reader = new FileReader();
+                    reader.onload = function(e) {
+                        archivosBase64.push({
+                            nombre: archivo.name,
+                            tipo: archivo.type,
+                            tamaño: archivo.size,
+                            contenido: e.target.result
+                        });
+                        archivosProcesados++;
+                        
+                        if (archivosProcesados === archivos.length) {
+                            resolve(archivosBase64);
+                        }
+                    };
+                    reader.onerror = reject;
+                    reader.readAsDataURL(archivo);
+                });
+            });
+        }
+        
+        // Función para reportar un vendedor problemático
+        async function reportarVendedorProblematico() {
+            const nombre = document.getElementById('nombreVendedor').value.trim();
+            const contacto = document.getElementById('contactoVendedor').value.trim();
+            const tipoProblema = document.getElementById('tipoProblema').value;
+            const descripcion = document.getElementById('descripcionProblema').value.trim();
+            const archivosEvidencia = document.getElementById('evidencia').files;
+            
+            // Validaciones
+            if (!nombre || !contacto || !tipoProblema || !descripcion) {
+                alert('⚠️ Por favor completa todos los campos obligatorios.');
+                return;
+            }
+            
+            if (descripcion.length < 20) {
+                alert('⚠️ La descripción debe tener al menos 20 caracteres para ser válida.');
+                return;
+            }
+            
+            // Validar que haya evidencia
+            if (archivosEvidencia.length === 0) {
+                alert('⚠️ Por favor sube al menos una captura de pantalla o evidencia.');
+                return;
+            }
+            
+            // Confirmar reporte
+            const confirmar = confirm(`¿Estás seguro de reportar a "${nombre}"?\n\nEsto enviará el reporte al administrador para revisión. Con 3+ reportes de diferentes compradores, se procederá a tomar medidas.`);
+            if (!confirmar) return;
+            
+            // Mostrar loading
+            mostrarNotificacion('📤 Procesando evidencia...', 'info');
+            
+            try {
+                // Convertir archivos a base64
+                const evidenciasBase64 = await convertirArchivosABase64(archivosEvidencia);
+                
+                // Crear objeto del reporte
+                const reporte = {
+                    id: Date.now(),
+                    nombre: nombre,
+                    contacto: contacto,
+                    tipoProblema: tipoProblema,
+                    descripcion: descripcion,
+                    evidencia: evidenciasBase64,
+                    fecha: new Date().toLocaleDateString('es-ES'),
+                    reportadoPor: 'Comprador Actual', // En una implementación real sería el usuario logueado
+                    estado: 'pendiente',
+                    compradorId: 'comprador_demo', // ID único del comprador
+                    numeroReportes: 1 // Contador de reportes para este vendedor
+                };
+                
+                // Verificar si ya hay reportes para este vendedor
+                let reportes = JSON.parse(localStorage.getItem('vendedoresReportados') || '[]');
+                const reporteExistente = reportes.find(r => r.contacto === contacto);
+                
+                if (reporteExistente) {
+                    reporte.numeroReportes = reporteExistente.numeroReportes + 1;
+                    // Reemplazar el reporte anterior
+                    reportes = reportes.filter(r => r.contacto !== contacto);
+                }
+                
+                reportes.push(reporte);
+                localStorage.setItem('vendedoresReportados', JSON.stringify(reportes));
+                
+                // Limpiar formulario
+                document.getElementById('nombreVendedor').value = '';
+                document.getElementById('contactoVendedor').value = '';
+                document.getElementById('tipoProblema').value = '';
+                document.getElementById('descripcionProblema').value = '';
+                document.getElementById('evidencia').value = '';
+                
+                // Actualizar listas
+                mostrarVendedoresReportados();
+                mostrarVendedoresBloqueados();
+                
+                // Mostrar confirmación
+                mostrarNotificacion(`✅ Reporte enviado al administrador. Total de reportes para este vendedor: ${reporte.numeroReportes}`, 'success');
+                
+            } catch (error) {
+                console.error('Error procesando archivos:', error);
+                mostrarNotificacion('❌ Error al procesar la evidencia. Intenta nuevamente.', 'error');
+            }
+        }
+        
+        // Función para mostrar la lista de vendedores reportados
+        function mostrarVendedoresReportados() {
+            const reportes = JSON.parse(localStorage.getItem('vendedoresReportados') || '[]');
+            const container = document.getElementById('listaVendedoresReportados');
+            
+            if (reportes.length === 0) {
+                container.innerHTML = `
+                    <div class="no-reportes">
+                        <i class="fas fa-shield-alt" style="font-size: 2rem; color: #10B981; margin-bottom: 10px;"></i>
+                        <p>¡Excelente! No hay reportes pendientes.</p>
+                        <small>Mantengamos esta comunidad limpia y segura para todos.</small>
+                    </div>
+                `;
+                return;
+            }
+            
+            let html = '';
+            reportes.forEach(reporte => {
+                const motivoTexto = {
+                    'producto-falso': 'Producto falso',
+                    'no-entrega': 'No entregó',
+                    'estafa': 'Estafa',
+                    'comportamiento-inadecuado': 'Comportamiento inadecuado',
+                    'no-responde': 'No responde',
+                    'cobro-extra': 'Cobró extra',
+                    'otro': 'Otro motivo'
+                }[reporte.tipoProblema] || reporte.tipoProblema;
+                
+                html += `
+                    <div class="item-reportar">
+                        <div class="info">
+                            <h6>${reporte.nombre}</h6>
+                            <p><strong>Contacto:</strong> ${reporte.contacto}</p>
+                            <p><strong>Motivo:</strong> <span class="motivo">${motivoTexto}</span></p>
+                            <p><strong>Fecha:</strong> ${reporte.fecha}</p>
+                            <p><strong>Estado:</strong> <span style="color: #F59E0B; font-weight: 600;">⏳ PENDIENTE</span></p>
+                            <p><strong>Reportes:</strong> <span style="color: #DC2626; font-weight: 600;">${reporte.numeroReportes || 1} reporte(s)</span></p>
+                            ${reporte.evidencia && reporte.evidencia.length > 0 ? `<p><strong>Evidencia:</strong> ${reporte.evidencia.length} archivo(s) subido(s)</p>` : ''}
+                            <p><strong>Descripción:</strong> ${reporte.descripcion}</p>
+                        </div>
+                        <div class="actions" style="margin-top: 10px;">
+                            <button class="btn btn-sm btn-info" onclick="responderReporte(${reporte.id})" style="background: #17a2b8; border-color: #17a2b8; margin-right: 5px;">
+                                <i class="fas fa-comment-dots"></i> Responder
+                            </button>
+                            <button class="btn btn-sm btn-danger" onclick="bloquearVendedorIndividual('${reporte.nombre}', '${reporte.contacto}')">
+                                <i class="fas fa-user-slash"></i> Bloquear
+                            </button>
+                        </div>
+                        ${reporte.respuestas && reporte.respuestas.length > 0 ? `
+                            <div class="respuestas-reporte" style="margin-top: 15px; padding-top: 15px; border-top: 1px solid #e9ecef;">
+                                <h6 style="color: #17a2b8; margin-bottom: 10px;"><i class="fas fa-comments"></i> Respuestas de la Comunidad (${reporte.respuestas.length}):</h6>
+                                ${reporte.respuestas.map(respuesta => `
+                                    <div class="respuesta-item" style="background: #f8f9fa; padding: 10px; border-radius: 8px; margin-bottom: 8px;">
+                                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 5px;">
+                                            <strong style="color: #495057;">${respuesta.nombre}</strong>
+                                            <small style="color: #6c757d;">${respuesta.fecha}</small>
+                                        </div>
+                                        <p style="margin: 0; color: #333;">${respuesta.mensaje}</p>
+                                    </div>
+                                `).join('')}
+                            </div>
+                        ` : ''}
+                    </div>
+                `;
+            });
+            
+            container.innerHTML = html;
+        }
+        
+        // Función para mostrar la lista de vendedores bloqueados individualmente
+        function mostrarVendedoresBloqueados() {
+            const bloqueados = JSON.parse(localStorage.getItem('vendedoresBloqueados') || '[]');
+            const container = document.getElementById('listaVendedoresBloqueados');
+            
+            if (bloqueados.length === 0) {
+                container.innerHTML = `
+                    <div class="no-reportes">
+                        <i class="fas fa-user-check" style="font-size: 2rem; color: #8B5CF6; margin-bottom: 10px;"></i>
+                        <p>No has bloqueado ningún vendedor.</p>
+                        <small>Los bloqueos son personales y solo te afectan a ti.</small>
+                    </div>
+                `;
+                return;
+            }
+            
+            let html = '';
+            bloqueados.forEach(bloqueado => {
+                html += `
+                    <div class="item-reportar">
+                        <div class="info">
+                            <h6>${bloqueado.nombre}</h6>
+                            <p><strong>Contacto:</strong> ${bloqueado.contacto}</p>
+                            <p><strong>Fecha:</strong> ${bloqueado.fecha}</p>
+                            <p><strong>Estado:</strong> <span style="color: #8B5CF6; font-weight: 600;">🚫 BLOQUEADO</span></p>
+                        </div>
+                        <button class="btn-desbloquear" onclick="desbloquearVendedor(${bloqueado.id})">
+                            <i class="fas fa-unlock"></i> Desbloquear
+                        </button>
+                    </div>
+                `;
+            });
+            
+            container.innerHTML = html;
+        }
+        
+        // Función para bloquear un vendedor individualmente
+        function bloquearVendedorIndividual() {
+            const nombre = document.getElementById('nombreVendedor').value.trim();
+            const contacto = document.getElementById('contactoVendedor').value.trim();
+            
+            if (!nombre || !contacto) {
+                alert('⚠️ Por favor completa al menos el nombre y contacto para bloquear.');
+                return;
+            }
+            
+            const confirmar = confirm(`¿Estás seguro de bloquear a "${nombre}"?\n\nEste bloqueo es personal y solo te afecta a ti.`);
+            if (!confirmar) return;
+            
+            // Crear objeto del bloqueo
+            const bloqueado = {
+                id: Date.now(),
+                nombre: nombre,
+                contacto: contacto,
+                fecha: new Date().toLocaleDateString('es-ES'),
+                compradorId: 'comprador_demo' // ID único del comprador
+            };
+            
+            // Guardar en localStorage (bloqueos individuales)
+            let bloqueados = JSON.parse(localStorage.getItem('vendedoresBloqueados') || '[]');
+            bloqueados.push(bloqueado);
+            localStorage.setItem('vendedoresBloqueados', JSON.stringify(bloqueados));
+            
+            // Actualizar lista
+            mostrarVendedoresBloqueados();
+            
+            // Mostrar confirmación
+            mostrarNotificacion('✅ Vendedor bloqueado individualmente. Solo te afecta a ti.', 'success');
+        }
+        
+        // Función para desbloquear un vendedor
+        function desbloquearVendedor(id) {
+            const confirmar = confirm('¿Estás seguro de desbloquear a este vendedor?');
+            if (!confirmar) return;
+            
+            let bloqueados = JSON.parse(localStorage.getItem('vendedoresBloqueados') || '[]');
+            bloqueados = bloqueados.filter(bloqueado => bloqueado.id !== id);
+            localStorage.setItem('vendedoresBloqueados', JSON.stringify(bloqueados));
+            
+            mostrarVendedoresBloqueados();
+            mostrarNotificacion('✅ Vendedor desbloqueado exitosamente.', 'success');
+        }
+        
+        // Función para mostrar notificaciones
+        function mostrarNotificacion(mensaje, tipo = 'info') {
+            // Crear elemento de notificación
+            const notificacion = document.createElement('div');
+            notificacion.style.cssText = `
+                position: fixed;
+                top: 20px;
+                right: 20px;
+                background: ${tipo === 'success' ? '#10B981' : tipo === 'error' ? '#EF4444' : '#3B82F6'};
+                color: white;
+                padding: 15px 20px;
+                border-radius: 10px;
+                box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+                z-index: 10000;
+                font-weight: 600;
+                max-width: 400px;
+            `;
+            notificacion.textContent = mensaje;
+            
+            document.body.appendChild(notificacion);
+            
+            // Remover después de 4 segundos
+            setTimeout(() => {
+                if (notificacion.parentNode) {
+                    notificacion.parentNode.removeChild(notificacion);
+                }
+            }, 4000);
+        }
+        
+        // ===== SISTEMA DE RESPUESTAS A REPORTES =====
+        
+        // Función para responder a un reporte
+        function responderReporte(reporteId) {
+            const nombre = prompt('Tu nombre (opcional):') || 'Comprador Anónimo';
+            const mensaje = prompt('Tu respuesta o experiencia similar:');
+            
+            if (!mensaje || mensaje.trim().length < 5) {
+                alert('⚠️ Por favor escribe una respuesta de al menos 5 caracteres.');
+                return;
+            }
+            
+            const respuesta = {
+                id: Date.now(),
+                reporteId: reporteId,
+                nombre: nombre.trim(),
+                mensaje: mensaje.trim(),
+                fecha: new Date().toLocaleDateString('es-ES'),
+                hora: new Date().toLocaleTimeString('es-ES')
+            };
+            
+            // Obtener reportes existentes
+            let reportes = JSON.parse(localStorage.getItem('vendedoresReportados') || '[]');
+            const reporteIndex = reportes.findIndex(r => r.id === reporteId);
+            
+            if (reporteIndex !== -1) {
+                // Agregar respuesta al reporte
+                if (!reportes[reporteIndex].respuestas) {
+                    reportes[reporteIndex].respuestas = [];
+                }
+                reportes[reporteIndex].respuestas.push(respuesta);
+                
+                // Guardar actualización
+                localStorage.setItem('vendedoresReportados', JSON.stringify(reportes));
+                
+                // Actualizar vista
+                mostrarVendedoresReportados();
+                
+                mostrarNotificacion('✅ Respuesta agregada. Gracias por ayudar a la comunidad.', 'success');
+            } else {
+                mostrarNotificacion('❌ Error: No se encontró el reporte.', 'error');
+            }
+        }
+        
+        // Inicializar comunidad
+        document.addEventListener('DOMContentLoaded', () => {
+            // Agregar algunos datos de ejemplo si no existen
+            if (!localStorage.getItem('vendedores_reportados')) {
+                const ejemplos = [
+                    {
+                        id: 1,
+                        vendedor: 'vendedor_ejemplo@email.com',
+                        nombre: 'Tienda Ejemplo',
+                        motivo: 'Producto defectuoso',
+                        descripcion: 'El producto llegó roto y no responden los mensajes',
+                        evidencia: null,
+                        numeroReportes: 2,
+                        fecha: new Date().toISOString()
+                    }
+                ];
+                localStorage.setItem('vendedores_reportados', JSON.stringify(ejemplos));
+            }
+            
+            // Mostrar listas al cargar
+            mostrarVendedoresReportados();
+            mostrarVendedoresBloqueados();
+        });
+    </script>
+    
+    <!-- Sistema de Alertas de Emergencia Global -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="config-supabase-seguro.js"></script>
+    <script src="js/sistema-alertas-comunidades.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            setTimeout(() => {
+                if (typeof SistemaAlertasComunidades !== 'undefined') {
+                    window.alertasGlobal = new SistemaAlertasComunidades('global');
+                }
+            }, 500);
+        });
+    </script>
+</body>
+</html>

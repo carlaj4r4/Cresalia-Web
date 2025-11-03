@@ -1,0 +1,1586 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Configuración - Admin Panel</title>
+    
+    <!-- Favicon -->
+    <link rel="icon" type="image/png" href="../../assets/logo/logo-cresalia.png">
+    <link rel="apple-touch-icon" href="../../assets/logo/logo-cresalia.png">
+    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Click Derecho Personalizado -->
+    <script src="../../js/click-derecho-personalizado.js"></script>
+    
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #a855f7 0%, #ec4899 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        /* Header */
+        .header {
+            background: white;
+            border-radius: 20px;
+            padding: 30px;
+            margin-bottom: 30px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .header h1 {
+            color: #374151;
+            font-size: 2rem;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        
+        .header h1 i {
+            color: #a855f7;
+        }
+        
+        .btn-back {
+            background: linear-gradient(135deg, #a855f7, #ec4899);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 12px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            text-decoration: none;
+        }
+        
+        .btn-back:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(79, 172, 254, 0.3);
+        }
+        
+        /* Tabs */
+        .tabs-container {
+            background: white;
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            margin-bottom: 30px;
+        }
+        
+        .tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 30px;
+            flex-wrap: wrap;
+            border-bottom: 2px solid #E5E7EB;
+            padding-bottom: 10px;
+        }
+        
+        .tab {
+            background: transparent;
+            color: #6B7280;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 10px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .tab:hover {
+            background: #F3F4F6;
+            color: #374151;
+        }
+        
+        .tab.active {
+            background: linear-gradient(135deg, #a855f7, #ec4899);
+            color: white;
+        }
+        
+        .tab-content {
+            display: none;
+        }
+        
+        .tab-content.active {
+            display: block;
+            animation: fadeIn 0.3s ease;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        /* Form Sections */
+        .form-section {
+            background: #F9FAFB;
+            border-radius: 15px;
+            padding: 25px;
+            margin-bottom: 25px;
+            border: 2px solid #E5E7EB;
+        }
+        
+        .form-section h3 {
+            color: #374151;
+            font-size: 1.3rem;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .form-section h3 i {
+            color: #4facfe;
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #374151;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .form-group input,
+        .form-group textarea,
+        .form-group select {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #E5E7EB;
+            border-radius: 10px;
+            font-size: 14px;
+            transition: all 0.3s ease;
+        }
+        
+        .form-group input:focus,
+        .form-group textarea:focus,
+        .form-group select:focus {
+            outline: none;
+            border-color: #4facfe;
+            box-shadow: 0 0 0 3px rgba(79, 172, 254, 0.1);
+        }
+        
+        .form-group textarea {
+            min-height: 100px;
+            resize: vertical;
+        }
+        
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+        
+        /* Toggle Switch */
+        .toggle-switch {
+            position: relative;
+            display: inline-block;
+            width: 60px;
+            height: 30px;
+        }
+        
+        .toggle-switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+        
+        .slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: #ccc;
+            transition: 0.4s;
+            border-radius: 30px;
+        }
+        
+        .slider:before {
+            position: absolute;
+            content: "";
+            height: 22px;
+            width: 22px;
+            left: 4px;
+            bottom: 4px;
+            background-color: white;
+            transition: 0.4s;
+            border-radius: 50%;
+        }
+        
+        input:checked + .slider {
+            background: linear-gradient(135deg, #4facfe, #00f2fe);
+        }
+        
+        input:checked + .slider:before {
+            transform: translateX(30px);
+        }
+        
+        /* Color Picker */
+        .color-picker-group {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        
+        .color-preview {
+            width: 50px;
+            height: 50px;
+            border-radius: 10px;
+            border: 2px solid #E5E7EB;
+            cursor: pointer;
+        }
+        
+        /* Image Upload */
+        .image-upload-area {
+            border: 2px dashed #D1D5DB;
+            border-radius: 15px;
+            padding: 30px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            background: white;
+        }
+        
+        .image-upload-area:hover {
+            border-color: #4facfe;
+            background: #F0F9FF;
+        }
+        
+        .image-upload-area i {
+            font-size: 3rem;
+            color: #D1D5DB;
+            margin-bottom: 15px;
+        }
+        
+        .image-preview {
+            max-width: 300px;
+            max-height: 200px;
+            border-radius: 10px;
+            margin-top: 15px;
+            display: none;
+        }
+        
+        .image-preview.show {
+            display: block;
+        }
+        
+        /* Video Upload */
+        .video-upload-area {
+            border: 2px dashed #D1D5DB;
+            border-radius: 15px;
+            padding: 30px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            background: white;
+        }
+        
+        .video-upload-area:hover {
+            border-color: #4facfe;
+            background: #F0F9FF;
+        }
+        
+        .video-preview {
+            max-width: 100%;
+            max-height: 300px;
+            border-radius: 10px;
+            margin-top: 15px;
+            display: none;
+        }
+        
+        .video-preview.show {
+            display: block;
+        }
+        
+        /* Plan Badge */
+        .plan-badge {
+            display: inline-block;
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: bold;
+            margin-left: 10px;
+        }
+        
+        .plan-badge.basic {
+            background: #DBEAFE;
+            color: #1E40AF;
+        }
+        
+        .plan-badge.professional {
+            background: #D1FAE5;
+            color: #065F46;
+        }
+        
+        .plan-badge.enterprise {
+            background: #FEF3C7;
+            color: #92400E;
+        }
+        
+        .plan-locked {
+            opacity: 0.5;
+            pointer-events: none;
+            position: relative;
+        }
+        
+        .plan-locked::after {
+            content: '🔒 Disponible en plan superior';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: rgba(0,0,0,0.8);
+            color: white;
+            padding: 10px 20px;
+            border-radius: 10px;
+            font-size: 0.9rem;
+            white-space: nowrap;
+        }
+        
+        /* Buttons */
+        .btn-primary {
+            background: linear-gradient(135deg, #a855f7, #ec4899);
+            color: white;
+            border: none;
+            padding: 15px 40px;
+            border-radius: 12px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(79, 172, 254, 0.3);
+        }
+        
+        .btn-secondary {
+            background: #6B7280;
+            color: white;
+            border: none;
+            padding: 15px 40px;
+            border-radius: 12px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-right: 10px;
+        }
+        
+        .btn-secondary:hover {
+            background: #4B5563;
+        }
+        
+        .save-section {
+            text-align: center;
+            margin-top: 40px;
+            padding-top: 30px;
+            border-top: 2px solid #E5E7EB;
+        }
+        
+        /* Payment Methods */
+        .payment-methods {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+            gap: 15px;
+        }
+        
+        .payment-method {
+            background: white;
+            border: 2px solid #E5E7EB;
+            border-radius: 10px;
+            padding: 15px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-align: center;
+        }
+        
+        .payment-method:hover {
+            border-color: #4facfe;
+            transform: translateY(-2px);
+        }
+        
+        .payment-method.selected {
+            border-color: #4facfe;
+            background: #F0F9FF;
+        }
+        
+        .payment-method i {
+            font-size: 2rem;
+            margin-bottom: 8px;
+            color: #6B7280;
+        }
+        
+        .payment-method.selected i {
+            color: #4facfe;
+        }
+        
+        /* FAQ Items */
+        .faq-items {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+        
+        .faq-item {
+            background: white;
+            border: 2px solid #E5E7EB;
+            border-radius: 10px;
+            padding: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            gap: 15px;
+        }
+        
+        .faq-content {
+            flex: 1;
+        }
+        
+        .faq-content h4 {
+            color: #374151;
+            margin-bottom: 8px;
+        }
+        
+        .faq-content p {
+            color: #6B7280;
+            font-size: 0.95rem;
+        }
+        
+        .faq-actions {
+            display: flex;
+            gap: 8px;
+        }
+        
+        .btn-icon {
+            background: transparent;
+            border: none;
+            cursor: pointer;
+            padding: 8px;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+        }
+        
+        .btn-icon:hover {
+            background: #F3F4F6;
+        }
+        
+        .btn-icon.delete:hover {
+            background: #FEE2E2;
+            color: #DC2626;
+        }
+        
+        /* Notificaciones */
+        .notification {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: white;
+            padding: 20px 25px;
+            border-radius: 12px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            z-index: 9999999;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            animation: slideIn 0.3s ease;
+            max-width: 400px;
+        }
+        
+        .notification.success {
+            border-left: 4px solid #10B981;
+        }
+        
+        .notification.error {
+            border-left: 4px solid #EF4444;
+        }
+        
+        .notification.info {
+            border-left: 4px solid #3B82F6;
+        }
+        
+        @keyframes slideIn {
+            from {
+                transform: translateX(400px);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+        
+        /* Responsive */
+        @media (max-width: 768px) {
+            .header {
+                flex-direction: column;
+                gap: 20px;
+                text-align: center;
+            }
+            
+            .tabs {
+                flex-direction: column;
+            }
+            
+            .form-row {
+                grid-template-columns: 1fr;
+            }
+            
+            .payment-methods {
+                grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <div class="header">
+            <h1>
+                <i class="fas fa-cog"></i>
+                Configuración de Mi Tienda
+            </h1>
+            <a href="admin.html" class="btn-back">
+                <i class="fas fa-arrow-left"></i>
+                Volver al Dashboard
+            </a>
+        </div>
+        
+        <!-- Tabs Container -->
+        <div class="tabs-container">
+            <!-- Tabs -->
+            <div class="tabs">
+                <button class="tab active" onclick="cambiarTab('general')">
+                    <i class="fas fa-store"></i> General
+                </button>
+                <button class="tab" onclick="cambiarTab('planes')">
+                    <i class="fas fa-crown"></i> Mi Plan
+                </button>
+                <button class="tab" onclick="cambiarTab('interfaz')">
+                    <i class="fas fa-palette"></i> Interfaz
+                </button>
+                <button class="tab" onclick="cambiarTab('multimedia')">
+                    <i class="fas fa-film"></i> Multimedia
+                </button>
+                <button class="tab" onclick="cambiarTab('pagos')">
+                    <i class="fas fa-credit-card"></i> Pagos
+                </button>
+                <button class="tab" onclick="cambiarTab('chatbot')">
+                    <i class="fas fa-robot"></i> Chatbot IA
+                </button>
+                <button class="tab" onclick="cambiarTab('soporte')">
+                    <i class="fas fa-headset"></i> Soporte
+                </button>
+                <button class="tab" onclick="cambiarTab('faq')">
+                    <i class="fas fa-question-circle"></i> FAQ
+                </button>
+            </div>
+            
+            <!-- Tab Content: General -->
+            <div id="tab-general" class="tab-content active">
+                <div class="form-section">
+                    <h3><i class="fas fa-info-circle"></i> Información Básica</h3>
+                    
+                    <div class="form-group">
+                        <label>
+                            <i class="fas fa-store"></i> Nombre de la Tienda *
+                        </label>
+                        <input type="text" id="nombreTienda" placeholder="Mi Tienda Online">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>
+                            <i class="fas fa-align-left"></i> Descripción
+                        </label>
+                        <textarea id="descripcionTienda" placeholder="Describe tu negocio..."></textarea>
+                    </div>
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>
+                                <i class="fas fa-calendar-alt"></i> Año de Creación
+                            </label>
+                            <input type="number" id="anioCreacion" placeholder="2024" min="1900" max="2100">
+                        </div>
+                        
+                        <div class="form-group">
+                            <label>
+                                <i class="fas fa-tag"></i> Categoría Principal
+                            </label>
+                            <select id="categoriaTienda">
+                                <option value="">Selecciona una categoría</option>
+                                <option value="ropa">Ropa y Moda</option>
+                                <option value="tecnologia">Tecnología</option>
+                                <option value="alimentos">Alimentos y Bebidas</option>
+                                <option value="hogar">Hogar y Decoración</option>
+                                <option value="salud">Salud y Belleza</option>
+                                <option value="deportes">Deportes</option>
+                                <option value="servicios">Servicios</option>
+                                <option value="otro">Otro</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="form-section">
+                    <h3><i class="fas fa-map-marker-alt"></i> Ubicación y Contacto</h3>
+                    
+                    <div class="form-group">
+                        <label>
+                            <i class="fas fa-map-marker-alt"></i> Dirección
+                        </label>
+                        <input type="text" id="direccion" placeholder="Calle Principal #123">
+                    </div>
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>
+                                <i class="fas fa-city"></i> Ciudad
+                            </label>
+                            <input type="text" id="ciudad" placeholder="Tu Ciudad">
+                        </div>
+                        
+                        <div class="form-group">
+                            <label>
+                                <i class="fas fa-flag"></i> País
+                            </label>
+                            <input type="text" id="pais" placeholder="Tu País">
+                        </div>
+                    </div>
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>
+                                <i class="fas fa-phone"></i> Teléfono
+                            </label>
+                            <input type="tel" id="telefono" placeholder="+1 234 567 8900">
+                        </div>
+                        
+                        <div class="form-group">
+                            <label>
+                                <i class="fas fa-envelope"></i> Email
+                            </label>
+                            <input type="email" id="email" placeholder="contacto@mitienda.com">
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label style="display: flex; align-items: center; justify-content: space-between;">
+                            <span><i class="fas fa-truck"></i> ¿Realizas envíos a domicilio?</span>
+                            <label class="toggle-switch">
+                                <input type="checkbox" id="enviosDomicilio">
+                                <span class="slider"></span>
+                            </label>
+                        </label>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Tab Content: Planes -->
+            <div id="tab-planes" class="tab-content">
+                <div style="text-align: center; margin-bottom: 30px;">
+                    <h2 style="color: #374151; font-size: 2rem; margin-bottom: 10px;">
+                        <i class="fas fa-crown" style="color: #F59E0B;"></i> Tu Plan Actual
+                    </h2>
+                    <p style="color: #6B7280;">Elige el plan que mejor se adapte a tu negocio</p>
+                </div>
+                
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 25px; margin-bottom: 30px;">
+                    <!-- Plan Basic -->
+                    <div style="background: white; border-radius: 20px; padding: 30px; box-shadow: 0 10px 30px rgba(0,0,0,0.1); border: 3px solid transparent; transition: all 0.3s ease; position: relative;">
+                        <div style="text-align: center; margin-bottom: 20px;">
+                            <div style="font-size: 3rem; margin-bottom: 10px;">🌱</div>
+                            <h3 style="color: #374151; font-size: 1.8rem; margin-bottom: 10px;">Basic</h3>
+                            <div style="font-size: 2.5rem; font-weight: bold; color: #4facfe; margin-bottom: 5px;">GRATIS</div>
+                            <p style="color: #6B7280; font-size: 0.9rem;">Perfecto para empezar</p>
+                        </div>
+                        
+                        <ul style="list-style: none; padding: 0; margin-bottom: 25px;">
+                            <li style="padding: 10px 0; color: #374151; display: flex; align-items: center; gap: 10px;">
+                                <i class="fas fa-check-circle" style="color: #10B981;"></i>
+                                Hasta 50 productos
+                            </li>
+                            <li style="padding: 10px 0; color: #374151; display: flex; align-items: center; gap: 10px;">
+                                <i class="fas fa-check-circle" style="color: #10B981;"></i>
+                                Hasta 10 servicios
+                            </li>
+                            <li style="padding: 10px 0; color: #374151; display: flex; align-items: center; gap: 10px;">
+                                <i class="fas fa-check-circle" style="color: #10B981;"></i>
+                                Plantilla básica
+                            </li>
+                            <li style="padding: 10px 0; color: #374151; display: flex; align-items: center; gap: 10px;">
+                                <i class="fas fa-check-circle" style="color: #10B981;"></i>
+                                Chat de soporte básico
+                            </li>
+                            <li style="padding: 10px 0; color: #9CA3AF; display: flex; align-items: center; gap: 10px;">
+                                <i class="fas fa-times-circle" style="color: #EF4444;"></i>
+                                Sin personalización
+                            </li>
+                            <li style="padding: 10px 0; color: #9CA3AF; display: flex; align-items: center; gap: 10px;">
+                                <i class="fas fa-times-circle" style="color: #EF4444;"></i>
+                                Sin chatbot IA
+                            </li>
+                        </ul>
+                        
+                        <button onclick="seleccionarPlan('basic')" style="width: 100%; background: #4facfe; color: white; border: none; padding: 15px; border-radius: 12px; font-weight: 600; cursor: pointer; transition: all 0.3s ease;">
+                            Plan Actual
+                        </button>
+                    </div>
+                    
+                    <!-- Plan Professional -->
+                    <div style="background: white; border-radius: 20px; padding: 30px; box-shadow: 0 15px 40px rgba(102, 126, 234, 0.3); border: 3px solid #667eea; transition: all 0.3s ease; position: relative; transform: scale(1.05);">
+                        <div style="position: absolute; top: -15px; left: 50%; transform: translateX(-50%); background: linear-gradient(135deg, #667eea, #764ba2); color: white; padding: 8px 20px; border-radius: 20px; font-weight: bold; font-size: 0.85rem;">
+                            ⭐ RECOMENDADO
+                        </div>
+                        <div style="text-align: center; margin-bottom: 20px;">
+                            <div style="font-size: 3rem; margin-bottom: 10px;">🚀</div>
+                            <h3 style="color: #374151; font-size: 1.8rem; margin-bottom: 10px;">Professional</h3>
+                            <div style="font-size: 2.5rem; font-weight: bold; color: #667eea; margin-bottom: 5px;">$29<span style="font-size: 1rem; font-weight: normal;">/mes</span></div>
+                            <p style="color: #6B7280; font-size: 0.9rem;">Para negocios en crecimiento</p>
+                        </div>
+                        
+                        <ul style="list-style: none; padding: 0; margin-bottom: 25px;">
+                            <li style="padding: 10px 0; color: #374151; display: flex; align-items: center; gap: 10px;">
+                                <i class="fas fa-check-circle" style="color: #10B981;"></i>
+                                <strong>Productos ilimitados</strong>
+                            </li>
+                            <li style="padding: 10px 0; color: #374151; display: flex; align-items: center; gap: 10px;">
+                                <i class="fas fa-check-circle" style="color: #10B981;"></i>
+                                <strong>Servicios ilimitados</strong>
+                            </li>
+                            <li style="padding: 10px 0; color: #374151; display: flex; align-items: center; gap: 10px;">
+                                <i class="fas fa-check-circle" style="color: #10B981;"></i>
+                                5 plantillas premium
+                            </li>
+                            <li style="padding: 10px 0; color: #374151; display: flex; align-items: center; gap: 10px;">
+                                <i class="fas fa-check-circle" style="color: #10B981;"></i>
+                                Personalización completa
+                            </li>
+                            <li style="padding: 10px 0; color: #374151; display: flex; align-items: center; gap: 10px;">
+                                <i class="fas fa-check-circle" style="color: #10B981;"></i>
+                                Video de presentación
+                            </li>
+                            <li style="padding: 10px 0; color: #374151; display: flex; align-items: center; gap: 10px;">
+                                <i class="fas fa-check-circle" style="color: #10B981;"></i>
+                                Chat de soporte prioritario
+                            </li>
+                            <li style="padding: 10px 0; color: #9CA3AF; display: flex; align-items: center; gap: 10px;">
+                                <i class="fas fa-times-circle" style="color: #EF4444;"></i>
+                                Sin chatbot IA
+                            </li>
+                        </ul>
+                        
+                        <button onclick="seleccionarPlan('professional')" style="width: 100%; background: linear-gradient(135deg, #667eea, #764ba2); color: white; border: none; padding: 15px; border-radius: 12px; font-weight: 600; cursor: pointer; transition: all 0.3s ease; box-shadow: 0 5px 15px rgba(102, 126, 234, 0.3);">
+                            <i class="fas fa-crown"></i> Actualizar a Professional
+                        </button>
+                    </div>
+                    
+                    <!-- Plan Enterprise -->
+                    <div style="background: white; border-radius: 20px; padding: 30px; box-shadow: 0 10px 30px rgba(0,0,0,0.1); border: 3px solid transparent; transition: all 0.3s ease; position: relative;">
+                        <div style="text-align: center; margin-bottom: 20px;">
+                            <div style="font-size: 3rem; margin-bottom: 10px;">👑</div>
+                            <h3 style="color: #374151; font-size: 1.8rem; margin-bottom: 10px;">Enterprise</h3>
+                            <div style="font-size: 2.5rem; font-weight: bold; color: #F59E0B; margin-bottom: 5px;">$79<span style="font-size: 1rem; font-weight: normal;">/mes</span></div>
+                            <p style="color: #6B7280; font-size: 0.9rem;">Máximo poder empresarial</p>
+                        </div>
+                        
+                        <ul style="list-style: none; padding: 0; margin-bottom: 25px;">
+                            <li style="padding: 10px 0; color: #374151; display: flex; align-items: center; gap: 10px;">
+                                <i class="fas fa-check-circle" style="color: #10B981;"></i>
+                                <strong>Todo de Professional +</strong>
+                            </li>
+                            <li style="padding: 10px 0; color: #374151; display: flex; align-items: center; gap: 10px;">
+                                <i class="fas fa-check-circle" style="color: #10B981;"></i>
+                                <strong>Chatbot IA personalizado</strong>
+                            </li>
+                            <li style="padding: 10px 0; color: #374151; display: flex; align-items: center; gap: 10px;">
+                                <i class="fas fa-check-circle" style="color: #10B981;"></i>
+                                Analytics avanzados
+                            </li>
+                            <li style="padding: 10px 0; color: #374151; display: flex; align-items: center; gap: 10px;">
+                                <i class="fas fa-check-circle" style="color: #10B981;"></i>
+                                Multitienda
+                            </li>
+                            <li style="padding: 10px 0; color: #374151; display: flex; align-items: center; gap: 10px;">
+                                <i class="fas fa-check-circle" style="color: #10B981;"></i>
+                                Dominio personalizado
+                            </li>
+                            <li style="padding: 10px 0; color: #374151; display: flex; align-items: center; gap: 10px;">
+                                <i class="fas fa-check-circle" style="color: #10B981;"></i>
+                                Soporte 24/7 dedicado
+                            </li>
+                            <li style="padding: 10px 0; color: #374151; display: flex; align-items: center; gap: 10px;">
+                                <i class="fas fa-check-circle" style="color: #10B981;"></i>
+                                Capacitación personalizada
+                            </li>
+                        </ul>
+                        
+                        <button onclick="seleccionarPlan('enterprise')" style="width: 100%; background: linear-gradient(135deg, #F59E0B, #D97706); color: white; border: none; padding: 15px; border-radius: 12px; font-weight: 600; cursor: pointer; transition: all 0.3s ease; box-shadow: 0 5px 15px rgba(245, 158, 11, 0.3);">
+                            <i class="fas fa-rocket"></i> Actualizar a Enterprise
+                        </button>
+                    </div>
+                </div>
+                
+                <div style="background: linear-gradient(135deg, #f0f9ff, #e0f2fe); padding: 25px; border-radius: 15px; border-left: 4px solid #3b82f6;">
+                    <h4 style="color: #1e40af; margin-bottom: 15px; display: flex; align-items: center; gap: 10px;">
+                        <i class="fas fa-info-circle"></i> Información Importante
+                    </h4>
+                    <ul style="color: #1e40af; margin: 0; line-height: 1.8;">
+                        <li>✅ Todos los planes incluyen acceso al chat con Crisla para apoyo emocional</li>
+                        <li>✅ Puedes cambiar de plan en cualquier momento</li>
+                        <li>✅ Sin permanencia: cancela cuando quieras</li>
+                        <li>✅ Prueba gratuita de 14 días en planes de pago</li>
+                        <li>✅ Garantía de devolución de 30 días</li>
+                    </ul>
+                </div>
+            </div>
+            
+            <!-- Tab Content: Interfaz -->
+            <div id="tab-interfaz" class="tab-content">
+                <div class="form-section">
+                    <h3>
+                        <i class="fas fa-palette"></i> Personalización de Interfaz
+                        <span class="plan-badge professional">Professional+</span>
+                    </h3>
+                    
+                    <div class="form-group">
+                        <label>
+                            <i class="fas fa-th-large"></i> Plantilla de Diseño
+                        </label>
+                        <select id="plantillaDiseno">
+                            <option value="moderna">Moderna (Por defecto)</option>
+                            <option value="minimalista">Minimalista</option>
+                            <option value="clasica">Clásica</option>
+                            <option value="elegante">Elegante</option>
+                            <option value="colorida">Colorida</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>
+                                <i class="fas fa-paint-brush"></i> Color Principal
+                            </label>
+                            <div class="color-picker-group">
+                                <input type="color" id="colorPrincipal" value="#4facfe">
+                                <span id="colorPrincipalHex">#4facfe</span>
+                            </div>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label>
+                                <i class="fas fa-paint-brush"></i> Color Secundario
+                            </label>
+                            <div class="color-picker-group">
+                                <input type="color" id="colorSecundario" value="#00f2fe">
+                                <span id="colorSecundarioHex">#00f2fe</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>
+                            <i class="fas fa-image"></i> Logo de la Tienda
+                        </label>
+                        <div class="image-upload-area" onclick="document.getElementById('logoInput').click()">
+                            <i class="fas fa-cloud-upload-alt"></i>
+                            <p>Haz clic para subir tu logo</p>
+                            <small style="color: #9CA3AF;">Formatos: JPG, PNG (Max 2MB)</small>
+                            <input type="file" id="logoInput" accept="image/*" style="display: none;" onchange="previewLogo(event)">
+                        </div>
+                        <img id="logoPreview" class="image-preview" alt="Logo Preview">
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Tab Content: Multimedia -->
+            <div id="tab-multimedia" class="tab-content">
+                <div class="form-section">
+                    <h3>
+                        <i class="fas fa-film"></i> Video de Presentación
+                        <span class="plan-badge professional">Professional+</span>
+                    </h3>
+                    
+                    <div class="form-group">
+                        <label>
+                            <i class="fas fa-video"></i> Sube tu video de presentación
+                        </label>
+                        <div class="video-upload-area" onclick="document.getElementById('videoInput').click()">
+                            <i class="fas fa-film"></i>
+                            <p>Haz clic para subir tu video</p>
+                            <small style="color: #9CA3AF;">Formatos: MP4, WebM (Max 50MB)</small>
+                            <input type="file" id="videoInput" accept="video/*" style="display: none;" onchange="previewVideo(event)">
+                        </div>
+                        <video id="videoPreview" class="video-preview" controls alt="Video Preview"></video>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>
+                            <i class="fas fa-link"></i> O ingresa URL de YouTube/Vimeo
+                        </label>
+                        <input type="url" id="videoUrl" placeholder="https://www.youtube.com/watch?v=...">
+                    </div>
+                </div>
+                
+                <div class="form-section">
+                    <h3><i class="fas fa-images"></i> Galería de Imágenes</h3>
+                    
+                    <div class="form-group">
+                        <label>
+                            <i class="fas fa-image"></i> Imágenes de tu negocio
+                        </label>
+                        <div class="image-upload-area" onclick="document.getElementById('galeriaInput').click()">
+                            <i class="fas fa-images"></i>
+                            <p>Haz clic para subir imágenes</p>
+                            <small style="color: #9CA3AF;">Puedes seleccionar múltiples imágenes</small>
+                            <input type="file" id="galeriaInput" accept="image/*" multiple style="display: none;" onchange="previewGaleria(event)">
+                        </div>
+                        <div id="galeriaPreview" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 15px; margin-top: 20px;"></div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Tab Content: Pagos -->
+            <div id="tab-pagos" class="tab-content">
+                <div class="form-section">
+                    <h3><i class="fas fa-credit-card"></i> Métodos de Pago Aceptados</h3>
+                    
+                    <div class="payment-methods" id="paymentMethods">
+                        <div class="payment-method" data-method="efectivo" onclick="togglePaymentMethod(this)">
+                            <i class="fas fa-money-bill-wave"></i>
+                            <p>Efectivo</p>
+                        </div>
+                        <div class="payment-method" data-method="tarjeta" onclick="togglePaymentMethod(this)">
+                            <i class="fas fa-credit-card"></i>
+                            <p>Tarjeta</p>
+                        </div>
+                        <div class="payment-method" data-method="transferencia" onclick="togglePaymentMethod(this)">
+                            <i class="fas fa-exchange-alt"></i>
+                            <p>Transferencia</p>
+                        </div>
+                        <div class="payment-method" data-method="paypal" onclick="togglePaymentMethod(this)">
+                            <i class="fab fa-paypal"></i>
+                            <p>PayPal</p>
+                        </div>
+                        <div class="payment-method" data-method="mercadopago" onclick="togglePaymentMethod(this)">
+                            <i class="fas fa-shopping-cart"></i>
+                            <p>Mercado Pago</p>
+                        </div>
+                        <div class="payment-method" data-method="stripe" onclick="togglePaymentMethod(this)">
+                            <i class="fab fa-stripe"></i>
+                            <p>Stripe</p>
+                        </div>
+                        <div class="payment-method" data-method="crypto" onclick="togglePaymentMethod(this)">
+                            <i class="fab fa-bitcoin"></i>
+                            <p>Crypto</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="form-section">
+                    <h3><i class="fas fa-dollar-sign"></i> Información de Pago</h3>
+                    
+                    <div class="form-group">
+                        <label>
+                            <i class="fas fa-university"></i> CBU / CVU (Transferencias)
+                        </label>
+                        <input type="text" id="cbu" placeholder="0000000000000000000000">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>
+                            <i class="fas fa-user"></i> Alias
+                        </label>
+                        <input type="text" id="alias" placeholder="MI.TIENDA.ALIAS">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>
+                            <i class="fab fa-paypal"></i> Email de PayPal
+                        </label>
+                        <input type="email" id="paypalEmail" placeholder="pago@mitienda.com">
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Tab Content: Chatbot -->
+            <div id="tab-chatbot" class="tab-content">
+                <div class="form-section">
+                    <h3>
+                        <i class="fas fa-robot"></i> Configuración del Chatbot IA
+                        <span class="plan-badge enterprise">Enterprise</span>
+                    </h3>
+                    
+                    <div class="form-group">
+                        <label style="display: flex; align-items: center; justify-content: space-between;">
+                            <span><i class="fas fa-power-off"></i> Activar Chatbot</span>
+                            <label class="toggle-switch">
+                                <input type="checkbox" id="chatbotActivo">
+                                <span class="slider"></span>
+                            </label>
+                        </label>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>
+                            <i class="fas fa-comment"></i> Nombre del Chatbot
+                        </label>
+                        <input type="text" id="chatbotNombre" placeholder="Asistente Virtual">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>
+                            <i class="fas fa-smile"></i> Mensaje de Bienvenida
+                        </label>
+                        <textarea id="chatbotBienvenida" placeholder="¡Hola! ¿En qué puedo ayudarte hoy?"></textarea>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>
+                            <i class="fas fa-palette"></i> Color del Chatbot
+                        </label>
+                        <div class="color-picker-group">
+                            <input type="color" id="chatbotColor" value="#667eea">
+                            <span id="chatbotColorHex">#667eea</span>
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>
+                            <i class="fas fa-map-pin"></i> Posición en Pantalla
+                        </label>
+                        <select id="chatbotPosicion">
+                            <option value="bottom-right">Abajo Derecha</option>
+                            <option value="bottom-left">Abajo Izquierda</option>
+                            <option value="top-right">Arriba Derecha</option>
+                            <option value="top-left">Arriba Izquierda</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Tab Content: Soporte -->
+            <div id="tab-soporte" class="tab-content">
+                <div class="form-section">
+                    <h3>
+                        <i class="fas fa-headset"></i> Chat de Soporte
+                        <span class="plan-badge professional">Professional+</span>
+                    </h3>
+                    
+                    <div class="form-group">
+                        <label style="display: flex; align-items: center; justify-content: space-between;">
+                            <span><i class="fas fa-power-off"></i> Activar Chat de Soporte</span>
+                            <label class="toggle-switch">
+                                <input type="checkbox" id="soporteActivo">
+                                <span class="slider"></span>
+                            </label>
+                        </label>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>
+                            <i class="fas fa-envelope"></i> Email de Soporte
+                        </label>
+                        <input type="email" id="soporteEmail" placeholder="soporte@mitienda.com">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>
+                            <i class="fas fa-phone"></i> Teléfono de Soporte
+                        </label>
+                        <input type="tel" id="soporteTelefono" placeholder="+1 234 567 8900">
+                    </div>
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>
+                                <i class="fas fa-clock"></i> Horario de Atención (Inicio)
+                            </label>
+                            <input type="time" id="horarioInicio" value="09:00">
+                        </div>
+                        
+                        <div class="form-group">
+                            <label>
+                                <i class="fas fa-clock"></i> Horario de Atención (Fin)
+                            </label>
+                            <input type="time" id="horarioFin" value="18:00">
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Tab Content: FAQ -->
+            <div id="tab-faq" class="tab-content">
+                <div class="form-section">
+                    <h3><i class="fas fa-question-circle"></i> Preguntas Frecuentes</h3>
+                    
+                    <div style="margin-bottom: 20px;">
+                        <button class="btn-primary" onclick="agregarPreguntaFAQ()">
+                            <i class="fas fa-plus"></i> Agregar Pregunta
+                        </button>
+                    </div>
+                    
+                    <div id="faqList" class="faq-items">
+                        <!-- Las preguntas FAQ se cargarán aquí -->
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Save Button -->
+            <div class="save-section">
+                <button class="btn-secondary" onclick="resetearConfiguracion()">
+                    <i class="fas fa-undo"></i> Restablecer
+                </button>
+                <button class="btn-primary" onclick="guardarConfiguracion()">
+                    <i class="fas fa-save"></i> Guardar Configuración
+                </button>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        // ========================================
+        // VARIABLES GLOBALES
+        // ========================================
+        
+        let planActual = 'basic'; // basic, professional, enterprise
+        let faqItems = [];
+        
+        // ========================================
+        // FUNCIONES MULTI-TENANT
+        // ========================================
+        
+        function obtenerTiendaId() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const tiendaId = urlParams.get('tienda') || 'demo-tienda';
+            console.log('🏪 Tienda actual:', tiendaId);
+            return tiendaId;
+        }
+        
+        // ========================================
+        // TABS
+        // ========================================
+        
+        function cambiarTab(tabName) {
+            // Ocultar todos los contenidos
+            document.querySelectorAll('.tab-content').forEach(content => {
+                content.classList.remove('active');
+            });
+            
+            // Desactivar todos los tabs
+            document.querySelectorAll('.tab').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            
+            // Mostrar el contenido seleccionado
+            document.getElementById(`tab-${tabName}`).classList.add('active');
+            
+            // Activar el tab seleccionado
+            event.target.classList.add('active');
+            
+            console.log(`📑 Tab cambiado a: ${tabName}`);
+        }
+        
+        // ========================================
+        // PREVIEW DE IMÁGENES Y VIDEOS
+        // ========================================
+        
+        function previewLogo(event) {
+            const file = event.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    const preview = document.getElementById('logoPreview');
+                    preview.src = e.target.result;
+                    preview.classList.add('show');
+                };
+                reader.readAsDataURL(file);
+            }
+        }
+        
+        function previewVideo(event) {
+            const file = event.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    const preview = document.getElementById('videoPreview');
+                    preview.src = e.target.result;
+                    preview.classList.add('show');
+                };
+                reader.readAsDataURL(file);
+            }
+        }
+        
+        function previewGaleria(event) {
+            const files = event.target.files;
+            const container = document.getElementById('galeriaPreview');
+            container.innerHTML = '';
+            
+            Array.from(files).forEach(file => {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    const img = document.createElement('img');
+                    img.src = e.target.result;
+                    img.style.width = '100%';
+                    img.style.height = '150px';
+                    img.style.objectFit = 'cover';
+                    img.style.borderRadius = '10px';
+                    container.appendChild(img);
+                };
+                reader.readAsDataURL(file);
+            });
+        }
+        
+        // ========================================
+        // COLOR PICKER
+        // ========================================
+        
+        document.getElementById('colorPrincipal')?.addEventListener('input', function(e) {
+            document.getElementById('colorPrincipalHex').textContent = e.target.value;
+        });
+        
+        document.getElementById('colorSecundario')?.addEventListener('input', function(e) {
+            document.getElementById('colorSecundarioHex').textContent = e.target.value;
+        });
+        
+        document.getElementById('chatbotColor')?.addEventListener('input', function(e) {
+            document.getElementById('chatbotColorHex').textContent = e.target.value;
+        });
+        
+        // ========================================
+        // PAYMENT METHODS
+        // ========================================
+        
+        function togglePaymentMethod(element) {
+            element.classList.toggle('selected');
+        }
+        
+        // ========================================
+        // FAQ FUNCTIONS
+        // ========================================
+        
+        function agregarPreguntaFAQ() {
+            const pregunta = prompt('Ingresa la pregunta:');
+            if (!pregunta) return;
+            
+            const respuesta = prompt('Ingresa la respuesta:');
+            if (!respuesta) return;
+            
+            const faqItem = {
+                id: Date.now().toString(),
+                pregunta: pregunta,
+                respuesta: respuesta
+            };
+            
+            faqItems.push(faqItem);
+            renderizarFAQ();
+            mostrarNotificacion('✅ Pregunta agregada', 'success');
+        }
+        
+        function eliminarPreguntaFAQ(id) {
+            if (!confirm('¿Eliminar esta pregunta?')) return;
+            
+            faqItems = faqItems.filter(item => item.id !== id);
+            renderizarFAQ();
+            mostrarNotificacion('✅ Pregunta eliminada', 'success');
+        }
+        
+        function renderizarFAQ() {
+            const container = document.getElementById('faqList');
+            
+            if (faqItems.length === 0) {
+                container.innerHTML = `
+                    <div style="text-align: center; padding: 40px; color: #9CA3AF;">
+                        <i class="fas fa-question-circle" style="font-size: 3rem; margin-bottom: 15px;"></i>
+                        <p>No hay preguntas frecuentes. Agrega la primera.</p>
+                    </div>
+                `;
+                return;
+            }
+            
+            container.innerHTML = faqItems.map(item => `
+                <div class="faq-item">
+                    <div class="faq-content">
+                        <h4>❓ ${item.pregunta}</h4>
+                        <p>${item.respuesta}</p>
+                    </div>
+                    <div class="faq-actions">
+                        <button class="btn-icon delete" onclick="eliminarPreguntaFAQ('${item.id}')">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                    </div>
+                </div>
+            `).join('');
+        }
+        
+        // ========================================
+        // GUARDAR CONFIGURACIÓN
+        // ========================================
+        
+        function guardarConfiguracion() {
+            console.log('💾 Guardando configuración...');
+            
+            const tiendaId = obtenerTiendaId();
+            
+            // Recopilar métodos de pago seleccionados
+            const metodosPago = Array.from(document.querySelectorAll('.payment-method.selected'))
+                .map(el => el.dataset.method);
+            
+            const configuracion = {
+                // General
+                nombreTienda: document.getElementById('nombreTienda').value,
+                descripcionTienda: document.getElementById('descripcionTienda').value,
+                anioCreacion: document.getElementById('anioCreacion').value,
+                categoriaTienda: document.getElementById('categoriaTienda').value,
+                direccion: document.getElementById('direccion').value,
+                ciudad: document.getElementById('ciudad').value,
+                pais: document.getElementById('pais').value,
+                telefono: document.getElementById('telefono').value,
+                email: document.getElementById('email').value,
+                enviosDomicilio: document.getElementById('enviosDomicilio').checked,
+                
+                // Interfaz
+                plantillaDiseno: document.getElementById('plantillaDiseno').value,
+                colorPrincipal: document.getElementById('colorPrincipal').value,
+                colorSecundario: document.getElementById('colorSecundario').value,
+                logo: document.getElementById('logoPreview').src || '',
+                
+                // Multimedia
+                videoUrl: document.getElementById('videoUrl').value,
+                video: document.getElementById('videoPreview').src || '',
+                
+                // Pagos
+                metodosPago: metodosPago,
+                cbu: document.getElementById('cbu').value,
+                alias: document.getElementById('alias').value,
+                paypalEmail: document.getElementById('paypalEmail').value,
+                
+                // Chatbot
+                chatbotActivo: document.getElementById('chatbotActivo').checked,
+                chatbotNombre: document.getElementById('chatbotNombre').value,
+                chatbotBienvenida: document.getElementById('chatbotBienvenida').value,
+                chatbotColor: document.getElementById('chatbotColor').value,
+                chatbotPosicion: document.getElementById('chatbotPosicion').value,
+                
+                // Soporte
+                soporteActivo: document.getElementById('soporteActivo').checked,
+                soporteEmail: document.getElementById('soporteEmail').value,
+                soporteTelefono: document.getElementById('soporteTelefono').value,
+                horarioInicio: document.getElementById('horarioInicio').value,
+                horarioFin: document.getElementById('horarioFin').value,
+                
+                // FAQ
+                faq: faqItems,
+                
+                fechaActualizacion: new Date().toISOString()
+            };
+            
+            // Guardar en localStorage
+            localStorage.setItem(`configuracion_${tiendaId}`, JSON.stringify(configuracion));
+            
+            console.log('✅ Configuración guardada:', configuracion);
+            mostrarNotificacion('✅ Configuración guardada exitosamente', 'success');
+        }
+        
+        // ========================================
+        // CARGAR CONFIGURACIÓN
+        // ========================================
+        
+        function cargarConfiguracion() {
+            console.log('📋 Cargando configuración...');
+            
+            const tiendaId = obtenerTiendaId();
+            const configuracion = JSON.parse(localStorage.getItem(`configuracion_${tiendaId}`) || '{}');
+            
+            if (Object.keys(configuracion).length === 0) {
+                console.log('⚠️ No hay configuración guardada');
+                return;
+            }
+            
+            // Cargar General
+            document.getElementById('nombreTienda').value = configuracion.nombreTienda || '';
+            document.getElementById('descripcionTienda').value = configuracion.descripcionTienda || '';
+            document.getElementById('anioCreacion').value = configuracion.anioCreacion || '';
+            document.getElementById('categoriaTienda').value = configuracion.categoriaTienda || '';
+            document.getElementById('direccion').value = configuracion.direccion || '';
+            document.getElementById('ciudad').value = configuracion.ciudad || '';
+            document.getElementById('pais').value = configuracion.pais || '';
+            document.getElementById('telefono').value = configuracion.telefono || '';
+            document.getElementById('email').value = configuracion.email || '';
+            document.getElementById('enviosDomicilio').checked = configuracion.enviosDomicilio || false;
+            
+            // Cargar Interfaz
+            document.getElementById('plantillaDiseno').value = configuracion.plantillaDiseno || 'moderna';
+            document.getElementById('colorPrincipal').value = configuracion.colorPrincipal || '#4facfe';
+            document.getElementById('colorSecundario').value = configuracion.colorSecundario || '#00f2fe';
+            document.getElementById('colorPrincipalHex').textContent = configuracion.colorPrincipal || '#4facfe';
+            document.getElementById('colorSecundarioHex').textContent = configuracion.colorSecundario || '#00f2fe';
+            
+            if (configuracion.logo) {
+                document.getElementById('logoPreview').src = configuracion.logo;
+                document.getElementById('logoPreview').classList.add('show');
+            }
+            
+            // Cargar Multimedia
+            document.getElementById('videoUrl').value = configuracion.videoUrl || '';
+            if (configuracion.video) {
+                document.getElementById('videoPreview').src = configuracion.video;
+                document.getElementById('videoPreview').classList.add('show');
+            }
+            
+            // Cargar Métodos de Pago
+            if (configuracion.metodosPago) {
+                configuracion.metodosPago.forEach(method => {
+                    const element = document.querySelector(`[data-method="${method}"]`);
+                    if (element) element.classList.add('selected');
+                });
+            }
+            
+            document.getElementById('cbu').value = configuracion.cbu || '';
+            document.getElementById('alias').value = configuracion.alias || '';
+            document.getElementById('paypalEmail').value = configuracion.paypalEmail || '';
+            
+            // Cargar Chatbot
+            document.getElementById('chatbotActivo').checked = configuracion.chatbotActivo || false;
+            document.getElementById('chatbotNombre').value = configuracion.chatbotNombre || '';
+            document.getElementById('chatbotBienvenida').value = configuracion.chatbotBienvenida || '';
+            document.getElementById('chatbotColor').value = configuracion.chatbotColor || '#667eea';
+            document.getElementById('chatbotColorHex').textContent = configuracion.chatbotColor || '#667eea';
+            document.getElementById('chatbotPosicion').value = configuracion.chatbotPosicion || 'bottom-right';
+            
+            // Cargar Soporte
+            document.getElementById('soporteActivo').checked = configuracion.soporteActivo || false;
+            document.getElementById('soporteEmail').value = configuracion.soporteEmail || '';
+            document.getElementById('soporteTelefono').value = configuracion.soporteTelefono || '';
+            document.getElementById('horarioInicio').value = configuracion.horarioInicio || '09:00';
+            document.getElementById('horarioFin').value = configuracion.horarioFin || '18:00';
+            
+            // Cargar FAQ
+            faqItems = configuracion.faq || [];
+            renderizarFAQ();
+            
+            console.log('✅ Configuración cargada');
+        }
+        
+        // ========================================
+        // RESETEAR CONFIGURACIÓN
+        // ========================================
+        
+        function resetearConfiguracion() {
+            if (!confirm('¿Estás seguro de restablecer toda la configuración?')) return;
+            
+            const tiendaId = obtenerTiendaId();
+            localStorage.removeItem(`configuracion_${tiendaId}`);
+            
+            location.reload();
+        }
+        
+        // ========================================
+        // NOTIFICACIONES
+        // ========================================
+        
+        function mostrarNotificacion(mensaje, tipo = 'info') {
+            const notification = document.createElement('div');
+            notification.className = `notification ${tipo}`;
+            notification.innerHTML = `
+                <i class="fas fa-${tipo === 'success' ? 'check-circle' : tipo === 'error' ? 'exclamation-circle' : 'info-circle'}"></i>
+                <span>${mensaje}</span>
+            `;
+            
+            document.body.appendChild(notification);
+            
+            setTimeout(() => {
+                notification.style.animation = 'slideIn 0.3s ease reverse';
+                setTimeout(() => notification.remove(), 300);
+            }, 3000);
+        }
+        
+        // ========================================
+        // SELECCIÓN DE PLAN
+        // ========================================
+        
+        function seleccionarPlan(plan) {
+            console.log(`💳 Seleccionando plan: ${plan}`);
+            
+            if (plan === 'basic') {
+                mostrarNotificacion('✅ Ya estás en el plan Basic', 'info');
+                return;
+            }
+            
+            const planes = {
+                'professional': {
+                    nombre: 'Professional',
+                    precio: '$29/mes',
+                    emoji: '🚀'
+                },
+                'enterprise': {
+                    nombre: 'Enterprise',
+                    precio: '$79/mes',
+                    emoji: '👑'
+                }
+            };
+            
+            const planInfo = planes[plan];
+            
+            const confirmar = confirm(`¿Deseas actualizar al plan ${planInfo.emoji} ${planInfo.nombre} por ${planInfo.precio}?\n\n✅ Prueba gratuita de 14 días\n✅ Sin permanencia\n✅ Garantía de 30 días`);
+            
+            if (confirmar) {
+                // Aquí iría la integración con el sistema de pagos
+                mostrarNotificacion(`🎉 ¡Bienvenido al plan ${planInfo.nombre}! Por favor, contacta a Crisla para completar la activación.`, 'success');
+                
+                // Guardar plan seleccionado
+                const tiendaId = obtenerTiendaId();
+                localStorage.setItem(`plan_${tiendaId}`, plan);
+                planActual = plan;
+            }
+        }
+        
+        // ========================================
+        // INICIALIZACIÓN
+        // ========================================
+        
+        document.addEventListener('DOMContentLoaded', () => {
+            console.log('🚀 Inicializando página de configuración...');
+            cargarConfiguracion();
+            console.log('✅ Página de configuración cargada');
+        });
+    </script>
+</body>
+</html>
+

@@ -1,0 +1,233 @@
+/* ===== ESTILOS DE ACCESIBILIDAD Y COMPATIBILIDAD ===== */
+
+/* ===== COMPATIBILIDAD CON NAVEGADORES ===== */
+
+/* Soporte para text-size-adjust */
+* {
+    -webkit-text-size-adjust: 100%;
+    -moz-text-size-adjust: 100%;
+    -ms-text-size-adjust: 100%;
+    text-size-adjust: 100%;
+}
+
+/* Soporte para backdrop-filter */
+.modal-friocas,
+.modal-overlay,
+.user-system-overlay {
+    -webkit-backdrop-filter: blur(5px);
+    backdrop-filter: blur(5px);
+}
+
+/* Soporte para text-align match-parent */
+.text-match-parent {
+    text-align: -webkit-match-parent;
+    text-align: match-parent;
+}
+
+/* Soporte para scrollbar en Safari */
+::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+}
+
+::-webkit-scrollbar-track {
+    background: #f1f1f1;
+    border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb {
+    background: #c1c1c1;
+    border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: #a8a8a8;
+}
+
+/* Estilos para navegadores que soportan scrollbar-color */
+@supports (scrollbar-color: #c1c1c1 #f1f1f1) {
+    * {
+        scrollbar-color: #c1c1c1 #f1f1f1;
+        scrollbar-width: thin;
+    }
+}
+
+/* ===== MEJORAS DE ACCESIBILIDAD ===== */
+
+/* Enfoque visible para navegación por teclado */
+button:focus,
+input:focus,
+select:focus,
+textarea:focus,
+a:focus {
+    outline: 2px solid #2563eb;
+    outline-offset: 2px;
+}
+
+/* Contraste mejorado para texto */
+.text-low-contrast {
+    color: #4b5563 !important;
+}
+
+/* Indicadores de estado para elementos interactivos */
+button:hover,
+input:hover,
+select:hover {
+    transform: translateY(-1px);
+    transition: transform 0.2s ease;
+}
+
+/* Estilos para elementos con alto contraste */
+@media (prefers-contrast: high) {
+    button,
+    input,
+    select {
+        border: 2px solid #000;
+    }
+    
+    .modal-content-friocas {
+        border: 3px solid #000;
+    }
+}
+
+/* ===== REDUCCIÓN DE MOVIMIENTO ===== */
+@media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+        scroll-behavior: auto !important;
+    }
+}
+
+/* ===== MEJORAS PARA LECTORES DE PANTALLA ===== */
+
+/* Ocultar elementos visualmente pero mantenerlos accesibles */
+.sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
+}
+
+/* Indicadores de estado para formularios */
+.form-group {
+    position: relative;
+}
+
+.form-group input:invalid {
+    border-color: #ef4444;
+}
+
+.form-group input:valid {
+    border-color: #10b981;
+}
+
+/* ===== MEJORAS PARA DISPOSITIVOS TÁCTILES ===== */
+
+/* Tamaño mínimo para elementos táctiles */
+button,
+input[type="button"],
+input[type="submit"],
+input[type="reset"],
+a {
+    min-height: 44px;
+    min-width: 44px;
+}
+
+/* Espaciado mejorado para dispositivos móviles */
+@media (max-width: 768px) {
+    .form-group {
+        margin-bottom: 1rem;
+    }
+    
+    input,
+    select,
+    textarea {
+        font-size: 16px; /* Previene zoom en iOS */
+    }
+}
+
+/* ===== MEJORAS DE RENDIMIENTO ===== */
+
+/* Optimización de renderizado */
+.modal-friocas,
+.cart-modal,
+.chatbot-container {
+    will-change: transform, opacity;
+}
+
+/* ===== ESTILOS PARA IMPRESIÓN ===== */
+@media print {
+    .floating-cart-btn,
+    .chatbot-toggle,
+    .ai-chatbot-toggle,
+    .floating-premium-btn,
+    .floating-help-btn {
+        display: none !important;
+    }
+    
+    .modal-friocas,
+    .cart-modal {
+        position: static !important;
+        display: block !important;
+        box-shadow: none !important;
+    }
+}
+
+/* ===== MEJORAS PARA ALTO CONTRASTE ===== */
+@media (prefers-contrast: high) {
+    :root {
+        --primary-color: #000;
+        --secondary-color: #fff;
+        --text-color: #000;
+        --background-color: #fff;
+    }
+    
+    .btn-primary {
+        background: #000 !important;
+        color: #fff !important;
+        border: 2px solid #000 !important;
+    }
+    
+    .modal-content-friocas {
+        background: #fff !important;
+        border: 3px solid #000 !important;
+        color: #000 !important;
+    }
+}
+
+/* ===== MEJORAS PARA DARK MODE ===== */
+@media (prefers-color-scheme: dark) {
+    :root {
+        --primary-color: #3b82f6;
+        --secondary-color: #1f2937;
+        --text-color: #f9fafb;
+        --background-color: #111827;
+    }
+    
+    body {
+        background-color: var(--background-color);
+        color: var(--text-color);
+    }
+    
+    .modal-content-friocas {
+        background-color: #1f2937;
+        color: #f9fafb;
+    }
+    
+    input,
+    select,
+    textarea {
+        background-color: #374151;
+        color: #f9fafb;
+        border-color: #4b5563;
+    }
+}

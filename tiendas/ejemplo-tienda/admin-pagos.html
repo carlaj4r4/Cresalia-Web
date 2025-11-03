@@ -1,0 +1,866 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pagos y Suscripción - Admin Panel</title>
+    
+    <!-- Favicon -->
+    <link rel="icon" type="image/png" href="../../assets/logo/logo-cresalia.png">
+    <link rel="apple-touch-icon" href="../../assets/logo/logo-cresalia.png">
+    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Click Derecho Personalizado -->
+    <script src="../../js/click-derecho-personalizado.js"></script>
+    
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        @keyframes gradientShift {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+        
+        @keyframes float {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-20px); }
+        }
+        
+        @keyframes slideInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+        
+        @keyframes shimmer {
+            0% { background-position: -1000px 0; }
+            100% { background-position: 1000px 0; }
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f093fb 100%);
+            background-size: 200% 200%;
+            animation: gradientShift 15s ease infinite;
+            min-height: 100vh;
+            padding: 20px;
+            position: relative;
+            overflow-x: hidden;
+        }
+        
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><circle cx="25" cy="25" r="2" fill="rgba(255,255,255,0.1)"/><circle cx="75" cy="75" r="3" fill="rgba(255,255,255,0.15)"/><circle cx="50" cy="10" r="1.5" fill="rgba(255,255,255,0.1)"/><circle cx="10" cy="60" r="2" fill="rgba(255,255,255,0.1)"/><circle cx="90" cy="40" r="1" fill="rgba(255,255,255,0.1)"/></svg>');
+            pointer-events: none;
+            z-index: 0;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            position: relative;
+            z-index: 1;
+        }
+        
+        /* Header */
+        .header {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(20px);
+            border-radius: 20px;
+            padding: 30px;
+            margin-bottom: 30px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.15);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            animation: slideInUp 0.6s ease-out;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+        }
+        
+        .header h1 {
+            color: #374151;
+            font-size: 2rem;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        
+        .header h1 i {
+            color: #a855f7;
+        }
+        
+        .btn-back {
+            background: linear-gradient(135deg, #667eea, #764ba2, #f093fb);
+            background-size: 200% 200%;
+            animation: gradientShift 3s ease infinite;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 12px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            text-decoration: none;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .btn-back::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
+            transition: left 0.5s;
+        }
+        
+        .btn-back:hover::before {
+            left: 100%;
+        }
+        
+        .btn-back:hover {
+            transform: translateY(-3px) scale(1.05);
+            box-shadow: 0 15px 35px rgba(102, 126, 234, 0.4);
+        }
+        
+        /* Main Content */
+        .main-content {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(20px);
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.15);
+            animation: slideInUp 0.8s ease-out;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+        }
+        
+        /* Info Banner */
+        .info-banner {
+            background: linear-gradient(135deg, #dbeafe, #e0e7ff, #ddd6fe);
+            background-size: 200% 200%;
+            animation: gradientShift 8s ease infinite;
+            border-left: 6px solid #3b82f6;
+            padding: 25px;
+            border-radius: 15px;
+            margin-bottom: 30px;
+            box-shadow: 0 10px 25px rgba(59, 130, 246, 0.15);
+            position: relative;
+            overflow: hidden;
+            animation: slideInUp 1s ease-out;
+        }
+        
+        .info-banner::before {
+            content: '✨';
+            position: absolute;
+            font-size: 60px;
+            right: 20px;
+            top: 50%;
+            transform: translateY(-50%);
+            opacity: 0.2;
+            animation: float 3s ease-in-out infinite;
+        }
+        
+        .info-banner h3 {
+            color: #1e40af;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .info-banner ul {
+            color: #1e40af;
+            line-height: 2;
+            list-style: none;
+            padding-left: 0;
+        }
+        
+        .info-banner li {
+            padding-left: 25px;
+            position: relative;
+        }
+        
+        .info-banner li:before {
+            content: '✅';
+            position: absolute;
+            left: 0;
+        }
+        
+        /* Subscription Card */
+        .subscription-card {
+            background: linear-gradient(135deg, #faf5ff, #f3e8ff, #fae8ff);
+            background-size: 200% 200%;
+            animation: gradientShift 10s ease infinite;
+            border: 3px solid transparent;
+            background-image: linear-gradient(white, white), linear-gradient(135deg, #a855f7, #ec4899, #f093fb);
+            background-origin: border-box;
+            background-clip: padding-box, border-box;
+            border-radius: 20px;
+            padding: 30px;
+            margin-bottom: 30px;
+            box-shadow: 0 15px 40px rgba(168, 85, 247, 0.2);
+            transition: all 0.4s ease;
+            animation: slideInUp 1.2s ease-out;
+        }
+        
+        .subscription-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 20px 50px rgba(168, 85, 247, 0.3);
+        }
+        
+        .subscription-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        
+        .subscription-header h3 {
+            color: #374151;
+            font-size: 1.5rem;
+        }
+        
+        .plan-badge {
+            background: linear-gradient(135deg, #a855f7, #ec4899, #f093fb);
+            background-size: 200% 200%;
+            animation: gradientShift 4s ease infinite;
+            color: white;
+            padding: 10px 24px;
+            border-radius: 25px;
+            font-weight: bold;
+            box-shadow: 0 8px 20px rgba(168, 85, 247, 0.3);
+            animation: pulse 2s ease-in-out infinite;
+        }
+        
+        .subscription-details {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+        
+        .detail-item {
+            background: white;
+            padding: 15px;
+            border-radius: 10px;
+        }
+        
+        .detail-label {
+            color: #6B7280;
+            font-size: 0.9rem;
+            margin-bottom: 5px;
+        }
+        
+        .detail-value {
+            color: #374151;
+            font-size: 1.2rem;
+            font-weight: bold;
+        }
+        
+        /* Payment Methods */
+        .payment-section {
+            margin-top: 30px;
+        }
+        
+        .payment-section h3 {
+            color: #374151;
+            margin-bottom: 20px;
+        }
+        
+        .payment-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+        }
+        
+        .payment-card {
+            background: white;
+            border: 2px solid #E5E7EB;
+            border-radius: 15px;
+            padding: 20px;
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .payment-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(135deg, rgba(102, 126, 234, 0.1), rgba(168, 85, 247, 0.1));
+            opacity: 0;
+            transition: opacity 0.4s ease;
+        }
+        
+        .payment-card:hover::before {
+            opacity: 1;
+        }
+        
+        .payment-card:hover {
+            border-color: #a855f7;
+            transform: translateY(-8px) scale(1.02);
+            box-shadow: 0 15px 35px rgba(168, 85, 247, 0.25);
+        }
+        
+        .payment-card h4 {
+            color: #374151;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .payment-card i {
+            color: #a855f7;
+            font-size: 1.5rem;
+            transition: all 0.4s ease;
+        }
+        
+        .payment-card:hover i {
+            transform: scale(1.2) rotate(10deg);
+            filter: drop-shadow(0 4px 8px rgba(168, 85, 247, 0.4));
+        }
+        
+        .toggle-switch {
+            position: relative;
+            display: inline-block;
+            width: 60px;
+            height: 30px;
+        }
+        
+        .toggle-switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+        
+        .slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: #ccc;
+            transition: 0.4s;
+            border-radius: 30px;
+        }
+        
+        .slider:before {
+            position: absolute;
+            content: "";
+            height: 22px;
+            width: 22px;
+            left: 4px;
+            bottom: 4px;
+            background-color: white;
+            transition: 0.4s;
+            border-radius: 50%;
+        }
+        
+        input:checked + .slider {
+            background: linear-gradient(135deg, #a855f7, #ec4899);
+        }
+        
+        input:checked + .slider:before {
+            transform: translateX(30px);
+        }
+        
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea, #764ba2, #f093fb);
+            background-size: 200% 200%;
+            animation: gradientShift 3s ease infinite;
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .btn-primary::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 0;
+            height: 0;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.3);
+            transform: translate(-50%, -50%);
+            transition: width 0.6s, height 0.6s;
+        }
+        
+        .btn-primary:hover::before {
+            width: 300px;
+            height: 300px;
+        }
+        
+        .btn-primary:hover {
+            transform: translateY(-3px) scale(1.05);
+            box-shadow: 0 15px 35px rgba(168, 85, 247, 0.4);
+        }
+        
+        /* Notificaciones */
+        .notification {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: white;
+            padding: 20px 25px;
+            border-radius: 15px;
+            box-shadow: 0 15px 40px rgba(0,0,0,0.25);
+            z-index: 9999999;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            animation: slideInUp 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            max-width: 400px;
+            border-left: 5px solid #10B981;
+        }
+        
+        .notification.success {
+            border-left-color: #10B981;
+            background: linear-gradient(135deg, #d1fae5, #a7f3d0);
+        }
+        
+        .notification i {
+            font-size: 1.5rem;
+            color: #10B981;
+        }
+        
+        @keyframes slideIn {
+            from {
+                transform: translateX(400px) rotate(10deg);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(0) rotate(0deg);
+                opacity: 1;
+            }
+        }
+        
+        /* Comisiones Banner - Enhanced */
+        .zero-commission-banner {
+            background: linear-gradient(135deg, #d1fae5, #a7f3d0, #6ee7b7);
+            background-size: 200% 200%;
+            animation: gradientShift 8s ease infinite;
+            border-left: 6px solid #10b981;
+            padding: 30px;
+            border-radius: 20px;
+            margin-top: 40px;
+            box-shadow: 0 15px 40px rgba(16, 185, 129, 0.2);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .zero-commission-banner::before {
+            content: '💰';
+            position: absolute;
+            font-size: 80px;
+            right: 30px;
+            top: 50%;
+            transform: translateY(-50%);
+            opacity: 0.15;
+            animation: float 4s ease-in-out infinite;
+        }
+        
+        .zero-commission-banner h3 {
+            color: #065f46;
+            font-size: 1.75rem;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-weight: 700;
+        }
+        
+        .zero-commission-banner ul {
+            list-style: none;
+            padding-left: 0;
+        }
+        
+        .zero-commission-banner li {
+            padding: 12px 0;
+            color: #065f46;
+            font-size: 1.05rem;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            transition: all 0.3s ease;
+        }
+        
+        .zero-commission-banner li:hover {
+            transform: translateX(10px);
+            color: #047857;
+        }
+        
+        .zero-commission-banner li::before {
+            content: '✅';
+            font-size: 1.3rem;
+            animation: pulse 2s ease-in-out infinite;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <div class="header">
+            <h1>
+                <i class="fas fa-credit-card"></i>
+                Pagos y Suscripción
+            </h1>
+            <a href="admin.html" class="btn-back">
+                <i class="fas fa-arrow-left"></i>
+                Volver al Dashboard
+            </a>
+        </div>
+        
+        <!-- Main Content -->
+        <div class="main-content">
+            <!-- Banner Informativo -->
+            <div class="info-banner">
+                <h3><i class="fas fa-heart"></i> Filosofía de Ayuda - Sin Comisiones Ocultas</h3>
+                <ul>
+                    <li><strong>Todo el dinero de tus ventas es 100% tuyo</strong> - No cobramos comisión por tus productos o servicios</li>
+                    <li><strong>Solo pagas tu suscripción mensual</strong> - Precio fijo y claro</li>
+                    <li><strong>Auto-débito opcional</strong> - Tú decides si activar el pago automático</li>
+                    <li><strong>Cancela cuando quieras</strong> - Sin ataduras ni penalizaciones</li>
+                    <li><strong>Recibes pagos directamente</strong> - Tus clientes te pagan a ti, no a nosotros</li>
+                </ul>
+            </div>
+            
+            <!-- Suscripción Actual -->
+            <div class="subscription-card">
+                <div class="subscription-header">
+                    <h3><i class="fas fa-crown"></i> Tu Suscripción Actual</h3>
+                    <span class="plan-badge" id="currentPlanBadge">BASIC - GRATIS</span>
+                </div>
+                
+                <div class="subscription-details">
+                    <div class="detail-item">
+                        <div class="detail-label">Plan</div>
+                        <div class="detail-value" id="planName">Basic</div>
+                    </div>
+                    <div class="detail-item">
+                        <div class="detail-label">Costo Mensual</div>
+                        <div class="detail-value" id="planPrice">$0.00</div>
+                    </div>
+                    <div class="detail-item">
+                        <div class="detail-label">Próximo Pago</div>
+                        <div class="detail-value" id="nextPayment">-</div>
+                    </div>
+                    <div class="detail-item">
+                        <div class="detail-label">Estado</div>
+                        <div class="detail-value" style="color: #10B981;">Activo</div>
+                    </div>
+                </div>
+                
+                <div style="background: white; padding: 20px; border-radius: 10px; margin-top: 20px;">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+                        <div>
+                            <strong style="color: #374151;">Auto-débito de Suscripción</strong>
+                            <p style="color: #6B7280; font-size: 0.9rem; margin: 5px 0 0 0;">
+                                Activa el pago automático para no preocuparte por renovar manualmente
+                            </p>
+                        </div>
+                        <label class="toggle-switch">
+                            <input type="checkbox" id="autoDebitoSuscripcion" onchange="toggleAutoDebito()">
+                            <span class="slider"></span>
+                        </label>
+                    </div>
+                    
+                    <div style="background: #fef3c7; padding: 15px; border-radius: 10px; border-left: 4px solid #f59e0b;">
+                        <p style="color: #92400e; margin: 0; font-size: 0.95rem;">
+                            ⚠️ <strong>Importante:</strong> El auto-débito solo aplica para tu suscripción mensual. Los pagos que recibas de tus clientes van directo a tu cuenta, sin intermediarios.
+                        </p>
+                    </div>
+                </div>
+                
+                <div style="text-align: center; margin-top: 25px;">
+                    <button class="btn-primary" onclick="window.location.href='admin-configuracion.html?tab=planes'">
+                        <i class="fas fa-arrow-up"></i> Cambiar Plan
+                    </button>
+                </div>
+            </div>
+            
+            <!-- Métodos de Pago -->
+            <div class="payment-section">
+                <h3><i class="fas fa-wallet"></i> Métodos de Pago para tu Suscripción</h3>
+                <p style="color: #6B7280; margin-bottom: 20px;">Configura cómo deseas pagar tu suscripción mensual</p>
+                
+                <div class="payment-grid">
+                    <div class="payment-card">
+                        <h4><i class="fas fa-credit-card"></i> Tarjeta de Crédito/Débito</h4>
+                        <p style="color: #6B7280; margin-bottom: 15px;">Visa, MasterCard, American Express</p>
+                        <button class="btn-primary" onclick="configurarTarjeta()">
+                            <i class="fas fa-plus"></i> Agregar Tarjeta
+                        </button>
+                    </div>
+                    
+                    <div class="payment-card">
+                        <h4><i class="fas fa-university"></i> Transferencia Bancaria</h4>
+                        <p style="color: #6B7280; margin-bottom: 15px;">CBU/CVU - Pago manual mensual</p>
+                        <button class="btn-primary" onclick="verDatosTransferencia()">
+                            <i class="fas fa-info-circle"></i> Ver Datos
+                        </button>
+                    </div>
+                    
+                    <div class="payment-card">
+                        <h4><i class="fab fa-paypal"></i> PayPal</h4>
+                        <p style="color: #6B7280; margin-bottom: 15px;">Pago seguro internacional</p>
+                        <button class="btn-primary" onclick="configurarPayPal()">
+                            <i class="fas fa-link"></i> Vincular PayPal
+                        </button>
+                    </div>
+                    
+                    <div class="payment-card">
+                        <h4><i class="fas fa-shopping-cart"></i> Mercado Pago</h4>
+                        <p style="color: #6B7280; margin-bottom: 15px;">Para Argentina y LATAM</p>
+                        <button class="btn-primary" onclick="configurarMercadoPago()">
+                            <i class="fas fa-link"></i> Vincular Cuenta
+                        </button>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Historial de Pagos -->
+            <div class="payment-section" style="margin-top: 40px;">
+                <h3><i class="fas fa-history"></i> Historial de Pagos de Suscripción</h3>
+                <p style="color: #6B7280; margin-bottom: 20px;">Tus pagos de suscripción a Cresalia</p>
+                
+                <div style="background: #F9FAFB; border-radius: 15px; padding: 20px;">
+                    <table style="width: 100%; border-collapse: collapse;">
+                        <thead>
+                            <tr style="border-bottom: 2px solid #E5E7EB;">
+                                <th style="text-align: left; padding: 15px; color: #374151;">Fecha</th>
+                                <th style="text-align: left; padding: 15px; color: #374151;">Concepto</th>
+                                <th style="text-align: left; padding: 15px; color: #374151;">Monto</th>
+                                <th style="text-align: left; padding: 15px; color: #374151;">Estado</th>
+                            </tr>
+                        </thead>
+                        <tbody id="historialPagos">
+                            <tr>
+                                <td colspan="4" style="text-align: center; padding: 40px; color: #9CA3AF;">
+                                    No hay pagos registrados aún
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            
+            <!-- Comisiones de la Plataforma -->
+            <div class="zero-commission-banner">
+                <h3>
+                    <i class="fas fa-hand-holding-usd"></i> ¡CERO COMISIONES en tus Ventas! 💜
+                </h3>
+                <div style="position: relative; z-index: 1;">
+                    <p style="font-size: 1.2rem; margin-bottom: 20px; font-weight: 600; color: #065f46;">
+                        🎉 <strong>¡TODO EL DINERO ES 100% TUYO!</strong>
+                    </p>
+                    <ul>
+                        <li><strong>NO cobramos comisión</strong> por tus productos - ¡Ni un centavo!</li>
+                        <li><strong>NO cobramos comisión</strong> por tus servicios - ¡Todo es tuyo!</li>
+                        <li><strong>NO tocamos tu dinero</strong> - Los clientes te pagan directamente a ti</li>
+                        <li><strong>Solo pagas tu suscripción mensual</strong> - Precio fijo y transparente</li>
+                        <li><strong>Total transparencia</strong> - Sin sorpresas, sin letra chica</li>
+                        <li><strong>Cancela cuando quieras</strong> - Sin ataduras ni penalizaciones</li>
+                    </ul>
+                    <p style="margin-top: 20px; font-style: italic; font-size: 1.1rem; color: #047857;">
+                        💜 Creemos en <strong>ayudar sin competir</strong>. Tu éxito es nuestro éxito.
+                    </p>
+                </div>
+            </div>
+            
+            <!-- Facturación -->
+            <div class="payment-section" style="margin-top: 40px;">
+                <h3><i class="fas fa-file-invoice"></i> Datos de Facturación</h3>
+                <p style="color: #6B7280; margin-bottom: 20px;">Para emitir tus facturas de suscripción</p>
+                
+                <form onsubmit="guardarDatosFacturacion(event)">
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 20px;">
+                        <div>
+                            <label style="display: block; margin-bottom: 8px; font-weight: 600; color: #374151;">
+                                Nombre/Razón Social
+                            </label>
+                            <input type="text" id="factNombre" style="width: 100%; padding: 12px; border: 2px solid #E5E7EB; border-radius: 10px;">
+                        </div>
+                        <div>
+                            <label style="display: block; margin-bottom: 8px; font-weight: 600; color: #374151;">
+                                RUT/CUIT/RFC
+                            </label>
+                            <input type="text" id="factRut" style="width: 100%; padding: 12px; border: 2px solid #E5E7EB; border-radius: 10px;">
+                        </div>
+                    </div>
+                    
+                    <div style="margin-bottom: 20px;">
+                        <label style="display: block; margin-bottom: 8px; font-weight: 600; color: #374151;">
+                            Dirección Fiscal
+                        </label>
+                        <input type="text" id="factDireccion" style="width: 100%; padding: 12px; border: 2px solid #E5E7EB; border-radius: 10px;">
+                    </div>
+                    
+                    <div style="text-align: center;">
+                        <button type="submit" class="btn-primary">
+                            <i class="fas fa-save"></i> Guardar Datos
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        console.log('💳 Página de pagos cargada');
+        
+        // Cargar información del plan
+        function cargarInfoPlan() {
+            const tiendaId = 'demo-tienda';
+            const plan = localStorage.getItem(`plan_${tiendaId}`) || 'basic';
+            
+            const planes = {
+                'basic': {
+                    nombre: 'Basic',
+                    precio: '$0.00',
+                    badge: 'BASIC - GRATIS'
+                },
+                'professional': {
+                    nombre: 'Professional',
+                    precio: '$29.00',
+                    badge: 'PROFESSIONAL'
+                },
+                'enterprise': {
+                    nombre: 'Enterprise',
+                    precio: '$79.00',
+                    badge: 'ENTERPRISE'
+                }
+            };
+            
+            const planInfo = planes[plan];
+            document.getElementById('currentPlanBadge').textContent = planInfo.badge;
+            document.getElementById('planName').textContent = planInfo.nombre;
+            document.getElementById('planPrice').textContent = planInfo.precio;
+            
+            if (plan !== 'basic') {
+                const hoy = new Date();
+                hoy.setMonth(hoy.getMonth() + 1);
+                document.getElementById('nextPayment').textContent = hoy.toLocaleDateString('es-ES');
+            }
+        }
+        
+        function toggleAutoDebito() {
+            const checkbox = document.getElementById('autoDebitoSuscripcion');
+            const tiendaId = 'demo-tienda';
+            localStorage.setItem(`autoDebito_${tiendaId}`, checkbox.checked);
+            
+            if (checkbox.checked) {
+                mostrarNotificacion('✅ Auto-débito activado - Tu suscripción se renovará automáticamente', 'success');
+            } else {
+                mostrarNotificacion('⚠️ Auto-débito desactivado - Recuerda renovar manualmente cada mes', 'success');
+            }
+        }
+        
+        function configurarTarjeta() {
+            alert('🔒 Redirigiendo a pasarela de pago segura...\n\nEsta funcionalidad se integrará con Stripe o Mercado Pago para procesar pagos de forma segura.');
+            mostrarNotificacion('Funcionalidad en desarrollo', 'success');
+        }
+        
+        function verDatosTransferencia() {
+            alert('🏦 DATOS PARA TRANSFERENCIA\n\n' +
+                'Banco: Banco Ejemplo\n' +
+                'Titular: Cresalia Platform SRL\n' +
+                'CBU: 0000000000000000000000\n' +
+                'Alias: CRESALIA.PAGO\n\n' +
+                '💡 Envía el comprobante a pagos@cresalia.com');
+        }
+        
+        function configurarPayPal() {
+            alert('💰 PAYPAL\n\nSerás redirigido a PayPal para vincular tu cuenta de forma segura.');
+            mostrarNotificacion('Funcionalidad en desarrollo', 'success');
+        }
+        
+        function configurarMercadoPago() {
+            alert('🛒 MERCADO PAGO\n\nSerás redirigido a Mercado Pago para vincular tu cuenta.');
+            mostrarNotificacion('Funcionalidad en desarrollo', 'success');
+        }
+        
+        function guardarDatosFacturacion(event) {
+            event.preventDefault();
+            
+            const tiendaId = 'demo-tienda';
+            const datosFacturacion = {
+                nombre: document.getElementById('factNombre').value,
+                rut: document.getElementById('factRut').value,
+                direccion: document.getElementById('factDireccion').value
+            };
+            
+            localStorage.setItem(`facturacion_${tiendaId}`, JSON.stringify(datosFacturacion));
+            mostrarNotificacion('✅ Datos de facturación guardados', 'success');
+            console.log('✅ Datos guardados:', datosFacturacion);
+        }
+        
+        function mostrarNotificacion(mensaje, tipo = 'info') {
+            const notification = document.createElement('div');
+            notification.className = `notification ${tipo}`;
+            notification.innerHTML = `
+                <i class="fas fa-${tipo === 'success' ? 'check-circle' : 'info-circle'}"></i>
+                <span>${mensaje}</span>
+            `;
+            
+            document.body.appendChild(notification);
+            
+            setTimeout(() => {
+                notification.style.animation = 'slideIn 0.3s ease reverse';
+                setTimeout(() => notification.remove(), 300);
+            }, 3000);
+        }
+        
+        // Inicialización
+        document.addEventListener('DOMContentLoaded', () => {
+            cargarInfoPlan();
+            
+            // Cargar auto-débito guardado
+            const tiendaId = 'demo-tienda';
+            const autoDebito = localStorage.getItem(`autoDebito_${tiendaId}`) === 'true';
+            document.getElementById('autoDebitoSuscripcion').checked = autoDebito;
+            
+            console.log('✅ Página de pagos inicializada');
+        });
+    </script>
+</body>
+</html>
+

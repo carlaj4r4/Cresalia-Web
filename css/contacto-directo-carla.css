@@ -1,0 +1,516 @@
+/* ===== SISTEMA DE CONTACTO DIRECTO CON CRISLA ===== */
+/* Version 1.0 - Cresalia Platform */
+/* Diseño empático, cálido y acogedor */
+
+/* ===== MODAL ===== */
+.modal-contacto-crisla {
+    display: flex;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.8);
+    backdrop-filter: blur(10px);
+    z-index: 99999;
+    justify-content: center;
+    align-items: center;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.modal-contacto-crisla.show {
+    opacity: 1;
+}
+
+.modal-contacto-content {
+    background: white;
+    border-radius: 30px;
+    max-width: 650px;
+    width: 90%;
+    max-height: 90vh;
+    overflow-y: auto;
+    box-shadow: 0 25px 70px rgba(0, 0, 0, 0.4);
+    animation: slideInDown 0.4s ease-out;
+}
+
+@keyframes slideInDown {
+    from {
+        opacity: 0;
+        transform: translateY(-50px) scale(0.9);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+}
+
+/* ===== HEADER ===== */
+.modal-contacto-header {
+    background: linear-gradient(135deg, #EC4899, #F9A8D4);
+    color: white;
+    padding: 40px 30px;
+    border-radius: 30px 30px 0 0;
+    text-align: center;
+    position: relative;
+}
+
+.crisla-avatar {
+    width: 100px;
+    height: 100px;
+    border-radius: 50%;
+    background: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 20px;
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
+    border: 4px solid rgba(255, 255, 255, 0.5);
+    overflow: hidden;
+    animation: pulse 2s ease-in-out infinite;
+}
+
+.crisla-avatar img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+/* Alias para compatibilidad */
+.crisla-avatar {
+    width: 100px;
+    height: 100px;
+    border-radius: 50%;
+    background: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 20px;
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
+    border: 4px solid rgba(255, 255, 255, 0.5);
+    overflow: hidden;
+    animation: pulse 2s ease-in-out infinite;
+}
+
+.crisla-avatar img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.modal-contacto-header h2 {
+    margin: 0 0 5px 0;
+    font-size: 32px;
+    font-weight: 800;
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+.modal-contacto-header p {
+    margin: 0;
+    font-size: 16px;
+    opacity: 0.95;
+}
+
+/* ===== BODY ===== */
+.modal-contacto-body {
+    padding: 40px 30px;
+}
+
+.mensaje-crisla, .mensaje-crisla {
+    background: linear-gradient(135deg, #FDF2F8, #FCE7F3);
+    border-radius: 20px;
+    padding: 25px;
+    margin-bottom: 30px;
+    border-left: 4px solid #EC4899;
+    box-shadow: 0 4px 15px rgba(236, 72, 153, 0.1);
+}
+
+.mensaje-crisla p, .mensaje-crisla p {
+    color: #374151;
+    line-height: 1.7;
+    margin-bottom: 15px;
+}
+
+.mensaje-crisla strong, .mensaje-crisla strong {
+    color: #EC4899;
+}
+
+.mensaje-crisla ul, .mensaje-crisla ul {
+    list-style: none;
+    padding: 0;
+    margin: 20px 0;
+}
+
+.mensaje-crisla li, .mensaje-crisla li {
+    padding: 10px 0;
+    color: #4B5563;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.mensaje-crisla em, .mensaje-crisla em {
+    display: block;
+    text-align: center;
+    font-size: 18px;
+    color: #EC4899;
+    margin-top: 20px;
+    font-weight: 600;
+}
+
+/* ===== FORMULARIO ===== */
+.form-group {
+    margin-bottom: 25px;
+}
+
+.form-group label {
+    display: block;
+    font-weight: 700;
+    color: #374151;
+    margin-bottom: 10px;
+    font-size: 15px;
+}
+
+.form-group label i {
+    color: #EC4899;
+    margin-right: 8px;
+}
+
+.form-group input,
+.form-group select,
+.form-group textarea {
+    width: 100%;
+    padding: 14px 18px;
+    border: 2px solid #E5E7EB;
+    border-radius: 12px;
+    font-size: 15px;
+    font-family: inherit;
+    transition: all 0.3s ease;
+}
+
+.form-group input:focus,
+.form-group select:focus,
+.form-group textarea:focus {
+    outline: none;
+    border-color: #EC4899;
+    box-shadow: 0 0 0 4px rgba(236, 72, 153, 0.1);
+    transform: translateY(-2px);
+}
+
+.form-group textarea {
+    resize: vertical;
+    min-height: 120px;
+}
+
+.form-group select {
+    cursor: pointer;
+}
+
+.checkbox-group {
+    margin: 25px 0;
+}
+
+.checkbox-group label {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    cursor: pointer;
+    padding: 15px;
+    background: linear-gradient(135deg, #FDF2F8, #FCE7F3);
+    border-radius: 12px;
+    transition: all 0.3s ease;
+}
+
+.checkbox-group label:hover {
+    background: linear-gradient(135deg, #FCE7F3, #FDF2F8);
+    transform: translateX(5px);
+}
+
+.checkbox-group input[type="checkbox"] {
+    width: 24px;
+    height: 24px;
+    cursor: pointer;
+}
+
+.checkbox-group span {
+    color: #374151;
+    font-size: 15px;
+    font-weight: 600;
+}
+
+/* ===== MENSAJE CONFIDENCIAL ===== */
+.mensaje-confidencial {
+    background: linear-gradient(135deg, #F0FDF4, #DCFCE7);
+    border-left: 4px solid #10B981;
+    border-radius: 12px;
+    padding: 20px;
+    margin: 25px 0;
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+.mensaje-confidencial i {
+    font-size: 28px;
+    color: #10B981;
+}
+
+.mensaje-confidencial p {
+    margin: 0;
+    color: #065F46;
+    font-size: 14px;
+    line-height: 1.6;
+}
+
+/* ===== BOTONES ===== */
+.botones-contacto {
+    display: flex;
+    gap: 15px;
+    margin-top: 30px;
+}
+
+.btn-enviar-crisla, .btn-enviar-crisla {
+    flex: 1;
+    background: linear-gradient(135deg, #EC4899, #F9A8D4);
+    color: white;
+    border: none;
+    padding: 16px 24px;
+    border-radius: 12px;
+    font-size: 16px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 8px 20px rgba(236, 72, 153, 0.3);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+}
+
+.btn-enviar-crisla:hover, .btn-enviar-crisla:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 12px 30px rgba(236, 72, 153, 0.5);
+}
+
+.btn-enviar-crisla:active, .btn-enviar-crisla:active {
+    transform: translateY(-1px);
+}
+
+.btn-cancelar {
+    background: #F3F4F6;
+    color: #6B7280;
+    border: 2px solid #E5E7EB;
+    padding: 16px 24px;
+    border-radius: 12px;
+    font-size: 16px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.btn-cancelar:hover {
+    background: #E5E7EB;
+    color: #374151;
+}
+
+/* ===== OPCIONES ALTERNATIVAS ===== */
+.opciones-contacto-alternativas {
+    margin-top: 40px;
+    padding-top: 30px;
+    border-top: 2px solid #F3F4F6;
+    text-align: center;
+}
+
+.opciones-contacto-alternativas p {
+    color: #6B7280;
+    font-size: 14px;
+    margin-bottom: 15px;
+}
+
+.contactos-directos {
+    display: flex;
+    gap: 15px;
+    justify-content: center;
+}
+
+.contacto-btn {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 12px 24px;
+    background: white;
+    border: 2px solid #E5E7EB;
+    border-radius: 12px;
+    color: #374151;
+    text-decoration: none;
+    font-weight: 600;
+    transition: all 0.3s ease;
+}
+
+.contacto-btn:hover {
+    background: #7C3AED;
+    color: white;
+    border-color: #7C3AED;
+    transform: translateY(-2px);
+}
+
+/* ===== BOTÓN FLOTANTE ===== */
+.boton-contacto-crisla-flotante {
+    position: fixed;
+    bottom: 30px;
+    right: 30px;
+    background: linear-gradient(135deg, #EC4899, #F9A8D4);
+    color: white;
+    padding: 18px 28px;
+    border-radius: 50px;
+    box-shadow: 0 8px 25px rgba(236, 72, 153, 0.4);
+    cursor: pointer;
+    transition: all 0.3s ease;
+    z-index: 9998;
+    animation: bounceIn 1s ease-out, pulse 3s ease-in-out 2s infinite;
+}
+
+.boton-contacto-crisla-flotante:hover {
+    transform: translateY(-5px) scale(1.05);
+    box-shadow: 0 12px 35px rgba(236, 72, 153, 0.6);
+}
+
+.boton-contacto-contenido {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.boton-contacto-contenido i {
+    font-size: 24px;
+    animation: heartbeat 1.5s ease-in-out infinite;
+}
+
+@keyframes heartbeat {
+    0%, 100% { transform: scale(1); }
+    25% { transform: scale(1.2); }
+    50% { transform: scale(1); }
+}
+
+.boton-contacto-contenido span {
+    font-weight: 700;
+    font-size: 16px;
+}
+
+@keyframes bounceIn {
+    0% {
+        opacity: 0;
+        transform: scale(0.3) translateY(50px);
+    }
+    50% {
+        opacity: 1;
+        transform: scale(1.1);
+    }
+    100% {
+        transform: scale(1) translateY(0);
+    }
+}
+
+@keyframes pulse {
+    0%, 100% {
+        transform: scale(1);
+        box-shadow: 0 8px 25px rgba(236, 72, 153, 0.4);
+    }
+    50% {
+        transform: scale(1.05);
+        box-shadow: 0 12px 35px rgba(236, 72, 153, 0.6);
+    }
+}
+
+/* ===== RESPONSIVE ===== */
+@media (max-width: 768px) {
+    .modal-contacto-content {
+        width: 95%;
+        max-height: 95vh;
+    }
+    
+    .modal-contacto-header {
+        padding: 30px 20px;
+    }
+    
+    .modal-contacto-body {
+        padding: 30px 20px;
+    }
+    
+    .modal-contacto-header h2 {
+        font-size: 28px;
+    }
+    
+    .botones-contacto {
+        flex-direction: column;
+    }
+    
+    .contactos-directos {
+        flex-direction: column;
+    }
+    
+    .boton-contacto-crisla-flotante {
+        bottom: 20px;
+        right: 20px;
+        padding: 15px 20px;
+    }
+    
+    .boton-contacto-contenido span {
+        display: none;
+    }
+    
+    .boton-contacto-crisla-flotante {
+        width: 60px;
+        height: 60px;
+        border-radius: 50%;
+        padding: 0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+    
+    .boton-contacto-contenido {
+        gap: 0;
+    }
+}
+
+@media (max-width: 480px) {
+    .crisla-avatar {
+        width: 80px;
+        height: 80px;
+    }
+    
+    .mensaje-crisla {
+        padding: 20px;
+    }
+    
+    .form-group input,
+    .form-group select,
+    .form-group textarea {
+        padding: 12px 15px;
+    }
+}
+
+/* ===== ACCESIBILIDAD ===== */
+.btn-enviar-crisla:focus,
+.btn-cancelar:focus,
+.contacto-btn:focus,
+.boton-contacto-crisla-flotante:focus {
+    outline: 3px solid #EC4899;
+    outline-offset: 2px;
+}
+
+/* ===== ANIMACIONES EXTRA ===== */
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+/* ===== MODO IMPRESIÓN ===== */
+@media print {
+    .boton-contacto-crisla-flotante,
+    .botones-contacto {
+        display: none;
+    }
+}
+

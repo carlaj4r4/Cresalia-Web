@@ -1,0 +1,613 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Crear Tu Tienda - Cresalia</title>
+    
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Estilos Principales -->
+    <link rel="stylesheet" href="styles-cresalia.css">
+    <link rel="stylesheet" href="css/sistema-anti-fraudes.css">
+    
+    <style>
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px 0;
+        }
+        
+        .registro-container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+        
+        .registro-header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+        
+        .registro-header h1 {
+            margin: 0;
+            font-size: 2.5rem;
+            font-weight: 700;
+        }
+        
+        .registro-header p {
+            margin: 10px 0 0 0;
+            opacity: 0.9;
+            font-size: 1.1rem;
+        }
+        
+        .registro-form {
+            padding: 40px;
+        }
+        
+        .form-section {
+            margin-bottom: 35px;
+        }
+        
+        .section-title {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 1.3rem;
+            font-weight: 600;
+            color: #495057;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #E9ECEF;
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        .form-group label {
+            display: block;
+            font-weight: 500;
+            color: #495057;
+            margin-bottom: 8px;
+            font-size: 1rem;
+        }
+        
+        .form-group input,
+        .form-group textarea,
+        .form-group select {
+            width: 100%;
+            padding: 12px 15px;
+            border: 2px solid #DEE2E6;
+            border-radius: 10px;
+            font-size: 14px;
+            transition: all 0.3s ease;
+            font-family: 'Poppins', sans-serif;
+            background: white;
+            color: #2c3e50; /* Texto oscuro y legible */
+        }
+        
+        .form-group input:focus,
+        .form-group textarea:focus,
+        .form-group select:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+            transform: translateY(-1px);
+        }
+        
+        .btn-crear-tienda {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 15px 40px;
+            border-radius: 25px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            width: 100%;
+            margin-top: 20px;
+        }
+        
+        .btn-crear-tienda:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px rgba(102, 126, 234, 0.3);
+        }
+        
+        .btn-crear-tienda:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+        
+        .loading-spinner {
+            display: none;
+            margin-right: 10px;
+        }
+        
+        .progress-bar {
+            height: 4px;
+            background: #E9ECEF;
+            border-radius: 2px;
+            margin: 20px 0;
+            overflow: hidden;
+        }
+        
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            transition: width 0.3s ease;
+            width: 0%;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="registro-container">
+            <!-- Header -->
+            <div class="registro-header">
+                <h1>🚀 Crear Tu Tienda</h1>
+                <p>Empezamos pocos, crecemos mucho - juntos</p>
+            </div>
+            
+            <!-- Barra de Progreso -->
+            <div class="progress-bar">
+                <div class="progress-fill" id="progressFill"></div>
+            </div>
+            
+            <!-- Formulario -->
+            <div class="registro-form">
+                <form id="form-registro-tienda" novalidate>
+                    
+                    <!-- Sección 1: Información Básica -->
+                    <div class="form-section">
+                        <div class="section-title">
+                            <i class="fas fa-store"></i>
+                            Información de Tu Tienda
+                        </div>
+                        
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="nombre_tienda">🏪 Nombre de tu tienda *</label>
+                                    <input type="text" id="nombre_tienda" name="nombre_tienda" required
+                                           placeholder="Ej: Dulces María, Ropa Moderna, etc.">
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="categoria_principal">📂 Categoría principal *</label>
+                                    <select id="categoria_principal" name="categoria_principal" required>
+                                        <option value="">Selecciona una categoría</option>
+                                        <option value="alimentos">🍽️ Alimentos y Bebidas</option>
+                                        <option value="ropa">👕 Ropa y Accesorios</option>
+                                        <option value="hogar">🏠 Hogar y Decoración</option>
+                                        <option value="belleza">💄 Belleza y Cuidado Personal</option>
+                                        <option value="tecnologia">📱 Tecnología</option>
+                                        <option value="servicios">🔧 Servicios</option>
+                                        <option value="artesanias">🎨 Artesanías</option>
+                                        <option value="otros">📦 Otros</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="descripcion_corta">📝 Descripción breve *</label>
+                            <textarea id="descripcion_corta" name="descripcion_corta" required rows="3"
+                                      placeholder="Describe en pocas palabras qué vendes y qué te hace especial..."></textarea>
+                        </div>
+                    </div>
+                    
+                    <!-- Sección 2: Información Personal -->
+                    <div class="form-section">
+                        <div class="section-title">
+                            <i class="fas fa-user"></i>
+                            Tus Datos de Contacto
+                        </div>
+                        
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="nombre_propietario">👤 Tu nombre *</label>
+                                    <input type="text" id="nombre_propietario" name="nombre_propietario" required
+                                           placeholder="¿Cómo te llamas?">
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="email">📧 Email *</label>
+                                    <input type="email" id="email" name="email" required
+                                           placeholder="tu-email@ejemplo.com">
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="telefono">📱 Teléfono *</label>
+                                    <input type="tel" id="telefono" name="telefono" required
+                                           placeholder="+54 9 11 1234-5678">
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="ciudad">🌍 Ciudad *</label>
+                                    <input type="text" id="ciudad" name="ciudad" required
+                                           placeholder="¿De dónde eres?">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Sección 3: Filtro Anti-Fraudes (Versión Suave) -->
+                    <div class="seccion-filtro-cresalia">
+                        <h3 class="titulo-filtro">🌟 Contanos Sobre Tu Emprendimiento</h3>
+                        <p style="text-align: center; color: #6c757d; margin-bottom: 25px;">
+                            Estas preguntas nos ayudan a conocerte mejor y brindarte el mejor soporte
+                        </p>
+                        
+                        <div class="pregunta-filtro">
+                            <label for="historia_emprendedor">🌟 ¿Qué te motivó a emprender? *</label>
+                            <textarea id="historia_emprendedor" name="historia_emprendedor" required
+                                      placeholder="Ej: Perdí mi empleo y decidí cocinar tortas para vender. Siempre me gustó cocinar y ahora quiero hacer crecer mi negocio..."
+                                      minlength="10" maxlength="500"></textarea>
+                            <small style="color: #6c757d;">Mínimo 10 caracteres - Contá lo que te sintás cómodo/a compartiendo</small>
+                        </div>
+                        
+                        <div class="pregunta-filtro">
+                            <label for="productos_servicios">🛍️ ¿Qué productos o servicios vas a ofrecer? *</label>
+                            <textarea id="productos_servicios" name="productos_servicios" required
+                                      placeholder="Ej: Tortas caseras, cupcakes, postres para eventos..."
+                                      minlength="5" maxlength="300"></textarea>
+                            <small style="color: #6c757d;">Solo 5 caracteres mínimo - Sé breve si preferís</small>
+                        </div>
+                        
+                        <div class="pregunta-filtro">
+                            <label for="como_conociste">📱 ¿Cómo conociste Cresalia? *</label>
+                            <div class="opciones-radio">
+                                <label>
+                                    <input type="radio" name="como_conociste" value="redes_sociales" required>
+                                    <span>📱 Redes sociales</span>
+                                </label>
+                                <label>
+                                    <input type="radio" name="como_conociste" value="recomendacion" required>
+                                    <span>👥 Recomendación</span>
+                                </label>
+                                <label>
+                                    <input type="radio" name="como_conociste" value="google" required>
+                                    <span>🔍 Google</span>
+                                </label>
+                                <label>
+                                    <input type="radio" name="como_conociste" value="publicidad" required>
+                                    <span>📺 Publicidad</span>
+                                </label>
+                                <label>
+                                    <input type="radio" name="como_conociste" value="otro_emprendedor" required>
+                                    <span>🤝 Otro emprendedor</span>
+                                </label>
+                                <label>
+                                    <input type="radio" name="como_conociste" value="otro" required>
+                                    <span>❓ Otro</span>
+                                </label>
+                            </div>
+                        </div>
+                        
+                        <div class="pregunta-filtro">
+                            <label for="objetivo_principal">🎯 ¿Cuál es tu objetivo principal?</label>
+                            <input type="text" id="objetivo_principal" name="objetivo_principal"
+                                   placeholder="Ej: Generar ingresos extra para mi familia..."
+                                   maxlength="200">
+                            <small style="color: #6c757d;">Opcional - Nos ayuda a entender mejor tus necesidades</small>
+                        </div>
+                    </div>
+                    
+                    <!-- Advertencias Educativas -->
+                    <div class="advertencias-educativas">
+                        <h4><i class="fas fa-lightbulb"></i> Consejos Para Tu Éxito</h4>
+                        <div class="advertencia-item">
+                            <i class="fas fa-camera"></i>
+                            <span><strong>Usá fotos reales:</strong> Las fotos auténticas de tus productos generan más confianza</span>
+                        </div>
+                        <div class="advertencia-item">
+                            <i class="fas fa-heart"></i>
+                            <span><strong>Sé honesto:</strong> Describe tus productos tal como son, tus clientes lo agradecerán</span>
+                        </div>
+                        <div class="advertencia-item">
+                            <i class="fas fa-handshake"></i>
+                            <span><strong>Construí confianza:</strong> La transparencia es la base de un negocio exitoso</span>
+                        </div>
+                        <div class="advertencia-item">
+                            <i class="fas fa-support"></i>
+                            <span><strong>Estamos aquí:</strong> Si necesitás ayuda, nuestro sistema CRISLA está disponible 24/7</span>
+                        </div>
+                    </div>
+                    
+                    <!-- Términos y Condiciones -->
+                        <div class="form-group">
+                            <label for="password_elegida">🔑 Elegí tu contraseña *</label>
+                            <input type="password" id="password_elegida" name="password_elegida" required
+                                   minlength="6" placeholder="Tu contraseña personal para acceder">
+                            <small style="color: #6c757d;">Mínimo 6 caracteres - Algo que recuerdes fácil</small>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="confirmar_password">🔑 Confirmar contraseña *</label>
+                            <input type="password" id="confirmar_password" name="confirmar_password" required
+                                   placeholder="Escribí de nuevo tu contraseña">
+                        </div>
+                        
+                        <div class="form-group">
+                            <label>
+                                <input type="checkbox" id="acepta_terminos" name="acepta_terminos" required style="width: auto; margin-right: 10px;">
+                                Acepto los <a href="#" target="_blank">términos y condiciones</a> y me comprometo a usar Cresalia de forma ética y legal
+                            </label>
+                        </div>
+                    
+                    <!-- Botón Enviar -->
+                    <button type="submit" class="btn-crear-tienda" id="btnCrearTienda">
+                        <span class="loading-spinner"><i class="fas fa-spinner fa-spin"></i></span>
+                        <span class="btn-text">🚀 Crear Mi Tienda Gratis</span>
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="js/sistema-anti-fraudes-cresalia.js"></script>
+    
+    <script>
+        // ===== CONFIGURACIÓN DEL FORMULARIO =====
+        const FormularioRegistro = {
+            progreso: 0,
+            totalPasos: 4,
+            
+            // Inicializar
+            init() {
+                this.configurarEventListeners();
+                this.actualizarProgreso();
+            },
+            
+            // Configurar event listeners
+            configurarEventListeners() {
+                const form = document.getElementById('form-registro-tienda');
+                const inputs = form.querySelectorAll('input, textarea, select');
+                
+                // Validación en tiempo real
+                inputs.forEach(input => {
+                    input.addEventListener('input', () => {
+                        this.validarCampo(input);
+                        this.actualizarProgreso();
+                    });
+                    
+                    input.addEventListener('change', () => {
+                        this.validarCampo(input);
+                        this.actualizarProgreso();
+                    });
+                });
+                
+                // Submit del formulario
+                form.addEventListener('submit', (e) => {
+                    e.preventDefault();
+                    this.procesarFormulario();
+                });
+            },
+            
+            // Validar campo individual
+            validarCampo(campo) {
+                const valor = campo.value.trim();
+                let esValido = true;
+                
+                // Validaciones básicas
+                if (campo.required && !valor) {
+                    esValido = false;
+                }
+                
+                if (campo.minLength && valor.length < campo.minLength) {
+                    esValido = false;
+                }
+                
+                if (campo.type === 'email' && valor && !this.validarEmail(valor)) {
+                    esValido = false;
+                }
+                
+                // Aplicar estilos visuales
+                if (esValido && valor) {
+                    campo.style.borderColor = '#28a745';
+                    campo.style.backgroundColor = '#f8fff9';
+                } else if (!esValido && valor) {
+                    campo.style.borderColor = '#dc3545';
+                    campo.style.backgroundColor = '#fff8f8';
+                } else {
+                    campo.style.borderColor = '#DEE2E6';
+                    campo.style.backgroundColor = 'white';
+                }
+                
+                return esValido;
+            },
+            
+            // Validar email
+            validarEmail(email) {
+                const regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+                return regex.test(email);
+            },
+            
+            // Actualizar barra de progreso
+            actualizarProgreso() {
+                const form = document.getElementById('form-registro-tienda');
+                const inputs = form.querySelectorAll('input[required], textarea[required], select[required]');
+                let completados = 0;
+                
+                inputs.forEach(input => {
+                    if ((input.type === 'radio' && form.querySelector(`input[name="${input.name}"]:checked`)) ||
+                        (input.type !== 'radio' && input.value.trim())) {
+                        completados++;
+                    }
+                });
+                
+                const porcentaje = (completados / inputs.length) * 100;
+                document.getElementById('progressFill').style.width = porcentaje + '%';
+            },
+            
+            // Procesar formulario
+            async procesarFormulario() {
+                const form = document.getElementById('form-registro-tienda');
+                const btnSubmit = document.getElementById('btnCrearTienda');
+                const spinner = btnSubmit.querySelector('.loading-spinner');
+                const btnText = btnSubmit.querySelector('.btn-text');
+                
+                let huboError = false; // Flag para controlar si hubo error
+                
+                try {
+                    // Mostrar loading
+                    btnSubmit.disabled = true;
+                    spinner.style.display = 'inline-block';
+                    btnText.textContent = 'Creando tu tienda...';
+                    
+                    // Recopilar datos
+                    const formData = new FormData(form);
+                    this.datosRegistro = Object.fromEntries(formData.entries());
+                    
+                    // Validar que las contraseñas coincidan
+                    if (this.datosRegistro.password_elegida !== this.datosRegistro.confirmar_password) {
+                        throw new Error('Las contraseñas no coinciden. Por favor, verificá que ambas sean iguales.');
+                    }
+                    
+                    // Validar longitud mínima de contraseña
+                    if (this.datosRegistro.password_elegida.length < 6) {
+                        throw new Error('La contraseña debe tener al menos 6 caracteres.');
+                    }
+                    
+                    // ACCESO INMEDIATO - Como pidió la co-fundadora 💜
+                    // Crear cuenta activa instantáneamente
+                    console.log('✅ Cuenta creada instantáneamente - ACCESO INMEDIATO');
+                    
+                    // Guardar datos de la nueva tienda
+                    const tiendaId = 'tienda_' + Date.now();
+                    localStorage.setItem(`tienda_${tiendaId}`, JSON.stringify({
+                        ...this.datosRegistro,
+                        id: tiendaId,
+                        estado: 'activa', // ¡Activa desde el momento 1!
+                        fechaCreacion: new Date().toISOString(),
+                        password: this.datosRegistro.password_elegida // Guardamos la contraseña elegida
+                    }));
+                    
+                    // Guardar sesión activa
+                    localStorage.setItem('cresalia_sesion_activa', 'true');
+                    localStorage.setItem('cresalia_user_data', JSON.stringify({
+                        email: this.datosRegistro.email,
+                        nombre_tienda: this.datosRegistro.nombre_tienda,
+                        tipo: 'tienda',
+                        tienda_id: tiendaId
+                    }));
+                    
+                    // Simular delay realista
+                    await new Promise(resolve => setTimeout(resolve, 1500));
+                    
+                    // Éxito - Mostrar pantalla de acceso inmediato
+                    this.mostrarExito();
+                    
+                } catch (errorCapturado) {
+                    console.error('Error creando tienda:', errorCapturado);
+                    this.mostrarError(errorCapturado.message);
+                    huboError = true; // Marcar que hubo error
+                } finally {
+                    // Restaurar botón solo si hubo error
+                    if (!this.datosRegistro || huboError) {
+                        btnSubmit.disabled = false;
+                        spinner.style.display = 'none';
+                        btnText.textContent = '🚀 Crear Mi Tienda Gratis';
+                    }
+                }
+            },
+            
+            // Mostrar mensaje de éxito
+            mostrarExito() {
+                const container = document.querySelector('.registro-form');
+                const datos = this.datosRegistro; // Obtener datos del registro
+                
+                container.innerHTML = `
+                    <div style="text-align: center; padding: 40px;">
+                        <div style="font-size: 4rem; margin-bottom: 20px;">🎉</div>
+                        <h2 style="color: #28a745; margin-bottom: 20px;">¡Tu Tienda Ya Está Activa!</h2>
+                        <p style="font-size: 1.1rem; color: #6c757d; margin-bottom: 20px;">
+                            ¡Felicitaciones! Tu tienda está <strong>100% operativa</strong> y podés empezar a vender ahora mismo.
+                        </p>
+                        
+                        <div style="background: linear-gradient(135deg, #E8F5E8, #C8E6C9); padding: 25px; border-radius: 15px; margin-bottom: 30px; border: 2px solid #4CAF50;">
+                            <h4 style="color: #2E7D32; margin-bottom: 15px;">🚀 ¡Acceso Inmediato - Sin Esperas!</h4>
+                            <div style="background: white; padding: 20px; border-radius: 10px; margin-bottom: 15px;">
+                                <div style="text-align: left; color: #2E7D32; line-height: 1.8;">
+                                    <strong>🏪 Tienda:</strong> ${datos.nombre_tienda}<br>
+                                    <strong>📧 Email:</strong> ${datos.email}<br>
+                                    <strong>🔑 Contraseña:</strong> La que elegiste recién<br>
+                                    <strong>📂 Categoría:</strong> ${datos.categoria_principal}<br>
+                                    <strong>✅ Estado:</strong> <span style="color: #28a745; font-weight: bold;">ACTIVA</span>
+                                </div>
+                            </div>
+                            <p style="color: #2E7D32; margin: 0; font-size: 1rem; font-weight: 600;">
+                                💪 ¡Podés empezar a cargar productos YA! Sin aprobaciones ni demoras.
+                            </p>
+                        </div>
+                        
+                        <div style="background: #E8F5E8; padding: 20px; border-radius: 15px; margin-bottom: 25px; border: 2px solid #4CAF50;">
+                            <h4 style="color: #2E7D32; margin-bottom: 10px;">✨ Recomendaciones para tu éxito</h4>
+                            <p style="color: #2E7D32; margin: 0; font-size: 0.95rem;">
+                                Te sugerimos usar <strong>imágenes reales y auténticas</strong> de tus productos, ser respetuoso con todos los compradores y crear descripciones que reflejen genuinamente lo que vendes. ¡Esto te ayudará a generar confianza y tener más ventas! 💚
+                            </p>
+                        </div>
+                        
+                        <div class="botones-accion" style="display: flex; gap: 15px; justify-content: center; flex-wrap: wrap; margin-bottom: 20px;">
+                            <a href="tiendas/ejemplo-tienda/admin.html" class="btn-crear-tienda" style="display: inline-block; text-decoration: none; padding: 15px 30px;">
+                                🎯 Ir A Mi Panel de Admin
+                            </a>
+                            <a href="tiendas/ejemplo-tienda/index.html" class="btn-crear-tienda" style="display: inline-block; text-decoration: none; background: linear-gradient(135deg, #6c757d 0%, #495057 100%); padding: 15px 30px;">
+                                🏠 Ver Cómo Se Ve Mi Tienda
+                            </a>
+                        </div>
+                        
+                        <div style="background: #E8E3F3; padding: 20px; border-radius: 10px; margin-top: 20px; border: 2px solid #764ba2;">
+                            <p style="margin: 0; font-size: 1rem; color: #4a148c;">
+                                💜 <strong>CRISLA (Sistema de Soporte)</strong> está disponible 24/7 si necesitás ayuda
+                            </p>
+                            <p style="margin: 8px 0 0 0; font-size: 0.9rem; color: #6a1b9a;">
+                                Hacé clic en el botón de ayuda en tu panel para hablar con nosotros
+                            </p>
+                        </div>
+                    </div>
+                `;
+                
+                // Auto-redirigir al panel después de 8 segundos (damos tiempo para leer)
+                setTimeout(() => {
+                    window.location.href = 'tiendas/ejemplo-tienda/admin.html';
+                }, 8000);
+            },
+            
+            // Mostrar mensaje de error
+            mostrarError(mensaje) {
+                alert('❌ Error: ' + mensaje + '\n\nPor favor, revisa los datos e intenta nuevamente.');
+            }
+        };
+        
+        // Inicializar cuando se carga la página
+        document.addEventListener('DOMContentLoaded', () => {
+            FormularioRegistro.init();
+        });
+    </script>
+</body>
+</html>

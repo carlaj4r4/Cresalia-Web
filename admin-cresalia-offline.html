@@ -1,0 +1,849 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cresalia - Panel de Administración</title>
+    
+    <!-- Favicon -->
+    <link rel="icon" type="image/png" href="assets/logo/logo-cresalia.png">
+    
+    <style>
+        /* Estilos Bootstrap básicos locales */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #8B5CF6 0%, #3B82F6 50%, #10B981 100%);
+            min-height: 100vh;
+            color: #333;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        .card {
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            padding: 30px;
+            margin-bottom: 20px;
+        }
+        
+        .btn {
+            display: inline-block;
+            padding: 12px 24px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            text-decoration: none;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            margin: 5px;
+        }
+        
+        .btn-primary {
+            background: linear-gradient(135deg, #8B5CF6, #3B82F6);
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(139, 92, 246, 0.3);
+        }
+        
+        .btn-success {
+            background: linear-gradient(135deg, #10B981, #059669);
+            color: white;
+        }
+        
+        .btn-danger {
+            background: linear-gradient(135deg, #EF4444, #DC2626);
+            color: white;
+        }
+        
+        .btn-warning {
+            background: linear-gradient(135deg, #F59E0B, #D97706);
+            color: white;
+        }
+        
+        .btn-info {
+            background: linear-gradient(135deg, #06B6D4, #0891B2);
+            color: white;
+        }
+        
+        .form-control {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #E5E7EB;
+            border-radius: 8px;
+            font-size: 16px;
+            transition: border-color 0.3s ease;
+        }
+        
+        .form-control:focus {
+            outline: none;
+            border-color: #8B5CF6;
+            box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.1);
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        .form-label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+            color: #374151;
+        }
+        
+        .row {
+            display: flex;
+            flex-wrap: wrap;
+            margin: -10px;
+        }
+        
+        .col {
+            flex: 1;
+            padding: 10px;
+        }
+        
+        .col-6 {
+            flex: 0 0 50%;
+        }
+        
+        .col-4 {
+            flex: 0 0 33.333%;
+        }
+        
+        .col-3 {
+            flex: 0 0 25%;
+        }
+        
+        .text-center {
+            text-align: center;
+        }
+        
+        .text-white {
+            color: white;
+        }
+        
+        .mb-3 {
+            margin-bottom: 1rem;
+        }
+        
+        .mb-4 {
+            margin-bottom: 1.5rem;
+        }
+        
+        .mt-3 {
+            margin-top: 1rem;
+        }
+        
+        .mt-4 {
+            margin-top: 1.5rem;
+        }
+        
+        .d-flex {
+            display: flex;
+        }
+        
+        .justify-content-between {
+            justify-content: space-between;
+        }
+        
+        .align-items-center {
+            align-items: center;
+        }
+        
+        .navbar {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            padding: 15px 0;
+            margin-bottom: 30px;
+            border-radius: 15px;
+        }
+        
+        .navbar-brand {
+            font-size: 24px;
+            font-weight: bold;
+            color: white;
+            text-decoration: none;
+        }
+        
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+        
+        .stat-card {
+            background: white;
+            border-radius: 15px;
+            padding: 25px;
+            text-align: center;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            transition: transform 0.3s ease;
+        }
+        
+        .stat-card:hover {
+            transform: translateY(-5px);
+        }
+        
+        .stat-number {
+            font-size: 2.5rem;
+            font-weight: bold;
+            color: #8B5CF6;
+            margin-bottom: 10px;
+        }
+        
+        .stat-label {
+            color: #6B7280;
+            font-size: 14px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        
+        .table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+        
+        .table th,
+        .table td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #E5E7EB;
+        }
+        
+        .table th {
+            background: #F9FAFB;
+            font-weight: 600;
+            color: #374151;
+        }
+        
+        .table tr:hover {
+            background: #F9FAFB;
+        }
+        
+        .badge {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 500;
+            text-transform: uppercase;
+        }
+        
+        .badge-success {
+            background: #D1FAE5;
+            color: #065F46;
+        }
+        
+        .badge-warning {
+            background: #FEF3C7;
+            color: #92400E;
+        }
+        
+        .badge-danger {
+            background: #FEE2E2;
+            color: #991B1B;
+        }
+        
+        .badge-info {
+            background: #DBEAFE;
+            color: #1E40AF;
+        }
+        
+        .hidden {
+            display: none !important;
+        }
+        
+        .login-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .login-card {
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            max-width: 400px;
+            width: 100%;
+        }
+        
+        .login-title {
+            text-align: center;
+            margin-bottom: 30px;
+            color: #1F2937;
+            font-size: 28px;
+            font-weight: bold;
+        }
+        
+        .login-subtitle {
+            text-align: center;
+            color: #6B7280;
+            margin-bottom: 30px;
+        }
+        
+        .alert {
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+        
+        .alert-danger {
+            background: #FEE2E2;
+            color: #991B1B;
+            border: 1px solid #FECACA;
+        }
+        
+        .alert-success {
+            background: #D1FAE5;
+            color: #065F46;
+            border: 1px solid #A7F3D0;
+        }
+        
+        .loading {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid #f3f3f3;
+            border-top: 3px solid #8B5CF6;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        .emotional-support-btn {
+            background: linear-gradient(135deg, #EC4899, #F9A8D4) !important;
+            color: white !important;
+            border: none !important;
+            animation: heartbeat 2s infinite;
+        }
+        
+        .emotional-support-btn:hover {
+            background: linear-gradient(135deg, #DB2777, #EC4899) !important;
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(236, 72, 153, 0.3);
+        }
+        
+        @keyframes heartbeat {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+        
+        .floating-btn {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            border: none;
+            font-size: 24px;
+            cursor: pointer;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.2);
+            z-index: 1000;
+        }
+        
+        .floating-btn:hover {
+            transform: scale(1.1);
+        }
+        
+        @media (max-width: 768px) {
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .col-6, .col-4, .col-3 {
+                flex: 0 0 100%;
+            }
+            
+            .container {
+                padding: 10px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Pantalla de Login -->
+    <div id="loginScreen" class="login-container">
+        <div class="login-card">
+            <div class="text-center mb-4">
+                <img src="assets/logo/logo-cresalia.png" alt="Cresalia" style="height: 60px; margin-bottom: 20px;">
+            </div>
+            <h1 class="login-title">Panel de Administración</h1>
+            <p class="login-subtitle">Acceso seguro a Cresalia</p>
+            
+            <div id="loginAlert" class="alert alert-danger hidden">
+                <strong>Error:</strong> <span id="loginError"></span>
+            </div>
+            
+            <form id="loginForm">
+                <div class="form-group">
+                    <label class="form-label" for="adminPassword">Contraseña de Administrador</label>
+                    <input type="password" class="form-control" id="adminPassword" placeholder="Ingresa la contraseña" required>
+                </div>
+                
+                <button type="submit" class="btn btn-primary" style="width: 100%; padding: 15px;">
+                    <span id="loginBtnText">Acceder</span>
+                    <span id="loginLoading" class="loading hidden"></span>
+                </button>
+            </form>
+            
+            <div class="text-center mt-4">
+                <small class="text-muted">
+                    Contraseña por defecto: <strong>CREDENTIAL_REMOVED</strong>
+                </small>
+            </div>
+        </div>
+    </div>
+
+    <!-- Panel de Administración -->
+    <div id="adminPanel" class="hidden">
+        <!-- Navbar -->
+        <nav class="navbar">
+            <div class="container">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div class="d-flex align-items-center">
+                        <img src="assets/logo/logo-cresalia.png" alt="Cresalia" style="height: 40px; margin-right: 15px;">
+                        <a href="#" class="navbar-brand">Cresalia Admin</a>
+                    </div>
+                    <div>
+                        <span class="text-white">Sesión activa</span>
+                        <button class="btn btn-danger btn-sm" onclick="cerrarSesion()" style="margin-left: 10px;">
+                            Cerrar Sesión
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </nav>
+
+        <div class="container">
+            <!-- Estadísticas -->
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-number" id="totalProductos">0</div>
+                    <div class="stat-label">Productos</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number" id="totalVentas">0</div>
+                    <div class="stat-label">Ventas</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number" id="totalIngresos">$0</div>
+                    <div class="stat-label">Ingresos</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number" id="totalClientes">0</div>
+                    <div class="stat-label">Clientes</div>
+                </div>
+            </div>
+
+            <!-- Gestión de Productos -->
+            <div class="card">
+                <h3 style="margin-bottom: 20px; color: #1F2937;">Gestión de Productos</h3>
+                
+                <div class="row">
+                    <div class="col-6">
+                        <button class="btn btn-primary" onclick="mostrarAgregarProducto()">
+                            <i class="fas fa-plus"></i> Agregar Producto
+                        </button>
+                        <button class="btn btn-success" onclick="cargarProductos()">
+                            <i class="fas fa-refresh"></i> Actualizar
+                        </button>
+                    </div>
+                </div>
+                
+                <div id="productosLista" class="mt-4">
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Nombre</th>
+                                <th>Precio</th>
+                                <th>Stock</th>
+                                <th>Estado</th>
+                                <th>Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody id="productosTableBody">
+                            <tr>
+                                <td colspan="6" class="text-center">Cargando productos...</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Gestión de Órdenes -->
+            <div class="card">
+                <h3 style="margin-bottom: 20px; color: #1F2937;">Órdenes Recientes</h3>
+                
+                <div class="row">
+                    <div class="col-6">
+                        <button class="btn btn-info" onclick="cargarOrdenes()">
+                            <i class="fas fa-shopping-cart"></i> Ver Todas las Órdenes
+                        </button>
+                    </div>
+                </div>
+                
+                <div id="ordenesLista" class="mt-4">
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Cliente</th>
+                                <th>Total</th>
+                                <th>Estado</th>
+                                <th>Fecha</th>
+                                <th>Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody id="ordenesTableBody">
+                            <tr>
+                                <td colspan="6" class="text-center">Cargando órdenes...</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Configuración -->
+            <div class="card">
+                <h3 style="margin-bottom: 20px; color: #1F2937;">Configuración de la Tienda</h3>
+                
+                <div class="row">
+                    <div class="col-6">
+                        <div class="form-group">
+                            <label class="form-label">Nombre de la Tienda</label>
+                            <input type="text" class="form-control" id="nombreTienda" value="Cresalia Demo">
+                        </div>
+                    </div>
+                    <div class="col-6">
+                        <div class="form-group">
+                            <label class="form-label">Email de Contacto</label>
+                            <input type="email" class="form-control" id="emailTienda" value="admin@cresalia.com">
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="row">
+                    <div class="col-6">
+                        <div class="form-group">
+                            <label class="form-label">Teléfono</label>
+                            <input type="tel" class="form-control" id="telefonoTienda" value="+51 999 999 999">
+                        </div>
+                    </div>
+                    <div class="col-6">
+                        <div class="form-group">
+                            <label class="form-label">Dirección</label>
+                            <input type="text" class="form-control" id="direccionTienda" value="Lima, Perú">
+                        </div>
+                    </div>
+                </div>
+                
+                <button class="btn btn-success" onclick="guardarConfiguracion()">
+                    <i class="fas fa-save"></i> Guardar Configuración
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Botón flotante de soporte emocional -->
+    <button class="floating-btn emotional-support-btn" onclick="abrirSoporteEmocional()" title="Soporte Emocional">
+        💜
+    </button>
+
+    <script>
+        // Configuración
+        const ADMIN_PASSWORD = 'CREDENTIAL_REMOVED';
+        let isLoggedIn = false;
+        
+        // Datos de ejemplo
+        let productos = [
+            { id: 1, nombre: 'Producto Demo 1', precio: 29.99, stock: 50, estado: 'activo' },
+            { id: 2, nombre: 'Producto Demo 2', precio: 49.99, stock: 25, estado: 'activo' },
+            { id: 3, nombre: 'Producto Demo 3', precio: 19.99, stock: 0, estado: 'agotado' }
+        ];
+        
+        let ordenes = [
+            { id: 1, cliente: 'Juan Pérez', total: 79.98, estado: 'completada', fecha: '2024-01-15' },
+            { id: 2, cliente: 'María García', total: 29.99, estado: 'pendiente', fecha: '2024-01-14' },
+            { id: 3, cliente: 'Carlos López', total: 149.97, estado: 'procesando', fecha: '2024-01-13' }
+        ];
+        
+        // Inicialización
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('🚀 Panel de Administración Cresalia iniciado');
+            
+            // Verificar sesión existente
+            const session = localStorage.getItem('adminSession');
+            if (session) {
+                try {
+                    const sessionData = JSON.parse(session);
+                    if (Date.now() - sessionData.timestamp < 30 * 60 * 1000) { // 30 minutos
+                        iniciarSesion();
+                    } else {
+                        localStorage.removeItem('adminSession');
+                    }
+                } catch (e) {
+                    localStorage.removeItem('adminSession');
+                }
+            }
+            
+            // Configurar formulario de login
+            document.getElementById('loginForm').addEventListener('submit', function(e) {
+                e.preventDefault();
+                const password = document.getElementById('adminPassword').value;
+                if (password === ADMIN_PASSWORD) {
+                    iniciarSesion();
+                } else {
+                    mostrarError('Contraseña incorrecta');
+                }
+            });
+            
+            // Cargar datos iniciales
+            cargarEstadisticas();
+            cargarProductos();
+            cargarOrdenes();
+        });
+        
+        function iniciarSesion() {
+            isLoggedIn = true;
+            document.getElementById('loginScreen').classList.add('hidden');
+            document.getElementById('adminPanel').classList.remove('hidden');
+            
+            // Guardar sesión
+            localStorage.setItem('adminSession', JSON.stringify({
+                timestamp: Date.now(),
+                user: 'admin'
+            }));
+            
+            mostrarExito('Sesión iniciada correctamente');
+        }
+        
+        function cerrarSesion() {
+            isLoggedIn = false;
+            localStorage.removeItem('adminSession');
+            document.getElementById('loginScreen').classList.remove('hidden');
+            document.getElementById('adminPanel').classList.add('hidden');
+            document.getElementById('adminPassword').value = '';
+        }
+        
+        function cargarEstadisticas() {
+            const totalProductos = productos.length;
+            const totalVentas = ordenes.length;
+            const totalIngresos = ordenes.reduce((sum, orden) => sum + orden.total, 0);
+            const totalClientes = new Set(ordenes.map(orden => orden.cliente)).size;
+            
+            document.getElementById('totalProductos').textContent = totalProductos;
+            document.getElementById('totalVentas').textContent = totalVentas;
+            document.getElementById('totalIngresos').textContent = '$' + totalIngresos.toFixed(2);
+            document.getElementById('totalClientes').textContent = totalClientes;
+        }
+        
+        function cargarProductos() {
+            const tbody = document.getElementById('productosTableBody');
+            tbody.innerHTML = '';
+            
+            productos.forEach(producto => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${producto.id}</td>
+                    <td>${producto.nombre}</td>
+                    <td>$${producto.precio}</td>
+                    <td>${producto.stock}</td>
+                    <td><span class="badge ${producto.estado === 'activo' ? 'badge-success' : 'badge-warning'}">${producto.estado}</span></td>
+                    <td>
+                        <button class="btn btn-info btn-sm" onclick="editarProducto(${producto.id})">Editar</button>
+                        <button class="btn btn-danger btn-sm" onclick="eliminarProducto(${producto.id})">Eliminar</button>
+                    </td>
+                `;
+                tbody.appendChild(row);
+            });
+        }
+        
+        function cargarOrdenes() {
+            const tbody = document.getElementById('ordenesTableBody');
+            tbody.innerHTML = '';
+            
+            ordenes.forEach(orden => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>#${orden.id}</td>
+                    <td>${orden.cliente}</td>
+                    <td>$${orden.total}</td>
+                    <td><span class="badge ${getBadgeClass(orden.estado)}">${orden.estado}</span></td>
+                    <td>${orden.fecha}</td>
+                    <td>
+                        <button class="btn btn-info btn-sm" onclick="verOrden(${orden.id})">Ver</button>
+                        <button class="btn btn-success btn-sm" onclick="actualizarEstado(${orden.id})">Actualizar</button>
+                    </td>
+                `;
+                tbody.appendChild(row);
+            });
+        }
+        
+        function getBadgeClass(estado) {
+            switch(estado) {
+                case 'completada': return 'badge-success';
+                case 'pendiente': return 'badge-warning';
+                case 'procesando': return 'badge-info';
+                default: return 'badge-danger';
+            }
+        }
+        
+        function mostrarAgregarProducto() {
+            const nombre = prompt('Nombre del producto:');
+            if (nombre) {
+                const precio = parseFloat(prompt('Precio del producto:'));
+                if (precio) {
+                    const stock = parseInt(prompt('Stock inicial:'));
+                    if (stock >= 0) {
+                        const nuevoProducto = {
+                            id: productos.length + 1,
+                            nombre: nombre,
+                            precio: precio,
+                            stock: stock,
+                            estado: 'activo'
+                        };
+                        productos.push(nuevoProducto);
+                        cargarProductos();
+                        cargarEstadisticas();
+                        mostrarExito('Producto agregado correctamente');
+                    }
+                }
+            }
+        }
+        
+        function editarProducto(id) {
+            const producto = productos.find(p => p.id === id);
+            if (producto) {
+                const nuevoNombre = prompt('Nuevo nombre:', producto.nombre);
+                if (nuevoNombre) {
+                    const nuevoPrecio = parseFloat(prompt('Nuevo precio:', producto.precio));
+                    if (nuevoPrecio) {
+                        producto.nombre = nuevoNombre;
+                        producto.precio = nuevoPrecio;
+                        cargarProductos();
+                        mostrarExito('Producto actualizado');
+                    }
+                }
+            }
+        }
+        
+        function eliminarProducto(id) {
+            if (confirm('¿Estás seguro de eliminar este producto?')) {
+                productos = productos.filter(p => p.id !== id);
+                cargarProductos();
+                cargarEstadisticas();
+                mostrarExito('Producto eliminado');
+            }
+        }
+        
+        function verOrden(id) {
+            const orden = ordenes.find(o => o.id === id);
+            if (orden) {
+                alert(`Orden #${orden.id}\nCliente: ${orden.cliente}\nTotal: $${orden.total}\nEstado: ${orden.estado}\nFecha: ${orden.fecha}`);
+            }
+        }
+        
+        function actualizarEstado(id) {
+            const orden = ordenes.find(o => o.id === id);
+            if (orden) {
+                const nuevoEstado = prompt('Nuevo estado (pendiente/procesando/completada):', orden.estado);
+                if (nuevoEstado) {
+                    orden.estado = nuevoEstado;
+                    cargarOrdenes();
+                    mostrarExito('Estado actualizado');
+                }
+            }
+        }
+        
+        function guardarConfiguracion() {
+            const config = {
+                nombre: document.getElementById('nombreTienda').value,
+                email: document.getElementById('emailTienda').value,
+                telefono: document.getElementById('telefonoTienda').value,
+                direccion: document.getElementById('direccionTienda').value
+            };
+            
+            localStorage.setItem('tiendaConfig', JSON.stringify(config));
+            mostrarExito('Configuración guardada correctamente');
+        }
+        
+        function abrirSoporteEmocional() {
+            alert('💜 Sistema de Apoyo Emprendedor\n\n¿Cómo te sientes hoy?\n\n🚀 Excelente\n😊 Bien\n😐 Regular\n😔 Difícil\n😰 Abrumado\n\nRecuerda: "Empezamos pocos, crecemos mucho" 💜');
+        }
+        
+        function mostrarError(mensaje) {
+            const alert = document.getElementById('loginAlert');
+            const error = document.getElementById('loginError');
+            error.textContent = mensaje;
+            alert.classList.remove('hidden');
+            setTimeout(() => alert.classList.add('hidden'), 5000);
+        }
+        
+        function mostrarExito(mensaje) {
+            // Crear notificación de éxito
+            const notification = document.createElement('div');
+            notification.style.cssText = `
+                position: fixed;
+                top: 20px;
+                right: 20px;
+                background: #10B981;
+                color: white;
+                padding: 15px 20px;
+                border-radius: 8px;
+                box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+                z-index: 10000;
+                font-weight: 500;
+            `;
+            notification.textContent = mensaje;
+            document.body.appendChild(notification);
+            
+            setTimeout(() => {
+                notification.remove();
+            }, 3000);
+        }
+        
+        // Cargar configuración guardada
+        const savedConfig = localStorage.getItem('tiendaConfig');
+        if (savedConfig) {
+            try {
+                const config = JSON.parse(savedConfig);
+                document.getElementById('nombreTienda').value = config.nombre || 'Cresalia Demo';
+                document.getElementById('emailTienda').value = config.email || 'admin@cresalia.com';
+                document.getElementById('telefonoTienda').value = config.telefono || '+51 999 999 999';
+                document.getElementById('direccionTienda').value = config.direccion || 'Lima, Perú';
+            } catch (e) {
+                console.log('Error cargando configuración:', e);
+            }
+        }
+    </script>
+</body>
+</html>
+
+
+
+

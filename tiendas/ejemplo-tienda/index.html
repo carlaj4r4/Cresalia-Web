@@ -1,0 +1,2339 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title id="pageTitle">Mi Tienda - Productos de Calidad</title>
+    
+    <!-- Sistema de Interconexiones -->
+    <script src="../../js/sistema-interconexiones-global.js"></script>
+    
+    <!-- Sistema de Alertas de Emergencia -->
+    <script src="../../js/sistema-alertas-emergencia-global.js"></script>
+    
+    <!-- PWA Meta Tags -->
+    <meta name="application-name" content="Cresalia">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    <meta name="apple-mobile-web-app-title" content="Cresalia">
+    <meta name="description" content="Plataforma inclusiva para emprendedores de todos los géneros. Crea tu tienda online, gestiona productos, servicios y crece con nosotros.">
+    <meta name="format-detection" content="telephone=no">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="msapplication-config" content="/browserconfig.xml">
+    <meta name="msapplication-TileColor" content="#8B5CF6">
+    <meta name="msapplication-tap-highlight" content="no">
+    <meta name="theme-color" content="#7C3AED">
+    
+    <!-- PWA Manifest -->
+    <link rel="manifest" href="/manifest.json">
+    
+    <!-- Apple Touch Icons -->
+    <link rel="apple-touch-icon" href="/icons/icon-152x152.png">
+    <link rel="apple-touch-icon" sizes="152x152" href="/icons/icon-152x152.png">
+    <link rel="apple-touch-icon" sizes="180x180" href="/icons/icon-192x192.png">
+    <link rel="apple-touch-icon" sizes="167x167" href="/icons/icon-192x192.png">
+    
+    <!-- Seguridad -->
+    <meta name="robots" content="index, follow">
+    <meta http-equiv="X-Content-Type-Options" content="nosniff">
+    <meta http-equiv="X-XSS-Protection" content="1; mode=block">
+    
+    <!-- Favicon -->
+    <link rel="icon" type="image/x-icon" href="../../favicon.ico">
+    <link rel="icon" type="image/png" href="../../assets/logo/logo-cresalia.png">
+    <link rel="apple-touch-icon" href="../../assets/logo/logo-cresalia.png">
+    
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Estilos -->
+    <link rel="stylesheet" href="../../styles-cresalia.css">
+    <link rel="stylesheet" href="../../css/buyer-interface-improved.css">
+    <link rel="stylesheet" href="../../css/elegant-notifications.css">
+    <link rel="stylesheet" href="../../css/tienda-search-chatbot.css?v=1.1">
+    <link rel="stylesheet" href="../../css/sistema-feedbacks.css">
+    
+    <!-- Click Derecho Personalizado -->
+    <script src="../../js/click-derecho-personalizado.js"></script>
+    
+    <style>
+        :root {
+            /* Paleta inclusiva - Neutra y universal */
+            --primary-color: #8B5CF6;      /* Morado - Creatividad, sabiduría */
+            --secondary-color: #10B981;    /* Verde - Crecimiento, éxito */
+            --accent-color: #3B82F6;        /* Azul - Confianza, profesionalismo */
+            --warm-color: #F59E0B;         /* Naranja - Energía, motivación */
+            --success-color: #10B981;       /* Verde - Logros */
+            --info-color: #06B6D4;          /* Cyan - Información */
+            --love-color: #EC4899;          /* Rosa - Bienestar (opcional) */
+        }
+        
+        @keyframes gradientShift {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+        
+        @keyframes float {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-20px); }
+        }
+        
+        @keyframes slideInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+        
+        @keyframes shimmer {
+            0% { background-position: -1000px 0; }
+            100% { background-position: 1000px 0; }
+        }
+        
+        .hero-section {
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color), var(--accent-color));
+            background-size: 200% 200%;
+            animation: gradientShift 15s ease infinite;
+            color: white;
+            padding: 120px 0 80px;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .hero-section::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><circle cx="25" cy="25" r="2" fill="rgba(255,255,255,0.15)"/><circle cx="75" cy="75" r="3" fill="rgba(255,255,255,0.2)"/><circle cx="50" cy="10" r="1.5" fill="rgba(255,255,255,0.15)"/><circle cx="10" cy="60" r="2" fill="rgba(255,255,255,0.15)"/><circle cx="90" cy="40" r="1" fill="rgba(255,255,255,0.1)"/></svg>');
+            opacity: 0.5;
+            animation: float 10s ease-in-out infinite;
+        }
+        
+        .hero-content {
+            position: relative;
+            z-index: 10;
+            animation: slideInUp 0.8s ease-out;
+        }
+        
+        .hero-content h1 {
+            animation: slideInUp 1s ease-out;
+            text-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+        }
+        
+        .hero-content p {
+            animation: slideInUp 1.2s ease-out;
+        }
+        
+        .hero-badges {
+            display: flex;
+            gap: 15px;
+            margin-top: 20px;
+            flex-wrap: wrap;
+        }
+        
+        .hero-badge {
+            background: rgba(255, 255, 255, 0.25);
+            padding: 10px 18px;
+            border-radius: 25px;
+            font-size: 14px;
+            font-weight: 600;
+            backdrop-filter: blur(10px);
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            animation: slideInUp 1.4s ease-out;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+        }
+        
+        .hero-badge:hover {
+            transform: translateY(-3px) scale(1.05);
+            background: rgba(255, 255, 255, 0.35);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
+        }
+        
+        .product-category {
+            background: white;
+            border-radius: 20px;
+            padding: 30px;
+            text-align: center;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            border: 2px solid transparent;
+            animation: slideInUp 0.6s ease-out;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .product-category::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(102, 126, 234, 0.1), transparent);
+            transition: left 0.6s;
+        }
+        
+        .product-category:hover::before {
+            left: 100%;
+        }
+        
+        .product-category:hover {
+            transform: translateY(-10px) scale(1.02);
+            border-color: var(--primary-color);
+            box-shadow: 0 20px 50px rgba(102, 126, 234, 0.25);
+        }
+        
+        .category-icon {
+            width: 90px;
+            height: 90px;
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color), var(--accent-color));
+            background-size: 200% 200%;
+            animation: gradientShift 5s ease infinite;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 20px;
+            color: white;
+            font-size: 36px;
+            box-shadow: 0 10px 30px rgba(102, 126, 234, 0.3);
+            transition: all 0.4s ease;
+        }
+        
+        .product-category:hover .category-icon {
+            transform: scale(1.1) rotate(10deg);
+            box-shadow: 0 15px 40px rgba(102, 126, 234, 0.4);
+        }
+        
+        .testimonial-card {
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+            text-align: center;
+            position: relative;
+        }
+        
+        .testimonial-card::before {
+            content: '"';
+            position: absolute;
+            top: -10px;
+            left: 30px;
+            font-size: 60px;
+            color: var(--primary-color);
+            opacity: 0.3;
+        }
+        
+        .customer-avatar {
+            width: 60px;
+            height: 60px;
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 15px;
+            color: white;
+            font-size: 24px;
+        }
+        
+        .store-footer {
+            background: linear-gradient(135deg, #1F2937, #374151);
+            color: white;
+            padding: 60px 0 30px;
+        }
+        
+        .footer-section h5 {
+            color: white;
+            margin-bottom: 20px;
+            font-weight: 600;
+        }
+        
+        .footer-section ul {
+            list-style: none;
+            padding: 0;
+        }
+        
+        .footer-section ul li {
+            margin-bottom: 10px;
+        }
+        
+        .footer-section ul li a {
+            color: #D1D5DB;
+            text-decoration: none;
+            transition: all 0.3s ease;
+        }
+        
+        .footer-section ul li a:hover {
+            color: white;
+        }
+        
+        .cresalia-badge {
+            background: linear-gradient(135deg, rgba(124, 58, 237, 0.15), rgba(168, 85, 247, 0.15));
+            border: 2px solid rgba(124, 58, 237, 0.4);
+            color: #7C3AED;
+            padding: 12px 24px;
+            border-radius: 30px;
+            font-size: 14px;
+            font-weight: 600;
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            margin-top: 20px;
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            animation: pulse 3s ease-in-out infinite;
+        }
+        
+        .cresalia-badge:hover {
+            transform: translateY(-3px) scale(1.05);
+            background: linear-gradient(135deg, rgba(124, 58, 237, 0.25), rgba(168, 85, 247, 0.25));
+            box-shadow: 0 8px 20px rgba(124, 58, 237, 0.3);
+        }
+        
+        .section-header {
+            text-align: center;
+            margin-bottom: 3rem;
+            animation: slideInUp 0.8s ease-out;
+        }
+        
+        .section-header h2 {
+            font-size: 2.5rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 1rem;
+        }
+        
+        /* Productos Grid */
+        .productos-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 30px;
+        }
+        
+        /* Servicios Grid */
+        .servicios-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+            margin-top: 40px;
+        }
+        
+        .servicio-card {
+            background: white;
+            border-radius: 20px;
+            padding: 25px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            transition: all 0.3s ease;
+            border: 2px solid transparent;
+        }
+        
+        .servicio-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.15);
+            border-color: #667eea;
+        }
+        
+        .servicio-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+        
+        .servicio-icon {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 15px;
+            font-size: 20px;
+            color: white;
+        }
+        
+        .servicio-info h3 {
+            margin: 0;
+            color: #2d3748;
+            font-size: 1.2rem;
+        }
+        
+        .servicio-categoria {
+            color: #667eea;
+            font-size: 0.9rem;
+            font-weight: 500;
+        }
+        
+        .servicio-descripcion {
+            color: #4a5568;
+            margin: 15px 0;
+            line-height: 1.6;
+        }
+        
+        .servicio-precio {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #10b981;
+            margin: 15px 0;
+        }
+        
+        .servicio-features {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin: 15px 0;
+        }
+        
+        .servicio-feature {
+            background: #f1f5f9;
+            color: #475569;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 500;
+        }
+        
+        .servicio-actions {
+            display: flex;
+            gap: 10px;
+            margin-top: 20px;
+        }
+        
+        .btn-servicio {
+            flex: 1;
+            padding: 12px 20px;
+            border: none;
+            border-radius: 10px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .btn-contactar {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+        }
+        
+        .btn-contactar:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(102, 126, 234, 0.4);
+        }
+        
+        .btn-favorito {
+            background: #f1f5f9;
+            color: #64748b;
+            border: 2px solid #e2e8f0;
+        }
+        
+        .btn-favorito:hover {
+            background: #fef2f2;
+            color: #dc2626;
+            border-color: #fecaca;
+        }
+        
+        .filtros-especiales {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+        
+        .filtros-especiales .form-check {
+            margin: 0;
+        }
+        
+        .filtros-especiales .form-check-label {
+            font-size: 0.9rem;
+            color: #4a5568;
+        }
+        
+        /* Responsive para servicios */
+        @media (max-width: 768px) {
+            .servicios-grid {
+                grid-template-columns: 1fr;
+                gap: 20px;
+            }
+            
+            .servicio-card {
+                padding: 20px;
+            }
+            
+            .servicio-actions {
+                flex-direction: column;
+            }
+        }
+        
+        .producto-card {
+            background: white;
+            border-radius: 20px;
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            animation: slideInUp 0.8s ease-out;
+            position: relative;
+        }
+        
+        .producto-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(102, 126, 234, 0.1), transparent);
+            transition: left 0.6s;
+            z-index: 1;
+        }
+        
+        .producto-card:hover::before {
+            left: 100%;
+        }
+        
+        .producto-card:hover {
+            transform: translateY(-10px) scale(1.02);
+            box-shadow: 0 20px 50px rgba(102, 126, 234, 0.25);
+        }
+        
+        .btn-add-cart, .btn-view-store {
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .btn-add-cart::before, .btn-view-store::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 0;
+            height: 0;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.3);
+            transform: translate(-50%, -50%);
+            transition: width 0.6s, height 0.6s;
+        }
+        
+        .btn-add-cart:hover::before, .btn-view-store:hover::before {
+            width: 300px;
+            height: 300px;
+        }
+        
+        .btn-add-cart:hover, .btn-view-store:hover {
+            transform: translateY(-2px) scale(1.05);
+        }
+        
+        
+        /* Estilos para el stock de productos */
+        .producto-stock {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin: 12px 0;
+            padding: 8px 12px;
+            background: #F8FAFC;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 500;
+        }
+        
+        .producto-stock i {
+            color: #6B7280;
+            font-size: 12px;
+        }
+        
+        .stock-text {
+            color: #374151;
+            flex: 1;
+        }
+        
+        .stock-indicator {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            animation: pulse-stock 2s infinite;
+        }
+        
+        .stock-alto {
+            background: #10B981;
+            box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.7);
+        }
+        
+        .stock-medio {
+            background: #F59E0B;
+            box-shadow: 0 0 0 0 rgba(245, 158, 11, 0.7);
+        }
+        
+        .stock-bajo {
+            background: #EF4444;
+            box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.7);
+        }
+        
+        .stock-agotado {
+            background: #6B7280;
+            box-shadow: 0 0 0 0 rgba(107, 114, 128, 0.7);
+        }
+        
+        @keyframes pulse-stock {
+            0% {
+                transform: scale(0.95);
+                box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.7);
+            }
+            70% {
+                transform: scale(1);
+                box-shadow: 0 0 0 10px rgba(16, 185, 129, 0);
+            }
+            100% {
+                transform: scale(0.95);
+                box-shadow: 0 0 0 0 rgba(16, 185, 129, 0);
+            }
+        }
+        
+        /* Responsive para stock */
+        @media (max-width: 768px) {
+            .producto-stock {
+                font-size: 12px;
+                padding: 6px 10px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header class="hero-section">
+        <div class="container">
+            <div class="hero-content">
+                <div class="row align-items-center">
+                    <div class="col-lg-8">
+                        <h1 id="heroTiendaNombre" class="display-4 fw-bold mb-4">¡Bienvenidos a TechStore Argentina!</h1>
+                        <p id="heroTiendaDescripcion" class="lead mb-4">Tu tienda de confianza para tecnología y electrónicos. Los mejores precios y productos de calidad garantizada.</p>
+                        <div class="hero-badges">
+                            <span id="heroPlanBadge" class="hero-badge">
+                                <i class="fas fa-store"></i> <span id="heroPlanTexto">Plan Básico</span>
+                            </span>
+                            <span class="hero-badge">
+                                <i class="fas fa-shield-alt"></i> Compra Segura
+                            </span>
+                            <span class="hero-badge">
+                                <i class="fas fa-truck"></i> Envío Disponible
+                            </span>
+                        </div>
+                    </div>
+                    <div class="col-lg-4 text-center">
+                        <div class="category-icon">
+                            <i class="fas fa-laptop"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Categorías -->
+    <section class="py-5">
+        <div class="container">
+            <div class="section-header">
+                <h2><i class="fas fa-th-large"></i> Categorías</h2>
+                <p>Encuentra lo que buscas en nuestras categorías</p>
+            </div>
+            
+            <div id="categoriasGrid" class="row">
+                <!-- Las categorías se cargan dinámicamente desde admin -->
+                <div class="col-12 text-center py-5">
+                    <i class="fas fa-box-open fa-3x text-muted mb-3"></i>
+                    <p class="text-muted">No hay categorías configuradas todavía</p>
+                    <small class="text-muted">Visita el panel de administración para agregar categorías</small>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Productos Destacados -->
+    <section class="productos-section">
+        <div class="container">
+            <div class="section-header">
+                <h2><i class="fas fa-star"></i> Productos Destacados</h2>
+                <p>Los productos más populares y mejor valorados</p>
+            </div>
+            
+            <!-- Filtros de Búsqueda -->
+            <div class="filtros-container mb-4">
+                <div class="row">
+                    <div class="col-md-4 mb-3">
+                        <div class="filtro-card busqueda-card">
+                            <label><i class="fas fa-search"></i> Buscar Productos</label>
+                            <div class="busqueda-container">
+                                <input type="text" 
+                                       id="busquedaProductos" 
+                                       class="form-control busqueda-input" 
+                                       placeholder="Buscar por nombre o descripción...">
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="col-md-3 mb-3">
+                        <div class="filtro-card">
+                            <label><i class="fas fa-th-large"></i> Categoría</label>
+                            <select id="filtroCategoría" class="form-select">
+                                <option value="">Todas las categorías</option>
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <div class="col-md-3 mb-3">
+                        <div class="filtro-card">
+                            <label><i class="fas fa-sort-amount-down"></i> Ordenar Por</label>
+                            <select id="filtroOrden" class="form-select">
+                                <option value="destacado">Destacados</option>
+                                <option value="precio-menor">Precio: Menor a Mayor</option>
+                                <option value="precio-mayor">Precio: Mayor a Menor</option>
+                                <option value="nombre">Nombre A-Z</option>
+                                <option value="nuevo">Más Nuevos</option>
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <div class="col-md-2 mb-3">
+                        <div class="filtro-card">
+                            <label><i class="fas fa-filter"></i> Filtrar</label>
+                            <button class="btn btn-primary w-100" onclick="aplicarFiltros()">
+                                <i class="fas fa-search me-2"></i>Buscar
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="filtros-acciones">
+                    <div class="resultados-info">
+                        <span id="contadorProductos">0 productos encontrados</span>
+                    </div>
+                    <div class="filtros-botones">
+                        <button class="btn btn-outline-secondary" onclick="limpiarFiltros()">
+                            <i class="fas fa-redo me-2"></i>Limpiar Filtros
+                        </button>
+                    </div>
+                </div>
+            </div>
+            
+            <div id="productosGrid" class="productos-grid">
+                <!-- Los productos se cargan dinámicamente desde admin -->
+                <div class="col-12 text-center py-5">
+                    <i class="fas fa-shopping-bag fa-3x text-muted mb-3"></i>
+                    <p class="text-muted">No hay productos disponibles todavía</p>
+                    <small class="text-muted">Visita el panel de administración para agregar productos</small>
+                </div>
+            </div>
+            
+        </div>
+    </section>
+
+    <!-- Servicios Section -->
+    <section id="servicios" class="py-5" style="background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);">
+        <div class="container">
+            <div class="section-header">
+                <h2><i class="fas fa-tools"></i> Nuestros Servicios</h2>
+                <p>Servicios profesionales de calidad para nuestros clientes</p>
+            </div>
+            
+            <!-- Filtros de Servicios -->
+            <div class="filtros-container mb-4">
+                <div class="row">
+                    <div class="col-md-3">
+                        <div class="filtro-group">
+                            <label for="busquedaServicios" class="filtro-label">
+                                <i class="fas fa-search"></i> Buscar Servicios
+                            </label>
+                            <input type="text" id="busquedaServicios" class="form-control busqueda-input" placeholder="Ej: peluquería, estética, transporte..." autocomplete="off">
+                        </div>
+                    </div>
+                    <div class="col-md-2">
+                        <div class="filtro-group">
+                            <label for="categoriaServicio" class="filtro-label">
+                                <i class="fas fa-tags"></i> Categoría
+                            </label>
+                            <select id="categoriaServicio" class="form-select" onchange="aplicarFiltrosServicios()">
+                                <option value="">Todas las categorías</option>
+                                <option value="peluqueria">Peluquería</option>
+                                <option value="estetica">Estética y Belleza</option>
+                                <option value="transporte">Transporte</option>
+                                <option value="lubricentro">Lubricentro</option>
+                                <option value="detail">Detail y Limpieza</option>
+                                <option value="distribucion">Distribución</option>
+                                <option value="restaurante">Restaurante</option>
+                                <option value="bar">Bar y Tragos</option>
+                                <option value="cafe">Café y Té</option>
+                                <option value="panaderia">Panadería</option>
+                                <option value="comida">Comida</option>
+                                <option value="general">Negocio General</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="col-md-2">
+                        <div class="filtro-group">
+                            <label for="precioMinServicio" class="filtro-label">
+                                <i class="fas fa-dollar-sign"></i> Precio Mín
+                            </label>
+                            <input type="number" id="precioMinServicio" class="form-control" min="0" max="100000" value="0" placeholder="0" onchange="aplicarFiltrosServicios()">
+                        </div>
+                    </div>
+                    <div class="col-md-2">
+                        <div class="filtro-group">
+                            <label for="precioMaxServicio" class="filtro-label">
+                                <i class="fas fa-dollar-sign"></i> Precio Máx
+                            </label>
+                            <input type="number" id="precioMaxServicio" class="form-control" min="0" max="100000" value="100000" placeholder="100000" onchange="aplicarFiltrosServicios()">
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="filtro-group">
+                            <label class="filtro-label">
+                                <i class="fas fa-filter"></i> Filtros Especiales
+                            </label>
+                            <div class="filtros-especiales">
+                                <div class="form-check form-check-inline">
+                                    <input class="form-check-input" type="checkbox" id="envioDomicilio" onchange="aplicarFiltrosServicios()">
+                                    <label class="form-check-label" for="envioDomicilio">
+                                        <i class="fas fa-truck"></i> Envío a domicilio
+                                    </label>
+                                </div>
+                                <div class="form-check form-check-inline">
+                                    <input class="form-check-input" type="checkbox" id="masBarato" onchange="aplicarFiltrosServicios()">
+                                    <label class="form-check-label" for="masBarato">
+                                        <i class="fas fa-tag"></i> Más barato
+                                    </label>
+                                </div>
+                                <div class="form-check form-check-inline">
+                                    <input class="form-check-input" type="checkbox" id="masCercano" onchange="aplicarFiltrosServicios()">
+                                    <label class="form-check-label" for="masCercano">
+                                        <i class="fas fa-map-marker-alt"></i> Más cercano
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Grid de Servicios -->
+            <div class="servicios-grid" id="serviciosGrid">
+                <!-- Los servicios se cargarán dinámicamente -->
+            </div>
+            
+            <!-- Paginación de Servicios -->
+            <div class="paginacion-container">
+                <nav aria-label="Paginación de servicios">
+                    <ul class="pagination justify-content-center" id="paginacionServicios">
+                        <!-- La paginación se generará dinámicamente -->
+                    </ul>
+                </nav>
+            </div>
+        </div>
+    </section>
+
+    <!-- Testimonios y Feedbacks -->
+    <section class="py-5" style="background: #F8FAFC;">
+        <div class="container">
+            <div class="section-header">
+                <h2><i class="fas fa-quote-left"></i> Opiniones de Nuestros Clientes</h2>
+                <p>La satisfacción de nuestros clientes es nuestra prioridad</p>
+            </div>
+            
+            <!-- Estadísticas de Feedbacks -->
+            <div id="feedbackStats">
+                <!-- Las estadísticas se cargan dinámicamente -->
+            </div>
+            
+            <!-- Lista de Feedbacks -->
+            <div id="feedbacksContainer" class="mt-4">
+                <!-- Los feedbacks se cargan dinámicamente -->
+            </div>
+        </div>
+    </section>
+
+    <!-- Modal de Feedback -->
+    <div id="feedbackModal" class="modal">
+        <div class="feedback-modal-content">
+            <div class="feedback-modal-header">
+                <h3><i class="fas fa-star me-2"></i>Comparte tu Experiencia</h3>
+                <p>Tu opinión es muy importante para nosotros y otros clientes</p>
+                <button class="feedback-modal-close" onclick="FeedbackSystem.cerrarModalFeedback()">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="feedback-modal-body">
+                <form id="feedbackForm" onsubmit="FeedbackSystem.handleSubmitFeedback(event)">
+                    <div class="form-group">
+                        <label for="feedbackNombre"><i class="fas fa-user"></i> Tu Nombre</label>
+                        <input type="text" id="feedbackNombre" name="nombre" class="form-control" placeholder="Ej: Juan Pérez" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="feedbackEmail"><i class="fas fa-envelope"></i> Email (Opcional)</label>
+                        <input type="email" id="feedbackEmail" name="email" class="form-control" placeholder="tu@email.com">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="feedbackRating"><i class="fas fa-star"></i> Calificación</label>
+                        <div class="rating-input">
+                            <i class="far fa-star rating-star" onclick="FeedbackSystem.seleccionarEstrellas(1)"></i>
+                            <i class="far fa-star rating-star" onclick="FeedbackSystem.seleccionarEstrellas(2)"></i>
+                            <i class="far fa-star rating-star" onclick="FeedbackSystem.seleccionarEstrellas(3)"></i>
+                            <i class="far fa-star rating-star" onclick="FeedbackSystem.seleccionarEstrellas(4)"></i>
+                            <i class="far fa-star rating-star" onclick="FeedbackSystem.seleccionarEstrellas(5)"></i>
+                        </div>
+                        <input type="hidden" id="feedbackRating" name="rating" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="feedbackComentario"><i class="fas fa-comment"></i> Tu Opinión</label>
+                        <textarea id="feedbackComentario" name="comentario" class="form-control" rows="5" placeholder="Cuéntanos sobre tu experiencia con nuestra tienda..."></textarea>
+                    </div>
+                    
+                    <button type="submit" class="btn-submit-feedback">
+                        <i class="fas fa-paper-plane me-2"></i>Enviar Opinión
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="store-footer">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-4 mb-4">
+                    <div class="footer-section">
+                        <h5 id="footerTiendaNombre">Mi Tienda</h5>
+                        <p id="footerTiendaDescripcion">Tu tienda de confianza para productos de calidad.</p>
+                        <div id="footerCresaliaBadge" class="cresalia-badge">
+                            <i class="fas fa-store"></i>
+                            Powered by Cresalia
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="col-md-2 mb-4">
+                    <div class="footer-section">
+                        <h5>Productos</h5>
+                        <ul>
+                            <li><a href="#productos">Ver Catálogo</a></li>
+                            <li><a href="#servicios">Servicios</a></li>
+                            <li><a href="#ofertas">Ofertas</a></li>
+                            <li><a href="#novedades">Novedades</a></li>
+                        </ul>
+                    </div>
+                </div>
+                
+                <div class="col-md-2 mb-4">
+                    <div class="footer-section">
+                        <h5>Soporte</h5>
+                        <ul>
+                            <li><a href="#ayuda">Ayuda</a></li>
+                            <li><a href="#garantia">Garantía</a></li>
+                            <li><a href="#devoluciones">Devoluciones</a></li>
+                            <li><a href="#contacto">Contacto</a></li>
+                        </ul>
+                    </div>
+                </div>
+                
+                <div class="col-md-2 mb-4">
+                    <div class="footer-section">
+                        <h5>Empresa</h5>
+                        <ul>
+                            <li><a href="#nosotros">Nosotros</a></li>
+                            <li><a href="#trabaja">Trabaja con nosotros</a></li>
+                            <li><a href="#prensa">Prensa</a></li>
+                            <li><a href="#terminos">Términos</a></li>
+                        </ul>
+                    </div>
+                </div>
+                
+                <div class="col-md-2 mb-4">
+                    <div class="footer-section">
+                        <h5>Contacto</h5>
+                        <ul>
+                            <li><i class="fas fa-phone"></i> <span id="footerTelefono">+00 00 0000-0000</span></li>
+                            <li><i class="fas fa-envelope"></i> <span id="footerEmail">info@mitienda.com</span></li>
+                            <li><i class="fas fa-map-marker-alt"></i> <span id="footerDireccion">Tu Ciudad</span></li>
+                            <li id="footerWhatsappLink"><i class="fab fa-whatsapp"></i> WhatsApp</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            
+            <hr style="border-color: #4B5563; margin: 30px 0;">
+            
+            <div class="row align-items-center">
+                <div class="col-md-6">
+                    <p class="mb-0">&copy; <span class="footer-year">2024</span> <span id="footerCopyright">Mi Tienda</span>. Todos los derechos reservados.</p>
+                </div>
+                <div class="col-md-6 text-md-end">
+                    <p class="mb-0">Desarrollado con <i class="fas fa-heart text-danger"></i> por <strong>Cresalia</strong></p>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Scripts -->
+    <script src="../../js/elegant-notifications.js"></script>
+    
+    <!-- Sistema de Sincronización de Tienda -->
+    <script src="sincronizacion-tienda.js"></script>
+    
+    <!-- Sistema de Personalización de Tienda -->
+    <script src="personalizacion-tienda.js"></script>
+    
+    <script src="../../js/sistema-feedbacks.js"></script>
+    
+    <script>
+        // ========================================
+        // FUNCIONES GLOBALES (Definir primero)
+        // ========================================
+        
+        // Funciones para carrito (deben estar en scope global)
+        function agregarAlCarrito(id, nombre, precio) {
+            let carrito = JSON.parse(localStorage.getItem('carrito') || '[]');
+            carrito.push({ id, nombre, precio, cantidad: 1, fecha: new Date().toISOString() });
+            localStorage.setItem('carrito', JSON.stringify(carrito));
+            
+            if (window.elegantNotifications) {
+                window.elegantNotifications.show(`✅ ${nombre} agregado al carrito`, 'success');
+            } else {
+                alert(`${nombre} agregado al carrito`);
+            }
+        }
+        
+        function verDetalles(id) {
+            if (window.elegantNotifications) {
+                window.elegantNotifications.show('🔍 Ver detalles del producto (próximamente)', 'info');
+            } else {
+                alert('Ver detalles del producto (próximamente)');
+            }
+        }
+        
+        // Demo de notificaciones
+        function demoAction(action) {
+            if (window.elegantNotifications) {
+                window.elegantNotifications.show(`🛍️ ${action}`, 'success');
+            } else {
+                alert(action);
+            }
+        }
+        
+        // ========================================
+        // INICIALIZACIÓN
+        // ========================================
+        
+        // Demo de notificación inicial y cargar año del footer
+        document.addEventListener('DOMContentLoaded', function() {
+            // Cargar año dinámico del footer
+            cargarAñoFooter();
+            
+            setTimeout(() => {
+                if (window.elegantNotifications) {
+                    window.elegantNotifications.show('🏪 ¡Bienvenido a nuestra tienda!', 'success');
+                }
+            }, 1000);
+        });
+        
+        function cargarAñoFooter() {
+            // Intentar cargar el año desde localStorage
+            const añoGuardado = localStorage.getItem('techstore_footer_year');
+            const footerYear = document.querySelector('.footer-year');
+            
+            if (añoGuardado && footerYear) {
+                footerYear.textContent = añoGuardado;
+            } else if (footerYear) {
+                // Si no hay año guardado, usar el año actual
+                footerYear.textContent = new Date().getFullYear();
+            }
+        }
+        
+        // Demo de scroll suave
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                const href = this.getAttribute('href');
+                
+                // Validar que el href no sea solo "#"
+                if (!href || href === '#' || href.length <= 1) {
+                    return; // No hacer nada si es solo "#"
+                }
+                
+                e.preventDefault();
+                const target = document.querySelector(href);
+                if (target) {
+                    target.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'start'
+                    });
+                }
+            });
+        });
+        
+    </script>
+
+    <!-- Widget de Soporte para Usuarios -->
+    <script src="../../core/widget-soporte-usuarios.js"></script>
+    
+    <!-- Sistema de Soporte Integrado -->
+    <script src="../../js/sistema-soporte-integrado-cresalia.js?v=1.1"></script>
+    <script src="../../js/tienda-search-filters.js?v=1.0"></script>
+    
+    <!-- Cargar datos dinámicos de la tienda -->
+    <script>
+        // Cargar nombre de la tienda dinámicamente
+        function cargarDatosTienda() {
+            const tiendaActual = JSON.parse(localStorage.getItem('tienda_actual') || '{}');
+            const config = JSON.parse(localStorage.getItem('techstore_configuracion') || '{}');
+            
+            // Datos básicos
+            const nombreTienda = tiendaActual.nombre_tienda || config.nombreTienda || 'Mi Tienda';
+            const descripcion = config.descripcion || tiendaActual.descripcion || 'Tu tienda de confianza para productos de calidad.';
+            const email = tiendaActual.email || config.email || 'info@mitienda.com';
+            const telefono = config.telefono || '+00 00 0000-0000';
+            const direccion = config.direccion || 'Tu Ciudad';
+            const plan = tiendaActual.plan || 'basico';
+            const whatsapp = config.whatsapp || '';
+            
+            console.log('📦 Cargando datos de tienda:', {
+                nombreTienda,
+                email,
+                plan
+            });
+            
+            // Actualizar título de la página
+            const pageTitle = document.getElementById('pageTitle');
+            if (pageTitle) {
+                pageTitle.textContent = nombreTienda;
+            }
+            
+            // Actualizar hero section
+            const heroNombre = document.getElementById('heroTiendaNombre');
+            if (heroNombre) {
+                heroNombre.textContent = '¡Bienvenidos a ' + nombreTienda + '!';
+            }
+            
+            const heroDescripcion = document.getElementById('heroTiendaDescripcion');
+            if (heroDescripcion) {
+                heroDescripcion.textContent = descripcion;
+            }
+            
+            // Actualizar plan badge en hero
+            const heroPlanTexto = document.getElementById('heroPlanTexto');
+            const heroPlanBadge = document.getElementById('heroPlanBadge');
+            if (heroPlanTexto && heroPlanBadge) {
+                let planNombre = 'Plan Básico';
+                let planIcono = 'fa-store';
+                
+                if (plan === 'pro') {
+                    planNombre = 'Plan PRO';
+                    planIcono = 'fa-crown';
+                } else if (plan === 'enterprise' || plan === 'enterprise_custom') {
+                    planNombre = 'Plan Enterprise';
+                    planIcono = 'fa-star';
+                }
+                
+                heroPlanTexto.textContent = planNombre;
+                heroPlanBadge.querySelector('i').className = 'fas ' + planIcono;
+            }
+            
+            // Actualizar footer
+            const footerTiendaNombre = document.getElementById('footerTiendaNombre');
+            if (footerTiendaNombre) {
+                footerTiendaNombre.textContent = nombreTienda;
+            }
+            
+            const footerTiendaDescripcion = document.getElementById('footerTiendaDescripcion');
+            if (footerTiendaDescripcion) {
+                footerTiendaDescripcion.textContent = descripcion;
+            }
+            
+            const footerEmail = document.getElementById('footerEmail');
+            if (footerEmail) {
+                footerEmail.textContent = email;
+            }
+            
+            const footerTelefono = document.getElementById('footerTelefono');
+            if (footerTelefono) {
+                footerTelefono.textContent = telefono;
+            }
+            
+            const footerDireccion = document.getElementById('footerDireccion');
+            if (footerDireccion) {
+                footerDireccion.textContent = direccion;
+            }
+            
+            const footerCopyright = document.getElementById('footerCopyright');
+            if (footerCopyright) {
+                footerCopyright.textContent = nombreTienda;
+            }
+            
+            // Ocultar badge de Cresalia si es plan PRO o superior
+            const footerCresaliaBadge = document.getElementById('footerCresaliaBadge');
+            if (footerCresaliaBadge) {
+                if (plan === 'pro' || plan === 'enterprise' || plan === 'enterprise_custom') {
+                    footerCresaliaBadge.style.display = 'none';
+                } else {
+                    footerCresaliaBadge.style.display = 'inline-flex';
+                }
+            }
+            
+            // Configurar link de WhatsApp
+            const footerWhatsappLink = document.getElementById('footerWhatsappLink');
+            if (footerWhatsappLink && whatsapp) {
+                footerWhatsappLink.innerHTML = `<a href="https://wa.me/${whatsapp.replace(/[^0-9]/g, '')}" target="_blank" style="color: #D1D5DB; text-decoration: none;">
+                    <i class="fab fa-whatsapp"></i> WhatsApp
+                </a>`;
+            }
+            
+            console.log('✅ Datos de tienda cargados correctamente:', nombreTienda);
+            
+            // Cargar productos y categorías
+            cargarProductosYCategorias();
+            
+            // Cargar servicios
+            cargarServicios();
+        }
+        
+        // Cargar productos y categorías dinámicamente
+        async function cargarProductosYCategorias() {
+            // Intentar cargar desde localStorage primero
+            const productos = JSON.parse(localStorage.getItem('productos_' + (JSON.parse(localStorage.getItem('tienda_actual') || '{}').id || 'demo')) || '[]');
+            const categoriasPersonalizadas = JSON.parse(localStorage.getItem('categorias_tienda') || '[]');
+            
+            console.log('📦 Productos cargados:', productos.length);
+            console.log('📁 Categorías cargadas:', categoriasPersonalizadas.length);
+            
+            // Guardar productos en variable global para filtros
+            window.todosLosProductos = productos;
+            window.productosFiltrados = productos;
+            
+            // Configurar sincronización automática
+            configurarSincronizacionProductos();
+            
+            // Cargar categorías en selector de filtros
+            const selectCategoria = document.getElementById('filtroCategoría');
+            if (selectCategoria && categoriasPersonalizadas.length > 0) {
+                selectCategoria.innerHTML = '<option value="">Todas las categorías</option>';
+                categoriasPersonalizadas.forEach(cat => {
+                    selectCategoria.innerHTML += `<option value="${cat.id}">${cat.nombre}</option>`;
+                });
+            }
+            
+            // Cargar categorías
+            const categoriasGrid = document.getElementById('categoriasGrid');
+            if (categoriasGrid && categoriasPersonalizadas.length > 0) {
+                categoriasGrid.innerHTML = '';
+                categoriasPersonalizadas.slice(0, 8).forEach(cat => {
+                    const catHTML = `
+                        <div class="col-md-3 mb-4">
+                            <div class="product-category">
+                                <div class="category-icon">
+                                    <i class="${cat.icono || 'fas fa-box'}"></i>
+                                </div>
+                                <h5>${cat.nombre}</h5>
+                                <p>${cat.descripcion || 'Ver productos'}</p>
+                            </div>
+                        </div>
+                    `;
+                    categoriasGrid.innerHTML += catHTML;
+                });
+            }
+            
+            // Renderizar productos inicial
+            renderizarProductos(productos);
+        }
+        
+        // Función para renderizar productos
+        function renderizarProductos(productos) {
+            const productosGrid = document.getElementById('productosGrid');
+            const contadorProductos = document.getElementById('contadorProductos');
+            
+            if (contadorProductos) {
+                contadorProductos.innerHTML = `<span>${productos.length}</span> productos encontrados`;
+            }
+            
+            if (productosGrid && productos.length > 0) {
+                productosGrid.innerHTML = '';
+                productos.forEach(prod => {
+                    const prodHTML = `
+                        <div class="producto-card">
+                            <div class="producto-image">
+                                ${prod.imagen ? 
+                                    `<img src="${prod.imagen}" alt="${prod.nombre}" style="max-width: 100%; height: auto;">` : 
+                                    `<i class="fas fa-box fa-3x" style="color: #D1D5DB;"></i>`
+                                }
+                            </div>
+                            ${prod.destacado ? '<div class="product-badge badge-featured">Destacado</div>' : ''}
+                            ${prod.oferta ? '<div class="product-badge badge-sale">Oferta</div>' : ''}
+                            ${prod.nuevo ? '<div class="product-badge badge-new">Nuevo</div>' : ''}
+                            <div class="producto-content">
+                                <h3 class="producto-title">${prod.nombre}</h3>
+                                <p class="producto-description">${prod.descripcion || ''}</p>
+                                <div class="producto-stock">
+                                    <i class="fas fa-box"></i>
+                                    <span class="stock-text">Stock: ${prod.stock || generarStockAleatorio()}</span>
+                                    <span class="stock-indicator ${obtenerClaseStock(prod.stock)}"></span>
+                                </div>
+                                <div class="producto-price">
+                                    ${prod.precioOriginal ? `<span class="price-original">$${prod.precioOriginal}</span>` : ''}
+                                    <span class="price-current">$${prod.precio}</span>
+                                </div>
+                                <div class="producto-actions">
+                                    <button class="btn-add-cart" onclick="agregarAlCarrito('${prod.id}', '${prod.nombre}', ${prod.precio})">
+                                        <i class="fas fa-shopping-cart"></i>
+                                        Agregar al Carrito
+                                    </button>
+                                    <button class="btn-view-store" onclick="verDetalles('${prod.id}')">
+                                        <i class="fas fa-info-circle"></i>
+                                        Ver Detalles
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                    productosGrid.innerHTML += prodHTML;
+                });
+            } else if (productosGrid) {
+                productosGrid.innerHTML = `
+                    <div class="col-12 text-center py-5">
+                        <i class="fas fa-search fa-3x text-muted mb-3"></i>
+                        <p class="text-muted">No se encontraron productos con los filtros seleccionados</p>
+                        <button class="btn btn-primary" onclick="limpiarFiltros()">
+                            <i class="fas fa-redo me-2"></i>Limpiar Filtros
+                        </button>
+                    </div>
+                `;
+            }
+        }
+        
+        // ===== SISTEMA DE FILTROS =====
+        
+        // Aplicar filtros
+        function aplicarFiltros() {
+            const busqueda = document.getElementById('busquedaProductos')?.value.toLowerCase() || '';
+            const categoria = document.getElementById('filtroCategoría')?.value || '';
+            const orden = document.getElementById('filtroOrden')?.value || 'destacado';
+            
+            let productosFiltrados = [...window.todosLosProductos];
+            
+            // Filtro de búsqueda
+            if (busqueda) {
+                productosFiltrados = productosFiltrados.filter(prod => 
+                    prod.nombre.toLowerCase().includes(busqueda) ||
+                    (prod.descripcion && prod.descripcion.toLowerCase().includes(busqueda))
+                );
+            }
+            
+            // Filtro de categoría
+            if (categoria) {
+                productosFiltrados = productosFiltrados.filter(prod => 
+                    prod.categoria_id === categoria || prod.categoria === categoria
+                );
+            }
+            
+            // Ordenamiento
+            switch(orden) {
+                case 'precio-menor':
+                    productosFiltrados.sort((a, b) => parseFloat(a.precio) - parseFloat(b.precio));
+                    break;
+                case 'precio-mayor':
+                    productosFiltrados.sort((a, b) => parseFloat(b.precio) - parseFloat(a.precio));
+                    break;
+                case 'nombre':
+                    productosFiltrados.sort((a, b) => a.nombre.localeCompare(b.nombre));
+                    break;
+                case 'nuevo':
+                    productosFiltrados.sort((a, b) => {
+                        if (a.nuevo && !b.nuevo) return -1;
+                        if (!a.nuevo && b.nuevo) return 1;
+                        return 0;
+                    });
+                    break;
+                case 'destacado':
+                default:
+                    productosFiltrados.sort((a, b) => {
+                        if (a.destacado && !b.destacado) return -1;
+                        if (!a.destacado && b.destacado) return 1;
+                        return 0;
+                    });
+            }
+            
+            window.productosFiltrados = productosFiltrados;
+            renderizarProductos(productosFiltrados);
+            
+            // Notificar
+            if (window.elegantNotifications) {
+                window.elegantNotifications.show(`✅ Se encontraron ${productosFiltrados.length} productos`, 'success');
+            }
+        }
+        
+        // Limpiar filtros
+        function limpiarFiltros() {
+            const busqueda = document.getElementById('busquedaProductos');
+            const categoria = document.getElementById('filtroCategoría');
+            const orden = document.getElementById('filtroOrden');
+            
+            if (busqueda) busqueda.value = '';
+            if (categoria) categoria.value = '';
+            if (orden) orden.value = 'destacado';
+            
+            window.productosFiltrados = window.todosLosProductos;
+            renderizarProductos(window.todosLosProductos);
+            
+            if (window.elegantNotifications) {
+                window.elegantNotifications.show('🔄 Filtros limpiados', 'info');
+            }
+        }
+        
+        // Búsqueda en tiempo real
+        document.addEventListener('DOMContentLoaded', function() {
+            const busquedaInput = document.getElementById('busquedaProductos');
+            if (busquedaInput) {
+                busquedaInput.addEventListener('input', function() {
+                    // Aplicar filtros con un pequeño debounce
+                    clearTimeout(window.busquedaTimeout);
+                    window.busquedaTimeout = setTimeout(() => {
+                        aplicarFiltros();
+                    }, 300);
+                });
+            }
+        });
+        
+        // Ejecutar al cargar la página
+        window.addEventListener('DOMContentLoaded', function() {
+            // NOTA: El nombre de tienda ahora lo actualiza automáticamente sincronizacion-tienda.js
+            // Solo cargamos productos y categorías
+            if (typeof cargarProductosYCategorias === 'function') {
+                cargarProductosYCategorias();
+            }
+            
+            // Inicializar sistema de feedbacks
+            setTimeout(() => {
+                if (typeof FeedbackSystem !== 'undefined') {
+                    FeedbackSystem.init('ejemplo-tienda');
+                    console.log('✅ Sistema de Feedbacks inicializado');
+                } else {
+                    console.error('❌ FeedbackSystem no está disponible');
+                }
+            }, 1000);
+        });
+        
+        // ========================================
+        // FUNCIONES DE STOCK
+        // ========================================
+        
+        function generarStockAleatorio() {
+            // Generar stock aleatorio entre 0 y 100
+            return Math.floor(Math.random() * 101);
+        }
+        
+        function obtenerClaseStock(stock) {
+            const stockNum = stock || generarStockAleatorio();
+            if (stockNum === 0) return 'stock-agotado';
+            if (stockNum <= 10) return 'stock-bajo';
+            if (stockNum <= 30) return 'stock-medio';
+            return 'stock-alto';
+        }
+        
+        function obtenerTextoStock(stock) {
+            const stockNum = stock || generarStockAleatorio();
+            if (stockNum === 0) return 'Agotado';
+            if (stockNum <= 10) return 'Últimas unidades';
+            if (stockNum <= 30) return 'Stock limitado';
+            return 'Disponible';
+        }
+        
+        // ========================================
+        // FUNCIONES DE SERVICIOS
+        // ========================================
+        
+        // Cargar servicios desde localStorage
+        function cargarServicios() {
+            const servicios = JSON.parse(localStorage.getItem('servicios_' + (JSON.parse(localStorage.getItem('tienda_actual') || '{}').id || 'demo')) || '[]');
+            
+            console.log('🔧 Servicios cargados:', servicios.length);
+            
+            // Guardar servicios en variable global
+            window.todosLosServicios = servicios;
+            window.serviciosFiltrados = servicios;
+            
+            // Mostrar servicios
+            mostrarServicios(servicios);
+            
+            // Configurar filtros
+            configurarFiltrosServicios();
+        }
+        
+        // Mostrar servicios en el grid
+        function mostrarServicios(servicios) {
+            const serviciosGrid = document.getElementById('serviciosGrid');
+            if (!serviciosGrid) return;
+            
+            if (servicios.length === 0) {
+                serviciosGrid.innerHTML = `
+                    <div class="col-12 text-center py-5">
+                        <i class="fas fa-tools fa-3x text-muted mb-3"></i>
+                        <p class="text-muted">No hay servicios disponibles todavía</p>
+                        <small class="text-muted">Visita el panel de administración para agregar servicios</small>
+                    </div>
+                `;
+                return;
+            }
+            
+            serviciosGrid.innerHTML = '';
+            servicios.forEach(servicio => {
+                const servicioHTML = crearServicioCard(servicio);
+                serviciosGrid.innerHTML += servicioHTML;
+            });
+        }
+        
+        // Crear tarjeta de servicio
+        function crearServicioCard(servicio) {
+            const iconos = {
+                'peluqueria': '💇‍♀️',
+                'estetica': '💄',
+                'transporte': '🚗',
+                'lubricentro': '🔧',
+                'detail': '✨',
+                'distribucion': '📦',
+                'restaurante': '🍽️',
+                'bar': '🍻',
+                'cafe': '☕',
+                'panaderia': '🥖',
+                'comida': '🍕',
+                'general': '🏪'
+            };
+            
+            const colores = {
+                'peluqueria': '#ec4899',
+                'estetica': '#f59e0b',
+                'transporte': '#3b82f6',
+                'lubricentro': '#6b7280',
+                'detail': '#10b981',
+                'distribucion': '#8b5cf6',
+                'restaurante': '#ef4444',
+                'bar': '#f97316',
+                'cafe': '#a3a3a3',
+                'panaderia': '#fbbf24',
+                'comida': '#f43f5e',
+                'general': '#6366f1'
+            };
+            
+            const icono = iconos[servicio.categoria] || '🔧';
+            const color = colores[servicio.categoria] || '#667eea';
+            
+            return `
+                <div class="servicio-card">
+                    <div class="servicio-header">
+                        <div class="servicio-icon" style="background: ${color};">
+                            ${icono}
+                        </div>
+                        <div class="servicio-info">
+                            <h3>${servicio.nombre}</h3>
+                            <div class="servicio-categoria">${obtenerNombreCategoria(servicio.categoria)}</div>
+                        </div>
+                    </div>
+                    
+                    <div class="servicio-descripcion">
+                        ${servicio.descripcion || 'Servicio profesional de calidad.'}
+                    </div>
+                    
+                    <div class="servicio-precio">
+                        $${servicio.precio || 'Consultar'}
+                    </div>
+                    
+                    <div class="servicio-features">
+                        ${servicio.envioDomicilio ? '<span class="servicio-feature"><i class="fas fa-truck"></i> Envío a domicilio</span>' : ''}
+                        ${servicio.distancia ? `<span class="servicio-feature"><i class="fas fa-map-marker-alt"></i> ${servicio.distancia} km</span>` : ''}
+                        ${servicio.telefono ? `<span class="servicio-feature"><i class="fas fa-phone"></i> ${servicio.telefono}</span>` : ''}
+                    </div>
+                    
+                    <div class="servicio-actions">
+                        <button class="btn-servicio btn-contactar" onclick="contactarServicio('${servicio.id}')">
+                            <i class="fas fa-phone"></i> Contactar
+                        </button>
+                        <button class="btn-servicio btn-favorito" onclick="agregarFavoritoServicio('${servicio.id}')">
+                            <i class="fas fa-heart"></i> Favorito
+                        </button>
+                    </div>
+                </div>
+            `;
+        }
+        
+        // Obtener nombre de categoría
+        function obtenerNombreCategoria(categoria) {
+            const nombres = {
+                'peluqueria': 'Peluquería',
+                'estetica': 'Estética y Belleza',
+                'transporte': 'Transporte',
+                'lubricentro': 'Lubricentro',
+                'detail': 'Detail y Limpieza',
+                'distribucion': 'Distribución',
+                'restaurante': 'Restaurante',
+                'bar': 'Bar y Tragos',
+                'cafe': 'Café y Té',
+                'panaderia': 'Panadería',
+                'comida': 'Comida',
+                'general': 'Negocio General'
+            };
+            return nombres[categoria] || 'Servicio';
+        }
+        
+        // Configurar filtros de servicios
+        function configurarFiltrosServicios() {
+            const busquedaInput = document.getElementById('busquedaServicios');
+            if (busquedaInput) {
+                busquedaInput.addEventListener('input', aplicarFiltrosServicios);
+            }
+        }
+        
+        // Aplicar filtros de servicios
+        function aplicarFiltrosServicios() {
+            const busqueda = document.getElementById('busquedaServicios')?.value.toLowerCase() || '';
+            const categoria = document.getElementById('categoriaServicio')?.value || '';
+            const precioMin = parseFloat(document.getElementById('precioMinServicio')?.value) || 0;
+            const precioMax = parseFloat(document.getElementById('precioMaxServicio')?.value) || 100000;
+            const envíoDomicilio = document.getElementById('envioDomicilio')?.checked || false;
+            const masBarato = document.getElementById('masBarato')?.checked || false;
+            const masCercano = document.getElementById('masCercano')?.checked || false;
+            
+            let serviciosFiltrados = [...window.todosLosServicios];
+            
+            // Filtro por búsqueda
+            if (busqueda) {
+                serviciosFiltrados = serviciosFiltrados.filter(servicio => 
+                    servicio.nombre.toLowerCase().includes(busqueda) ||
+                    servicio.descripcion?.toLowerCase().includes(busqueda)
+                );
+            }
+            
+            // Filtro por categoría
+            if (categoria) {
+                serviciosFiltrados = serviciosFiltrados.filter(servicio => 
+                    servicio.categoria === categoria
+                );
+            }
+            
+            // Filtro por precio
+            serviciosFiltrados = serviciosFiltrados.filter(servicio => {
+                const precio = parseFloat(servicio.precio) || 0;
+                return precio >= precioMin && precio <= precioMax;
+            });
+            
+            // Filtro por envío a domicilio
+            if (envíoDomicilio) {
+                serviciosFiltrados = serviciosFiltrados.filter(servicio => 
+                    servicio.envioDomicilio
+                );
+            }
+            
+            // Ordenamiento
+            if (masBarato) {
+                serviciosFiltrados.sort((a, b) => (parseFloat(a.precio) || 0) - (parseFloat(b.precio) || 0));
+            } else if (masCercano) {
+                serviciosFiltrados.sort((a, b) => (parseFloat(a.distancia) || 0) - (parseFloat(b.distancia) || 0));
+            }
+            
+            // Actualizar variable global
+            window.serviciosFiltrados = serviciosFiltrados;
+            
+            // Mostrar servicios filtrados
+            mostrarServicios(serviciosFiltrados);
+        }
+        
+        // Contactar servicio
+        function contactarServicio(servicioId) {
+            const servicio = window.todosLosServicios.find(s => s.id === servicioId);
+            if (!servicio) return;
+            
+            // Simular contacto (aquí integrarías con WhatsApp, teléfono, etc.)
+            alert(`Contactando con ${servicio.nombre}\nTeléfono: ${servicio.telefono || 'No disponible'}\n\n¡Pronto te contactaremos!`);
+        }
+        
+        // Agregar a favoritos
+        function agregarFavoritoServicio(servicioId) {
+            const servicio = window.todosLosServicios.find(s => s.id === servicioId);
+            if (!servicio) return;
+            
+            // Simular agregar a favoritos
+            alert(`¡${servicio.nombre} agregado a favoritos! 💜`);
+        }
+        
+        // ===== SISTEMA DE GARANTÍAS Y DEVOLUCIONES =====
+        
+        // Cargar y mostrar información de garantías en el footer
+        function cargarInformacionGarantias() {
+            const tiendaId = JSON.parse(localStorage.getItem('tienda_actual') || '{}').id || 'demo';
+            const garantias = JSON.parse(localStorage.getItem('garantias_' + tiendaId) || 'null');
+            
+            if (!garantias) return;
+            
+            // Buscar el footer para agregar la información
+            const footer = document.querySelector('footer') || document.querySelector('.footer');
+            if (!footer) return;
+            
+            // Crear sección de garantías
+            const garantiasHTML = `
+                <div class="garantias-section" style="background: #f8fafc; padding: 30px 0; margin-top: 20px; border-top: 2px solid #e2e8f0;">
+                    <div class="container">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <h4 style="color: #2d3748; margin-bottom: 15px;">
+                                    <i class="fas fa-shield-alt" style="color: #10b981; margin-right: 8px;"></i>
+                                    Garantías
+                                </h4>
+                                ${garantias.mesesGarantia > 0 ? `
+                                    <p style="color: #4a5568; margin-bottom: 10px;">
+                                        <strong>Garantía:</strong> ${garantias.mesesGarantia} ${garantias.mesesGarantia === 1 ? 'mes' : 'meses'}
+                                    </p>
+                                ` : `
+                                    <p style="color: #4a5568; margin-bottom: 10px;">
+                                        <strong>Garantía:</strong> Sin garantía
+                                    </p>
+                                `}
+                                ${garantias.condicionesGarantia ? `
+                                    <p style="color: #4a5568; font-size: 0.9rem; margin-bottom: 15px;">
+                                        ${garantias.condicionesGarantia}
+                                    </p>
+                                ` : ''}
+                            </div>
+                            <div class="col-md-6">
+                                <h4 style="color: #2d3748; margin-bottom: 15px;">
+                                    <i class="fas fa-undo" style="color: #667eea; margin-right: 8px;"></i>
+                                    Devoluciones
+                                </h4>
+                                ${garantias.politicaDevoluciones !== 'no' ? `
+                                    <p style="color: #4a5568; margin-bottom: 10px;">
+                                        <strong>Devoluciones:</strong> ${garantias.politicaDevoluciones} días
+                                    </p>
+                                ` : `
+                                    <p style="color: #4a5568; margin-bottom: 10px;">
+                                        <strong>Devoluciones:</strong> No aceptamos devoluciones
+                                    </p>
+                                `}
+                                ${garantias.procesoDevoluciones ? `
+                                    <p style="color: #4a5568; font-size: 0.9rem; margin-bottom: 15px;">
+                                        ${garantias.procesoDevoluciones}
+                                    </p>
+                                ` : ''}
+                            </div>
+                        </div>
+                        ${garantias.contactoGarantias ? `
+                            <div class="row mt-3">
+                                <div class="col-12">
+                                    <p style="color: #4a5568; text-align: center; margin-bottom: 0;">
+                                        <i class="fas fa-phone" style="color: #10b981; margin-right: 5px;"></i>
+                                        <strong>Contacto para garantías:</strong> ${garantias.contactoGarantias}
+                                    </p>
+                                </div>
+                            </div>
+                        ` : ''}
+                    </div>
+                </div>
+            `;
+            
+            // Agregar al footer
+            footer.insertAdjacentHTML('beforeend', garantiasHTML);
+            
+            console.log('✅ Información de garantías agregada al footer');
+        }
+        
+        // ============================================
+        // SISTEMA DE SINCRONIZACIÓN AUTOMÁTICA
+        // ============================================
+        
+        // Configurar sincronización de productos
+        function configurarSincronizacionProductos() {
+            // Escuchar cambios en localStorage
+            window.addEventListener('storage', function(e) {
+                if (e.key && e.key.startsWith('productos_')) {
+                    console.log('🔄 Cambios detectados en productos, actualizando...');
+                    cargarProductosYCategorias();
+                }
+                if (e.key === 'servicios_tienda') {
+                    console.log('🔄 Cambios detectados en servicios, actualizando...');
+                    cargarServicios();
+                }
+                if (e.key === 'tienda_personalizacion') {
+                    console.log('🔄 Cambios detectados en personalización, aplicando...');
+                    aplicarPersonalizacion();
+                }
+            });
+            
+            // Escuchar mensajes de sincronización
+            window.addEventListener('message', function(e) {
+                if (e.data && e.data.type === 'CRESALIA_PRODUCTOS_ACTUALIZADOS') {
+                    console.log('🔄 Sincronización de productos recibida');
+                    window.todosLosProductos = e.data.productos;
+                    renderizarProductos(e.data.productos);
+                }
+                if (e.data && e.data.type === 'CRESALIA_SERVICIOS_ACTUALIZADOS') {
+                    console.log('🔄 Sincronización de servicios recibida');
+                    cargarServicios();
+                }
+                if (e.data && e.data.type === 'CRESALIA_PERSONALIZACION_ACTUALIZADA') {
+                    console.log('🔄 Sincronización de personalización recibida');
+                    aplicarPersonalizacion(e.data.data);
+                }
+            });
+            
+            // Sincronización periódica cada 3 segundos
+            setInterval(function() {
+                const ultimaSincronizacion = localStorage.getItem('tienda_ultima_sincronizacion');
+                if (ultimaSincronizacion) {
+                    const tiempoTranscurrido = Date.now() - new Date(ultimaSincronizacion).getTime();
+                    if (tiempoTranscurrido < 15000) { // 15 segundos
+                        cargarProductosYCategorias();
+                        cargarServicios();
+                    }
+                }
+            }, 3000);
+            
+            console.log('🔄 Sincronización automática configurada');
+        }
+        
+        // Aplicar personalización de la tienda
+        function aplicarPersonalizacion(config = null) {
+            const personalizacion = config || JSON.parse(localStorage.getItem('tienda_personalizacion') || '{}');
+            
+            if (personalizacion.colores) {
+                // Aplicar colores
+                document.documentElement.style.setProperty('--primary-color', personalizacion.colores.primario || '#8B5CF6');
+                document.documentElement.style.setProperty('--secondary-color', personalizacion.colores.secundario || '#10B981');
+                document.documentElement.style.setProperty('--accent-color', personalizacion.colores.acento || '#3B82F6');
+            }
+            
+            if (personalizacion.logo) {
+                // Aplicar logo
+                const logoElements = document.querySelectorAll('.logo-tienda, .navbar-brand img');
+                logoElements.forEach(logo => {
+                    logo.src = personalizacion.logo;
+                });
+            }
+            
+            if (personalizacion.eslogan && personalizacion.eslogan.activo) {
+                // Aplicar eslogan
+                const esloganElement = document.querySelector('.hero-badges');
+                if (esloganElement && personalizacion.eslogan.texto) {
+                    esloganElement.innerHTML += `
+                        <div class="eslogan-tienda" style="background: linear-gradient(135deg, #F093FB, #F5576C); color: white; padding: 12px 20px; border-radius: 25px; margin: 10px 0; text-align: center;">
+                            <h3 style="margin: 0 0 8px; font-size: 1.2rem;">${personalizacion.eslogan.texto}</h3>
+                            ${personalizacion.eslogan.subtitulo ? `<p style="margin: 0; opacity: 0.9; font-size: 0.9rem;">${personalizacion.eslogan.subtitulo}</p>` : ''}
+                            ${personalizacion.eslogan.caracteristicas && personalizacion.eslogan.caracteristicas.length > 0 ? `
+                                <div style="margin-top: 8px; display: flex; gap: 6px; justify-content: center; flex-wrap: wrap;">
+                                    ${personalizacion.eslogan.caracteristicas.map(caracteristica => 
+                                        `<span style="background: rgba(255,255,255,0.2); padding: 4px 8px; border-radius: 12px; font-size: 0.8rem;">${caracteristica}</span>`
+                                    ).join('')}
+                                </div>
+                            ` : ''}
+                        </div>
+                    `;
+                }
+            }
+            
+            if (personalizacion.videoPresentacion && personalizacion.videoPresentacion.activo) {
+                // Aplicar video de presentación
+                const heroSection = document.querySelector('.hero-section');
+                if (heroSection && personalizacion.videoPresentacion.url) {
+                    const videoContainer = document.createElement('div');
+                    videoContainer.className = 'video-presentacion-container';
+                    videoContainer.style.cssText = 'margin: 20px 0; text-align: center;';
+                    videoContainer.innerHTML = `
+                        <div class="video-presentacion" style="background: white; padding: 20px; border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">
+                            <video controls style="width: 100%; max-width: 600px; border-radius: 8px;">
+                                <source src="${personalizacion.videoPresentacion.url}" type="video/mp4">
+                                Tu navegador no soporta el elemento video.
+                            </video>
+                            <h3 style="margin: 15px 0 8px; color: #374151;">${personalizacion.videoPresentacion.titulo}</h3>
+                            <p style="margin: 0; color: #6B7280;">${personalizacion.videoPresentacion.descripcion}</p>
+                        </div>
+                    `;
+                    heroSection.appendChild(videoContainer);
+                }
+            }
+            
+            console.log('✅ Personalización aplicada');
+        }
+        
+        // Sistema de IA para descripciones de productos
+        function generarDescripcionConIA(producto) {
+            const planActual = JSON.parse(localStorage.getItem('tienda_actual') || '{}').plan || 'free';
+            
+            if (planActual === 'free') {
+                mostrarNotificacion('💡 La generación de descripciones con IA está disponible en planes de pago', 'info');
+                return null;
+            }
+            
+            // Simular generación de descripción con IA
+            const descripcionesIA = {
+                'tecnologia': `Descubre ${producto.nombre}, un producto de tecnología avanzada que combina innovación y funcionalidad. Diseñado para ofrecerte la mejor experiencia, este artículo destaca por su calidad superior y características únicas que lo hacen imprescindible.`,
+                'hogar': `${producto.nombre} es la solución perfecta para tu hogar. Con un diseño elegante y funcional, este producto te brinda comodidad y practicidad en cada uso. Su construcción de calidad garantiza durabilidad y satisfacción.`,
+                'moda': `Atrévete con ${producto.nombre}, una pieza de moda que refleja tu estilo único. Diseñado con los mejores materiales y atención al detalle, este artículo te hará destacar con elegancia y sofisticación.`,
+                'deportes': `Potencia tu rendimiento con ${producto.nombre}. Diseñado para deportistas exigentes, este producto combina tecnología y ergonomía para ofrecerte el máximo rendimiento en cada entrenamiento.`,
+                'default': `${producto.nombre} es un producto excepcional que combina calidad, diseño y funcionalidad. Con características destacadas y un precio competitivo, es la opción perfecta para tus necesidades.`
+            };
+            
+            const categoria = producto.categoria?.toLowerCase() || 'default';
+            const descripcion = descripcionesIA[categoria] || descripcionesIA.default;
+            
+            return descripcion;
+        }
+        
+        // Sistema de recomendaciones de imágenes
+        function recomendarImagenes(producto) {
+            const recomendaciones = {
+                'tecnologia': [
+                    'Incluye una imagen del producto en uso',
+                    'Muestra los detalles técnicos importantes',
+                    'Agrega una imagen de la caja o empaque',
+                    'Considera mostrar el producto desde diferentes ángulos'
+                ],
+                'moda': [
+                    'Modelo usando la prenda',
+                    'Detalles de textura y materiales',
+                    'Vista frontal y posterior',
+                    'Imagen de la etiqueta o marca'
+                ],
+                'hogar': [
+                    'Producto en su ambiente natural',
+                    'Detalles de construcción',
+                    'Comparación de tamaños',
+                    'Imagen de instalación o uso'
+                ],
+                'default': [
+                    'Imagen principal clara y nítida',
+                    'Detalles importantes del producto',
+                    'Diferentes ángulos de vista',
+                    'Imagen de la marca o etiqueta'
+                ]
+            };
+            
+            const categoria = producto.categoria?.toLowerCase() || 'default';
+            return recomendaciones[categoria] || recomendaciones.default;
+        }
+        
+        // ============================================
+        // SISTEMA DE CHAT DE TIENDA CON COMPRADORES
+        // ============================================
+        
+        class ChatTienda {
+            constructor() {
+                this.mensajes = this.cargarMensajes();
+                this.configuracion = this.cargarConfiguracion();
+                this.estaAbierto = false;
+                this.inicializar();
+            }
+            
+            cargarMensajes() {
+                return JSON.parse(localStorage.getItem('chat_tienda') || '[]');
+            }
+            
+            cargarConfiguracion() {
+                return JSON.parse(localStorage.getItem('configuracion_chat_tienda') || '{}');
+            }
+            
+            guardarMensajes() {
+                localStorage.setItem('chat_tienda', JSON.stringify(this.mensajes));
+            }
+            
+            guardarConfiguracion() {
+                localStorage.setItem('configuracion_chat_tienda', JSON.stringify(this.configuracion));
+            }
+            
+            inicializar() {
+                console.log('💬 Chat de Tienda inicializado');
+                this.inicializarConfiguracionDefault();
+                this.crearBotonChat();
+            }
+            
+            inicializarConfiguracionDefault() {
+                if (!this.configuracion.saludo) {
+                    this.configuracion.saludo = '¡Hola! 👋 ¿En qué puedo ayudarte hoy?';
+                }
+                if (!this.configuracion.despedida) {
+                    this.configuracion.despedida = '¡Gracias por contactarnos! Si tienes más preguntas, no dudes en escribirnos. 😊';
+                }
+                if (!this.configuracion.fueraHorario) {
+                    this.configuracion.fueraHorario = 'Estamos fuera de horario de atención. Te responderemos pronto. ⏰';
+                }
+                if (!this.configuracion.respuestas) {
+                    this.configuracion.respuestas = {
+                        envios: 'Los envíos se realizan dentro de las 24-48 horas hábiles. ¿Te gustaría conocer más detalles?',
+                        pagos: 'Aceptamos todas las tarjetas de crédito y débito, MercadoPago y transferencias bancarias.',
+                        garantias: 'Ofrecemos garantía de 30 días en todos nuestros productos. ¿Necesitas más información?',
+                        devoluciones: 'Puedes devolver tu compra dentro de los 30 días posteriores a la compra.',
+                        horarios: 'Nuestro horario de atención es de lunes a viernes de 9:00 a 18:00 hs.',
+                        contacto: 'Puedes contactarnos por WhatsApp, email o completando el formulario de contacto.'
+                    };
+                }
+                this.guardarConfiguracion();
+            }
+            
+            crearBotonChat() {
+                const botonChat = document.createElement('div');
+                botonChat.id = 'botonChatTienda';
+                botonChat.style.cssText = `
+                    position: fixed;
+                    bottom: 20px;
+                    right: 20px;
+                    width: 60px;
+                    height: 60px;
+                    background: linear-gradient(135deg, #8B5CF6, #7C3AED);
+                    border-radius: 50%;
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    cursor: pointer;
+                    box-shadow: 0 4px 12px rgba(139, 92, 246, 0.4);
+                    z-index: 1000;
+                    transition: all 0.3s ease;
+                `;
+                botonChat.innerHTML = '<i class="fas fa-comments" style="color: white; font-size: 24px;"></i>';
+                
+                botonChat.addEventListener('click', () => this.toggleChat());
+                botonChat.addEventListener('mouseenter', () => {
+                    botonChat.style.transform = 'scale(1.1)';
+                });
+                botonChat.addEventListener('mouseleave', () => {
+                    botonChat.style.transform = 'scale(1)';
+                });
+                
+                document.body.appendChild(botonChat);
+            }
+            
+            toggleChat() {
+                if (this.estaAbierto) {
+                    this.cerrarChat();
+                } else {
+                    this.abrirChat();
+                }
+            }
+            
+            abrirChat() {
+                const chatContainer = document.createElement('div');
+                chatContainer.id = 'chatContainer';
+                chatContainer.style.cssText = `
+                    position: fixed;
+                    bottom: 90px;
+                    right: 20px;
+                    width: 350px;
+                    height: 500px;
+                    background: white;
+                    border-radius: 16px;
+                    box-shadow: 0 8px 32px rgba(0,0,0,0.15);
+                    z-index: 1001;
+                    display: flex;
+                    flex-direction: column;
+                    overflow: hidden;
+                `;
+                
+                chatContainer.innerHTML = `
+                    <div style="background: linear-gradient(135deg, #8B5CF6, #7C3AED); color: white; padding: 16px; display: flex; justify-content: space-between; align-items: center;">
+                        <div>
+                            <h4 style="margin: 0; font-size: 1.1rem;">💬 Chat de Soporte</h4>
+                            <p style="margin: 4px 0 0; font-size: 0.8rem; opacity: 0.9;">Estamos aquí para ayudarte</p>
+                        </div>
+                        <button onclick="chatTienda.cerrarChat()" style="background: none; border: none; color: white; font-size: 18px; cursor: pointer;">×</button>
+                    </div>
+                    
+                    <div id="mensajesChat" style="flex: 1; padding: 16px; overflow-y: auto; background: #F8FAFC;">
+                        ${this.mensajes.map(mensaje => this.renderizarMensaje(mensaje)).join('')}
+                    </div>
+                    
+                    <div style="padding: 16px; border-top: 1px solid #E5E7EB; background: white;">
+                        <div style="display: flex; gap: 8px;">
+                            <input type="text" id="inputMensajeChat" placeholder="Escribe tu mensaje..." style="flex: 1; padding: 12px; border: 1px solid #D1D5DB; border-radius: 8px; font-size: 0.9rem;">
+                            <button onclick="chatTienda.enviarMensaje()" style="background: #8B5CF6; color: white; border: none; padding: 12px 16px; border-radius: 8px; cursor: pointer;">
+                                <i class="fas fa-paper-plane"></i>
+                            </button>
+                        </div>
+                        <div style="margin-top: 8px; display: flex; gap: 4px; flex-wrap: wrap;">
+                            <button onclick="chatTienda.enviarRespuestaRapida('envios')" style="background: #F3F4F6; color: #374151; border: none; padding: 6px 12px; border-radius: 16px; font-size: 0.8rem; cursor: pointer;">Envíos</button>
+                            <button onclick="chatTienda.enviarRespuestaRapida('pagos')" style="background: #F3F4F6; color: #374151; border: none; padding: 6px 12px; border-radius: 16px; font-size: 0.8rem; cursor: pointer;">Pagos</button>
+                            <button onclick="chatTienda.enviarRespuestaRapida('garantias')" style="background: #F3F4F6; color: #374151; border: none; padding: 6px 12px; border-radius: 16px; font-size: 0.8rem; cursor: pointer;">Garantías</button>
+                        </div>
+                    </div>
+                `;
+                
+                document.body.appendChild(chatContainer);
+                this.estaAbierto = true;
+                
+                // Enviar mensaje de bienvenida si es la primera vez
+                if (this.mensajes.length === 0) {
+                    this.agregarMensaje('bot', this.configuracion.saludo);
+                }
+                
+                // Scroll al final
+                const mensajesContainer = document.getElementById('mensajesChat');
+                mensajesContainer.scrollTop = mensajesContainer.scrollHeight;
+                
+                // Focus en el input
+                document.getElementById('inputMensajeChat').focus();
+            }
+            
+            cerrarChat() {
+                const chatContainer = document.getElementById('chatContainer');
+                if (chatContainer) {
+                    chatContainer.remove();
+                }
+                this.estaAbierto = false;
+            }
+            
+            renderizarMensaje(mensaje) {
+                const esBot = mensaje.tipo === 'bot';
+                return `
+                    <div style="margin-bottom: 12px; display: flex; ${esBot ? 'justify-content: flex-start' : 'justify-content: flex-end'}">
+                        <div style="max-width: 80%; padding: 12px; border-radius: 12px; ${esBot ? 'background: #E5E7EB; color: #374151;' : 'background: #8B5CF6; color: white;'}">
+                            <p style="margin: 0; font-size: 0.9rem; line-height: 1.4;">${mensaje.texto}</p>
+                            <p style="margin: 4px 0 0; font-size: 0.7rem; opacity: 0.7;">${new Date(mensaje.fecha).toLocaleTimeString('es-ES', {hour: '2-digit', minute: '2-digit'})}</p>
+                        </div>
+                    </div>
+                `;
+            }
+            
+            agregarMensaje(tipo, texto) {
+                const mensaje = {
+                    id: Date.now(),
+                    tipo: tipo,
+                    texto: texto,
+                    fecha: new Date().toISOString()
+                };
+                
+                this.mensajes.push(mensaje);
+                this.guardarMensajes();
+                
+                // Actualizar UI si está abierto
+                if (this.estaAbierto) {
+                    const mensajesContainer = document.getElementById('mensajesChat');
+                    if (mensajesContainer) {
+                        mensajesContainer.innerHTML += this.renderizarMensaje(mensaje);
+                        mensajesContainer.scrollTop = mensajesContainer.scrollHeight;
+                    }
+                }
+            }
+            
+            enviarMensaje() {
+                const input = document.getElementById('inputMensajeChat');
+                const texto = input.value.trim();
+                
+                if (texto) {
+                    // Agregar mensaje del usuario
+                    this.agregarMensaje('usuario', texto);
+                    input.value = '';
+                    
+                    // Simular respuesta del bot
+                    setTimeout(() => {
+                        const respuesta = this.generarRespuesta(texto);
+                        this.agregarMensaje('bot', respuesta);
+                    }, 1000 + Math.random() * 2000);
+                }
+            }
+            
+            enviarRespuestaRapida(tipo) {
+                const respuesta = this.configuracion.respuestas[tipo];
+                if (respuesta) {
+                    this.agregarMensaje('bot', respuesta);
+                }
+            }
+            
+            generarRespuesta(texto) {
+                const textoLower = texto.toLowerCase();
+                
+                // Detectar palabras clave
+                if (textoLower.includes('envío') || textoLower.includes('envio') || textoLower.includes('entrega')) {
+                    return this.configuracion.respuestas.envios;
+                }
+                if (textoLower.includes('pago') || textoLower.includes('precio') || textoLower.includes('costo')) {
+                    return this.configuracion.respuestas.pagos;
+                }
+                if (textoLower.includes('garantía') || textoLower.includes('garantia')) {
+                    return this.configuracion.respuestas.garantias;
+                }
+                if (textoLower.includes('devolución') || textoLower.includes('devolucion')) {
+                    return this.configuracion.respuestas.devoluciones;
+                }
+                if (textoLower.includes('horario') || textoLower.includes('atención') || textoLower.includes('atencion')) {
+                    return this.configuracion.respuestas.horarios;
+                }
+                if (textoLower.includes('contacto') || textoLower.includes('teléfono') || textoLower.includes('telefono')) {
+                    return this.configuracion.respuestas.contacto;
+                }
+                
+                // Respuesta genérica
+                return 'Gracias por tu mensaje. Te ayudo con lo que necesites. ¿Hay algo específico en lo que pueda asistirte? 😊';
+            }
+        }
+        
+        // Instancia global del chat
+        let chatTienda = new ChatTienda();
+        
+        // Mostrar notificaciones elegantes
+        function mostrarNotificacion(mensaje, tipo = 'info') {
+            const notificacion = document.createElement('div');
+            notificacion.className = `notificacion notificacion-${tipo}`;
+            notificacion.style.cssText = `
+                position: fixed;
+                top: 20px;
+                right: 20px;
+                background: ${tipo === 'success' ? '#10B981' : tipo === 'error' ? '#EF4444' : '#3B82F6'};
+                color: white;
+                padding: 16px 20px;
+                border-radius: 12px;
+                box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+                z-index: 9999;
+                max-width: 350px;
+                animation: slideInRight 0.3s ease-out;
+            `;
+            notificacion.innerHTML = `
+                <div style="display: flex; align-items: center; gap: 12px;">
+                    <i class="fas fa-${tipo === 'success' ? 'check-circle' : tipo === 'error' ? 'exclamation-circle' : 'info-circle'}"></i>
+                    <span>${mensaje}</span>
+                </div>
+            `;
+            
+            document.body.appendChild(notificacion);
+            
+            setTimeout(() => {
+                notificacion.style.animation = 'slideOutRight 0.3s ease-in';
+                setTimeout(() => notificacion.remove(), 300);
+            }, 4000);
+        }
+        
+        // Cargar garantías al inicializar la página
+        document.addEventListener('DOMContentLoaded', function() {
+            // Verificar si hay actualizaciones de garantías
+            const tiendaId = JSON.parse(localStorage.getItem('tienda_actual') || '{}').id || 'demo';
+            const footerActualizado = localStorage.getItem('footer_actualizado_' + tiendaId);
+            
+            if (footerActualizado === 'true') {
+                // Limpiar footer anterior si existe
+                const garantiasAnterior = document.querySelector('.garantias-section');
+                if (garantiasAnterior) {
+                    garantiasAnterior.remove();
+                }
+                
+                // Cargar nueva información
+                cargarInformacionGarantias();
+                
+                // Marcar como procesado
+                localStorage.removeItem('footer_actualizado_' + tiendaId);
+            }
+        });
+        
+    </script>
+    
+    <!-- PWA Service Worker -->
+    <script>
+        // Registrar Service Worker
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', async () => {
+                try {
+                    const registration = await navigator.serviceWorker.register('/sw.js');
+                    console.log('✅ Service Worker registrado:', registration.scope);
+                    
+                    // Verificar actualizaciones
+                    registration.addEventListener('updatefound', () => {
+                        const newWorker = registration.installing;
+                        newWorker.addEventListener('statechange', () => {
+                            if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
+                                // Nueva versión disponible
+                                if (confirm('¡Nueva versión de Cresalia disponible! ¿Quieres actualizar?')) {
+                                    newWorker.postMessage({ type: 'SKIP_WAITING' });
+                                    window.location.reload();
+                                }
+                            }
+                        });
+                    });
+                    
+                } catch (error) {
+                    console.error('❌ Error al registrar Service Worker:', error);
+                }
+            });
+        }
+        
+        // Instalar PWA
+        let deferredPrompt;
+        window.addEventListener('beforeinstallprompt', (e) => {
+            e.preventDefault();
+            deferredPrompt = e;
+            
+            // Mostrar botón de instalación
+            const installButton = document.createElement('button');
+            installButton.innerHTML = '📱 Instalar App';
+            installButton.style.cssText = `
+                position: fixed;
+                bottom: 20px;
+                left: 20px;
+                background: linear-gradient(135deg, #8B5CF6, #7C3AED);
+                color: white;
+                border: none;
+                padding: 12px 20px;
+                border-radius: 25px;
+                font-weight: 600;
+                cursor: pointer;
+                box-shadow: 0 4px 12px rgba(139, 92, 246, 0.4);
+                z-index: 1000;
+                animation: pulse 2s infinite;
+            `;
+            
+            installButton.addEventListener('click', async () => {
+                if (deferredPrompt) {
+                    deferredPrompt.prompt();
+                    const { outcome } = await deferredPrompt.userChoice;
+                    console.log('Resultado de instalación:', outcome);
+                    deferredPrompt = null;
+                    installButton.remove();
+                }
+            });
+            
+            document.body.appendChild(installButton);
+        });
+        
+        // PWA instalada
+        window.addEventListener('appinstalled', () => {
+            console.log('🎉 PWA instalada correctamente');
+            mostrarNotificacion('¡Cresalia instalada! Ahora puedes acceder desde tu pantalla de inicio', 'success');
+        });
+        
+        // Detectar si está en modo PWA
+        if (window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone) {
+            document.body.classList.add('pwa-mode');
+            console.log('📱 Ejecutándose en modo PWA');
+        }
+    </script>
+    
+    <!-- Sistema de Alertas de Emergencia Global -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="../../config-supabase-seguro.js"></script>
+    <script src="../../js/sistema-alertas-comunidades.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            setTimeout(() => {
+                if (typeof SistemaAlertasComunidades !== 'undefined') {
+                    window.alertasGlobal = new SistemaAlertasComunidades('global');
+                }
+            }, 500);
+        });
+    </script>
+</body>
+</html>

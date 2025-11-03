@@ -1,0 +1,828 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mis Servicios - Admin Panel</title>
+    
+    <!-- Favicon -->
+    <link rel="icon" type="image/png" href="../../assets/logo/logo-cresalia.png">
+    <link rel="apple-touch-icon" href="../../assets/logo/logo-cresalia.png">
+    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="../../css/modales-compactos.css">
+    
+    <!-- Click Derecho Personalizado -->
+    <script src="../../js/click-derecho-personalizado.js"></script>
+    
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #a855f7 0%, #ec4899 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+        
+        /* Header */
+        .header {
+            background: white;
+            border-radius: 20px;
+            padding: 30px;
+            margin-bottom: 30px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .header h1 {
+            color: #374151;
+            font-size: 2rem;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        
+        .header h1 i {
+            color: #a855f7;
+        }
+        
+        .btn-back {
+            background: linear-gradient(135deg, #a855f7, #ec4899);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 12px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            text-decoration: none;
+        }
+        
+        .btn-back:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(102, 126, 234, 0.3);
+        }
+        
+        /* Main Content */
+        .main-content {
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+        }
+        
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 2px solid #E5E7EB;
+        }
+        
+        .section-header h2 {
+            color: #374151;
+            font-size: 1.5rem;
+        }
+        
+        .btn-primary {
+            background: linear-gradient(135deg, #a855f7, #ec4899);
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 12px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(102, 126, 234, 0.3);
+        }
+        
+        /* Services Grid */
+        .services-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 25px;
+            margin-top: 30px;
+        }
+        
+        .service-card {
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            border-radius: 15px;
+            padding: 25px;
+            transition: all 0.3s ease;
+            border: 2px solid #E5E7EB;
+        }
+        
+        .service-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+        }
+        
+        .service-card h3 {
+            color: #374151;
+            font-size: 1.3rem;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .service-card p {
+            color: #6B7280;
+            line-height: 1.6;
+            margin-bottom: 15px;
+        }
+        
+        .service-price {
+            color: #667eea;
+            font-size: 1.5rem;
+            font-weight: bold;
+            margin: 15px 0;
+        }
+        
+        .service-duration {
+            color: #6B7280;
+            font-size: 0.9rem;
+            margin-bottom: 15px;
+        }
+        
+        .service-actions {
+            display: flex;
+            gap: 10px;
+            margin-top: 15px;
+        }
+        
+        .btn-edit, .btn-delete {
+            flex: 1;
+            padding: 10px;
+            border: none;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 5px;
+        }
+        
+        .btn-edit {
+            background: #3B82F6;
+            color: white;
+        }
+        
+        .btn-edit:hover {
+            background: #2563EB;
+        }
+        
+        .btn-delete {
+            background: #EF4444;
+            color: white;
+        }
+        
+        .btn-delete:hover {
+            background: #DC2626;
+        }
+        
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            color: #6B7280;
+        }
+        
+        .empty-state i {
+            font-size: 4rem;
+            color: #D1D5DB;
+            margin-bottom: 20px;
+        }
+        
+        .empty-state h3 {
+            color: #374151;
+            font-size: 1.5rem;
+            margin-bottom: 10px;
+        }
+        
+        /* Modal */
+        .modal {
+            position: fixed !important;
+            top: 0 !important;
+            left: 0 !important;
+            width: 100% !important;
+            height: 100% !important;
+            background: rgba(0,0,0,0.7) !important;
+            display: flex !important;
+            align-items: center !important;
+            justify-content: center !important;
+            z-index: 999999 !important;
+            opacity: 1 !important;
+            visibility: visible !important;
+            padding: 20px !important;
+            box-sizing: border-box !important;
+        }
+        
+        .modal.hidden {
+            display: none !important;
+        }
+        
+        .modal-content {
+            background: white !important;
+            border-radius: 12px !important;
+            padding: 20px !important;
+            max-width: 450px !important;
+            width: 100% !important;
+            max-height: 70vh !important;
+            overflow-y: auto !important;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3) !important;
+        }
+        
+        .modal-header {
+            display: flex !important;
+            justify-content: space-between !important;
+            align-items: center !important;
+            margin-bottom: 25px !important;
+            padding-bottom: 15px !important;
+            border-bottom: 2px solid #E5E7EB !important;
+        }
+        
+        .modal-header h3 {
+            color: #374151 !important;
+            font-size: 1.5rem !important;
+            display: flex !important;
+            align-items: center !important;
+            gap: 10px !important;
+        }
+        
+        .close-btn {
+            background: #EF4444 !important;
+            color: white !important;
+            border: none !important;
+            width: 35px !important;
+            height: 35px !important;
+            border-radius: 50% !important;
+            cursor: pointer !important;
+            display: flex !important;
+            align-items: center !important;
+            justify-content: center !important;
+            font-size: 18px !important;
+            transition: all 0.3s ease !important;
+        }
+        
+        .close-btn:hover {
+            background: #DC2626 !important;
+            transform: rotate(90deg) !important;
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #374151;
+        }
+        
+        .form-group input,
+        .form-group textarea,
+        .form-group select {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #E5E7EB;
+            border-radius: 10px;
+            font-size: 14px;
+            transition: all 0.3s ease;
+        }
+        
+        .form-group input:focus,
+        .form-group textarea:focus,
+        .form-group select:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+        
+        .form-group textarea {
+            min-height: 100px;
+            resize: vertical;
+        }
+        
+        .btn-secondary {
+            background: #6B7280;
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 12px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-right: 10px;
+        }
+        
+        .btn-secondary:hover {
+            background: #4B5563;
+        }
+        
+        /* Notificaciones */
+        .notification {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: white;
+            padding: 20px 25px;
+            border-radius: 12px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            z-index: 9999999;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            animation: slideIn 0.3s ease;
+            max-width: 400px;
+        }
+        
+        .notification.success {
+            border-left: 4px solid #10B981;
+        }
+        
+        .notification.error {
+            border-left: 4px solid #EF4444;
+        }
+        
+        .notification.info {
+            border-left: 4px solid #3B82F6;
+        }
+        
+        @keyframes slideIn {
+            from {
+                transform: translateX(400px);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+        
+        /* Responsive */
+        @media (max-width: 768px) {
+            .header {
+                flex-direction: column;
+                gap: 20px;
+                text-align: center;
+            }
+            
+            .services-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .modal {
+                padding: 10px !important;
+            }
+            
+            .modal-content {
+                width: 95% !important;
+                padding: 15px !important;
+                max-width: 400px !important;
+                max-height: 80vh !important;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <div class="header">
+            <h1>
+                <i class="fas fa-concierge-bell"></i>
+                Mis Servicios
+            </h1>
+            <a href="admin.html" class="btn-back">
+                <i class="fas fa-arrow-left"></i>
+                Volver al Dashboard
+            </a>
+        </div>
+        
+        <!-- Main Content -->
+        <div class="main-content">
+            <div class="section-header">
+                <h2>Gestión de Servicios</h2>
+                <button class="btn-primary" onclick="mostrarFormularioServicio()">
+                    <i class="fas fa-plus"></i>
+                    Agregar Servicio
+                </button>
+            </div>
+            
+            <div id="serviciosContainer" class="services-grid">
+                <!-- Los servicios se cargarán aquí -->
+            </div>
+        </div>
+    </div>
+    
+    <!-- Modal de Servicio -->
+    <div id="modalServicio" class="modal hidden">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3><i class="fas fa-concierge-bell"></i> <span id="modalTitle">Nuevo Servicio</span></h3>
+                <button class="close-btn" onclick="cerrarModalServicio()">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form id="servicioForm" onsubmit="guardarServicio(event)">
+                    <input type="hidden" id="servicioId">
+                    
+                    <div class="form-group">
+                        <label for="servicioNombre">
+                            <i class="fas fa-tag"></i> Nombre del Servicio *
+                        </label>
+                        <input type="text" id="servicioNombre" required placeholder="Ej: Consultoría de Marketing">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="servicioDescripcion">
+                            <i class="fas fa-align-left"></i> Descripción *
+                        </label>
+                        <textarea id="servicioDescripcion" required placeholder="Describe tu servicio en detalle..."></textarea>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="servicioPrecio">
+                            <i class="fas fa-dollar-sign"></i> Precio *
+                        </label>
+                        <input type="number" id="servicioPrecio" required placeholder="0.00" step="0.01" min="0">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="servicioDuracion">
+                            <i class="fas fa-clock"></i> Duración *
+                        </label>
+                        <input type="text" id="servicioDuracion" required placeholder="Ej: 2 horas, 1 mes, etc.">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="servicioCategoria">
+                            <i class="fas fa-folder"></i> Categoría *
+                        </label>
+                        <select id="servicioCategoria" required>
+                            <option value="">Selecciona una categoría</option>
+                            <option value="consultoria">💼 Consultoría</option>
+                            <option value="diseno">🎨 Diseño</option>
+                            <option value="desarrollo">💻 Desarrollo</option>
+                            <option value="marketing">📣 Marketing</option>
+                            <option value="remis">🚗 Remis (Transporte)</option>
+                            <option value="mecanica">🔧 Mecánica</option>
+                            <option value="detail">✨ Detail (Limpieza de Autos)</option>
+                            <option value="salud">🏥 Salud y Bienestar</option>
+                            <option value="educacion">📚 Educación</option>
+                            <option value="legal">⚖️ Servicios Legales</option>
+                            <option value="contabilidad">📊 Contabilidad</option>
+                            <option value="limpieza">🧹 Limpieza</option>
+                            <option value="reparacion">🔧 Reparaciones</option>
+                            <option value="eventos">🎉 Eventos</option>
+                            <option value="coaching">🎯 Coaching</option>
+                            <option value="traduccion">🌐 Traducción</option>
+                            <option value="fotografia">📸 Fotografía</option>
+                            <option value="peluqueria">💇 Peluquería y Estética</option>
+                            <option value="gastronomia">🍽️ Gastronomía</option>
+                            <option value="seguridad">🛡️ Seguridad</option>
+                            <option value="otro">🔧 Otro</option>
+                        </select>
+                    </div>
+                    
+                    <div style="text-align: center; margin-top: 30px;">
+                        <button type="button" class="btn-secondary" onclick="cerrarModalServicio()">
+                            <i class="fas fa-times"></i> Cancelar
+                        </button>
+                        <button type="submit" class="btn-primary">
+                            <i class="fas fa-save"></i> Guardar Servicio
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        // ========================================
+        // FUNCIONES MULTI-TENANT
+        // ========================================
+        
+        function obtenerTiendaId() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const tiendaId = urlParams.get('tienda') || 'demo-tienda';
+            console.log('🏪 Tienda actual:', tiendaId);
+            return tiendaId;
+        }
+        
+        // ========================================
+        // FUNCIONES DEL MODAL
+        // ========================================
+        
+        function mostrarFormularioServicio(servicio = null) {
+            console.log('🔵 FUNCIÓN mostrarFormularioServicio() EJECUTADA');
+            
+            const modal = document.getElementById('modalServicio');
+            const titulo = document.getElementById('modalTitle');
+            
+            if (servicio) {
+                // Modo edición
+                titulo.textContent = 'Editar Servicio';
+                document.getElementById('servicioId').value = servicio.id;
+                document.getElementById('servicioNombre').value = servicio.nombre;
+                document.getElementById('servicioDescripcion').value = servicio.descripcion;
+                document.getElementById('servicioPrecio').value = servicio.precio;
+                document.getElementById('servicioDuracion').value = servicio.duracion;
+                document.getElementById('servicioCategoria').value = servicio.categoria;
+            } else {
+                // Modo creación
+                titulo.textContent = 'Nuevo Servicio';
+                document.getElementById('servicioForm').reset();
+                document.getElementById('servicioId').value = '';
+            }
+            
+            modal.classList.remove('hidden');
+            console.log('✅ Modal de servicio mostrado');
+        }
+        
+        function cerrarModalServicio() {
+            const modal = document.getElementById('modalServicio');
+            modal.classList.add('hidden');
+            document.getElementById('servicioForm').reset();
+            console.log('✅ Modal de servicio cerrado');
+        }
+        
+        // ========================================
+        // GUARDAR SERVICIO
+        // ========================================
+        
+        function guardarServicio(event) {
+            event.preventDefault();
+            console.log('💾 Guardando servicio...');
+            
+            const tiendaId = obtenerTiendaId();
+            const servicioId = document.getElementById('servicioId').value;
+            
+            const servicio = {
+                id: servicioId || Date.now().toString(),
+                nombre: document.getElementById('servicioNombre').value,
+                descripcion: document.getElementById('servicioDescripcion').value,
+                precio: parseFloat(document.getElementById('servicioPrecio').value),
+                duracion: document.getElementById('servicioDuracion').value,
+                categoria: document.getElementById('servicioCategoria').value,
+                fechaCreacion: servicioId ? undefined : new Date().toISOString()
+            };
+            
+            // Obtener servicios existentes
+            let servicios = JSON.parse(localStorage.getItem(`servicios_${tiendaId}`) || '[]');
+            
+            if (servicioId) {
+                // Actualizar servicio existente
+                const index = servicios.findIndex(s => s.id === servicioId);
+                if (index !== -1) {
+                    servicios[index] = { ...servicios[index], ...servicio };
+                    mostrarNotificacion('✅ Servicio actualizado exitosamente', 'success');
+                }
+            } else {
+                // Agregar nuevo servicio
+                servicios.push(servicio);
+                mostrarNotificacion('✅ Servicio creado exitosamente', 'success');
+            }
+            
+            // Guardar en localStorage
+            localStorage.setItem(`servicios_${tiendaId}`, JSON.stringify(servicios));
+            
+            console.log('✅ Servicio guardado:', servicio);
+            
+            // Actualizar estadísticas en el dashboard
+            actualizarEstadisticas();
+            
+            // Cerrar modal y recargar servicios
+            cerrarModalServicio();
+            cargarServicios();
+        }
+        
+        // ========================================
+        // CARGAR SERVICIOS
+        // ========================================
+        
+        function cargarServicios() {
+            console.log('📋 Cargando servicios...');
+            
+            const tiendaId = obtenerTiendaId();
+            const servicios = JSON.parse(localStorage.getItem(`servicios_${tiendaId}`) || '[]');
+            const container = document.getElementById('serviciosContainer');
+            
+            if (servicios.length === 0) {
+                // Agregar servicios de ejemplo reales para emprendedores
+                const serviciosEjemplo = [
+                    {
+                        id: 'servicio_1',
+                        nombre: 'Consultoría de Marketing Digital',
+                        descripcion: 'Estrategia completa de marketing digital para hacer crecer tu negocio online. Incluye análisis de competencia, plan de contenido y estrategia de redes sociales.',
+                        precio: 150.00,
+                        duracion: '2 semanas',
+                        categoria: 'consultoria',
+                        fechaCreacion: new Date().toISOString()
+                    },
+                    {
+                        id: 'servicio_2',
+                        nombre: 'Diseño de Identidad Visual',
+                        descripcion: 'Creación de logo, paleta de colores y manual de marca para tu empresa. Incluye 3 propuestas iniciales y 2 revisiones.',
+                        precio: 89.00,
+                        duracion: '1 semana',
+                        categoria: 'diseno',
+                        fechaCreacion: new Date().toISOString()
+                    },
+                    {
+                        id: 'servicio_3',
+                        nombre: 'Desarrollo de Tienda Online',
+                        descripcion: 'Creación de tienda virtual completa con sistema de pagos, gestión de inventario y diseño responsive. Incluye capacitación.',
+                        precio: 299.00,
+                        duracion: '3 semanas',
+                        categoria: 'desarrollo',
+                        fechaCreacion: new Date().toISOString()
+                    },
+                    {
+                        id: 'servicio_4',
+                        nombre: 'Capacitación en Ventas',
+                        descripcion: 'Taller personalizado para mejorar tus técnicas de venta y cerrar más negocios. Shop online y presencial.',
+                        precio: 120.00,
+                        duracion: '1 día',
+                        categoria: 'capacitacion',
+                        fechaCreacion: new Date().toISOString()
+                    }
+                ];
+                
+                // Guardar servicios de ejemplo
+                localStorage.setItem(`servicios_${tiendaId}`, JSON.stringify(serviciosEjemplo));
+                
+                // Recargar servicios
+                cargarServicios();
+                return;
+            }
+            
+            container.innerHTML = servicios.map(servicio => `
+                <div class="service-card">
+                    <h3>
+                        <i class="fas fa-concierge-bell"></i>
+                        ${servicio.nombre}
+                    </h3>
+                    <p>${servicio.descripcion}</p>
+                    <div class="service-price">$${servicio.precio.toFixed(2)}</div>
+                    <div class="service-duration">
+                        <i class="fas fa-clock"></i> ${servicio.duracion}
+                    </div>
+                    <div class="service-duration">
+                        <i class="fas fa-folder"></i> ${obtenerNombreCategoria(servicio.categoria)}
+                    </div>
+                    <div class="service-actions">
+                        <button class="btn-edit" onclick='editarServicio(${JSON.stringify(servicio).replace(/'/g, "&apos;")})'>
+                            <i class="fas fa-edit"></i> Editar
+                        </button>
+                        <button class="btn-delete" onclick="eliminarServicio('${servicio.id}')">
+                            <i class="fas fa-trash"></i> Eliminar
+                        </button>
+                    </div>
+                </div>
+            `).join('');
+            
+            console.log(`✅ ${servicios.length} servicios cargados`);
+        }
+        
+        function obtenerNombreCategoria(categoria) {
+            const categorias = {
+                'consultoria': '💼 Consultoría',
+                'diseno': '🎨 Diseño',
+                'desarrollo': '💻 Desarrollo',
+                'marketing': '📣 Marketing',
+                'remis': '🚗 Remis (Transporte)',
+                'mecanica': '🔧 Mecánica',
+                'detail': '✨ Detail (Limpieza de Autos)',
+                'salud': '🏥 Salud y Bienestar',
+                'educacion': '📚 Educación',
+                'legal': '⚖️ Servicios Legales',
+                'contabilidad': '📊 Contabilidad',
+                'limpieza': '🧹 Limpieza',
+                'reparacion': '🔧 Reparaciones',
+                'eventos': '🎉 Eventos',
+                'coaching': '🎯 Coaching',
+                'traduccion': '🌐 Traducción',
+                'fotografia': '📸 Fotografía',
+                'peluqueria': '💇 Peluquería y Estética',
+                'gastronomia': '🍽️ Gastronomía',
+                'seguridad': '🛡️ Seguridad',
+                'otro': '🔧 Otro'
+            };
+            return categorias[categoria] || categoria;
+        }
+        
+        // ========================================
+        // EDITAR Y ELIMINAR SERVICIO
+        // ========================================
+        
+        function editarServicio(servicio) {
+            console.log('✏️ Editando servicio:', servicio);
+            mostrarFormularioServicio(servicio);
+        }
+        
+        function eliminarServicio(servicioId) {
+            if (!confirm('¿Estás seguro de eliminar este servicio?')) return;
+            
+            console.log('🗑️ Eliminando servicio:', servicioId);
+            
+            const tiendaId = obtenerTiendaId();
+            let servicios = JSON.parse(localStorage.getItem(`servicios_${tiendaId}`) || '[]');
+            
+            servicios = servicios.filter(s => s.id !== servicioId);
+            localStorage.setItem(`servicios_${tiendaId}`, JSON.stringify(servicios));
+            
+            mostrarNotificacion('✅ Servicio eliminado', 'success');
+            
+            // Actualizar estadísticas
+            actualizarEstadisticas();
+            
+            // Recargar servicios
+            cargarServicios();
+        }
+        
+        // ========================================
+        // ACTUALIZAR ESTADÍSTICAS
+        // ========================================
+        
+        function actualizarEstadisticas() {
+            const tiendaId = obtenerTiendaId();
+            const productos = JSON.parse(localStorage.getItem(`productos_${tiendaId}`) || '[]');
+            const servicios = JSON.parse(localStorage.getItem(`servicios_${tiendaId}`) || '[]');
+            const ofertas = JSON.parse(localStorage.getItem(`ofertas_${tiendaId}`) || '[]');
+            const diario = JSON.parse(localStorage.getItem(`diario_${tiendaId}`) || '[]');
+            
+            const stats = {
+                productos: productos.length,
+                servicios: servicios.length,
+                ofertas: ofertas.length,
+                entradas: diario.length
+            };
+            
+            localStorage.setItem(`estadisticas_${tiendaId}`, JSON.stringify(stats));
+            console.log('📊 Estadísticas actualizadas:', stats);
+        }
+        
+        // ========================================
+        // NOTIFICACIONES
+        // ========================================
+        
+        function mostrarNotificacion(mensaje, tipo = 'info') {
+            const notification = document.createElement('div');
+            notification.className = `notification ${tipo}`;
+            notification.innerHTML = `
+                <i class="fas fa-${tipo === 'success' ? 'check-circle' : tipo === 'error' ? 'exclamation-circle' : 'info-circle'}"></i>
+                <span>${mensaje}</span>
+            `;
+            
+            document.body.appendChild(notification);
+            
+            setTimeout(() => {
+                notification.style.animation = 'slideIn 0.3s ease reverse';
+                setTimeout(() => notification.remove(), 300);
+            }, 3000);
+        }
+        
+        // ========================================
+        // INICIALIZACIÓN
+        // ========================================
+        
+        document.addEventListener('DOMContentLoaded', () => {
+            console.log('🚀 Inicializando página de servicios...');
+            cargarServicios();
+            console.log('✅ Página de servicios cargada');
+        });
+    </script>
+</body>
+</html>
+

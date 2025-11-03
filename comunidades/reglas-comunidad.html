@@ -1,0 +1,491 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Reglas de la Comunidad - Cresalia</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            /* PROTECCIÓN: Dificultar selección para prevenir copy-paste */
+            -webkit-user-select: none;
+            -moz-user-select: none;
+            -ms-user-select: none;
+            user-select: none;
+        }
+
+        /* Permitir selección solo en áreas específicas si es necesario */
+        .selectable {
+            -webkit-user-select: text;
+            -moz-user-select: text;
+            -ms-user-select: text;
+            user-select: text;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+        }
+
+        h1 {
+            color: #667eea;
+            text-align: center;
+            margin-bottom: 10px;
+            font-size: 2.5em;
+        }
+
+        .subtitle {
+            text-align: center;
+            color: #666;
+            margin-bottom: 40px;
+            font-size: 1.1em;
+        }
+
+        .warning-box {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 25px;
+            border-radius: 15px;
+            margin-bottom: 30px;
+            text-align: center;
+            font-weight: 500;
+            line-height: 1.6;
+        }
+
+        .section {
+            margin-bottom: 35px;
+        }
+
+        .section-title {
+            color: #667eea;
+            font-size: 1.5em;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .icon {
+            font-size: 1.2em;
+        }
+
+        .rule {
+            background: #f8f9ff;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 15px;
+            border-left: 4px solid #667eea;
+        }
+
+        .rule-title {
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 8px;
+            font-size: 1.1em;
+        }
+
+        .rule-description {
+            color: #666;
+            line-height: 1.6;
+        }
+
+        .forbidden {
+            border-left-color: #e74c3c;
+        }
+
+        .forbidden .rule-title {
+            color: #e74c3c;
+        }
+
+        .protection {
+            border-left-color: #27ae60;
+        }
+
+        .protection .rule-title {
+            color: #27ae60;
+        }
+
+        .emphasis {
+            background: #fff3cd;
+            border-left-color: #ffc107;
+            border: 2px solid #ffc107;
+        }
+
+        .emphasis .rule-title {
+            color: #f57c00;
+        }
+
+        .back-button {
+            display: inline-block;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 15px 30px;
+            border-radius: 25px;
+            text-decoration: none;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            margin-top: 20px;
+        }
+
+        .back-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 20px rgba(102, 126, 234, 0.4);
+        }
+
+        .watermark {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%) rotate(-45deg);
+            font-size: 5em;
+            color: rgba(102, 126, 234, 0.05);
+            pointer-events: none;
+            z-index: 1;
+            font-weight: bold;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 20px;
+            }
+            
+            h1 {
+                font-size: 1.8em;
+            }
+            
+            .watermark {
+                font-size: 3em;
+            }
+        }
+
+        /* PROTECCIÓN ADICIONAL: Prevenir drag de imágenes */
+        img {
+            pointer-events: none;
+        }
+
+        /* Mensaje al intentar copiar */
+        .copy-warning {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: #e74c3c;
+            color: white;
+            padding: 15px 25px;
+            border-radius: 10px;
+            display: none;
+            z-index: 9999;
+            animation: slideIn 0.3s ease;
+        }
+
+        @keyframes slideIn {
+            from {
+                transform: translateX(400px);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Watermark de protección -->
+    <div class="watermark">CONFIDENCIAL</div>
+
+    <!-- Mensaje de advertencia al copiar -->
+    <div class="copy-warning" id="copyWarning">
+        ⚠️ Este contenido está protegido. No copies historias ajenas.
+    </div>
+
+    <div class="container">
+        <h1>🛡️ Reglas de la Comunidad</h1>
+        <p class="subtitle">Estas reglas protegen a TODOS. Léelas con atención.</p>
+
+        <!-- ADVERTENCIA PRINCIPAL -->
+        <div class="warning-box">
+            <strong>⚠️ IMPORTANTE:</strong><br>
+            Este es un espacio SAGRADO para compartir dolor y sanar.<br>
+            NO minimizamos el dolor de los demás.<br>
+            NO hacemos competencia del dolor.<br>
+            TODOS sufrimos en distintas cantidades y formas.<br>
+            TODOS merecemos respeto y comprensión.
+        </div>
+
+        <!-- SECCIÓN 1: PRINCIPIOS FUNDAMENTALES -->
+        <div class="section">
+            <h2 class="section-title">
+                <span class="icon">💜</span>
+                Principios Fundamentales
+            </h2>
+
+            <div class="rule">
+                <div class="rule-title">✅ RESPETO ABSOLUTO</div>
+                <div class="rule-description">
+                    Respetamos el dolor de TODOS. No importa si te parece "más grave" o "menos grave". 
+                    Cada persona vive su dolor de forma única. Tu experiencia es válida. La de los demás también.
+                </div>
+            </div>
+
+            <div class="rule">
+                <div class="rule-title">✅ ESCUCHAMOS SIN JUZGAR</div>
+                <div class="rule-description">
+                    Este es un espacio para ESCUCHAR. No para juzgar, no para comparar, no para minimizar. 
+                    Si alguien comparte su historia, ESCUCHÁ con empatía.
+                </div>
+            </div>
+
+            <div class="rule">
+                <div class="rule-title">✅ APOYAMOS, NO COMPETIMOS</div>
+                <div class="rule-description">
+                    NO hacemos competencia del dolor. No decimos "yo sufrí más que vos". 
+                    El dolor no es una competencia. Es una experiencia que compartimos para sanar juntos.
+                </div>
+            </div>
+
+            <div class="rule">
+                <div class="rule-title">✅ HABLAMOS Y NOS DESAHOGAMOS</div>
+                <div class="rule-description">
+                    Este espacio existe para que HABLES. Para que te DESAHOGUES. Para que encuentres personas 
+                    que pasan por lo mismo o que al menos te ENTIENDEN. No estás solo/a.
+                </div>
+            </div>
+        </div>
+
+        <!-- SECCIÓN 2: PROHIBICIONES ESTRICTAS -->
+        <div class="section">
+            <h2 class="section-title">
+                <span class="icon">🚫</span>
+                Prohibiciones Estrictas
+            </h2>
+
+            <div class="rule forbidden">
+                <div class="rule-title">❌ NO MINIMIZAR EL DOLOR AJENO</div>
+                <div class="rule-description">
+                    NUNCA digas "eso no es nada" o "yo pasé por peor". El dolor es personal. 
+                    Respetá la experiencia de cada uno. Minimizar el dolor ajeno es una forma de violencia.
+                </div>
+            </div>
+
+            <div class="rule forbidden">
+                <div class="rule-title">❌ NO INSULTOS</div>
+                <div class="rule-description">
+                    Cero tolerancia a insultos. Este es un espacio de RESPETO. 
+                    Si no estás de acuerdo con algo, expresalo con respeto o no lo expreses.
+                </div>
+            </div>
+
+            <div class="rule forbidden emphasis">
+                <div class="rule-title">❌ NO EXPONER NOMBRES</div>
+                <div class="rule-description">
+                    <strong>BAJO NINGUNA CIRCUNSTANCIA</strong> expongas nombres de personas (agresores, conocidos, etc.). 
+                    Este espacio es para sanar, NO para venganza pública. Protegemos el anonimato de TODOS.
+                </div>
+            </div>
+
+            <div class="rule forbidden emphasis">
+                <div class="rule-title">❌ NO CAPTURAS DE PANTALLA</div>
+                <div class="rule-description">
+                    <strong>PROHIBIDO</strong> tomar capturas de pantalla de historias ajenas. 
+                    Las historias compartidas aquí son CONFIDENCIALES. No las uses para redes sociales, 
+                    videos, blogs, o cualquier forma de monetización. Es EXPLOTACIÓN del dolor ajeno.
+                </div>
+            </div>
+
+            <div class="rule forbidden emphasis">
+                <div class="rule-title">❌ NO COPIAR HISTORIAS AJENAS</div>
+                <div class="rule-description">
+                    <strong>PROHIBIDO</strong> copiar y pegar historias de otros usuarios. 
+                    No robes el dolor ajeno para hacerlo tuyo, para contenido, o para beneficio económico. 
+                    Si hacemos esto, estamos EXPLOTANDO el dolor como tantos otros. Y NO somos eso.
+                </div>
+            </div>
+        </div>
+
+        <!-- SECCIÓN 3: PROTECCIÓN DE IDENTIDAD -->
+        <div class="section">
+            <h2 class="section-title">
+                <span class="icon">🔒</span>
+                Tu Identidad Está Protegida
+            </h2>
+
+            <div class="rule protection">
+                <div class="rule-title">✅ ANONIMATO GARANTIZADO</div>
+                <div class="rule-description">
+                    Tu identidad NO será revelada. NO habrá filtraciones de datos. 
+                    <strong>NOSOTROS no usaremos tu historia para marketing, números, o crecimiento de la plataforma.</strong>
+                    Dentro de nuestro ecosistema Cresalia, no nos beneficiamos de tu dolor.
+                </div>
+            </div>
+
+            <div class="rule protection">
+                <div class="rule-title">✅ CONTROL TOTAL DE TUS MENSAJES</div>
+                <div class="rule-description">
+                    Tenés HISTORIAL completo de tus mensajes. Podés EDITAR o BORRAR lo que compartas 
+                    en cualquier momento. Tu historia es TUYA. Vos decidís qué queda y qué no.
+                </div>
+            </div>
+
+            <div class="rule protection">
+                <div class="rule-title">✅ SEGURIDAD REFORZADA</div>
+                <div class="rule-description">
+                    Hemos implementado medidas de seguridad para proteger tu historia contra capturas, 
+                    copy-paste, y cualquier forma de explotación. Aunque no es 100% infalible 
+                    (nada en internet lo es), dificultamos al máximo el robo de contenido.
+                </div>
+            </div>
+        </div>
+
+        <!-- SECCIÓN 4: FILOSOFÍA -->
+        <div class="section">
+            <h2 class="section-title">
+                <span class="icon">✨</span>
+                Nuestra Filosofía
+            </h2>
+
+            <div class="rule emphasis">
+                <div class="rule-title">⚕️ ESTO NO ES TERAPIA</div>
+                <div class="rule-description">
+                    <strong>ACLARACIÓN IMPORTANTE:</strong> Esta comunidad NO es un reemplazo de terapia profesional. 
+                    No somos terapeutas, psicólogos ni profesionales de la salud mental. Somos una COMUNIDAD de apoyo 
+                    donde personas con experiencias similares se encuentran para desahogarse, compartir y sentirse escuchadas. 
+                    Si necesitás ayuda profesional, por favor buscá un terapeuta calificado. Este espacio es COMPLEMENTARIO, 
+                    no sustituto de ayuda profesional.
+                </div>
+            </div>
+
+            <div class="rule">
+                <div class="rule-title">💜 ESTE ES UN REFUGIO</div>
+                <div class="rule-description">
+                    Este espacio existe para DESAHOGARSE, no para terapia. Para ABRAZAR el dolor, no para curarlo (eso es trabajo de profesionales). 
+                    Para COMPARTIR sin sentirse minimizados, sin sentirse molestia, sin sentirse invisibles o que son solo un número más. 
+                    <strong>No somos números, somos personas.</strong> Iguales en dignidad, diferentes en experiencias.
+                </div>
+            </div>
+
+            <div class="rule">
+                <div class="rule-title">🤝 TODOS SUFRIMOS DIFERENTE</div>
+                <div class="rule-description">
+                    Todos sufrimos en distintas cantidades. Todos vivimos el dolor de forma diferente. 
+                    Cada dolor es ÚNICO - las formas de verlo, de sentirlo, de superarlo. Eso NO te hace menos ni más que nadie. 
+                    Está bien tener tu punto de vista, pero SIEMPRE respetando el dolor ajeno. 
+                    Lo que para vos es "poco", para otro puede ser insoportable. Y está bien.
+                </div>
+            </div>
+
+            <div class="rule">
+                <div class="rule-title">🌟 BUSCAMOS EQUIDAD</div>
+                <div class="rule-description">
+                    Este espacio busca la EQUIDAD - que todos tengan voz, que todos sean escuchados, que todos importen. 
+                    No hay jerarquías de dolor. No hay "víctimas más importantes". Todos merecen respeto, comprensión y apoyo.
+                </div>
+            </div>
+
+            <div class="rule emphasis">
+                <div class="rule-title">🛡️ PROTEGEMOS A TODOS - Nuestro Compromiso</div>
+                <div class="rule-description">
+                    <strong>Dentro de nuestro ecosistema Cresalia, NOSOTROS no lucraremos con el dolor de nadie.</strong><br><br>
+                    • <strong>NO haremos marketing</strong> con tu dolor ni con el dolor de otros usuarios.<br>
+                    • <strong>NO publicaremos</strong> tus historias para crecer la plataforma.<br>
+                    • <strong>NO usaremos</strong> tu experiencia como contenido para redes sociales o promoción.<br>
+                    • <strong>NO comparamos</strong> con otras plataformas - no buscamos hacer menos a nadie, solo crear un refugio.<br><br>
+                    <strong>Respetamos tu decisión:</strong> Si vos elegís lucrar con TU PROPIO dolor fuera de nuestras comunidades, esa es tu decisión personal y no la juzgamos. Lo que hagas fuera de nuestro ecosistema es cosa tuya, siempre y cuando no afecte a nuestro SaaS o a otros usuarios.<br><br>
+                    Estás seguro/a aquí. Lo prometemos.
+                </div>
+            </div>
+        </div>
+
+        <!-- SECCIÓN 5: CONSECUENCIAS -->
+        <div class="section">
+            <h2 class="section-title">
+                <span class="icon">⚖️</span>
+                Consecuencias por Incumplimiento
+            </h2>
+
+            <div class="rule forbidden">
+                <div class="rule-title">⚠️ VIOLACIÓN DE REGLAS</div>
+                <div class="rule-description">
+                    Si violás estas reglas (minimizar dolor, insultar, exponer nombres, robar historias, etc.), 
+                    serás REMOVIDO de la comunidad. Sin excepciones. Este espacio es sagrado y lo protegemos.
+                </div>
+            </div>
+
+            <div class="rule forbidden emphasis">
+                <div class="rule-title">⚠️ EXPLOTACIÓN DEL DOLOR AJENO</div>
+                <div class="rule-description">
+                    Si descubrimos que alguien está usando <strong>historias AJENAS</strong> de esta comunidad para contenido, 
+                    monetización, videos, o cualquier beneficio personal: <strong>acción legal</strong>. 
+                    No permitiremos que nadie lucre con el dolor de otros usuarios dentro de nuestro ecosistema.
+                </div>
+            </div>
+        </div>
+
+        <!-- MENSAJE FINAL -->
+        <div class="warning-box">
+            <strong>💜 Recordá:</strong><br>
+            No estás solo/a. Hay personas que entienden tu dolor.<br>
+            Tu historia importa. Tu dolor es válido.<br>
+            Este es tu espacio seguro. Bienvenido/a. 💜
+        </div>
+
+        <center>
+            <a href="javascript:history.back()" class="back-button">⬅️ Volver a la Comunidad</a>
+        </center>
+    </div>
+
+    <script>
+        // PROTECCIÓN: Detectar y advertir intentos de copiar
+        document.addEventListener('copy', function(e) {
+            e.preventDefault();
+            const copyWarning = document.getElementById('copyWarning');
+            copyWarning.style.display = 'block';
+            
+            setTimeout(() => {
+                copyWarning.style.display = 'none';
+            }, 3000);
+            
+            return false;
+        });
+
+        // PROTECCIÓN: Prevenir captura de pantalla (solo funciona en algunos navegadores móviles)
+        document.addEventListener('keyup', function(e) {
+            // Detectar Print Screen (aunque no se puede bloquear completamente)
+            if (e.key === 'PrintScreen') {
+                navigator.clipboard.writeText('');
+                alert('⚠️ Las capturas de pantalla están desactivadas para proteger las historias compartidas.');
+            }
+        });
+
+        // PROTECCIÓN: Prevenir clic derecho
+        document.addEventListener('contextmenu', function(e) {
+            e.preventDefault();
+            alert('⚠️ El menú contextual está desactivado para proteger el contenido.');
+            return false;
+        });
+
+        // PROTECCIÓN: Detectar herramientas de desarrollador (básico)
+        const devtools = /./;
+        devtools.toString = function() {
+            console.log('⚠️ Este contenido está protegido. No copies historias ajenas.');
+        };
+        console.log('%c⚠️ ADVERTENCIA', 'color: red; font-size: 20px; font-weight: bold;');
+        console.log('%cEste contenido está protegido. No copies historias de otros usuarios.', 'font-size: 14px;');
+        console.log('%cExplotar el dolor ajeno es inaceptable.', 'font-size: 14px; font-weight: bold;');
+    </script>
+</body>
+</html>
+

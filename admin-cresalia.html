@@ -1,0 +1,803 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cresalia - Panel de Administración</title>
+    
+    <!-- Favicon -->
+    <link rel="icon" type="image/png" href="assets/logo/logo-cresalia.png">
+    <link rel="apple-touch-icon" href="assets/logo/logo-cresalia.png">
+    
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Estilos de Administración -->
+    <link rel="stylesheet" href="styles-admin-cresalia.css?v=1.8">
+    <link rel="stylesheet" href="css/chatbot-admin.css">
+    <link rel="stylesheet" href="css/elegant-notifications.css">
+    <link rel="stylesheet" href="css/emotional-support.css">
+    <link rel="stylesheet" href="css/admin-sections.css">
+    <link rel="stylesheet" href="css/admin-interface-improved.css">
+    
+    <style>
+        /* Estilos específicos para el botón de respaldo emocional en el panel admin */
+        .emotional-support-btn {
+            background: linear-gradient(135deg, #EC4899, #F9A8D4) !important;
+            color: white !important;
+            border: none !important;
+            animation: heartbeat 2s infinite;
+        }
+        
+        .emotional-support-btn:hover {
+            background: linear-gradient(135deg, #DB2777, #EC4899) !important;
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(236, 72, 153, 0.3);
+        }
+        
+        .emotional-support-btn i {
+            color: white !important;
+            animation: heartbeat 2s infinite;
+        }
+        
+        @keyframes heartbeat {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+        }
+        
+        /* ===== MEJORAS PARA NOMBRES DE TIENDA ===== */
+        .admin-header h1 {
+            font-size: 24px;
+            font-weight: 700;
+            margin: 0;
+            word-wrap: break-word;
+            overflow-wrap: break-word;
+            hyphens: auto;
+            max-width: 100%;
+            line-height: 1.3;
+        }
+        
+        .admin-header-left {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            flex: 1;
+            min-width: 0;
+        }
+        
+        .admin-header-right {
+            flex-shrink: 0;
+        }
+        
+        /* Mejorar responsividad del header */
+        @media (max-width: 768px) {
+            .admin-header {
+                flex-direction: column;
+                gap: 15px;
+                padding: 15px 20px;
+            }
+            
+            .admin-header-left {
+                flex-direction: column;
+                text-align: center;
+                gap: 10px;
+            }
+            
+            .admin-header h1 {
+                font-size: 20px;
+            }
+        }
+        
+        /* Mejorar cards de tiendas */
+        .tenant-card .tenant-name {
+            word-wrap: break-word;
+            overflow-wrap: break-word;
+            hyphens: auto;
+            max-width: 100%;
+            line-height: 1.3;
+        }
+        
+        .tenant-card .tenant-info {
+            flex: 1;
+            min-width: 0;
+        }
+        
+        /* Estilos para la sección de productos recientes */
+        .dashboard-section {
+            margin: 20px 0;
+            padding: 20px;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        }
+        
+        .dashboard-section h3 {
+            color: #667eea;
+            margin-bottom: 15px;
+            font-size: 1.2em;
+            border-bottom: 2px solid #f0f0f0;
+            padding-bottom: 10px;
+        }
+        
+        .productos-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 15px;
+            margin-top: 15px;
+        }
+        
+        .producto-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px;
+            background: #f8f9fa;
+            border-radius: 10px;
+            border-left: 4px solid #667eea;
+            transition: all 0.3s ease;
+        }
+        
+        .producto-item:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        }
+        
+        .producto-info h4 {
+            margin: 0 0 5px 0;
+            color: #333;
+            font-size: 1em;
+        }
+        
+        .producto-precio {
+            color: #22c55e;
+            font-weight: bold;
+            margin: 0;
+        }
+        
+        .producto-categoria {
+            background: #667eea;
+            color: white;
+            padding: 2px 8px;
+            border-radius: 12px;
+            font-size: 0.8em;
+        }
+        
+        .producto-acciones .btn-ver {
+            background: #667eea;
+            color: white;
+            border: none;
+            padding: 8px 12px;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .producto-acciones .btn-ver:hover {
+            background: #5a67d8;
+            transform: scale(1.05);
+        }
+        
+        .no-data {
+            text-align: center;
+            padding: 40px;
+            color: #6b7280;
+        }
+        
+        .no-data i {
+            font-size: 3em;
+            margin-bottom: 15px;
+            opacity: 0.5;
+        }
+        
+        .loading {
+            text-align: center;
+            padding: 40px;
+            color: #667eea;
+        }
+        
+        .loading i {
+            font-size: 2em;
+            margin-bottom: 10px;
+        }
+    </style>
+</head>
+<body>
+    <!-- Pantalla de Login -->
+    <div id="loginScreen" class="login-container">
+        <div class="login-card">
+            <div class="login-header">
+                <img src="assets/logo/logo-cresalia.png" alt="Cresalia" class="login-logo">
+                <h2>Panel de Administración</h2>
+                <p>Acceso exclusivo para administradores</p>
+                <div style="background: #f8f9fa; padding: 10px; border-radius: 8px; margin-top: 10px; border: 1px solid #dee2e6;">
+                    <p style="margin: 0; font-size: 14px; color: #6c757d;">
+                        <strong>🔑 Contraseña:</strong> [CONFIGURACIÓN PRIVADA]
+                    </p>
+                </div>
+            </div>
+            
+            <form id="loginForm" class="login-form">
+                <div class="form-group">
+                    <label for="password">
+                        <i class="fas fa-lock"></i>
+                        Contraseña de Administrador
+                    </label>
+                    <input type="password" id="password" name="password" required>
+                    <div class="password-toggle">
+                        <i class="fas fa-eye" id="togglePassword"></i>
+                    </div>
+                </div>
+                
+                <button type="submit" class="login-btn">
+                    <i class="fas fa-sign-in-alt"></i>
+                    Acceder al Panel
+                </button>
+            </form>
+            
+            <div class="login-footer">
+                <p><i class="fas fa-shield-alt"></i> Acceso seguro y encriptado</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Panel de Administración -->
+    <div id="adminPanel" class="admin-container" style="display: none;">
+        <!-- Header del Panel -->
+        <header class="admin-header">
+            <div class="admin-header-left">
+                <img src="assets/logo/logo-cresalia.png" alt="Cresalia" class="admin-logo">
+                <h1>Panel de Administración Cresalia</h1>
+            </div>
+            <div class="admin-header-right">
+                <div class="admin-user">
+                    <i class="fas fa-user-shield"></i>
+                    <span>Administrador</span>
+                </div>
+                <button onclick="cambiarContraseñaAdmin('ADMIN123')" class="btn btn-warning btn-sm" style="margin-right: 10px;">
+                    <i class="fas fa-key"></i>
+                    Cambiar a ADMIN123
+                </button>
+                <button id="logoutBtn" class="logout-btn">
+                    <i class="fas fa-sign-out-alt"></i>
+                    Cerrar Sesión
+                </button>
+            </div>
+        </header>
+
+        <!-- Navegación -->
+        <nav class="admin-nav">
+            <button class="nav-btn active" data-section="dashboard">
+                <i class="fas fa-tachometer-alt"></i>
+                Dashboard
+            </button>
+            <button class="nav-btn" data-section="productos">
+                <i class="fas fa-box"></i>
+                Productos
+            </button>
+            <button class="nav-btn" data-section="categorias">
+                <i class="fas fa-tags"></i>
+                Categorías
+            </button>
+            <button class="nav-btn" data-section="servicios">
+                <i class="fas fa-tools"></i>
+                Servicios
+            </button>
+            <button class="nav-btn" data-section="pagos">
+                <i class="fas fa-credit-card"></i>
+                Configuración de Pagos
+            </button>
+            <button class="nav-btn" data-section="configuracion">
+                <i class="fas fa-cog"></i>
+                Configuración General
+            </button>
+            <button class="nav-btn" data-section="chatbot" onclick="mostrarConfiguracionChatbot()">
+                <i class="fas fa-robot"></i>
+                Chatbot IA
+            </button>
+            <button class="nav-btn" data-section="ofertas">
+                <i class="fas fa-tags"></i>
+                Ofertas & Combos
+            </button>
+            <button class="nav-btn" data-section="estadisticas">
+                <i class="fas fa-chart-bar"></i>
+                Estadísticas
+            </button>
+            <button class="nav-btn emotional-support-btn" onclick="abrirRespaldoEmocional()">
+                <i class="fas fa-heart"></i>
+                💜 Apoyo Emocional
+            </button>
+        </nav>
+
+        <!-- Contenido Principal -->
+        <main class="admin-content">
+            <!-- Dashboard -->
+            <section id="dashboard" class="content-section active">
+                <div class="dashboard-header">
+                    <h2><i class="fas fa-tachometer-alt"></i> Dashboard</h2>
+                    <p>Bienvenido al panel de control de Cresalia</p>
+                </div>
+                
+                <div class="dashboard-stats">
+                    <div class="stat-card">
+                        <div class="stat-icon">
+                            <i class="fas fa-shopping-cart"></i>
+                        </div>
+                        <div class="stat-info">
+                            <h3 id="total-productos">0</h3>
+                            <p>Productos Activos</p>
+                        </div>
+                    </div>
+                    
+                    <div class="stat-card">
+                        <div class="stat-icon">
+                            <i class="fas fa-tags"></i>
+                        </div>
+                        <div class="stat-info">
+                            <h3 id="total-categorias">0</h3>
+                            <p>Categorías</p>
+                        </div>
+                    </div>
+                    
+                    <div class="stat-card">
+                        <div class="stat-icon">
+                            <i class="fas fa-chart-line"></i>
+                        </div>
+                        <div class="stat-info">
+                            <h3 id="ventas-hoy">0</h3>
+                            <p>Ventas Hoy</p>
+                        </div>
+                    </div>
+                    
+                    <div class="stat-card">
+                        <div class="stat-icon">
+                            <i class="fas fa-users"></i>
+                        </div>
+                        <div class="stat-info">
+                            <h3 id="clientes-nuevos">0</h3>
+                            <p>Clientes Nuevos</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="dashboard-actions">
+                    <div class="action-card">
+                        <h3>Acciones Rápidas</h3>
+                        <div class="action-buttons">
+                            <button class="action-btn" onclick="mostrarSeccion('productos')">
+                                <i class="fas fa-plus"></i>
+                                Agregar Producto
+                            </button>
+                            <button class="action-btn" onclick="mostrarSeccion('ofertas')">
+                                <i class="fas fa-tag"></i>
+                                Crear Oferta
+                            </button>
+                            <button class="action-btn" onclick="mostrarSeccion('pagos')">
+                                <i class="fas fa-cog"></i>
+                                Configurar Pagos
+                            </button>
+                            <button class="action-btn" onclick="refrescarDatos()">
+                                <i class="fas fa-sync-alt"></i>
+                                Actualizar Datos
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <div class="action-card">
+                        <h3>Sincronización de Datos</h3>
+                        <div class="action-buttons">
+                            <button class="action-btn sync-btn" onclick="sincronizarConPaginaPrincipal()">
+                                <i class="fas fa-sync-alt"></i>
+                                Sincronizar Página
+                            </button>
+                            <button class="action-btn export-btn" onclick="exportarDatos()">
+                                <i class="fas fa-download"></i>
+                                Exportar Datos
+                            </button>
+                            <input type="file" id="importFile" style="display: none;" accept=".json" onchange="importarDatos(event)">
+                            <button class="action-btn import-btn" onclick="document.getElementById('importFile').click()">
+                                <i class="fas fa-upload"></i>
+                                Importar Datos
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <div class="action-card">
+                        <h3>Monitoreo y Notificaciones</h3>
+                        <div class="action-buttons">
+                            <button class="action-btn monitor-btn" onclick="mostrarPanelMonitoreo()">
+                                <i class="fas fa-chart-line"></i>
+                                Panel de Monitoreo
+                            </button>
+                            <button class="action-btn backup-btn" onclick="realizarBackupAutomatico()">
+                                <i class="fas fa-save"></i>
+                                Backup Manual
+                            </button>
+                            <button class="action-btn test-btn" onclick="probarNotificacion()">
+                                <i class="fas fa-bell"></i>
+                                Probar Notificación
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <div class="action-card">
+                        <h3>Gestión de Backups</h3>
+                        <div class="action-buttons">
+                            <button class="action-btn history-btn" onclick="mostrarHistorialBackups()">
+                                <i class="fas fa-history"></i>
+                                Historial de Backups
+                            </button>
+                            <button class="action-btn restore-btn" onclick="mostrarOpcionesRestauracion()">
+                                <i class="fas fa-undo"></i>
+                                Restaurar Sistema
+                            </button>
+                            <button class="action-btn config-btn" onclick="configurarBackup()">
+                                <i class="fas fa-cog"></i>
+                                Configurar Backup
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Sección de Productos Recientes -->
+                <div class="dashboard-section">
+                    <h3>📦 Productos Recientes</h3>
+                    <div id="productos-recientes" class="productos-container">
+                        <div class="loading">
+                            <i class="fas fa-spinner fa-spin"></i>
+                            <p>Cargando productos...</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Productos -->
+            <section id="productos" class="content-section">
+                <div class="section-header">
+                    <h2><i class="fas fa-box"></i> Gestión de Productos</h2>
+                    <div class="header-actions">
+                        <button class="add-btn" onclick="mostrarFormularioProducto()">
+                            <i class="fas fa-plus"></i>
+                            Agregar Producto
+                        </button>
+                        <button class="btn btn-danger" onclick="eliminarProductosSeleccionados()" id="eliminarSeleccionadosBtn" style="display: none;">
+                            <i class="fas fa-trash"></i>
+                            Eliminar Seleccionados
+                        </button>
+                        <button class="btn btn-danger" onclick="eliminarTodosLosProductos()">
+                            <i class="fas fa-trash-alt"></i>
+                            Eliminar Todos
+                        </button>
+                    </div>
+                </div>
+                
+                <div class="productos-controls">
+                    <div class="bulk-actions">
+                        <label class="checkbox-container">
+                            <input type="checkbox" id="selectAllProductos" onchange="toggleSelectAllProductos()">
+                            <span class="checkmark"></span>
+                            Seleccionar Todos
+                        </label>
+                        <span id="productosSeleccionadosCount" class="selection-count">0 productos seleccionados</span>
+                    </div>
+                </div>
+                
+                <div class="productos-grid" id="productosGrid">
+                    <!-- Los productos se cargarán dinámicamente -->
+                </div>
+            </section>
+
+            <!-- Categorías -->
+            <section id="categorias" class="content-section">
+                <div class="section-header">
+                    <h2><i class="fas fa-tags"></i> Gestión de Categorías</h2>
+                    <div class="header-actions">
+                        <button class="add-btn" onclick="mostrarFormularioCategoria()">
+                            <i class="fas fa-plus"></i>
+                            Agregar Categoría
+                        </button>
+                        <button class="add-btn" onclick="mostrarFormularioSubcategoria()">
+                            <i class="fas fa-layer-group"></i>
+                            Agregar Subcategoría
+                        </button>
+                    </div>
+                </div>
+                
+                <div class="categorias-container">
+                    <div class="categorias-grid" id="categoriasGrid">
+                        <!-- Las categorías se cargarán dinámicamente -->
+                    </div>
+                    
+                    <div class="subcategorias-section">
+                        <h3><i class="fas fa-layer-group"></i> Subcategorías</h3>
+                        <div class="subcategorias-grid" id="subcategoriasGrid">
+                            <!-- Las subcategorías se cargarán dinámicamente -->
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Servicios -->
+            <section id="servicios" class="content-section">
+                <div class="section-header">
+                    <h2><i class="fas fa-tools"></i> Gestión de Servicios</h2>
+                    <button class="add-btn" onclick="mostrarFormularioServicio()">
+                        <i class="fas fa-plus"></i>
+                        Agregar Servicio
+                    </button>
+                </div>
+                
+                <div class="servicios-grid" id="serviciosGrid">
+                    <!-- Los servicios se cargarán dinámicamente -->
+                </div>
+            </section>
+
+            <!-- Configuración de Pagos -->
+            <section id="pagos" class="content-section">
+                <div class="section-header">
+                    <h2><i class="fas fa-credit-card"></i> Configuración de Pagos</h2>
+                </div>
+                
+                <div class="payment-config">
+                    <!-- El contenido se cargará dinámicamente -->
+                </div>
+            </section>
+
+            <!-- Configuración General -->
+            <section id="configuracion" class="content-section">
+                <div class="section-header">
+                    <h2><i class="fas fa-cog"></i> Configuración General</h2>
+                    <p>Gestiona la información básica de Cresalia</p>
+                </div>
+                
+                <div class="config-general-grid" id="configGeneralGrid">
+                    <!-- El contenido se cargará dinámicamente -->
+                </div>
+            </section>
+
+            <!-- Ofertas y Combos -->
+            <section id="ofertas" class="content-section">
+                <div class="section-header">
+                    <h2><i class="fas fa-tags"></i> Ofertas y Combos</h2>
+                    <button class="add-btn" onclick="mostrarFormularioOferta()">
+                        <i class="fas fa-plus"></i>
+                        Crear Oferta
+                    </button>
+                </div>
+                
+                <div class="ofertas-grid" id="ofertasGrid">
+                    <!-- Las ofertas se cargarán dinámicamente -->
+                </div>
+            </section>
+
+            <!-- Atención al Cliente -->
+            <section id="atencion" class="content-section">
+                <div class="section-header">
+                    <h2><i class="fas fa-headset"></i> Atención al Cliente</h2>
+                    <button class="add-btn" onclick="mostrarFormularioTicket()">
+                        <i class="fas fa-plus"></i>
+                        Nuevo Ticket
+                    </button>
+                </div>
+                
+                <div class="atencion-container" id="atencionGrid">
+                    <!-- El contenido se cargará dinámicamente -->
+                </div>
+            </section>
+
+            <!-- Estadísticas -->
+            <section id="estadisticas" class="content-section">
+                <div class="section-header">
+                    <h2><i class="fas fa-chart-bar"></i> Estadísticas</h2>
+                    <div class="stats-filters">
+                        <select id="periodoEstadisticas" onchange="cargarEstadisticas()">
+                            <option value="hoy">Hoy</option>
+                            <option value="semana" selected>Esta Semana</option>
+                            <option value="mes">Este Mes</option>
+                            <option value="año">Este Año</option>
+                        </select>
+                    </div>
+                </div>
+                
+                <div class="stats-container" id="estadisticasContainer">
+                    <div class="stats-overview">
+                        <div class="stat-card">
+                            <div class="stat-icon">
+                                <i class="fas fa-shopping-cart"></i>
+                            </div>
+                            <div class="stat-content">
+                                <h3 id="totalVentas">0</h3>
+                                <p>Ventas Totales</p>
+                            </div>
+                        </div>
+                        
+                        <div class="stat-card">
+                            <div class="stat-icon">
+                                <i class="fas fa-dollar-sign"></i>
+                            </div>
+                            <div class="stat-content">
+                                <h3 id="ingresosTotales">$0</h3>
+                                <p>Ingresos</p>
+                            </div>
+                        </div>
+                        
+                        <div class="stat-card">
+                            <div class="stat-icon">
+                                <i class="fas fa-users"></i>
+                            </div>
+                            <div class="stat-content">
+                                <h3 id="clientesNuevos">0</h3>
+                                <p>Clientes Nuevos</p>
+                            </div>
+                        </div>
+                        
+                        <div class="stat-card">
+                            <div class="stat-icon">
+                                <i class="fas fa-star"></i>
+                            </div>
+                            <div class="stat-content">
+                                <h3 id="satisfaccion">0%</h3>
+                                <p>Satisfacción</p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="stats-charts">
+                        <div class="chart-card">
+                            <h3>Ventas por Día</h3>
+                            <div class="chart-container" id="ventasChart">
+                                <div class="chart-placeholder">
+                                    <i class="fas fa-chart-line"></i>
+                                    <p>Cargando gráfico...</p>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="chart-card">
+                            <h3>Productos Más Vendidos</h3>
+                            <div class="chart-container" id="productosChart">
+                                <div class="chart-placeholder">
+                                    <i class="fas fa-chart-pie"></i>
+                                    <p>Cargando gráfico...</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="stats-details">
+                        <div class="details-card">
+                            <h3>Últimas Transacciones</h3>
+                            <div class="transactions-list" id="transaccionesList">
+                                <!-- Las transacciones se cargarán dinámicamente -->
+                            </div>
+                        </div>
+                        
+                        <div class="details-card">
+                            <h3>Actividad Reciente</h3>
+                            <div class="activity-list" id="actividadList">
+                                <!-- La actividad se cargará dinámicamente -->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Configuración General -->
+            <section id="configuracion" class="content-section">
+                <div class="section-header">
+                    <h2><i class="fas fa-cog"></i> Configuración General</h2>
+                    <p>Gestiona la configuración general del sistema</p>
+                </div>
+                
+                <div class="config-general-grid" id="configGeneralGrid">
+                    <!-- La configuración se cargará dinámicamente -->
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <!-- Script de Administración -->
+    <script src="admin-cresalia.js?v=2.8"></script>
+    <script src="js/dashboard-stats-cresalia.js"></script>
+    <script src="security-system.js?v=2.4"></script>
+    <script src="core/proteccion-devtools-avanzada.js?v=2.3"></script>
+    <script>
+        // Inicializar protección DevTools avanzada
+        if (typeof ProteccionDevToolsAvanzada !== 'undefined') {
+            new ProteccionDevToolsAvanzada();
+        }
+
+        // Sistema de protección simplificado para el panel de administración
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('🔒 Verificando acceso al panel de administración...');
+            
+            // Esperar a que el sistema de seguridad se inicialice
+            setTimeout(() => {
+                // Verificar sesión usando el sistema unificado de security-system.js
+                const sessionData = localStorage.getItem('cresalia_session');
+                
+                if (sessionData) {
+                    try {
+                        const session = JSON.parse(atob(sessionData));
+                        const now = Date.now();
+                        const sessionAge = now - session.timestamp;
+                        const sessionTimeout = 30 * 60 * 1000; // 30 minutos
+                        
+                        console.log('📅 Verificación de sesión unificada:');
+                        console.log('   - Edad de sesión:', Math.round(sessionAge / 1000 / 60), 'minutos');
+                        console.log('   - Timeout:', Math.round(sessionTimeout / 1000 / 60), 'minutos');
+                        console.log('   - Usuario:', session.user?.nombre || 'Unknown');
+                        
+                        if (sessionAge < sessionTimeout) {
+                            console.log('✅ Sesión de administrador válida - Acceso permitido');
+                            return; // Permitir acceso
+                        } else {
+                            console.log('⏰ Sesión de administrador expirada');
+                            localStorage.removeItem('cresalia_session');
+                        }
+                    } catch (error) {
+                        console.error('❌ Error verificando sesión unificada:', error);
+                        localStorage.removeItem('friocas_session');
+                    }
+                }
+                
+                // Si no hay sesión válida, mostrar login
+                console.log('🔐 No hay sesión válida - Mostrando pantalla de login');
+                sessionStorage.setItem('adminPageLoaded', 'true');
+            }, 1000); // Esperar 1 segundo para que se inicialice el sistema de seguridad
+        });
+    </script>
+    
+    <!-- Scripts del Chatbot IA -->
+    <script src="js/elegant-notifications.js"></script>
+    <script src="js/plan-system.js"></script>
+    <script src="js/chatbot-ia-system.js"></script>
+    <script src="js/chatbot-admin.js"></script>
+    <script src="js/emotional-support-system.js"></script>
+    <script src="js/admin-backend-connection.js"></script>
+    <script src="js/auth-system.js"></script>
+    <script src="js/account-type-system.js"></script>
+    <script src="js/history-system.js"></script>
+    <script src="js/user-status-system.js"></script>
+    <script src="js/subscription-system.js"></script>
+    <script src="js/simple-payment-system.js"></script>
+    <script src="js/crisla-support-integration.js"></script>
+    <!-- Configuración privada (opcional) -->
+    <!-- <script src="config-privado.js"></script> -->
+    <script src="js/admin-panel-functions.js"></script>
+    
+    <script>
+        // Función para abrir el sistema de respaldo emocional
+        function abrirRespaldoEmocional() {
+            // Abrir en nueva ventana
+            window.open('crisla-respaldo-emocional.html', '_blank', 'width=1200,height=800,scrollbars=yes,resizable=yes');
+        }
+        
+        // Inicializar sistema de respaldo emocional en el panel admin
+        document.addEventListener('DOMContentLoaded', function() {
+            // Verificar si el plan permite respaldo emocional
+            if (typeof planSystem !== 'undefined' && ['free', 'basic'].includes(planSystem.currentPlan)) {
+                // Mostrar botón de respaldo emocional
+                const emotionalBtn = document.querySelector('.emotional-support-btn');
+                if (emotionalBtn) {
+                    emotionalBtn.style.display = 'flex';
+                }
+            } else {
+                // Ocultar botón para planes Pro y Enterprise
+                const emotionalBtn = document.querySelector('.emotional-support-btn');
+                if (emotionalBtn) {
+                    emotionalBtn.style.display = 'none';
+                }
+            }
+        });
+    </script>
+</body>
+</html>

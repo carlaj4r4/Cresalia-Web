@@ -1,0 +1,686 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Super Admin - Cresalia</title>
+    
+    <!-- Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    
+    <link rel="stylesheet" href="../core/css/cresalia-theme-purple.css">
+    
+    <style>
+        body {
+            background: #F9FAFB;
+            margin: 0;
+        }
+
+        /* Sidebar */
+        .sidebar {
+            position: fixed;
+            left: 0;
+            top: 0;
+            width: 260px;
+            height: 100vh;
+            background: linear-gradient(180deg, #1E1B4B 0%, #4C1D95 100%);
+            color: white;
+            padding: 24px;
+            overflow-y: auto;
+        }
+
+        .sidebar-header {
+            margin-bottom: 40px;
+        }
+
+        .sidebar-logo {
+            font-size: 28px;
+            font-weight: 800;
+            background: linear-gradient(135deg, #A78BFA, #EC4899);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 8px;
+        }
+
+        .sidebar-subtitle {
+            font-size: 13px;
+            color: #C4B5FD;
+            font-weight: 500;
+        }
+
+        .sidebar-menu {
+            list-style: none;
+        }
+
+        .menu-item {
+            margin-bottom: 8px;
+        }
+
+        .menu-link {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px 16px;
+            color: #C4B5FD;
+            text-decoration: none;
+            border-radius: 10px;
+            transition: all 0.2s;
+            font-size: 15px;
+            font-weight: 500;
+        }
+
+        .menu-link:hover {
+            background: rgba(167, 139, 250, 0.15);
+            color: white;
+        }
+
+        .menu-link.active {
+            background: rgba(236, 72, 153, 0.2);
+            color: white;
+            border-left: 3px solid #EC4899;
+        }
+
+        .menu-link i {
+            width: 20px;
+            text-align: center;
+        }
+
+        /* Main Content */
+        .main-content {
+            margin-left: 260px;
+            padding: 32px;
+        }
+
+        /* Header */
+        .header {
+            background: white;
+            padding: 24px 32px;
+            border-radius: 16px;
+            margin-bottom: 32px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+        }
+
+        .header-title h1 {
+            font-size: 32px;
+            font-weight: 800;
+            color: #1F2937;
+            margin-bottom: 4px;
+        }
+
+        .header-title p {
+            color: #9CA3AF;
+            font-size: 14px;
+        }
+
+        .header-actions {
+            display: flex;
+            gap: 12px;
+            align-items: center;
+        }
+
+        /* Stats Cards */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+            gap: 24px;
+            margin-bottom: 32px;
+        }
+
+        .stat-card {
+            background: white;
+            padding: 24px;
+            border-radius: 16px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+            transition: all 0.3s ease;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 8px 24px rgba(124, 58, 237, 0.15);
+        }
+
+        .stat-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 16px;
+        }
+
+        .stat-label {
+            font-size: 14px;
+            color: #6B7280;
+            font-weight: 500;
+        }
+
+        .stat-icon {
+            width: 48px;
+            height: 48px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+        }
+
+        .stat-icon.purple {
+            background: linear-gradient(135deg, #7C3AED, #A78BFA);
+            color: white;
+        }
+
+        .stat-icon.pink {
+            background: linear-gradient(135deg, #EC4899, #F9A8D4);
+            color: white;
+        }
+
+        .stat-icon.green {
+            background: linear-gradient(135deg, #10B981, #34D399);
+            color: white;
+        }
+
+        .stat-icon.blue {
+            background: linear-gradient(135deg, #3B82F6, #60A5FA);
+            color: white;
+        }
+
+        .stat-value {
+            font-size: 36px;
+            font-weight: 800;
+            color: #1F2937;
+            margin-bottom: 4px;
+        }
+
+        .stat-change {
+            font-size: 13px;
+            font-weight: 600;
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .stat-change.up {
+            color: #10B981;
+        }
+
+        .stat-change.down {
+            color: #EF4444;
+        }
+
+        /* Tenants Table */
+        .tenants-section {
+            background: white;
+            padding: 32px;
+            border-radius: 16px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+            margin-bottom: 32px;
+        }
+
+        .section-title {
+            font-size: 20px;
+            font-weight: 700;
+            color: #1F2937;
+            margin-bottom: 24px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .tenants-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .tenants-table th {
+            text-align: left;
+            padding: 12px 16px;
+            background: #F9FAFB;
+            color: #6B7280;
+            font-size: 13px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .tenants-table td {
+            padding: 16px;
+            border-bottom: 1px solid #F3F4F6;
+        }
+
+        .tenants-table tr:hover {
+            background: #FAF5FF;
+        }
+
+        .tenant-name {
+            font-weight: 600;
+            color: #1F2937;
+        }
+
+        .tenant-slug {
+            color: #9CA3AF;
+            font-size: 13px;
+        }
+
+        .plan-badge {
+            padding: 4px 12px;
+            border-radius: 50px;
+            font-size: 12px;
+            font-weight: 600;
+            display: inline-block;
+        }
+
+        .plan-free {
+            background: #E5E7EB;
+            color: #4B5563;
+        }
+
+        .plan-basic {
+            background: #DBEAFE;
+            color: #1E40AF;
+        }
+
+        .plan-pro {
+            background: #EDE9FE;
+            color: #6D28D9;
+        }
+
+        .plan-enterprise {
+            background: #FCE7F3;
+            color: #BE185D;
+        }
+
+        .status-badge {
+            padding: 4px 12px;
+            border-radius: 50px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .status-active {
+            background: #D1FAE5;
+            color: #065F46;
+        }
+
+        .status-suspended {
+            background: #FEE2E2;
+            color: #991B1B;
+        }
+
+        .table-actions {
+            display: flex;
+            gap: 8px;
+        }
+
+        .btn-icon-small {
+            width: 32px;
+            height: 32px;
+            border-radius: 8px;
+            border: none;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .btn-view {
+            background: #EDE9FE;
+            color: #7C3AED;
+        }
+
+        .btn-edit {
+            background: #DBEAFE;
+            color: #2563EB;
+        }
+
+        .btn-danger {
+            background: #FEE2E2;
+            color: #DC2626;
+        }
+
+        .btn-icon-small:hover {
+            transform: scale(1.1);
+        }
+
+        /* Charts */
+        .charts-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+            gap: 24px;
+            margin-bottom: 32px;
+        }
+
+        .chart-card {
+            background: white;
+            padding: 24px;
+            border-radius: 16px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+        }
+
+        .chart-title {
+            font-size: 16px;
+            font-weight: 600;
+            color: #374151;
+            margin-bottom: 20px;
+        }
+    </style>
+</head>
+<body>
+    <!-- Sidebar -->
+    <aside class="sidebar">
+        <div class="sidebar-header">
+            <div class="sidebar-logo">Cresalia</div>
+            <div class="sidebar-subtitle">Super Admin Panel</div>
+        </div>
+
+        <ul class="sidebar-menu">
+            <li class="menu-item">
+                <a href="#" class="menu-link active">
+                    <i class="fas fa-chart-line"></i>
+                    Dashboard
+                </a>
+            </li>
+            <li class="menu-item">
+                <a href="#" class="menu-link">
+                    <i class="fas fa-store"></i>
+                    Tenants
+                </a>
+            </li>
+            <li class="menu-item">
+                <a href="#" class="menu-link">
+                    <i class="fas fa-dollar-sign"></i>
+                    Facturación
+                </a>
+            </li>
+            <li class="menu-item">
+                <a href="#" class="menu-link">
+                    <i class="fas fa-headset"></i>
+                    Soporte
+                </a>
+            </li>
+            <li class="menu-item">
+                <a href="#" class="menu-link">
+                    <i class="fas fa-chart-bar"></i>
+                    Analytics
+                </a>
+            </li>
+            <li class="menu-item">
+                <a href="#" class="menu-link">
+                    <i class="fas fa-cog"></i>
+                    Configuración
+                </a>
+            </li>
+            <li class="menu-item" style="margin-top: 40px;">
+                <a href="/" class="menu-link">
+                    <i class="fas fa-sign-out-alt"></i>
+                    Cerrar Sesión
+                </a>
+            </li>
+        </ul>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        <!-- Header -->
+        <div class="header">
+            <div class="header-title">
+                <h1>Dashboard Global</h1>
+                <p>Vista general de todos los tenants</p>
+            </div>
+            <div class="header-actions">
+                <button class="btn-cresalia btn-primary">
+                    <i class="fas fa-plus"></i>
+                    Nuevo Tenant
+                </button>
+            </div>
+        </div>
+
+        <!-- Stats -->
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-header">
+                    <div class="stat-label">Total Tenants</div>
+                    <div class="stat-icon purple">
+                        <i class="fas fa-store"></i>
+                    </div>
+                </div>
+                <div class="stat-value" id="total-tenants">127</div>
+                <div class="stat-change up">
+                    <i class="fas fa-arrow-up"></i>
+                    +12 este mes
+                </div>
+            </div>
+
+            <div class="stat-card">
+                <div class="stat-header">
+                    <div class="stat-label">MRR (Monthly Recurring Revenue)</div>
+                    <div class="stat-icon green">
+                        <i class="fas fa-dollar-sign"></i>
+                    </div>
+                </div>
+                <div class="stat-value" id="mrr">$8,430</div>
+                <div class="stat-change up">
+                    <i class="fas fa-arrow-up"></i>
+                    +18% vs mes anterior
+                </div>
+            </div>
+
+            <div class="stat-card">
+                <div class="stat-header">
+                    <div class="stat-label">Tenants Activos</div>
+                    <div class="stat-icon blue">
+                        <i class="fas fa-check-circle"></i>
+                    </div>
+                </div>
+                <div class="stat-value" id="active-tenants">119</div>
+                <div class="stat-change">
+                    93.7% del total
+                </div>
+            </div>
+
+            <div class="stat-card">
+                <div class="stat-header">
+                    <div class="stat-label">Tickets Abiertos</div>
+                    <div class="stat-icon pink">
+                        <i class="fas fa-ticket-alt"></i>
+                    </div>
+                </div>
+                <div class="stat-value" id="tickets">8</div>
+                <div class="stat-change down">
+                    <i class="fas fa-arrow-down"></i>
+                    -5 vs ayer
+                </div>
+            </div>
+        </div>
+
+        <!-- Charts -->
+        <div class="charts-grid">
+            <div class="chart-card">
+                <div class="chart-title">Ingresos Mensuales (MRR)</div>
+                <canvas id="mrrChart"></canvas>
+            </div>
+
+            <div class="chart-card">
+                <div class="chart-title">Distribución de Planes</div>
+                <canvas id="plansChart"></canvas>
+            </div>
+        </div>
+
+        <!-- Tenants Table -->
+        <div class="tenants-section">
+            <div class="section-title">
+                <i class="fas fa-store"></i>
+                Todos los Tenants
+            </div>
+
+            <table class="tenants-table" id="tenants-table">
+                <thead>
+                    <tr>
+                        <th>Tienda</th>
+                        <th>Plan</th>
+                        <th>Estado</th>
+                        <th>MRR</th>
+                        <th>Productos</th>
+                        <th>Órdenes/mes</th>
+                        <th>Creado</th>
+                        <th>Acciones</th>
+                    </tr>
+                </thead>
+                <tbody id="tenants-tbody">
+                    <!-- Se llenará dinámicamente -->
+                </tbody>
+            </table>
+        </div>
+    </main>
+
+    <script src="../security-config-updated.js"></script>
+    <script>
+        // Proteger página
+        protectSuperAdminPage();
+
+        // Cargar datos
+        async function loadDashboard() {
+            try {
+                const response = await fetch('http://localhost:3001/api/tenants');
+                const data = await response.json();
+                
+                renderTenants(data.tenants);
+                updateStats(data.tenants);
+                createCharts(data.tenants);
+            } catch (error) {
+                console.error('Error cargando dashboard:', error);
+            }
+        }
+
+        // Renderizar tenants
+        function renderTenants(tenants) {
+            const tbody = document.getElementById('tenants-tbody');
+            
+            tbody.innerHTML = tenants.map(tenant => `
+                <tr>
+                    <td>
+                        <div class="tenant-name">${tenant.nombre_empresa}</div>
+                        <div class="tenant-slug">${tenant.slug}</div>
+                    </td>
+                    <td>
+                        <span class="plan-badge plan-${tenant.plan || 'free'}">
+                            ${(tenant.plan || 'free').toUpperCase()}
+                        </span>
+                    </td>
+                    <td>
+                        <span class="status-badge status-${tenant.estado === 'activo' ? 'active' : 'suspended'}">
+                            ${tenant.estado === 'activo' ? 'Activo' : 'Suspendido'}
+                        </span>
+                    </td>
+                    <td>
+                        <strong>$${getPlanPrice(tenant.plan)}</strong>
+                    </td>
+                    <td>${tenant.total_productos || 0}</td>
+                    <td>${tenant.ordenes_mes || 0}</td>
+                    <td>${formatDate(tenant.created_at)}</td>
+                    <td>
+                        <div class="table-actions">
+                            <button class="btn-icon-small btn-view" title="Ver tienda">
+                                <i class="fas fa-eye"></i>
+                            </button>
+                            <button class="btn-icon-small btn-edit" title="Editar">
+                                <i class="fas fa-edit"></i>
+                            </button>
+                            <button class="btn-icon-small btn-danger" title="Suspender">
+                                <i class="fas fa-ban"></i>
+                            </button>
+                        </div>
+                    </td>
+                </tr>
+            `).join('');
+        }
+
+        // Actualizar stats
+        function updateStats(tenants) {
+            const totalTenants = tenants.length;
+            const activeTenants = tenants.filter(t => t.estado === 'activo').length;
+            
+            let mrr = 0;
+            tenants.forEach(t => {
+                mrr += getPlanPrice(t.plan);
+            });
+
+            document.getElementById('total-tenants').textContent = totalTenants;
+            document.getElementById('active-tenants').textContent = activeTenants;
+            document.getElementById('mrr').textContent = `$${mrr.toLocaleString()}`;
+        }
+
+        // Crear gráficos
+        function createCharts(tenants) {
+            // Gráfico de MRR
+            const mrrCtx = document.getElementById('mrrChart').getContext('2d');
+            new Chart(mrrCtx, {
+                type: 'line',
+                data: {
+                    labels: ['Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun'],
+                    datasets: [{
+                        label: 'MRR',
+                        data: [1200, 2300, 3800, 5200, 6800, 8430],
+                        borderColor: '#7C3AED',
+                        backgroundColor: 'rgba(124, 58, 237, 0.1)',
+                        tension: 0.4,
+                        fill: true
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: {
+                        legend: { display: false }
+                    }
+                }
+            });
+
+            // Gráfico de planes
+            const planCounts = {
+                free: tenants.filter(t => !t.plan || t.plan === 'free').length,
+                basic: tenants.filter(t => t.plan === 'basic').length,
+                pro: tenants.filter(t => t.plan === 'pro').length,
+                enterprise: tenants.filter(t => t.plan === 'enterprise').length
+            };
+
+            const plansCtx = document.getElementById('plansChart').getContext('2d');
+            new Chart(plansCtx, {
+                type: 'doughnut',
+                data: {
+                    labels: ['Free', 'Basic', 'Pro', 'Enterprise'],
+                    datasets: [{
+                        data: [planCounts.free, planCounts.basic, planCounts.pro, planCounts.enterprise],
+                        backgroundColor: ['#9CA3AF', '#3B82F6', '#7C3AED', '#EC4899']
+                    }]
+                },
+                options: {
+                    responsive: true
+                }
+            });
+        }
+
+        // Helpers
+        function getPlanPrice(plan) {
+            const prices = { free: 0, basic: 29, pro: 79, enterprise: 1000 };
+            return prices[plan] || 0;
+        }
+
+        function formatDate(dateString) {
+            const date = new Date(dateString);
+            return date.toLocaleDateString('es-ES');
+        }
+
+        // Cargar al iniciar
+        loadDashboard();
+    </script>
+</body>
+</html>
+
+

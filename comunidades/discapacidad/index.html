@@ -1,0 +1,894 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cresalia - Comunidad de Personas con Discapacidad</title>
+    <link rel="icon" type="image/x-icon" href="../../favicon.ico">
+    <link rel="icon" type="image/png" href="../../assets/logo/logo-cresalia.png">
+    <link rel="apple-touch-icon" href="../../assets/logo/logo-cresalia.png">
+    
+    <!-- PWA Manifest -->
+    <link rel="manifest" href="../../comunidades/manifest-comunidades.json">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    <meta name="apple-mobile-web-app-title" content="Cresalia Comunidades">
+    <meta name="theme-color" content="#8B5CF6">
+    
+    <!-- Protección Anti-DevTools -->
+    <script src="../../core/proteccion-devtools-avanzada.js?v=2.0"></script>
+    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            /* PROTECCIÓN: Dificultar selección para prevenir copy-paste */
+            -webkit-user-select: none;
+            -moz-user-select: none;
+            -ms-user-select: none;
+            user-select: none;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #8B5CF6 0%, #A78BFA 50%, #C4B5FD 100%);
+            min-height: 100vh;
+            padding: 20px;
+            position: relative;
+        }
+        
+        .page-wrapper {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            flex-direction: column;
+            gap: 30px;
+        }
+        
+        .container {
+            background: white;
+            border-radius: 24px;
+            padding: 60px 40px;
+            max-width: 100%;
+            text-align: center;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            position: relative;
+            z-index: 1;
+        }
+        
+        .foro-container {
+            background: white;
+            border-radius: 24px;
+            padding: 40px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            position: relative;
+            z-index: 1;
+            text-align: left;
+        }
+        
+        .foro-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 2px solid #E5E7EB;
+        }
+        
+        .foro-header h2 {
+            color: #374151;
+            font-size: 2rem;
+            margin: 0;
+        }
+        
+        .btn-primary {
+            background: linear-gradient(135deg, #8B5CF6 0%, #A78BFA 100%);
+            color: white;
+            padding: 12px 30px;
+            border-radius: 10px;
+            border: none;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(139, 92, 246, 0.4);
+        }
+        
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.7);
+            z-index: 10000;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+        
+        .modal-content {
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            max-width: 600px;
+            width: 100%;
+            max-height: 90vh;
+            overflow-y: auto;
+            position: relative;
+        }
+        
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+        }
+        
+        .modal-header h3 {
+            color: #374151;
+            margin: 0;
+        }
+        
+        .cerrar-modal {
+            background: none;
+            border: none;
+            font-size: 28px;
+            cursor: pointer;
+            color: #6B7280;
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            color: #374151;
+            font-weight: 600;
+        }
+        
+        .form-group input,
+        .form-group textarea {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #E5E7EB;
+            border-radius: 10px;
+            font-family: inherit;
+            font-size: 1rem;
+            transition: border-color 0.3s ease;
+            -webkit-user-select: text;
+            -moz-user-select: text;
+            -ms-user-select: text;
+            user-select: text;
+        }
+        
+        .form-group input:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: #8B5CF6;
+        }
+        
+        .form-group textarea {
+            min-height: 150px;
+            resize: vertical;
+        }
+        
+        #posts-container {
+            margin-top: 30px;
+        }
+        
+        .post {
+            background: #F9FAFB;
+            border-radius: 15px;
+            padding: 25px;
+            margin-bottom: 25px;
+            border-left: 4px solid #8B5CF6;
+        }
+        
+        .post-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 15px;
+        }
+        
+        .post-autor {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+        
+        .post-autor strong {
+            color: #374151;
+            font-size: 1.1rem;
+        }
+        
+        .post-fecha {
+            color: #9CA3AF;
+            font-size: 0.9rem;
+        }
+        
+        .post-acciones {
+            display: flex;
+            gap: 10px;
+        }
+        
+        .btn-editar, .btn-borrar {
+            background: none;
+            border: none;
+            color: #6B7280;
+            cursor: pointer;
+            padding: 5px 10px;
+            border-radius: 5px;
+            transition: all 0.3s ease;
+        }
+        
+        .btn-editar:hover {
+            background: #DBEAFE;
+            color: #3B82F6;
+        }
+        
+        .btn-borrar:hover {
+            background: #FEE2E2;
+            color: #EF4444;
+        }
+        
+        .post-titulo {
+            color: #374151;
+            font-size: 1.3rem;
+            margin-bottom: 15px;
+        }
+        
+        .post-contenido {
+            color: #4B5563;
+            line-height: 1.8;
+            margin-bottom: 20px;
+            white-space: pre-wrap;
+        }
+        
+        .post-footer {
+            display: flex;
+            gap: 15px;
+            padding-top: 15px;
+            border-top: 1px solid #E5E7EB;
+        }
+        
+        .btn-comentar, .btn-reaccionar {
+            background: none;
+            border: none;
+            color: #8B5CF6;
+            cursor: pointer;
+            padding: 8px 15px;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+        
+        .btn-comentar:hover, .btn-reaccionar:hover {
+            background: rgba(139, 92, 246, 0.1);
+        }
+        
+        .comentarios-container {
+            margin-top: 20px;
+            padding-top: 20px;
+            border-top: 1px solid #E5E7EB;
+        }
+        
+        .comentarios-list {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+        
+        .comentario {
+            background: white;
+            padding: 15px;
+            border-radius: 10px;
+            border-left: 3px solid rgba(139, 92, 246, 0.3);
+        }
+        
+        .comentario-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+        
+        .comentario-header strong {
+            color: #374151;
+        }
+        
+        .comentario-fecha {
+            color: #9CA3AF;
+            font-size: 0.85rem;
+        }
+        
+        .comentario-contenido {
+            color: #4B5563;
+            line-height: 1.6;
+            white-space: pre-wrap;
+        }
+        
+        .form-comentar {
+            margin-top: 15px;
+            padding: 15px;
+            background: #F9FAFB;
+            border-radius: 10px;
+        }
+        
+        .form-comentar textarea {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #E5E7EB;
+            border-radius: 8px;
+            font-family: inherit;
+            resize: vertical;
+            margin-bottom: 10px;
+            -webkit-user-select: text;
+            -moz-user-select: text;
+            -ms-user-select: text;
+            user-select: text;
+        }
+        
+        .form-comentar-botones {
+            display: flex;
+            gap: 10px;
+        }
+        
+        .btn-secondary {
+            background: #E5E7EB;
+            color: #374151;
+            padding: 10px 20px;
+            border-radius: 8px;
+            border: none;
+            font-weight: 600;
+            cursor: pointer;
+        }
+        
+        .sin-posts, .cargando {
+            text-align: center;
+            padding: 60px 20px;
+            color: #6B7280;
+        }
+        
+        .sin-posts h3 {
+            color: #374151;
+            margin-bottom: 15px;
+        }
+        
+        .error {
+            background: #FEE2E2;
+            color: #DC2626;
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+        }
+        
+        .trigger-warning {
+            background: #FEF3C7;
+            border: 2px solid #F59E0B;
+            padding: 20px;
+            border-radius: 12px;
+            margin: 25px 0;
+            color: #92400E;
+            font-weight: 500;
+        }
+        
+        .trigger-warning strong {
+            color: #B45309;
+            display: block;
+            margin-bottom: 8px;
+            font-size: 1.1em;
+        }
+        
+        .icon {
+            font-size: 80px;
+            margin-bottom: 20px;
+        }
+        
+        h1 {
+            color: #374151;
+            margin-bottom: 10px;
+            font-size: 2.5rem;
+        }
+        
+        .subtitle {
+            background: linear-gradient(135deg, #8B5CF6, #A78BFA);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            font-weight: 700;
+            font-size: 1.5rem;
+            margin-bottom: 30px;
+        }
+        
+        p {
+            color: #6B7280;
+            font-size: 1.1rem;
+            line-height: 1.8;
+            margin-bottom: 25px;
+        }
+        
+        .safe-space {
+            background: linear-gradient(135deg, rgba(139, 92, 246, 0.1), rgba(167, 139, 250, 0.1));
+            padding: 30px;
+            border-radius: 15px;
+            margin: 30px 0;
+            border-left: 5px solid #8B5CF6;
+        }
+        
+        .safe-space h3 {
+            color: #7C3AED;
+            margin-bottom: 15px;
+            font-size: 1.5rem;
+        }
+        
+        .safe-space p {
+            margin-bottom: 0;
+            color: #374151;
+            font-weight: 500;
+        }
+        
+        .important-message {
+            background: linear-gradient(135deg, #8B5CF6, #A78BFA);
+            color: white;
+            padding: 25px;
+            border-radius: 15px;
+            margin: 30px 0;
+            font-weight: 500;
+            line-height: 1.8;
+        }
+        
+        .important-message strong {
+            font-size: 1.2em;
+            display: block;
+            margin-bottom: 10px;
+        }
+        
+        .btn {
+            display: inline-block;
+            background: linear-gradient(135deg, #8B5CF6, #A78BFA);
+            color: white;
+            padding: 15px 40px;
+            border-radius: 12px;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 1.1rem;
+            transition: all 0.3s ease;
+            margin: 5px;
+        }
+        
+        .btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 30px rgba(139, 92, 246, 0.4);
+        }
+        
+        .btn-rules {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+        
+        .btn-rules:hover {
+            box-shadow: 0 10px 30px rgba(102, 126, 234, 0.4);
+        }
+        
+        .btn-home {
+            background: linear-gradient(135deg, #EC4899, #F9A8D4);
+        }
+        
+        .btn-home:hover {
+            box-shadow: 0 10px 30px rgba(236, 72, 153, 0.4);
+        }
+        
+        .features {
+            margin-top: 40px;
+            padding-top: 40px;
+            border-top: 2px solid #E5E7EB;
+        }
+        
+        .feature {
+            margin-bottom: 20px;
+            color: #374151;
+            font-size: 1rem;
+            text-align: left;
+            padding-left: 20px;
+        }
+        
+        .feature i {
+            color: #8B5CF6;
+            margin-right: 10px;
+            font-size: 1.2rem;
+        }
+        
+        .divider {
+            height: 3px;
+            background: linear-gradient(90deg, #8B5CF6, #A78BFA, #8B5CF6);
+            border-radius: 2px;
+            margin: 30px 0;
+        }
+        
+        .you-matter {
+            background: white;
+            border: 3px solid #8B5CF6;
+            padding: 25px;
+            border-radius: 15px;
+            margin: 30px 0;
+            box-shadow: 0 5px 20px rgba(139, 92, 246, 0.2);
+        }
+        
+        .you-matter h3 {
+            color: #7C3AED;
+            margin-bottom: 15px;
+            font-size: 1.8rem;
+        }
+        
+        .you-matter p {
+            color: #374151;
+            font-weight: 600;
+            margin-bottom: 0;
+            font-size: 1.2rem;
+        }
+        
+        .other-communities {
+            margin-top: 50px;
+            padding-top: 30px;
+            border-top: 2px solid #E5E7EB;
+        }
+        
+        .other-communities h3 {
+            color: #374151;
+            margin-bottom: 20px;
+        }
+        
+        .community-links {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            justify-content: center;
+        }
+        
+        .community-link {
+            display: inline-block;
+            padding: 10px 20px;
+            color: white;
+            text-decoration: none;
+            border-radius: 8px;
+            font-size: 0.9rem;
+            transition: all 0.3s ease;
+        }
+        
+        .community-link:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        }
+        
+        @media (max-width: 768px) {
+            .container {
+                padding: 40px 25px;
+            }
+            
+            h1 {
+                font-size: 2rem;
+            }
+            
+            .icon {
+                font-size: 60px;
+            }
+            
+            .feature {
+                text-align: center;
+                padding-left: 0;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="page-wrapper">
+    <div class="container">
+        <div class="icon">♿</div>
+        <h1>Cresalia</h1>
+        <p class="subtitle">Comunidad de Personas con Discapacidad</p>
+        
+        <div class="trigger-warning">
+            <strong>⚠️ Advertencia de Contenido:</strong>
+            Esta comunidad puede contener contenido sensible sobre experiencias difíciles y traumas. 
+            Si estás en un momento vulnerable, por favor considerá tu bienestar emocional antes de participar. 
+            No estás obligado/a a leer nada que te haga daño. Tu bienestar es lo más importante.
+        </div>
+        
+        <p>Un espacio seguro, anónimo y respetuoso para personas con cualquier tipo de discapacidad. 
+        Física, intelectual, sensorial, mental - TODAS son bienvenidas. Aquí tu voz importa.</p>
+        
+        <div class="you-matter">
+            <h3>💜 NO SOS "MENOS" 💜</h3>
+            <p>Tu discapacidad NO te define. NO sos "incapaz". NO sos carga. NO sos invisible. 
+            SOS una PERSONA con dignidad, derechos y valor. Punto.</p>
+        </div>
+        
+        <div class="safe-space">
+            <h3>🛡️ Este es TU espacio</h3>
+            <p>Aquí no hay "pobrecito/a", no hay infantilización, no hay "inspiración p0rn", no hay minimización. 
+            Aquí hay RESPETO, COMPRENSIÓN y DIGNIDAD. Tu experiencia es válida. Tu frustración es válida. Tu dolor es válido.</p>
+        </div>
+        
+        <div class="divider"></div>
+        
+        <div class="important-message">
+            <strong>💜 Lo que la sociedad hace mal:</strong>
+            Te infantiliza. Te trata como si fueras "menos inteligente". Te excluye de escuelas, universidades, trabajos. 
+            No hace espacios accesibles. Te mira con lástima. Te usa como "inspiración" sin tu consentimiento. 
+            Te hace sentir invisible. <strong>NADA DE ESO ESTÁ BIEN.</strong> Y aquí lo reconocemos.
+        </div>
+        
+        <a href="../reglas-comunidad.html" class="btn btn-rules">
+            <i class="fas fa-shield-alt"></i> Leer Reglas (IMPORTANTE)
+        </a>
+        
+        <a href="../../index-cresalia.html" class="btn btn-home">
+            <i class="fas fa-home"></i> Volver a Cresalia
+        </a>
+        
+        <div class="features">
+            <h3 style="color: #374151; margin-bottom: 25px; text-align: center;">Lo que encontrarás próximamente:</h3>
+            <div class="feature">
+                <i class="fas fa-comment-dots"></i> <strong>Espacio para compartir</strong> tus experiencias sin ser minimizado o infantilizado
+            </div>
+            <div class="feature">
+                <i class="fas fa-user-secret"></i> <strong>Anonimato total</strong> - Tu identidad está protegida
+            </div>
+            <div class="feature">
+                <i class="fas fa-users"></i> <strong>Otras personas con discapacidad</strong> que entienden tus desafíos únicos
+            </div>
+            <div class="feature">
+                <i class="fas fa-heart"></i> <strong>Validación de tu experiencia</strong> - Tu frustración ES legítima
+            </div>
+            <div class="feature">
+                <i class="fas fa-ban"></i> <strong>Sin bullying</strong> - Espacio protegido contra burlas y discriminación
+            </div>
+            <div class="feature">
+                <i class="fas fa-briefcase"></i> <strong>Recursos laborales</strong> - Cómo encontrar empleo inclusivo y digno
+            </div>
+            <div class="feature">
+                <i class="fas fa-graduation-cap"></i> <strong>Información educativa</strong> - Tus derechos en educación
+            </div>
+            <div class="feature">
+                <i class="fas fa-gavel"></i> <strong>Asesoría legal</strong> - Conocé tus derechos y cómo defenderlos
+            </div>
+            <div class="feature">
+                <i class="fas fa-lock"></i> <strong>Sin explotación</strong> - Tu historia NO será usada para "inspiration p0rn"
+            </div>
+            <div class="feature">
+                <i class="fas fa-edit"></i> <strong>Control total</strong> - Editá o borrá tus mensajes cuando quieras
+            </div>
+        </div>
+        
+        <div class="divider"></div>
+        
+        <div class="safe-space">
+            <h3>💪 Todas las discapacidades son válidas</h3>
+            <p>Discapacidad física, intelectual, sensorial (visual, auditiva), mental, neurológica, invisible. 
+            TODAS son reales. TODAS enfrentan discriminación. TODAS merecen respeto y apoyo. 
+            No hay "discapacidad más válida" que otra.</p>
+        </div>
+        
+        <div class="important-message">
+            <strong>💜 Cosas que NO haremos aquí:</strong>
+            ❌ Infantilizarte o tratarte como niño/a (seas adulto)<br>
+            ❌ Llamarte "inspiración" sin tu consentimiento<br>
+            ❌ Asumir que no entendés cosas<br>
+            ❌ Hablar "por vos" en lugar de escucharte<br>
+            ❌ Minimizar tus desafíos diarios<br>
+            ❌ Usar tu historia como "motivación" para otros<br>
+            ❌ Tratarte con lástima en lugar de respeto
+        </div>
+        
+        <div class="you-matter">
+            <h3>💜 Tus derechos son innegociables:</h3>
+            <p>Derecho a educación accesible. Derecho a empleo digno. Derecho a espacios accesibles. 
+            Derecho a ser tratado con DIGNIDAD. Derecho a NO ser discriminado. 
+            Estos derechos NO son favores. Son DERECHOS. 💜</p>
+        </div>
+        
+        <div class="safe-space">
+            <h3>🌟 Tu expresión es válida</h3>
+            <p>Algunas discapacidades dificultan la expresión verbal. Eso NO significa que no tengas nada que decir. 
+            Aquí respetamos TODAS las formas de comunicación. Tu voz importa, sin importar CÓMO la expreses.</p>
+        </div>
+        
+        <div class="important-message">
+            <strong>💜 No estás solo/a:</strong>
+            Hay millones de personas con discapacidad enfrentando los mismos desafíos: bullying, exclusión, 
+            discriminación laboral, falta de accesibilidad, infantilización. NO estás exagerando. 
+            NO sos "demasiado sensible". Tu experiencia es REAL y VÁLIDA.
+        </div>
+        
+        <!-- Otras Comunidades -->
+        <div class="other-communities">
+            <h3>Otras Comunidades de Apoyo</h3>
+            <div class="community-links">
+                <a href="../anti-bullying/index.html" class="community-link" style="background: linear-gradient(135deg, #60A5FA, #34D399);">
+                    🛡️ Anti-Bullying
+                </a>
+                <a href="../hombres-sobrevivientes/index.html" class="community-link" style="background: linear-gradient(135deg, #3B82F6, #1E40AF);">
+                    💙 Hombres Sobrevivientes
+                </a>
+                <a href="../mujeres-sobrevivientes/index.html" class="community-link" style="background: linear-gradient(135deg, #C084FC, #E879F9);">
+                    💜 Mujeres Sobrevivientes
+                </a>
+                <a href="../inmigrantes-racializados/index.html" class="community-link" style="background: linear-gradient(135deg, #D97706, #F59E0B);">
+                    🌍 Inmigrantes y Racializados
+                </a>
+                <a href="../lgbtq-experiencias/index.html" class="community-link" style="background: linear-gradient(135deg, #FF6B6B, #FF8E53);">
+                    🏳️‍🌈 Experiencias LGBTQ+
+                </a>
+                <a href="../otakus-anime-manga/index.html" class="community-link" style="background: linear-gradient(135deg, #FF6B9D, #C471ED);">
+                    🌸 Otakus
+                </a>
+                <a href="../gamers-videojuegos/index.html" class="community-link" style="background: linear-gradient(135deg, #6366F1, #8B5CF6);">
+                    🎮 Gamers
+                </a>
+                <a href="../../cresalia-jobs/index.html" class="community-link" style="background: linear-gradient(135deg, #F59E0B, #EAB308);">
+                    💼 Cresalia Jobs
+                </a>
+            </div>
+        </div>
+        
+        <p style="margin-top: 40px; font-size: 0.9rem; color: #9CA3AF;">
+            ♿💜 Parte del ecosistema Cresalia - Inclusión y dignidad para TODOS
+        </p>
+        
+        <p style="margin-top: 10px; font-size: 0.85rem; color: #9CA3AF; font-style: italic;">
+            "La discapacidad no te hace menos. La sociedad capacitista sí." 💜
+        </p>
+        
+        <!-- Mensaje de Protección -->
+        <div style="margin-top: 30px; padding: 20px; background: linear-gradient(135deg, rgba(139, 92, 246, 0.1), rgba(167, 139, 250, 0.1)); border-radius: 12px; border: 2px solid #8B5CF6;">
+            <p style="color: #7C3AED; font-weight: 600; font-size: 0.95rem; margin: 0;">
+                🛡️ <strong>Tu privacidad es sagrada:</strong> NO usaremos tu historia sin tu permiso explícito. 
+                NO la compartiremos para marketing. NO la monetizaremos. Tu experiencia NO está en venta. 
+                Gracias por confiar en nosotros. 💜
+            </p>
+        </div>
+    </div>
+    
+    <!-- Watermark de protección -->
+    <div style="position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%) rotate(-45deg); font-size: 5em; color: rgba(139, 92, 246, 0.03); pointer-events: none; z-index: 1; font-weight: bold;">
+        CONFIDENCIAL
+    </div>
+    
+    <!-- Advertencia de copia -->
+    <div id="copyWarning" style="position: fixed; top: 20px; right: 20px; background: #DC2626; color: white; padding: 15px 25px; border-radius: 10px; display: none; z-index: 9999; animation: slideIn 0.3s ease;">
+        ⚠️ Este contenido está protegido. No copies historias ajenas.
+    </div>
+    
+    <script>
+        // PROTECCIÓN: Detectar y advertir intentos de copiar
+        document.addEventListener('copy', function(e) {
+            e.preventDefault();
+            const copyWarning = document.getElementById('copyWarning');
+            copyWarning.style.display = 'block';
+            setTimeout(() => {
+                copyWarning.style.display = 'none';
+            }, 3000);
+            return false;
+        });
+        
+        // PROTECCIÓN: Prevenir clic derecho
+        document.addEventListener('contextmenu', function(e) {
+            e.preventDefault();
+            alert('⚠️ El menú contextual está desactivado para proteger el contenido compartido.');
+            return false;
+        });
+        
+        // PROTECCIÓN: Detectar Print Screen
+        document.addEventListener('keyup', function(e) {
+            if (e.key === 'PrintScreen') {
+                navigator.clipboard.writeText('');
+                alert('⚠️ Las capturas de pantalla están desactivadas para proteger las historias compartidas.');
+            }
+        });
+        
+        // Mensaje de bienvenida en consola
+        console.log('%c♿💜 Bienvenido/a a Cresalia - Personas con Discapacidad', 'color: #8B5CF6; font-size: 18px; font-weight: bold;');
+        console.log('%c🛡️ Este contenido está protegido. No copies historias de otros usuarios.', 'font-size: 14px;');
+        console.log('%cExplotar el dolor ajeno es inaceptable. Gracias por respetar esta comunidad. 💜', 'font-size: 14px; font-weight: bold;');
+    </script>
+    
+    <!-- SISTEMA DE FORO -->
+    <div class="foro-container">
+        <div class="foro-header">
+            <h2>♿ Foro de la Comunidad</h2>
+            <button class="btn-primary" id="btn-crear-post">
+                <i class="fas fa-plus"></i> Crear Post
+            </button>
+        </div>
+        
+        <div id="posts-container">
+            <!-- Los posts se cargarán aquí -->
+        </div>
+    </div>
+    
+    <!-- Modal crear post -->
+    <div class="modal" id="modal-crear-post">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>💜 Crear Nuevo Post</h3>
+                <button class="cerrar-modal" id="cerrar-form-post">&times;</button>
+            </div>
+            <form id="form-crear-post">
+                <div class="form-group">
+                    <label for="autor-alias">Tu alias (opcional):</label>
+                    <input type="text" id="autor-alias" placeholder="Ej: Anónimo, Luchador/a, Esperanza..." maxlength="50">
+                </div>
+                <div class="form-group">
+                    <label for="post-titulo">Título (opcional):</label>
+                    <input type="text" id="post-titulo" placeholder="Un título para tu post..." maxlength="500">
+                </div>
+                <div class="form-group">
+                    <label for="post-contenido">Tu mensaje: *</label>
+                    <textarea id="post-contenido" placeholder="Compartí tu experiencia, busca apoyo, o simplemente desahógate. Este es un espacio seguro... (mínimo 10 caracteres)" required></textarea>
+                </div>
+                <div style="display: flex; gap: 10px; justify-content: flex-end;">
+                    <button type="button" class="btn-secondary" id="cancelar-form-post">Cancelar</button>
+                    <button type="submit" class="btn-primary">
+                        <i class="fas fa-paper-plane"></i> Publicar
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+    </div>
+    
+    <!-- Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="../../config-supabase-seguro.js"></script>
+    <script src="../../js/sistema-foro-comunidades.js"></script>
+    <script src="../../js/sistema-feedbacks-comunidades.js"></script>
+    <script src="../../js/sistema-alertas-comunidades.js"></script>
+    <script>
+        let foroComunidad;
+        let alertasComunidad;
+        document.addEventListener('DOMContentLoaded', () => {
+            foroComunidad = new SistemaForoComunidades('discapacidad');
+            window.foroComunidad = foroComunidad;
+            
+            // Inicializar sistema de alertas
+            setTimeout(() => {
+                alertasComunidad = new SistemaAlertasComunidades('discapacidad');
+                window.alertasComunidad = alertasComunidad;
+            }, 500);
+            
+            document.getElementById('cancelar-form-post')?.addEventListener('click', () => {
+                foroComunidad.ocultarFormularioPost();
+            });
+        });
+        
+        // Registrar Service Worker para PWA
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('../../sw.js')
+                    .then(registration => {
+                        console.log('✅ Service Worker registrado');
+                    })
+                    .catch(error => {
+                        console.log('⚠️ Service Worker no disponible');
+                    });
+            });
+        }
+    </script>
+</body>
+</html>
+

@@ -1,66 +1,29 @@
-# Protección de IP y Seguridad - FRIOCAS Web
+# ===== CONFIGURACIÓN DE SEGURIDAD Y RENDIMIENTO FRIOCAS =====
 
-# Ocultar información del servidor
-ServerTokens Prod
-ServerSignature Off
-
-# Proteger contra ataques comunes
-<IfModule mod_rewrite.c>
-    RewriteEngine On
-    
-    # Bloquear acceso a archivos sensibles
-    RewriteRule ^(\.htaccess|\.htpasswd|\.git|\.env|config\.php|database\.php)$ - [F,L]
-    
-    # Bloquear user agents maliciosos
-    RewriteCond %{HTTP_USER_AGENT} ^$ [OR]
-    RewriteCond %{HTTP_USER_AGENT} ^(java|curl|wget) [NC,OR]
-    RewriteCond %{HTTP_USER_AGENT} ^.*(libwww-perl|curl|wget|python|nikto|scan) [NC,OR]
-    RewriteCond %{HTTP_USER_AGENT} ^.*(winhttp|HTTrack|clshttp|archiver|loader|email|harvest|extract|grab|miner) [NC]
-    RewriteRule .* - [F,L]
-    
-    # Bloquear IPs maliciosas (ejemplo)
-    # RewriteCond %{REMOTE_ADDR} ^(192\.168\.1\.100|10\.0\.0\.50)$
-    # RewriteRule .* - [F,L]
-</IfModule>
-
-# Headers de seguridad
+# ===== HEADERS DE SEGURIDAD =====
 <IfModule mod_headers.c>
-    # Ocultar información del servidor
-    Header always unset X-Powered-By
-    Header always unset X-AspNet-Version
-    Header always unset X-AspNetMvc-Version
+    # Content Security Policy
+    Header always set Content-Security-Policy "default-src 'self'; script-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net https://cdnjs.cloudflare.com https://sdk.mercadopago.com https://maps.googleapis.com; style-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net https://cdnjs.cloudflare.com https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com https://cdnjs.cloudflare.com; img-src 'self' data: https:; connect-src 'self' https://nominatim.openstreetmap.org; frame-ancestors 'none';"
     
-    # Protección XSS
-    Header always set X-XSS-Protection "1; mode=block"
+    # X-Frame-Options (reemplazado por CSP frame-ancestors)
+    # Header always set X-Frame-Options "DENY"
     
-    # Prevenir MIME sniffing
+    # X-Content-Type-Options
     Header always set X-Content-Type-Options "nosniff"
     
-    # Protección contra clickjacking
-    Header always set X-Frame-Options "DENY"
+    # Referrer Policy
+    Header always set Referrer-Policy "strict-origin-when-cross-origin"
     
-    # Política de referrer
-    Header always set Referrer-Policy "no-referrer"
+    # Permissions Policy
+    Header always set Permissions-Policy "geolocation=(), microphone=(), camera=()"
     
-    # Content Security Policy
-    Header always set Content-Security-Policy "default-src 'self' https: data: 'unsafe-inline' 'unsafe-eval'; img-src 'self' https: data: blob:;"
-    
-    # Cache control para archivos sensibles
-    <FilesMatch "\.(html|css|js|json)$">
-        Header set Cache-Control "no-cache, no-store, must-revalidate"
-        Header set Pragma "no-cache"
-        Header set Expires "0"
-    </FilesMatch>
+    # Remove X-XSS-Protection (reemplazado por CSP)
+    # Header always unset X-XSS-Protection
 </IfModule>
 
-# Proteger archivos sensibles
-<FilesMatch "^(\.htaccess|\.htpasswd|\.git|\.env|config\.js|script\.js)$">
-    Order Allow,Deny
-    Deny from all
-</FilesMatch>
-
-# Comprimir archivos
+# ===== COMPRESIÓN Y CACHE =====
 <IfModule mod_deflate.c>
+    # Comprimir archivos de texto
     AddOutputFilterByType DEFLATE text/plain
     AddOutputFilterByType DEFLATE text/html
     AddOutputFilterByType DEFLATE text/xml
@@ -70,32 +33,129 @@ ServerSignature Off
     AddOutputFilterByType DEFLATE application/rss+xml
     AddOutputFilterByType DEFLATE application/javascript
     AddOutputFilterByType DEFLATE application/x-javascript
+    AddOutputFilterByType DEFLATE application/json
 </IfModule>
 
-# Cache para archivos estáticos
 <IfModule mod_expires.c>
     ExpiresActive On
-    ExpiresByType image/jpg "access plus 1 month"
-    ExpiresByType image/jpeg "access plus 1 month"
-    ExpiresByType image/gif "access plus 1 month"
-    ExpiresByType image/png "access plus 1 month"
-    ExpiresByType text/css "access plus 1 month"
-    ExpiresByType application/pdf "access plus 1 month"
-    ExpiresByType text/javascript "access plus 1 month"
-    ExpiresByType application/javascript "access plus 1 month"
-    ExpiresByType application/x-javascript "access plus 1 month"
-    ExpiresByType application/x-shockwave-flash "access plus 1 month"
-    ExpiresByType image/x-icon "access plus 1 year"
-    ExpiresDefault "access plus 2 days"
+    
+    # Cache para archivos estáticos
+    ExpiresByType text/css "access plus 1 year"
+    ExpiresByType application/javascript "access plus 1 year"
+    ExpiresByType image/png "access plus 1 year"
+    ExpiresByType image/jpg "access plus 1 year"
+    ExpiresByType image/jpeg "access plus 1 year"
+    ExpiresByType image/gif "access plus 1 year"
+    ExpiresByType image/svg+xml "access plus 1 year"
+    ExpiresByType font/woff "access plus 1 year"
+    ExpiresByType font/woff2 "access plus 1 year"
+    ExpiresByType application/font-woff "access plus 1 year"
+    ExpiresByType application/font-woff2 "access plus 1 year"
+    
+    # Cache para HTML
+    ExpiresByType text/html "access plus 1 hour"
+    
+    # Cache para datos
+    ExpiresByType application/json "access plus 1 day"
 </IfModule>
 
-# Bloquear acceso a directorios
+# ===== CONFIGURACIÓN DE CACHE =====
+<IfModule mod_headers.c>
+    # Cache para archivos estáticos
+    <FilesMatch "\.(css|js|png|jpg|jpeg|gif|ico|svg|woff|woff2)$">
+        Header set Cache-Control "public, max-age=31536000, immutable"
+    </FilesMatch>
+    
+    # Cache para HTML
+    <FilesMatch "\.(html|htm)$">
+        Header set Cache-Control "public, max-age=3600"
+    </FilesMatch>
+    
+    # No cache para archivos dinámicos
+    <FilesMatch "\.(php|json)$">
+        Header set Cache-Control "no-cache, no-store, must-revalidate"
+        Header set Pragma "no-cache"
+        Header set Expires "0"
+    </FilesMatch>
+</IfModule>
+
+# ===== PROTECCIÓN DE ARCHIVOS =====
+# Proteger archivos sensibles
+<FilesMatch "\.(htaccess|htpasswd|ini|log|sh|inc|bak)$">
+    Order Allow,Deny
+    Deny from all
+</FilesMatch>
+
+# Proteger archivos de configuración
+<Files "config.php">
+    Order Allow,Deny
+    Deny from all
+</Files>
+
+# ===== REDIRECCIONES =====
+# Forzar HTTPS (descomentar si tienes SSL)
+# RewriteEngine On
+# RewriteCond %{HTTPS} off
+# RewriteRule ^(.*)$ https://%{HTTP_HOST}%{REQUEST_URI} [L,R=301]
+
+# Redirigir www a no-www (o viceversa)
+RewriteEngine On
+RewriteCond %{HTTP_HOST} ^www\.(.*)$ [NC]
+RewriteRule ^(.*)$ https://%1/$1 [R=301,L]
+
+# ===== OPTIMIZACIÓN DE RENDIMIENTO =====
+# Habilitar Keep-Alive
+<IfModule mod_headers.c>
+    Header set Connection keep-alive
+</IfModule>
+
+# Configurar Keep-Alive
+<IfModule mod_headers.c>
+    Header set Keep-Alive timeout=5, max=100
+</IfModule>
+
+# ===== CONFIGURACIÓN DE MIME TYPES =====
+<IfModule mod_mime.c>
+    # Configurar tipos MIME correctos
+    AddType application/font-woff .woff
+    AddType application/font-woff2 .woff2
+    AddType image/svg+xml .svg
+    AddType application/json .json
+</IfModule>
+
+# ===== PROTECCIÓN CONTRA ATAQUES =====
+# Bloquear User-Agents maliciosos
+<IfModule mod_rewrite.c>
+    RewriteCond %{HTTP_USER_AGENT} ^$ [OR]
+    RewriteCond %{HTTP_USER_AGENT} ^(java|curl|wget).* [NC,OR]
+    RewriteCond %{HTTP_USER_AGENT} ^.*(libwww-perl|curl|wget|python|nikto|wkito|pikto|acunetix).* [NC,OR]
+    RewriteCond %{HTTP_USER_AGENT} ^.*(winhttp|HTTrack|clshttp|archiver|loader|email|harvest|extract|grab|miner).* [NC]
+    RewriteRule .* - [F,L]
+</IfModule>
+
+# ===== CONFIGURACIÓN DE ERRORES =====
+# Páginas de error personalizadas
+ErrorDocument 404 /404.html
+ErrorDocument 500 /500.html
+
+# ===== CONFIGURACIÓN DE COMPRESIÓN ADICIONAL =====
+<IfModule mod_brotli.c>
+    AddOutputFilterByType BROTLI_COMPRESS text/html text/plain text/xml text/css text/javascript application/javascript application/xml+rss application/json
+</IfModule>
+
+# ===== CONFIGURACIÓN DE SEGURIDAD ADICIONAL =====
+# Deshabilitar listado de directorios
 Options -Indexes
 
-# Proteger contra hotlinking
-RewriteEngine On
-RewriteCond %{HTTP_REFERER} !^$
-RewriteCond %{HTTP_REFERER} !^http(s)?://(www\.)?friocas.com [NC]
-RewriteCond %{HTTP_REFERER} !^http(s)?://(www\.)?netlify.app [NC]
-RewriteCond %{HTTP_REFERER} !^http(s)?://(www\.)?github.com [NC]
-RewriteRule \.(jpg|jpeg|png|gif|css|js)$ - [F,L]
+# Proteger contra ataques de inclusión de archivos
+<IfModule mod_rewrite.c>
+    RewriteCond %{QUERY_STRING} (\<|%3C).*script.*(\>|%3E) [NC,OR]
+    RewriteCond %{QUERY_STRING} GLOBALS(=|\[|\%[0-9A-Z]{0,2}) [OR]
+    RewriteCond %{QUERY_STRING} _REQUEST(=|\[|\%[0-9A-Z]{0,2}) [OR]
+    RewriteCond %{QUERY_STRING} proc/self/environ [OR]
+    RewriteCond %{QUERY_STRING} mosConfig [OR]
+    RewriteCond %{QUERY_STRING} base64_(en|de)code[^(]*\([^)]*\) [OR]
+    RewriteCond %{QUERY_STRING} (<|%3C)([^s]*s)+cript.*(>|%3E) [NC,OR]
+    RewriteCond %{QUERY_STRING} (\<|%3C).*iframe.*(\>|%3E) [NC]
+    RewriteRule .* - [F]
+</IfModule>

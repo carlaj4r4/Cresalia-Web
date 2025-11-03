@@ -1,0 +1,359 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🔧 Diagnóstico de Modales - CRESALIA</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+            color: #333;
+        }
+        
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+        }
+        
+        h1 {
+            color: #667eea;
+            margin-bottom: 10px;
+            font-size: 32px;
+        }
+        
+        .subtitle {
+            color: #666;
+            margin-bottom: 30px;
+            font-size: 18px;
+        }
+        
+        .test-section {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            border-left: 4px solid #667eea;
+        }
+        
+        .test-section h2 {
+            color: #667eea;
+            margin-bottom: 15px;
+            font-size: 20px;
+        }
+        
+        .result {
+            padding: 15px;
+            border-radius: 8px;
+            margin-top: 10px;
+            font-family: 'Courier New', monospace;
+            font-size: 14px;
+        }
+        
+        .success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+        
+        .error {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+        
+        .warning {
+            background: #fff3cd;
+            color: #856404;
+            border: 1px solid #ffeaa7;
+        }
+        
+        .info {
+            background: #d1ecf1;
+            color: #0c5460;
+            border: 1px solid #bee5eb;
+        }
+        
+        button {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            font-size: 16px;
+            border-radius: 10px;
+            cursor: pointer;
+            margin: 10px 10px 10px 0;
+            transition: transform 0.2s, box-shadow 0.2s;
+            font-weight: 600;
+        }
+        
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(102, 126, 234, 0.3);
+        }
+        
+        button:active {
+            transform: translateY(0);
+        }
+        
+        .btn-secondary {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+        }
+        
+        .btn-success {
+            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+        }
+        
+        .icon {
+            font-size: 40px;
+            margin-bottom: 15px;
+        }
+        
+        .loading {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid rgba(102, 126, 234, 0.3);
+            border-radius: 50%;
+            border-top-color: #667eea;
+            animation: spin 1s linear infinite;
+        }
+        
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+        
+        .summary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 30px;
+            border-radius: 15px;
+            margin-top: 30px;
+            text-align: center;
+        }
+        
+        .summary h2 {
+            margin-bottom: 15px;
+            font-size: 28px;
+        }
+        
+        .summary p {
+            font-size: 18px;
+            line-height: 1.6;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="icon">🔧</div>
+        <h1>Diagnóstico de Modales</h1>
+        <p class="subtitle">Sistema automático de detección de problemas</p>
+        
+        <div id="results"></div>
+        
+        <div class="test-section">
+            <h2>🎯 Acciones Rápidas</h2>
+            <p style="margin-bottom: 15px;">Prueba los botones aquí para verificar que funcionen:</p>
+            <button onclick="probarModalProducto()">📦 Probar Modal Producto</button>
+            <button onclick="probarModalDiario()" class="btn-secondary">💜 Probar Modal Diario</button>
+            <button onclick="abrirAdmin()" class="btn-success">🚀 Abrir Admin Panel</button>
+        </div>
+        
+        <div id="summary"></div>
+    </div>
+
+    <script>
+        // Esperar 2 segundos para que todo cargue
+        setTimeout(() => {
+            ejecutarDiagnostico();
+        }, 2000);
+
+        function ejecutarDiagnostico() {
+            const resultsDiv = document.getElementById('results');
+            const summaryDiv = document.getElementById('summary');
+            let problemas = [];
+            let exitos = [];
+
+            resultsDiv.innerHTML = '<div class="result info"><div class="loading"></div> Ejecutando diagnóstico...</div>';
+
+            setTimeout(() => {
+                let html = '';
+
+                // TEST 1: Verificar ruta correcta
+                html += `
+                    <div class="test-section">
+                        <h2>📁 Test 1: Verificar Ubicación</h2>
+                        <div class="result info">
+                            Ubicación actual: <strong>${window.location.href}</strong><br>
+                            Carpeta: <strong>${window.location.pathname}</strong>
+                        </div>
+                    </div>
+                `;
+
+                // TEST 2: Verificar archivos JS
+                html += `
+                    <div class="test-section">
+                        <h2>📦 Test 2: Scripts Cargados</h2>
+                `;
+
+                const scripts = [
+                    'admin-productos-modales.js',
+                    'admin-modales-fix.js',
+                    'elegant-notifications.js'
+                ];
+
+                scripts.forEach(script => {
+                    const elementos = document.querySelectorAll(`script[src*="${script}"]`);
+                    if (elementos.length > 0) {
+                        html += `<div class="result success">✅ ${script} - CARGADO</div>`;
+                        exitos.push(script);
+                    } else {
+                        html += `<div class="result error">❌ ${script} - NO ENCONTRADO</div>`;
+                        problemas.push(script);
+                    }
+                });
+
+                html += `</div>`;
+
+                // TEST 3: Verificar funciones
+                html += `
+                    <div class="test-section">
+                        <h2>⚙️ Test 3: Funciones Disponibles</h2>
+                `;
+
+                const funciones = [
+                    'mostrarFormularioProducto',
+                    'cerrarModalProducto',
+                    'abrirDiarioEmocional',
+                    'cerrarDiarioEmocional',
+                    'verProductosActuales',
+                    'mostrarFormularioOferta'
+                ];
+
+                funciones.forEach(fn => {
+                    if (typeof window[fn] === 'function') {
+                        html += `<div class="result success">✅ ${fn}() - DISPONIBLE</div>`;
+                        exitos.push(fn);
+                    } else {
+                        html += `<div class="result error">❌ ${fn}() - NO DEFINIDA</div>`;
+                        problemas.push(fn);
+                    }
+                });
+
+                html += `</div>`;
+
+                // TEST 4: Verificar modales en DOM
+                html += `
+                    <div class="test-section">
+                        <h2>🎨 Test 4: Modales en el DOM</h2>
+                `;
+
+                const modales = [
+                    { id: 'modalProducto', nombre: 'Modal de Producto' },
+                    { id: 'modalServicio', nombre: 'Modal de Servicio' },
+                    { id: 'diarioModal', nombre: 'Modal de Diario' }
+                ];
+
+                modales.forEach(m => {
+                    const existe = document.getElementById(m.id);
+                    if (existe) {
+                        html += `<div class="result success">✅ ${m.nombre} (#${m.id}) - EXISTE</div>`;
+                        exitos.push(m.nombre);
+                    } else {
+                        html += `<div class="result warning">⚠️ ${m.nombre} (#${m.id}) - Se crea dinámicamente</div>`;
+                    }
+                });
+
+                html += `</div>`;
+
+                resultsDiv.innerHTML = html;
+
+                // RESUMEN
+                if (problemas.length === 0) {
+                    summaryDiv.innerHTML = `
+                        <div class="summary">
+                            <h2>🎉 ¡TODO FUNCIONA!</h2>
+                            <p><strong>${exitos.length}</strong> componentes verificados correctamente.</p>
+                            <p>Los modales deberían funcionar perfectamente.</p>
+                            <p style="margin-top: 20px;">
+                                <button onclick="abrirAdmin()" style="background: white; color: #667eea; font-size: 18px;">
+                                    🚀 Ir al Panel de Admin
+                                </button>
+                            </p>
+                        </div>
+                    `;
+                } else {
+                    summaryDiv.innerHTML = `
+                        <div class="summary" style="background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);">
+                            <h2>⚠️ Se Encontraron Problemas</h2>
+                            <p><strong>${problemas.length}</strong> componentes con problemas:</p>
+                            <p>${problemas.join(', ')}</p>
+                            <p style="margin-top: 20px; font-size: 16px;">
+                                📋 Copia toda esta página y envíasela a Claude.<br>
+                                Él sabrá exactamente qué arreglar.
+                            </p>
+                        </div>
+                    `;
+                }
+            }, 1000);
+        }
+
+        function probarModalProducto() {
+            if (typeof mostrarFormularioProducto === 'function') {
+                alert('✅ La función existe! Redirigiendo al admin para probarla...');
+                setTimeout(() => {
+                    window.location.href = 'tiendas/ejemplo-tienda/admin.html';
+                }, 1000);
+            } else {
+                alert('❌ La función mostrarFormularioProducto NO existe.\n\nEsto significa que el archivo admin-productos-modales.js no se cargó.\n\nCopia toda esta página y envíasela a Claude.');
+            }
+        }
+
+        function probarModalDiario() {
+            if (typeof abrirDiarioEmocional === 'function') {
+                alert('✅ La función existe! Redirigiendo al admin para probarla...');
+                setTimeout(() => {
+                    window.location.href = 'tiendas/ejemplo-tienda/admin.html';
+                }, 1000);
+            } else {
+                alert('❌ La función abrirDiarioEmocional NO existe.\n\nEsto significa que el archivo admin-modales-fix.js no se cargó.\n\nCopia toda esta página y envíasela a Claude.');
+            }
+        }
+
+        function abrirAdmin() {
+            window.location.href = 'tiendas/ejemplo-tienda/admin.html';
+        }
+    </script>
+</body>
+</html>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

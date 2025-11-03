@@ -3,24 +3,30 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>FRIOCAS - Productos de Limpieza Automotriz</title>
-    <meta name="description" content="FRIOCAS - Especialistas en productos de limpieza automotriz profesional. Limpiadores, shampoos, ceras y revividores de alta calidad.">
-    <meta name="keywords" content="limpieza automotriz, productos automotrices, shampoo para autos, ceras para autos, limpiadores automotrices">
+    <title>Cresalia - Plataforma de E-commerce Multi-tenant</title>
+    <meta name="description" content="Cresalia - Empezamos pocos, crecemos mucho. Plataforma SaaS para crear tu tienda online.">
+    <meta name="keywords" content="e-commerce, saas, tienda online, multi-tenant, plataforma comercio electrónico">
     
     <!-- Favicon -->
     <link rel="icon" type="image/x-icon" href="assets/favicon.ico">
     
+    <!-- Sistema de Interconexiones -->
+    <script src="js/sistema-interconexiones-global.js"></script>
+    
+    <!-- Sistema de Alertas de Emergencia -->
+    <script src="js/sistema-alertas-emergencia-global.js"></script>
+    
     <!-- Open Graph / Facebook -->
     <meta property="og:type" content="website">
     <meta property="og:url" content="https://carlaj4r4.github.io/FrioCas-web/">
-    <meta property="og:title" content="FRIOCAS - Productos de Limpieza Automotriz">
+    <meta property="og:title" content="CRESALIA - Plataforma SaaS E-commerce">
     <meta property="og:description" content="Especialistas en productos de limpieza automotriz profesional">
     <meta property="og:image" content="assets/logo-friocas.png">
     
     <!-- Twitter -->
     <meta property="twitter:card" content="summary_large_image">
     <meta property="twitter:url" content="https://carlaj4r4.github.io/FrioCas-web/">
-    <meta property="twitter:title" content="FRIOCAS - Productos de Limpieza Automotriz">
+    <meta property="twitter:title" content="CRESALIA - Plataforma SaaS E-commerce">
     <meta property="twitter:description" content="Especialistas en productos de limpieza automotriz profesional">
     <meta property="twitter:image" content="assets/logo-friocas.png">
     
@@ -95,11 +101,11 @@
 </head>
 <body>
     <div class="loading-container">
-        <div class="logo">FRIOCAS</div>
-        <div class="loading-text">Cargando productos de limpieza automotriz...</div>
+        <div class="logo">Cresalia</div>
+        <div class="loading-text">Empezamos pocos, crecemos mucho...</div>
         <div class="spinner"></div>
         <div class="redirect-text">Redirigiendo automáticamente...</div>
-        <a href="index-friocas2.html" class="manual-link">
+        <a href="index-cresalia.html" class="manual-link">
             Si no se redirige automáticamente, haz clic aquí
         </a>
     </div>
@@ -107,18 +113,18 @@
     <script>
         // Redirigir automáticamente después de 3 segundos
         setTimeout(() => {
-            window.location.href = 'index-friocas2.html?v=' + Date.now();
+            window.location.href = 'index-cresalia.html?v=' + Date.now();
         }, 3000);
         
         // Redirigir inmediatamente si el usuario hace clic en cualquier lugar
         document.addEventListener('click', () => {
-            window.location.href = 'index-friocas2.html?v=' + Date.now();
+            window.location.href = 'index-cresalia.html?v=' + Date.now();
         });
         
         // Redirigir con Enter
         document.addEventListener('keydown', (e) => {
             if (e.key === 'Enter') {
-                window.location.href = 'index-friocas2.html?v=' + Date.now();
+                window.location.href = 'index-cresalia.html?v=' + Date.now();
             }
         });
     </script>

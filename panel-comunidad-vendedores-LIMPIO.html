@@ -1,0 +1,646 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Comunidad de Vendedores - Cresalia</title>
+    
+    <!-- Favicon -->
+    <link rel="icon" type="image/x-icon" href="favicon.ico">
+    <link rel="icon" type="image/png" href="assets/logo/logo-cresalia.png">
+    
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        html, body {
+            display: block !important;
+            visibility: visible !important;
+            opacity: 1 !important;
+            width: 100%;
+            min-height: 100vh;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 20px;
+            margin: 0;
+        }
+        
+        .container-main {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: block !important;
+            visibility: visible !important;
+            opacity: 1 !important;
+        }
+        
+        .back-btn {
+            display: inline-block;
+            background: white;
+            color: #667eea;
+            padding: 12px 25px;
+            border-radius: 10px;
+            text-decoration: none;
+            font-weight: 600;
+            margin-bottom: 20px;
+            transition: all 0.3s ease;
+        }
+        
+        .back-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(255,255,255,0.3);
+        }
+        
+        .header {
+            background: white;
+            padding: 30px;
+            border-radius: 15px;
+            margin-bottom: 20px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            text-align: center;
+        }
+        
+        .header h1 {
+            color: #333;
+            margin-bottom: 10px;
+        }
+        
+        .header p {
+            color: #666;
+            font-size: 1.1rem;
+        }
+        
+        .banear-section {
+            background: #FEF2F2;
+            border: 2px solid #FECACA;
+            border-radius: 15px;
+            padding: 25px;
+            margin-bottom: 25px;
+        }
+        
+        .banear-section h4 {
+            color: #DC2626;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 1.3rem;
+        }
+        
+        .banear-form {
+            display: grid;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+        
+        .banear-form input, .banear-form textarea, .banear-form select {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #E5E7EB;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-family: inherit;
+        }
+        
+        .banear-form textarea {
+            resize: vertical;
+            min-height: 80px;
+        }
+        
+        .banear-form label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #333;
+        }
+        
+        .btn-banear {
+            background: linear-gradient(135deg, #DC2626, #EF4444);
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 10px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 1.1rem;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            justify-content: center;
+        }
+        
+        .btn-banear:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(220, 38, 38, 0.3);
+        }
+        
+        .lista-banear {
+            background: #F8F9FA;
+            border-radius: 12px;
+            padding: 20px;
+            margin-top: 20px;
+        }
+        
+        .lista-banear h5 {
+            color: #333;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .item-banear {
+            background: white;
+            border-radius: 10px;
+            padding: 15px;
+            margin-bottom: 10px;
+            border-left: 4px solid #DC2626;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+        
+        .item-banear .info {
+            flex: 1;
+        }
+        
+        .item-banear .info h6 {
+            color: #333;
+            margin: 0 0 5px 0;
+            font-size: 1.1rem;
+        }
+        
+        .item-banear .info p {
+            color: #666;
+            margin: 0;
+            font-size: 0.9rem;
+        }
+        
+        .item-banear .info .motivo {
+            color: #DC2626;
+            font-weight: 600;
+            font-size: 0.8rem;
+            text-transform: uppercase;
+        }
+        
+        .btn-desbanear {
+            background: #10B981;
+            color: white;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+        
+        .btn-desbanear:hover {
+            background: #059669;
+            transform: translateY(-1px);
+        }
+        
+        .no-reportes {
+            text-align: center;
+            color: #666;
+            padding: 40px;
+            font-style: italic;
+        }
+        
+        #comunidad-container {
+            min-height: 200px;
+            display: block !important;
+            visibility: visible !important;
+            opacity: 1 !important;
+        }
+        
+        /* Responsive */
+        @media (max-width: 768px) {
+            body {
+                padding: 10px;
+            }
+            
+            .header {
+                padding: 20px 15px;
+            }
+            
+            .banear-section {
+                padding: 15px;
+            }
+            
+            .item-banear {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 10px;
+            }
+            
+            .btn-desbanear {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container-main">
+        <a href="tiendas/ejemplo-tienda/admin.html" class="back-btn">
+            <i class="fas fa-arrow-left"></i> Volver al Panel
+        </a>
+        
+        <div class="header">
+            <h1>👥 Comunidad de Vendedores Cresalia</h1>
+            <p>Espacio seguro para protegernos y crecer juntos 💜</p>
+            
+            <div style="margin-top: 20px;">
+                <button onclick="mostrarPanelMentoria()" style="background: linear-gradient(135deg, #10B981, #059669); color: white; border: none; padding: 15px 30px; border-radius: 25px; font-size: 1.1rem; font-weight: 600; cursor: pointer; box-shadow: 0 4px 15px rgba(16, 185, 129, 0.3); transition: all 0.3s ease;">
+                    <i class="fas fa-graduation-cap"></i> Sistema de Mentoría Automática
+                </button>
+            </div>
+        </div>
+        
+        <div class="banear-section">
+            <h4><i class="fas fa-flag"></i> Sistema de Reportes: Reportar Compradores Problemáticos</h4>
+            <p style="color: #666; margin-bottom: 20px;">Reporta compradores que no cumplan con sus compromisos o realicen estafas. Con 3+ reportes de diferentes vendedores, el administrador procederá a banear. También puedes bloquear compradores individualmente.</p>
+            
+            <div class="banear-form">
+                <div>
+                    <label>Nombre del Comprador:</label>
+                    <input type="text" id="nombreComprador" placeholder="Nombre completo del comprador">
+                </div>
+                
+                <div>
+                    <label>Email o Teléfono:</label>
+                    <input type="text" id="contactoComprador" placeholder="Email o número de teléfono">
+                </div>
+                
+                <div>
+                    <label>Tipo de Problema:</label>
+                    <select id="tipoProblema">
+                        <option value="">Selecciona el tipo de problema</option>
+                        <option value="no-pago">No pagó el producto/servicio</option>
+                        <option value="estafa">Intentó estafar</option>
+                        <option value="comportamiento-inadecuado">Comportamiento inadecuado</option>
+                        <option value="cancelacion-sin-aviso">Canceló sin avisar</option>
+                        <option value="producto-danado">Reclamó producto dañado sin pruebas</option>
+                        <option value="otro">Otro</option>
+                    </select>
+                </div>
+                
+                <div>
+                    <label>Descripción del Problema:</label>
+                    <textarea id="descripcionProblema" placeholder="Describe detalladamente qué pasó, cuándo y cómo..."></textarea>
+                </div>
+                
+                <div>
+                    <label>Evidencia (Capturas de pantalla):</label>
+                    <input type="file" id="evidencia" accept="image/*,.pdf,.doc,.docx" multiple style="width: 100%; padding: 12px; border: 2px solid #E5E7EB; border-radius: 8px; font-size: 1rem; font-family: inherit;">
+                    <small style="color: #666; font-size: 0.8rem;">Puedes subir múltiples archivos: imágenes, PDFs o documentos</small>
+                </div>
+                
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+                    <button class="btn-banear" onclick="reportarCompradorDeshonesto()" style="background: linear-gradient(135deg, #3B82F6, #60A5FA);">
+                        <i class="fas fa-flag"></i> Reportar Comprador
+                    </button>
+                    <button class="btn-banear" onclick="bloquearCompradorIndividual()" style="background: linear-gradient(135deg, #DC2626, #EF4444);">
+                        <i class="fas fa-user-slash"></i> Bloquear Individualmente
+                    </button>
+                </div>
+            </div>
+            
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+                <div class="lista-banear">
+                    <h5><i class="fas fa-flag"></i> Compradores Reportados (Esperando Revisión)</h5>
+                    <div id="listaCompradoresReportados">
+                        <div class="no-reportes">
+                            <i class="fas fa-shield-alt" style="font-size: 2rem; color: #10B981; margin-bottom: 10px;"></i>
+                            <p>¡Excelente! No hay reportes pendientes.</p>
+                            <small>Mantengamos esta comunidad limpia y segura para todos.</small>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="lista-banear">
+                    <h5><i class="fas fa-user-slash"></i> Compradores Bloqueados (Solo Tuyos)</h5>
+                    <div id="listaCompradoresBloqueados">
+                        <div class="no-reportes">
+                            <i class="fas fa-user-check" style="font-size: 2rem; color: #3B82F6; margin-bottom: 10px;"></i>
+                            <p>No has bloqueado ningún comprador.</p>
+                            <small>Los bloqueos son personales y solo te afectan a ti.</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div id="comunidad-container"></div>
+    </div>
+    
+    <!-- Scripts externos necesarios -->
+    <script src="js/comunidad-vendedores.js"></script>
+    <script src="js/sistema-mentoria-automatica.js"></script>
+    
+    <script>
+        // ===== FUNCIONALIDADES DEL PANEL =====
+        
+        // Función para convertir archivos a base64
+        function convertirArchivosABase64(archivos) {
+            return new Promise((resolve, reject) => {
+                const archivosBase64 = [];
+                let archivosProcesados = 0;
+                
+                if (archivos.length === 0) {
+                    resolve([]);
+                    return;
+                }
+                
+                Array.from(archivos).forEach((archivo) => {
+                    const reader = new FileReader();
+                    reader.onload = function(e) {
+                        archivosBase64.push({
+                            nombre: archivo.name,
+                            tipo: archivo.type,
+                            tamaño: archivo.size,
+                            contenido: e.target.result
+                        });
+                        archivosProcesados++;
+                        
+                        if (archivosProcesados === archivos.length) {
+                            resolve(archivosBase64);
+                        }
+                    };
+                    reader.onerror = reject;
+                    reader.readAsDataURL(archivo);
+                });
+            });
+        }
+        
+        // Función para reportar un comprador deshonesto
+        async function reportarCompradorDeshonesto() {
+            const nombre = document.getElementById('nombreComprador').value.trim();
+            const contacto = document.getElementById('contactoComprador').value.trim();
+            const tipoProblema = document.getElementById('tipoProblema').value;
+            const descripcion = document.getElementById('descripcionProblema').value.trim();
+            const archivosEvidencia = document.getElementById('evidencia').files;
+            
+            // Validaciones
+            if (!nombre || !contacto || !tipoProblema || !descripcion) {
+                alert('⚠️ Por favor completa todos los campos obligatorios.');
+                return;
+            }
+            
+            if (descripcion.length < 20) {
+                alert('⚠️ La descripción debe tener al menos 20 caracteres para ser válida.');
+                return;
+            }
+            
+            if (archivosEvidencia.length === 0) {
+                alert('⚠️ Por favor sube al menos una captura de pantalla o evidencia.');
+                return;
+            }
+            
+            const confirmar = confirm(`¿Estás seguro de reportar a "${nombre}"?\n\nEsto enviará el reporte al administrador para revisión. Con 3+ reportes de diferentes vendedores, se procederá al baneo.`);
+            if (!confirmar) return;
+            
+            mostrarNotificacion('📤 Procesando evidencia...', 'info');
+            
+            try {
+                const evidenciasBase64 = await convertirArchivosABase64(archivosEvidencia);
+                
+                const reporte = {
+                    id: Date.now(),
+                    nombre: nombre,
+                    contacto: contacto,
+                    tipoProblema: tipoProblema,
+                    descripcion: descripcion,
+                    evidencia: evidenciasBase64,
+                    fecha: new Date().toLocaleDateString('es-ES'),
+                    reportadoPor: 'Vendedor Actual',
+                    estado: 'pendiente',
+                    vendedorId: 'vendedor_demo',
+                    numeroReportes: 1
+                };
+                
+                let reportes = JSON.parse(localStorage.getItem('compradoresReportados') || '[]');
+                const reporteExistente = reportes.find(r => r.contacto === contacto);
+                
+                if (reporteExistente) {
+                    reporte.numeroReportes = reporteExistente.numeroReportes + 1;
+                    reportes = reportes.filter(r => r.contacto !== contacto);
+                }
+                
+                reportes.push(reporte);
+                localStorage.setItem('compradoresReportados', JSON.stringify(reportes));
+                
+                // Limpiar formulario
+                document.getElementById('nombreComprador').value = '';
+                document.getElementById('contactoComprador').value = '';
+                document.getElementById('tipoProblema').value = '';
+                document.getElementById('descripcionProblema').value = '';
+                document.getElementById('evidencia').value = '';
+                
+                mostrarCompradoresReportados();
+                mostrarCompradoresBloqueados();
+                
+                mostrarNotificacion(`✅ Reporte enviado al administrador. Total de reportes para este comprador: ${reporte.numeroReportes}`, 'success');
+                
+            } catch (error) {
+                console.error('Error procesando archivos:', error);
+                mostrarNotificacion('❌ Error al procesar la evidencia. Intenta nuevamente.', 'error');
+            }
+        }
+        
+        // Función para mostrar la lista de compradores reportados
+        function mostrarCompradoresReportados() {
+            const reportes = JSON.parse(localStorage.getItem('compradoresReportados') || '[]');
+            const container = document.getElementById('listaCompradoresReportados');
+            
+            if (!container) return;
+            
+            if (reportes.length === 0) {
+                container.innerHTML = `
+                    <div class="no-reportes">
+                        <i class="fas fa-shield-alt" style="font-size: 2rem; color: #10B981; margin-bottom: 10px;"></i>
+                        <p>¡Excelente! No hay reportes pendientes.</p>
+                        <small>Mantengamos esta comunidad limpia y segura para todos.</small>
+                    </div>
+                `;
+                return;
+            }
+            
+            let html = '';
+            reportes.forEach(reporte => {
+                const motivoTexto = {
+                    'no-pago': 'No pagó',
+                    'estafa': 'Estafa',
+                    'comportamiento-inadecuado': 'Comportamiento inadecuado',
+                    'cancelacion-sin-aviso': 'Canceló sin avisar',
+                    'producto-danado': 'Producto dañado sin pruebas',
+                    'otro': 'Otro motivo'
+                }[reporte.tipoProblema] || reporte.tipoProblema;
+                
+                html += `
+                    <div class="item-banear">
+                        <div class="info">
+                            <h6>${reporte.nombre}</h6>
+                            <p><strong>Contacto:</strong> ${reporte.contacto}</p>
+                            <p><strong>Motivo:</strong> <span class="motivo">${motivoTexto}</span></p>
+                            <p><strong>Fecha:</strong> ${reporte.fecha}</p>
+                            <p><strong>Estado:</strong> <span style="color: #F59E0B; font-weight: 600;">⏳ PENDIENTE</span></p>
+                            <p><strong>Reportes:</strong> <span style="color: #DC2626; font-weight: 600;">${reporte.numeroReportes || 1} reporte(s)</span></p>
+                            ${reporte.evidencia && reporte.evidencia.length > 0 ? `<p><strong>Evidencia:</strong> ${reporte.evidencia.length} archivo(s) subido(s)</p>` : ''}
+                            <p><strong>Descripción:</strong> ${reporte.descripcion}</p>
+                        </div>
+                    </div>
+                `;
+            });
+            
+            container.innerHTML = html;
+        }
+        
+        // Función para mostrar la lista de compradores bloqueados
+        function mostrarCompradoresBloqueados() {
+            const bloqueados = JSON.parse(localStorage.getItem('compradoresBloqueados') || '[]');
+            const container = document.getElementById('listaCompradoresBloqueados');
+            
+            if (!container) return;
+            
+            if (bloqueados.length === 0) {
+                container.innerHTML = `
+                    <div class="no-reportes">
+                        <i class="fas fa-user-check" style="font-size: 2rem; color: #3B82F6; margin-bottom: 10px;"></i>
+                        <p>No has bloqueado ningún comprador.</p>
+                        <small>Los bloqueos son personales y solo te afectan a ti.</small>
+                    </div>
+                `;
+                return;
+            }
+            
+            let html = '';
+            bloqueados.forEach(bloqueado => {
+                html += `
+                    <div class="item-banear">
+                        <div class="info">
+                            <h6>${bloqueado.nombre}</h6>
+                            <p><strong>Contacto:</strong> ${bloqueado.contacto}</p>
+                            <p><strong>Fecha:</strong> ${bloqueado.fecha}</p>
+                            <p><strong>Estado:</strong> <span style="color: #DC2626; font-weight: 600;">🚫 BLOQUEADO</span></p>
+                        </div>
+                        <button class="btn-desbanear" onclick="desbloquearComprador(${bloqueado.id})">
+                            <i class="fas fa-unlock"></i> Desbloquear
+                        </button>
+                    </div>
+                `;
+            });
+            
+            container.innerHTML = html;
+        }
+        
+        // Función para bloquear un comprador individualmente
+        function bloquearCompradorIndividual() {
+            const nombre = document.getElementById('nombreComprador').value.trim();
+            const contacto = document.getElementById('contactoComprador').value.trim();
+            
+            if (!nombre || !contacto) {
+                alert('⚠️ Por favor completa al menos el nombre y contacto para bloquear.');
+                return;
+            }
+            
+            const confirmar = confirm(`¿Estás seguro de bloquear a "${nombre}"?\n\nEste bloqueo es personal y solo te afecta a ti.`);
+            if (!confirmar) return;
+            
+            const bloqueado = {
+                id: Date.now(),
+                nombre: nombre,
+                contacto: contacto,
+                fecha: new Date().toLocaleDateString('es-ES'),
+                vendedorId: 'vendedor_demo'
+            };
+            
+            let bloqueados = JSON.parse(localStorage.getItem('compradoresBloqueados') || '[]');
+            bloqueados.push(bloqueado);
+            localStorage.setItem('compradoresBloqueados', JSON.stringify(bloqueados));
+            
+            mostrarCompradoresBloqueados();
+            mostrarNotificacion('✅ Comprador bloqueado individualmente. Solo te afecta a ti.', 'success');
+        }
+        
+        // Función para desbloquear un comprador
+        function desbloquearComprador(id) {
+            const confirmar = confirm('¿Estás seguro de desbloquear a este comprador?');
+            if (!confirmar) return;
+            
+            let bloqueados = JSON.parse(localStorage.getItem('compradoresBloqueados') || '[]');
+            bloqueados = bloqueados.filter(bloqueado => bloqueado.id !== id);
+            localStorage.setItem('compradoresBloqueados', JSON.stringify(bloqueados));
+            
+            mostrarCompradoresBloqueados();
+            mostrarNotificacion('✅ Comprador desbloqueado exitosamente.', 'success');
+        }
+        
+        // Función para mostrar notificaciones
+        function mostrarNotificacion(mensaje, tipo = 'info') {
+            if (!document.body) {
+                setTimeout(() => mostrarNotificacion(mensaje, tipo), 100);
+                return;
+            }
+            
+            const notificacion = document.createElement('div');
+            notificacion.style.cssText = `
+                position: fixed;
+                top: 20px;
+                right: 20px;
+                background: ${tipo === 'success' ? '#10B981' : tipo === 'error' ? '#EF4444' : '#3B82F6'};
+                color: white;
+                padding: 15px 20px;
+                border-radius: 10px;
+                box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+                z-index: 10000;
+                font-weight: 600;
+                max-width: 400px;
+            `;
+            notificacion.textContent = mensaje;
+            
+            document.body.appendChild(notificacion);
+            
+            setTimeout(() => {
+                if (notificacion.parentNode) {
+                    notificacion.parentNode.removeChild(notificacion);
+                }
+            }, 4000);
+        }
+        
+        // Inicializar cuando el DOM esté listo
+        function inicializarPanel() {
+            // Cargar listas
+            mostrarCompradoresReportados();
+            mostrarCompradoresBloqueados();
+            
+            // Inicializar comunidad de vendedores si está disponible
+            if (typeof comunidadVendedores !== 'undefined' && typeof comunidadVendedores.init === 'function') {
+                comunidadVendedores.init();
+                console.log('✅ Comunidad de vendedores inicializada');
+            }
+        }
+        
+        // Ejecutar cuando esté listo
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', inicializarPanel);
+        } else {
+            inicializarPanel();
+        }
+        
+        // También ejecutar en load por si acaso
+        window.addEventListener('load', inicializarPanel);
+    </script>
+</body>
+</html>
+

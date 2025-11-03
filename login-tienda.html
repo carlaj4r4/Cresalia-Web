@@ -1,0 +1,446 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Iniciar Sesión - CRESALIA</title>
+    
+    <!-- Supabase Client Library -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+        
+        .login-container {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            max-width: 450px;
+            width: 100%;
+            padding: 40px;
+            animation: slideIn 0.5s ease-out;
+        }
+        
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(-30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .logo {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        
+        .logo img {
+            max-width: 150px;
+            height: auto;
+        }
+        
+        h1 {
+            color: #333;
+            text-align: center;
+            margin-bottom: 10px;
+            font-size: 28px;
+        }
+        
+        .subtitle {
+            text-align: center;
+            color: #666;
+            margin-bottom: 30px;
+            font-size: 14px;
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 8px;
+            color: #333;
+            font-weight: 600;
+            font-size: 14px;
+        }
+        
+        input {
+            width: 100%;
+            padding: 12px 15px;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            font-size: 14px;
+            transition: all 0.3s ease;
+        }
+        
+        input:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+        
+        .btn-login {
+            width: 100%;
+            padding: 15px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-top: 10px;
+        }
+        
+        .btn-login:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(102, 126, 234, 0.3);
+        }
+        
+        .btn-login:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+            transform: none;
+        }
+        
+        .forgot-password {
+            text-align: center;
+            margin-top: 15px;
+        }
+        
+        .forgot-password a {
+            color: #667eea;
+            text-decoration: none;
+            font-size: 14px;
+        }
+        
+        .forgot-password a:hover {
+            text-decoration: underline;
+        }
+        
+        .register-link {
+            text-align: center;
+            margin-top: 20px;
+            color: #666;
+            font-size: 14px;
+            padding-top: 20px;
+            border-top: 1px solid #e0e0e0;
+        }
+        
+        .register-link a {
+            color: #667eea;
+            text-decoration: none;
+            font-weight: 600;
+        }
+        
+        .register-link a:hover {
+            text-decoration: underline;
+        }
+        
+        .notification {
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            display: none;
+            animation: slideDown 0.3s ease;
+        }
+        
+        @keyframes slideDown {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .notification.success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+        
+        .notification.error {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+        
+        .notification.visible {
+            display: block;
+        }
+        
+        /* ===== RESPONSIVE PARA MÓVILES ===== */
+        @media (max-width: 768px) {
+            body {
+                overflow-x: hidden !important;
+                width: 100% !important;
+                margin: 0 !important;
+                padding: 15px !important;
+            }
+            
+            .login-container {
+                width: 100% !important;
+                max-width: 100% !important;
+                padding: 25px 20px !important;
+                margin: 0 !important;
+            }
+            
+            h1 {
+                font-size: 1.5rem !important;
+                line-height: 1.3 !important;
+            }
+            
+            .subtitle {
+                font-size: 0.85rem !important;
+            }
+            
+            .logo img {
+                max-width: 100px !important;
+            }
+            
+            label {
+                font-size: 0.85rem !important;
+            }
+            
+            input {
+                padding: 10px 12px !important;
+                font-size: 0.9rem !important;
+            }
+            
+            .btn-login {
+                padding: 12px !important;
+                font-size: 0.95rem !important;
+            }
+            
+            .back-link {
+                font-size: 0.85rem !important;
+            }
+            
+            .links {
+                font-size: 0.85rem !important;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="login-container">
+        <div class="logo">
+            <img src="assets/logo/logo-cresalia.png" alt="CRESALIA" onerror="this.style.display='none'">
+        </div>
+        
+        <h1>🏪 Acceso a Mi Tienda</h1>
+        <p class="subtitle">Inicia sesión para gestionar tu negocio</p>
+        
+        <div id="notificacion" class="notification"></div>
+        
+        <form id="loginForm">
+            <div class="form-group">
+                <label for="email">
+                    <i class="fas fa-envelope"></i> Email
+                </label>
+                <input 
+                    type="email" 
+                    id="email" 
+                    placeholder="tu@email.com" 
+                    required
+                    autocomplete="email"
+                >
+            </div>
+            
+            <div class="form-group">
+                <label for="password">
+                    <i class="fas fa-lock"></i> Contraseña
+                </label>
+                <input 
+                    type="password" 
+                    id="password" 
+                    placeholder="Tu contraseña" 
+                    required
+                    autocomplete="current-password"
+                >
+            </div>
+            
+            <button type="submit" class="btn-login" id="btnLogin">
+                <i class="fas fa-sign-in-alt"></i> Iniciar Sesión
+            </button>
+        </form>
+        
+        <div class="forgot-password">
+            <a href="#" onclick="recuperarPassword(); return false;">
+                ¿Olvidaste tu contraseña?
+            </a>
+        </div>
+        
+        <div class="register-link">
+            ¿No tienes una tienda? <a href="registro-tienda.html">Créala gratis</a>
+        </div>
+    </div>
+    
+    <!-- Scripts -->
+    <script src="auth/supabase-config.js"></script>
+    <script src="auth/auth-system.js"></script>
+    <script src="auth/security-enhanced.js"></script>
+    
+    <script>
+        // Inicializar al cargar
+        document.addEventListener('DOMContentLoaded', async function() {
+            initSupabase();
+            
+            // Si viene de un registro exitoso, pre-llenar el email
+            const registroExitoso = localStorage.getItem('registro_exitoso');
+            const emailRegistro = localStorage.getItem('email_registro');
+            
+            if (registroExitoso === 'true' && emailRegistro) {
+                document.getElementById('email').value = emailRegistro;
+                mostrarNotificacion('✅ Registro exitoso. Ahora inicia sesión con tu contraseña', 'success');
+                
+                // Limpiar flags
+                localStorage.removeItem('registro_exitoso');
+                localStorage.removeItem('email_registro');
+            }
+            
+            // Verificar si ya hay sesión activa
+            const session = await verificarSesion();
+            if (session) {
+                console.log('✅ Ya hay sesión activa, redirigiendo...');
+                redirigirAAdmin();
+                return;
+            }
+            
+            // Manejar envío del formulario
+            const form = document.getElementById('loginForm');
+            form.addEventListener('submit', async function(e) {
+                e.preventDefault();
+                
+                const email = document.getElementById('email').value.trim();
+                const password = document.getElementById('password').value;
+                
+                // Verificar seguridad (anti fuerza bruta)
+                const verificacion = verificarSeguridadLogin(email, password);
+                if (!verificacion.permitido) {
+                    mostrarNotificacion(verificacion.mensaje, 'error');
+                    return;
+                }
+                
+                // Deshabilitar botón
+                const btnLogin = document.getElementById('btnLogin');
+                btnLogin.disabled = true;
+                btnLogin.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Iniciando sesión...';
+                
+                // Intentar login
+                const resultado = await loginCliente(email, password);
+                
+                if (resultado.success) {
+                    // Resetear intentos fallidos
+                    securityEnhanced.resetearIntentos();
+                    
+                    // Registrar evento de seguridad
+                    securityEnhanced.registrarEvento('login_exitoso', {
+                        email: email,
+                        tienda: resultado.tienda.nombre_tienda
+                    });
+                    
+                    mostrarNotificacion('✅ ' + resultado.mensaje, 'success');
+                    
+                    // Redirigir al admin
+                    setTimeout(() => {
+                        redirigirAAdmin(resultado.tienda);
+                    }, 1500);
+                } else {
+                    // Registrar intento fallido
+                    const intentos = securityEnhanced.registrarIntentoFallido();
+                    
+                    let mensaje = resultado.mensaje;
+                    if (intentos.intentosRestantes > 0) {
+                        mensaje += ` (${intentos.intentosRestantes} intentos restantes)`;
+                    }
+                    
+                    mostrarNotificacion('❌ ' + mensaje, 'error');
+                    btnLogin.disabled = false;
+                    btnLogin.innerHTML = '<i class="fas fa-sign-in-alt"></i> Iniciar Sesión';
+                }
+            });
+        });
+        
+        function redirigirAAdmin(tienda) {
+            // Guardar info de la tienda antes de redirigir
+            if (tienda) {
+                localStorage.setItem('tienda_actual', JSON.stringify(tienda));
+                localStorage.setItem('login_tipo', 'supabase');
+                
+                // Guardar información de sesión completa
+                localStorage.setItem('cresalia_sesion_activa', 'true');
+                localStorage.setItem('cresalia_session_token', 'login_exitoso');
+                localStorage.setItem('cresalia_user_data', JSON.stringify({
+                    email: tienda.email,
+                    nombre_tienda: tienda.nombre_tienda,
+                    plan: tienda.plan || 'basic',
+                    tipo: 'tienda'
+                }));
+                localStorage.setItem('plan-actual', tienda.plan || 'basic');
+            }
+            
+            // Prevenir redirecciones múltiples
+            if (window.location.pathname.includes('admin.html')) {
+                console.log('✅ Ya estamos en el panel admin');
+                return;
+            }
+            
+            // Todos los clientes usan el mismo panel admin
+            // pero verán sus propios datos personalizados
+            console.log('🚀 Redirigiendo al panel admin...');
+            window.location.replace('tiendas/ejemplo-tienda/admin.html');
+        }
+        
+        function mostrarNotificacion(mensaje, tipo) {
+            const notif = document.getElementById('notificacion');
+            notif.textContent = mensaje;
+            notif.className = `notification ${tipo} visible`;
+            
+            setTimeout(() => {
+                notif.classList.remove('visible');
+            }, 5000);
+        }
+        
+        async function recuperarPassword() {
+            const email = prompt('Ingresa tu email para recuperar tu contraseña:');
+            
+            if (!email) return;
+            
+            const resultado = await recuperarPassword(email);
+            
+            if (resultado.success) {
+                alert(resultado.mensaje);
+            } else {
+                alert('Error: ' + resultado.mensaje);
+            }
+        }
+    </script>
+</body>
+</html>
+

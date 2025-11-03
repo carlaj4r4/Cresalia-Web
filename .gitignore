@@ -45,6 +45,12 @@ credentials.json
 secrets.json
 *.key
 *.pem
+config-privado.js
+config-mercado-pago.js
+documentacion-mercado-pago.md
+
+# Configuración con claves privadas (NO subir versión con serviceRoleKey real)
+# config-supabase-seguro.js está permitido solo si NO tiene serviceRoleKey real
 
 # Archivos de base de datos local
 *.db

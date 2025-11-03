@@ -1,7 +1,7 @@
-// ===== SISTEMA DE CARLA - VERSIÓN 1.9 - MODO DESARROLLO =====
-// ===== CONFIGURACIÓN EXCLUSIVA DE CARLA =====
-const CARLA_CONFIG = {
-    password: 'carla2024',
+// ===== SISTEMA DE CRISLA - VERSIÓN 2.0 - MODO DESARROLLO =====
+// ===== CONFIGURACIÓN EXCLUSIVA DE CRISLA =====
+const CRISLA_CONFIG = {
+    password: 'crisla2024',
     sessionTimeout: 30 * 60 * 1000, // 30 minutos
     secretKey: 'Ctrl + Alt + Shift + C',
     backupInterval: 5 * 60 * 1000, // 5 minutos
@@ -16,7 +16,7 @@ let carlaBackupTimer;
 
 // ===== INICIALIZACIÓN =====
 document.addEventListener('DOMContentLoaded', function() {
-    console.log('🎯 Sistema de Carla iniciando...');
+    console.log('🎯 Sistema de Crisla iniciando...');
     mostrarLoginCarla();
     configurarEventosCarla();
 });
@@ -32,13 +32,28 @@ function configurarEventosCarla() {
     if (loginForm) {
         loginForm.addEventListener('submit', manejarLoginCarla);
     }
+    
+    // Configurar event listeners para navegación
+    configurarNavegacionCarla();
+}
+
+function configurarNavegacionCarla() {
+    const navButtons = document.querySelectorAll('.carla-nav-btn');
+    navButtons.forEach(button => {
+        button.addEventListener('click', function() {
+            const seccion = this.getAttribute('data-section');
+            if (seccion) {
+                mostrarSeccionCarla(seccion);
+            }
+        });
+    });
 }
 
 function manejarLoginCarla(event) {
     event.preventDefault();
     const password = document.getElementById('carlaPassword').value;
     
-    if (password === CARLA_CONFIG.password) {
+    if (password === CRISLA_CONFIG.password) {
         iniciarSesionCarla();
     } else {
         mostrarNotificacionCarla('❌ Contraseña incorrecta', 'error');
@@ -51,9 +66,9 @@ function iniciarSesionCarla() {
     document.getElementById('carlaPanel').style.display = 'block';
     
     // Cargar configuración de modo desarrollo
-    const modoDesarrolloGuardado = localStorage.getItem('carlaModoDesarrollo');
+    const modoDesarrolloGuardado = localStorage.getItem('crislaModoDesarrollo');
     if (modoDesarrolloGuardado !== null) {
-        CARLA_CONFIG.modoDesarrollo = modoDesarrolloGuardado === 'true';
+        CRISLA_CONFIG.modoDesarrollo = modoDesarrolloGuardado === 'true';
     }
     
     // Iniciar timer de sesión
@@ -63,7 +78,7 @@ function iniciarSesionCarla() {
     iniciarBackupAutomaticoCarla();
     
     // Iniciar simulaciones si está en modo desarrollo
-    if (CARLA_CONFIG.modoDesarrollo) {
+    if (CRISLA_CONFIG.modoDesarrollo) {
         iniciarSimulacionesDesarrollo();
     }
     
@@ -73,7 +88,12 @@ function iniciarSesionCarla() {
     // Cargar dashboard
     cargarDashboardCarla();
     
-    mostrarNotificacionCarla('👑 ¡Bienvenida Carla!', 'success');
+    // Configurar navegación después de cargar el panel
+    setTimeout(() => {
+        configurarNavegacionCarla();
+    }, 100);
+    
+    mostrarNotificacionCarla('👑 ¡Bienvenida Crisla!', 'success');
 }
 
 function cerrarSesionCarla() {
@@ -92,7 +112,7 @@ function iniciarTimerSesionCarla() {
     carlaSessionTimer = setTimeout(() => {
         cerrarSesionCarla();
         mostrarNotificacionCarla('⏰ Sesión expirada', 'warning');
-    }, CARLA_CONFIG.sessionTimeout);
+    }, CRISLA_CONFIG.sessionTimeout);
 }
 
 // ===== NAVEGACIÓN =====
@@ -121,8 +141,14 @@ function mostrarSeccionCarla(seccion) {
         case 'dashboard':
             cargarDashboardCarla();
             break;
-        case 'tickets':
-            cargarTicketsCarla();
+        case 'clientes':
+            cargarTicketsClientes();
+            break;
+        case 'usuarios':
+            cargarTicketsUsuarios();
+            break;
+        case 'todos':
+            cargarTodosLosTickets();
             break;
         case 'chat':
             cargarChatCarla();
@@ -144,53 +170,316 @@ function mostrarSeccionCarla(seccion) {
 
 // ===== DASHBOARD =====
 function cargarDashboardCarla() {
-    const ticketsHoy = calcularTicketsHoy();
-    const tiempoPromedio = calcularTiempoPromedio();
+    const tickets = JSON.parse(localStorage.getItem('cresalia_tickets') || '[]');
+    const chats = JSON.parse(localStorage.getItem('crisla_chats') || '[]');
     
-    document.getElementById('ticketsHoy').textContent = ticketsHoy;
-    document.getElementById('tiempoPromedio').textContent = tiempoPromedio + ' min';
+    // Actualizar estadísticas
+    const totalTickets = tickets.length;
+    const ticketsUrgentes = tickets.filter(t => t.prioridad === 'Alta' || t.prioridad === 'Urgente').length;
+    const ticketsPendientes = tickets.filter(t => t.estado === 'Abierto').length;
+    const ticketsResueltos = tickets.filter(t => t.estado === 'Cerrado' || t.estado === 'Resuelto').length;
+    const ticketsHoy = tickets.filter(t => {
+        const hoy = new Date().toDateString();
+        return new Date(t.timestamp).toDateString() === hoy;
+    }).length;
+    const tiempoPromedio = 15; // Simulado
     
-    // Simular estadísticas en tiempo real
-    setInterval(() => {
-        actualizarEstadisticasDashboard();
-    }, 5000);
+    // Actualizar elementos que existen
+    const totalTicketsEl = document.getElementById('totalTickets');
+    if (totalTicketsEl) totalTicketsEl.textContent = totalTickets;
+    
+    const ticketsUrgentesEl = document.getElementById('ticketsUrgentes');
+    if (ticketsUrgentesEl) ticketsUrgentesEl.textContent = ticketsUrgentes;
+    
+    const ticketsPendientesEl = document.getElementById('ticketsPendientes');
+    if (ticketsPendientesEl) ticketsPendientesEl.textContent = ticketsPendientes;
+    
+    const ticketsResueltosEl = document.getElementById('ticketsResueltos');
+    if (ticketsResueltosEl) ticketsResueltosEl.textContent = ticketsResueltos;
+    
+    const ticketsHoyEl = document.getElementById('ticketsHoy');
+    if (ticketsHoyEl) ticketsHoyEl.textContent = ticketsHoy;
+    
+    const tiempoPromedioEl = document.getElementById('tiempoPromedio');
+    if (tiempoPromedioEl) tiempoPromedioEl.textContent = tiempoPromedio + ' min';
+    
+    // Cargar mensajes de apoyo emocional
+    cargarMensajesApoyoEmocional();
 }
 
-function calcularTicketsHoy() {
-    const tickets = obtenerTickets();
-    const hoy = new Date().toDateString();
-    return tickets.filter(ticket => 
-        new Date(ticket.fecha).toDateString() === hoy
-    ).length;
-}
-
-function calcularTiempoPromedio() {
-    const tickets = obtenerTickets();
-    if (tickets.length === 0) return 0;
+// Cargar mensajes de apoyo emocional
+function cargarMensajesApoyoEmocional() {
+    const mensajesApoyo = JSON.parse(localStorage.getItem('cresalia_mensajes_apoyo') || '[]');
     
-    const tiempos = tickets.map(ticket => {
-        if (ticket.tiempoResolucion) {
-            return ticket.tiempoResolucion;
+    // Crear o actualizar sección de mensajes de apoyo
+    let apoyoSection = document.getElementById('apoyo-emocional-section');
+    if (!apoyoSection) {
+        // Crear sección si no existe
+        const dashboardContent = document.querySelector('.dashboard-content');
+        if (dashboardContent) {
+            apoyoSection = document.createElement('div');
+            apoyoSection.id = 'apoyo-emocional-section';
+            apoyoSection.className = 'dashboard-card';
+            apoyoSection.innerHTML = `
+                <div class="card-header">
+                    <h3>💜 Mensajes de Apoyo Emocional</h3>
+                    <span class="badge badge-purple">${mensajesApoyo.length}</span>
+                </div>
+                <div class="card-body">
+                    <div id="mensajes-apoyo-container"></div>
+                </div>
+            `;
+            dashboardContent.appendChild(apoyoSection);
         }
-        return 15; // Tiempo promedio por defecto
-    });
+    }
     
-    return Math.round(tiempos.reduce((a, b) => a + b, 0) / tiempos.length);
+    // Actualizar contador
+    const badge = apoyoSection?.querySelector('.badge');
+    if (badge) {
+        badge.textContent = mensajesApoyo.length;
+    }
+    
+    // Renderizar mensajes
+    const container = document.getElementById('mensajes-apoyo-container');
+    if (container && mensajesApoyo.length > 0) {
+        container.innerHTML = mensajesApoyo.slice(0, 5).map(mensaje => `
+            <div class="mensaje-apoyo-item" onclick="abrirMensajeApoyo('${mensaje.id}')">
+                <div class="mensaje-header">
+                    <span class="mensaje-from">${mensaje.tenant_id}</span>
+                    <span class="mensaje-fecha">${new Date(mensaje.fecha).toLocaleDateString()}</span>
+                    <span class="mensaje-prioridad ${mensaje.prioridad}">${mensaje.prioridad}</span>
+                </div>
+                <div class="mensaje-preview">
+                    ${mensaje.mensaje.substring(0, 100)}${mensaje.mensaje.length > 100 ? '...' : ''}
+                </div>
+                <div class="mensaje-emocion">
+                    Emoción: ${mensaje.emocion}
+                </div>
+            </div>
+        `).join('');
+    } else if (container) {
+        container.innerHTML = '<p class="no-mensajes">No hay mensajes de apoyo emocional pendientes</p>';
+    }
 }
 
-function actualizarEstadisticasDashboard() {
-    const ticketsHoy = calcularTicketsHoy();
-    const tiempoPromedio = calcularTiempoPromedio();
+// Abrir mensaje de apoyo emocional
+function abrirMensajeApoyo(mensajeId) {
+    const mensajesApoyo = JSON.parse(localStorage.getItem('cresalia_mensajes_apoyo') || '[]');
+    const mensaje = mensajesApoyo.find(m => m.id == mensajeId);
     
-    document.getElementById('ticketsHoy').textContent = ticketsHoy;
-    document.getElementById('tiempoPromedio').textContent = tiempoPromedio + ' min';
+    if (!mensaje) return;
+    
+    const modal = document.createElement('div');
+    modal.className = 'modal-apoyo-emocional';
+    modal.innerHTML = `
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>💜 Mensaje de Apoyo Emocional</h2>
+                <button class="btn-cerrar" onclick="this.closest('.modal-apoyo-emocional').remove()">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            
+            <div class="modal-body">
+                <div class="mensaje-info">
+                    <div class="info-item">
+                        <strong>De:</strong> ${mensaje.tenant_id}
+                    </div>
+                    <div class="info-item">
+                        <strong>Fecha:</strong> ${new Date(mensaje.fecha).toLocaleString()}
+                    </div>
+                    <div class="info-item">
+                        <strong>Emoción:</strong> ${mensaje.emocion}
+                    </div>
+                    <div class="info-item">
+                        <strong>Prioridad:</strong> <span class="prioridad-badge ${mensaje.prioridad}">${mensaje.prioridad}</span>
+                    </div>
+                </div>
+                
+                <div class="mensaje-contenido">
+                    <h4>Mensaje:</h4>
+                    <div class="mensaje-texto">${mensaje.mensaje}</div>
+                </div>
+                
+                ${mensaje.contexto ? `
+                <div class="mensaje-contexto">
+                    <h4>Contexto:</h4>
+                    <ul>
+                        ${Object.entries(mensaje.contexto).map(([key, value]) => 
+                            value ? `<li>${key}</li>` : ''
+                        ).filter(Boolean).join('')}
+                    </ul>
+                </div>
+                ` : ''}
+                
+                <div class="modal-actions">
+                    <button class="btn-cancelar" onclick="this.closest('.modal-apoyo-emocional').remove()">
+                        Cerrar
+                    </button>
+                    <button class="btn-responder" onclick="responderMensajeApoyo('${mensaje.id}')">
+                        <i class="fas fa-reply"></i>
+                        Responder
+                    </button>
+                </div>
+            </div>
+        </div>
+    `;
+    
+    document.body.appendChild(modal);
+}
+
+// Responder mensaje de apoyo emocional
+function responderMensajeApoyo(mensajeId) {
+    // Cerrar modal actual
+    document.querySelector('.modal-apoyo-emocional')?.remove();
+    
+    // Abrir modal de respuesta
+    const modal = document.createElement('div');
+    modal.className = 'modal-respuesta-apoyo';
+    modal.innerHTML = `
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>💜 Responder Mensaje de Apoyo</h2>
+                <button class="btn-cerrar" onclick="this.closest('.modal-respuesta-apoyo').remove()">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            
+            <div class="modal-body">
+                <div class="respuesta-area">
+                    <label for="respuesta-apoyo">Tu respuesta:</label>
+                    <textarea id="respuesta-apoyo" rows="8" placeholder="Escribí tu respuesta empática aquí..."></textarea>
+                </div>
+                
+                <div class="modal-actions">
+                    <button class="btn-cancelar" onclick="this.closest('.modal-respuesta-apoyo').remove()">
+                        Cancelar
+                    </button>
+                    <button class="btn-enviar" onclick="enviarRespuestaApoyo('${mensajeId}')">
+                        <i class="fas fa-paper-plane"></i>
+                        Enviar Respuesta
+                    </button>
+                </div>
+            </div>
+        </div>
+    `;
+    
+    document.body.appendChild(modal);
+}
+
+// Enviar respuesta de apoyo emocional
+function enviarRespuestaApoyo(mensajeId) {
+    const respuesta = document.getElementById('respuesta-apoyo').value;
+    
+    if (!respuesta.trim()) {
+        alert('Por favor escribí una respuesta');
+        return;
+    }
+    
+    // Actualizar mensaje con respuesta
+    const mensajesApoyo = JSON.parse(localStorage.getItem('cresalia_mensajes_apoyo') || '[]');
+    const mensajeIndex = mensajesApoyo.findIndex(m => m.id == mensajeId);
+    
+    if (mensajeIndex !== -1) {
+        mensajesApoyo[mensajeIndex].respuesta = respuesta;
+        mensajesApoyo[mensajeIndex].estado = 'respondido';
+        mensajesApoyo[mensajeIndex].fechaRespuesta = new Date().toISOString();
+        
+        localStorage.setItem('cresalia_mensajes_apoyo', JSON.stringify(mensajesApoyo));
+    }
+    
+    // Cerrar modal
+    document.querySelector('.modal-respuesta-apoyo')?.remove();
+    
+    // Mostrar confirmación
+    mostrarNotificacionCarla('💜 Respuesta enviada correctamente', 'success');
+    
+    // Recargar mensajes
+    cargarMensajesApoyoEmocional();
 }
 
 // ===== GESTIÓN DE TICKETS =====
-function cargarTicketsCarla() {
-    const tickets = obtenerTickets();
-    const container = document.getElementById('ticketsContainer');
+function cargarTicketsClientes() {
+    let tickets = JSON.parse(localStorage.getItem('cresalia_tickets') || '[]');
+    const ticketsClientes = tickets.filter(t => t.tipoUsuario === 'Cliente');
     
+    const container = document.getElementById('clientesContainer');
+    if (!container) return;
+    
+    if (ticketsClientes.length === 0) {
+        container.innerHTML = `
+            <div class="no-tickets">
+                <i class="fas fa-store"></i>
+                <h3>No hay tickets de clientes</h3>
+                <p>Los administradores de tiendas no han creado tickets aún</p>
+            </div>
+        `;
+        return;
+    }
+    
+    ticketsClientes.sort((a, b) => b.timestamp - a.timestamp);
+    container.innerHTML = ticketsClientes.map(ticket => crearTicketHTML(ticket)).join('');
+}
+
+function cargarTicketsUsuarios() {
+    let tickets = JSON.parse(localStorage.getItem('cresalia_tickets') || '[]');
+    const ticketsUsuarios = tickets.filter(t => t.tipoUsuario === 'Usuario');
+    
+    const container = document.getElementById('usuariosContainer');
+    if (!container) return;
+    
+    if (ticketsUsuarios.length === 0) {
+        container.innerHTML = `
+            <div class="no-tickets">
+                <i class="fas fa-shopping-cart"></i>
+                <h3>No hay tickets de usuarios</h3>
+                <p>Los compradores no han creado consultas aún</p>
+            </div>
+        `;
+        return;
+    }
+    
+    ticketsUsuarios.sort((a, b) => b.timestamp - a.timestamp);
+    container.innerHTML = ticketsUsuarios.map(ticket => crearTicketHTML(ticket)).join('');
+}
+
+function cargarTodosLosTickets() {
+    let tickets = JSON.parse(localStorage.getItem('cresalia_tickets') || '[]');
+    
+    // Agregar algunos tickets de ejemplo si no hay ninguno
+    if (tickets.length === 0) {
+        tickets = [
+            {
+                id: 'TKT-001',
+                tipoUsuario: 'Cliente',
+                tipoProblema: 'configuracion',
+                prioridad: 'Alta',
+                nombre: 'María García',
+                email: 'maria@email.com',
+                descripcion: 'No puedo configurar los métodos de pago en mi tienda',
+                tienda: 'TechStore Argentina',
+                tenantId: 'techstore-arg',
+                estado: 'Abierto',
+                fecha: new Date().toLocaleString(),
+                timestamp: Date.now()
+            },
+            {
+                id: 'USR-001',
+                tipoUsuario: 'Usuario',
+                tipoConsulta: 'producto',
+                nombre: 'Juan Pérez',
+                email: 'juan@email.com',
+                descripcion: 'Mi pedido #12345 no llegó',
+                numeroPedido: '#12345',
+                estado: 'Abierto',
+                fecha: new Date().toLocaleString(),
+                timestamp: Date.now() - 3600000
+            }
+        ];
+        localStorage.setItem('cresalia_tickets', JSON.stringify(tickets));
+    }
+    
+    const container = document.getElementById('todosContainer');
     if (!container) return;
     
     if (tickets.length === 0) {
@@ -204,20 +493,31 @@ function cargarTicketsCarla() {
         return;
     }
     
-    container.innerHTML = tickets.map(ticket => `
-        <div class="ticket-card ${ticket.estado}" data-id="${ticket.id}">
+    tickets.sort((a, b) => b.timestamp - a.timestamp);
+    container.innerHTML = tickets.map(ticket => crearTicketHTML(ticket)).join('');
+}
+
+function crearTicketHTML(ticket) {
+    const tipoUsuarioIcon = ticket.tipoUsuario === 'Cliente' ? '🏪' : '🛒';
+    const tipoUsuarioClass = ticket.tipoUsuario === 'Cliente' ? 'cliente' : 'usuario';
+    
+    return `
+        <div class="ticket-card ${ticket.estado} ${tipoUsuarioClass}" data-id="${ticket.id}">
             <div class="ticket-header">
                 <span class="ticket-id">#${ticket.id}</span>
+                <span class="ticket-tipo">${tipoUsuarioIcon} ${ticket.tipoUsuario}</span>
                 <span class="ticket-estado ${ticket.estado}">${ticket.estado}</span>
-                <span class="ticket-fecha">${new Date(ticket.fecha).toLocaleDateString()}</span>
+                <span class="ticket-fecha">${new Date(ticket.timestamp).toLocaleDateString()}</span>
             </div>
             <div class="ticket-content">
-                <h4>${ticket.titulo}</h4>
+                <h4>${ticket.tipoProblema || ticket.tipoConsulta || 'Consulta'}</h4>
                 <p>${ticket.descripcion}</p>
                 <div class="ticket-info">
-                    <span><i class="fas fa-user"></i> ${ticket.cliente}</span>
+                    <span><i class="fas fa-user"></i> ${ticket.nombre}</span>
                     <span><i class="fas fa-envelope"></i> ${ticket.email}</span>
-                    <span><i class="fas fa-phone"></i> ${ticket.telefono}</span>
+                    ${ticket.tienda ? `<span><i class="fas fa-store"></i> ${ticket.tienda}</span>` : ''}
+                    ${ticket.numeroPedido ? `<span><i class="fas fa-receipt"></i> ${ticket.numeroPedido}</span>` : ''}
+                    ${ticket.prioridad ? `<span><i class="fas fa-flag"></i> ${ticket.prioridad}</span>` : ''}
                 </div>
             </div>
             <div class="ticket-actions">
@@ -227,44 +527,166 @@ function cargarTicketsCarla() {
                 <button onclick="cambiarEstadoTicketCarla('${ticket.id}')" class="btn-estado">
                     <i class="fas fa-check"></i> Atender
                 </button>
+                <button onclick="responderTicketCarla('${ticket.id}')" class="btn-responder">
+                    <i class="fas fa-reply"></i> Responder
+                </button>
             </div>
         </div>
-    `).join('');
+    `;
 }
 
 function abrirTicketCarla(ticketId) {
-    const tickets = obtenerTickets();
+    const tickets = JSON.parse(localStorage.getItem('cresalia_tickets') || '[]');
+    const ticket = tickets.find(t => t.id === ticketId);
+    
+    if (!ticket) {
+        mostrarNotificacionCarla('❌ Ticket no encontrado', 'error');
+        return;
+    }
+    
+    // Crear modal para ver el ticket completo
+    const modal = `
+        <div id="ticketModal" class="modal" style="display: flex;">
+            <div class="modal-content" style="max-width: 800px; max-height: 90vh; overflow-y: auto;">
+                <div class="modal-header" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                    <h2 style="color: var(--carla-primary); margin: 0;">🎫 Ticket #${ticket.id}</h2>
+                    <button onclick="cerrarTicketModal()" style="background: none; border: none; font-size: 24px; cursor: pointer; color: var(--carla-gray);">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+                
+                <div class="ticket-detalle" style="display: grid; gap: 20px;">
+                    <!-- Información del ticket -->
+                    <div style="background: linear-gradient(135deg, #FDF2F8, #FCE7F3); padding: 20px; border-radius: 15px; border: 2px solid #F9A8D4;">
+                        <h3 style="color: var(--carla-primary); margin-bottom: 15px;"><i class="fas fa-info-circle"></i> Información del Ticket</h3>
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; font-size: 14px;">
+                            <div><strong>ID:</strong> ${ticket.id}</div>
+                            <div><strong>Tipo:</strong> ${ticket.tipoUsuario === 'Cliente' ? '🏪 Cliente' : '🛒 Usuario'}</div>
+                            <div><strong>Estado:</strong> <span class="estado-${ticket.estado}">${ticket.estado}</span></div>
+                            <div><strong>Fecha:</strong> ${ticket.fecha}</div>
+                            <div><strong>Problema:</strong> ${ticket.tipoProblema || ticket.tipoConsulta || 'Consulta'}</div>
+                            ${ticket.prioridad ? `<div><strong>Prioridad:</strong> ${ticket.prioridad}</div>` : ''}
+                        </div>
+                    </div>
+                    
+                    <!-- Información del usuario -->
+                    <div style="background: linear-gradient(135deg, #FDF2F8, #FCE7F3); padding: 20px; border-radius: 15px; border: 2px solid #F9A8D4;">
+                        <h3 style="color: var(--carla-primary); margin-bottom: 15px;"><i class="fas fa-user"></i> Información del Usuario</h3>
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; font-size: 14px;">
+                            <div><strong>Nombre:</strong> ${ticket.nombre}</div>
+                            <div><strong>Email:</strong> ${ticket.email}</div>
+                            ${ticket.tienda ? `<div><strong>Tienda:</strong> ${ticket.tienda}</div>` : ''}
+                            ${ticket.numeroPedido ? `<div><strong>Pedido:</strong> ${ticket.numeroPedido}</div>` : ''}
+                        </div>
+                    </div>
+                    
+                    <!-- Descripción del problema -->
+                    <div style="background: linear-gradient(135deg, #FDF2F8, #FCE7F3); padding: 20px; border-radius: 15px; border: 2px solid #F9A8D4;">
+                        <h3 style="color: var(--carla-primary); margin-bottom: 15px;"><i class="fas fa-comment"></i> Descripción del Problema</h3>
+                        <p style="color: var(--carla-gray); line-height: 1.6; margin: 0;">${ticket.descripcion}</p>
+                    </div>
+                    
+                    <!-- Respuestas (si las hay) -->
+                    <div style="background: linear-gradient(135deg, #FDF2F8, #FCE7F3); padding: 20px; border-radius: 15px; border: 2px solid #F9A8D4;">
+                        <h3 style="color: var(--carla-primary); margin-bottom: 15px;"><i class="fas fa-reply"></i> Historial de Respuestas</h3>
+                        <div id="respuestasTicket" style="max-height: 200px; overflow-y: auto;">
+                            ${ticket.respuestas ? ticket.respuestas.map(respuesta => `
+                                <div style="background: white; padding: 15px; border-radius: 10px; margin-bottom: 10px; border-left: 4px solid var(--carla-primary);">
+                                    <div style="font-size: 12px; color: var(--carla-gray); margin-bottom: 5px;">
+                                        ${respuesta.fecha} - Crisla
+                                    </div>
+                                    <div style="color: var(--carla-dark);">${respuesta.mensaje}</div>
+                                    ${respuesta.archivos && respuesta.archivos.length > 0 ? `
+                                        <div style="margin-top: 10px;">
+                                            <strong style="color: var(--carla-primary); font-size: 12px;">📎 Archivos adjuntos:</strong>
+                                            <div style="display: flex; flex-wrap: wrap; gap: 5px; margin-top: 5px;">
+                                                ${respuesta.archivos.map(archivo => `
+                                                    <div style="background: var(--carla-light); padding: 5px 10px; border-radius: 6px; font-size: 11px; color: var(--carla-dark); border: 1px solid var(--carla-accent);">
+                                                        <i class="fas fa-paperclip"></i> ${archivo.nombre}
+                                                    </div>
+                                                `).join('')}
+                                            </div>
+                                        </div>
+                                    ` : ''}
+                                </div>
+                            `).join('') : '<p style="color: var(--carla-gray); text-align: center; font-style: italic;">No hay respuestas aún</p>'}
+                        </div>
+                    </div>
+                </div>
+                
+                <div style="display: flex; gap: 15px; margin-top: 30px;">
+                    <button onclick="cerrarTicketModal()" style="flex: 1; background: var(--carla-gray); color: white; border: none; padding: 15px; border-radius: 12px; font-size: 16px; font-weight: 600; cursor: pointer;">
+                        <i class="fas fa-times"></i> Cerrar
+                    </button>
+                    <button onclick="responderTicketCarla('${ticket.id}')" style="flex: 2; background: var(--carla-gradient); color: white; border: none; padding: 15px; border-radius: 12px; font-size: 16px; font-weight: 600; cursor: pointer;">
+                        <i class="fas fa-reply"></i> Responder
+                    </button>
+                </div>
+            </div>
+        </div>
+    `;
+    
+    document.body.insertAdjacentHTML('beforeend', modal);
+}
+
+function cerrarTicketModal() {
+    const modal = document.getElementById('ticketModal');
+    if (modal) {
+        modal.remove();
+    }
+}
+
+function responderTicketCarla(ticketId) {
+    const tickets = JSON.parse(localStorage.getItem('cresalia_tickets') || '[]');
     const ticket = tickets.find(t => t.id === ticketId);
     
     if (!ticket) return;
     
-    // Crear modal para ver ticket
-    const modal = document.createElement('div');
-    modal.className = 'modal-ticket';
-    modal.innerHTML = `
-        <div class="modal-ticket-content">
-            <div class="modal-ticket-header">
-                <h3>Ticket #${ticket.id}</h3>
-                <button onclick="cerrarModalTicketCarla()" class="cerrar-modal">
-                    <i class="fas fa-times"></i>
-                </button>
-            </div>
-            <div class="modal-ticket-body">
-                <div class="ticket-detalles">
-                    <h4>${ticket.titulo}</h4>
-                    <p>${ticket.descripcion}</p>
-                    <div class="ticket-meta">
-                        <span><strong>Cliente:</strong> ${ticket.cliente}</span>
-                        <span><strong>Email:</strong> ${ticket.email}</span>
-                        <span><strong>Teléfono:</strong> ${ticket.telefono}</span>
-                        <span><strong>Fecha:</strong> ${new Date(ticket.fecha).toLocaleString()}</span>
-                        <span><strong>Estado:</strong> ${ticket.estado}</span>
-                    </div>
+    const modal = `
+        <div id="respuestaModal" class="modal" style="display: flex;">
+            <div class="modal-content" style="max-width: 600px;">
+                <div style="text-align: center; margin-bottom: 30px;">
+                    <h2 style="color: var(--carla-primary); margin-bottom: 10px;">💬 Responder Ticket</h2>
+                    <p style="color: var(--carla-gray);">Enviar respuesta a ${ticket.nombre}</p>
                 </div>
-                <div class="ticket-respuesta">
-                    <h4>Responder al Cliente</h4>
-                    <textarea id="respuestaTicket" placeholder="Escribe tu respuesta..."></textarea>
-                    <button onclick="enviarRespuestaCarla('${ticket.id}')" class="btn-enviar">
+                
+                <form id="respuestaForm">
+                    <div style="margin-bottom: 20px;">
+                        <label style="display: block; margin-bottom: 8px; font-weight: 600; color: var(--carla-primary);">Mensaje</label>
+                        <textarea id="mensajeRespuesta" placeholder="Escribe tu respuesta..." style="width: 100%; padding: 15px; border: 2px solid #E5E7EB; border-radius: 10px; font-size: 14px; min-height: 150px; resize: vertical;" required></textarea>
+                    </div>
+                    
+                    <div style="margin-bottom: 20px;">
+                        <label style="display: block; margin-bottom: 8px; font-weight: 600; color: var(--carla-primary);">📎 Archivos Adjuntos (Opcional)</label>
+                        <div style="position: relative;">
+                            <input type="file" id="archivosRespuesta" multiple accept="image/*,video/*,audio/*,.pdf,.doc,.docx,.txt,.zip,.rar" style="width: 100%; padding: 15px; border: 2px dashed #E5E7EB; border-radius: 10px; font-size: 14px; cursor: pointer;">
+                            <div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); pointer-events: none; color: var(--carla-gray); font-size: 12px; text-align: center;">
+                                <i class="fas fa-cloud-upload-alt" style="font-size: 24px; margin-bottom: 5px; display: block;"></i>
+                                Haz clic para seleccionar archivos<br>
+                                <small>Imágenes, videos, audios, PDFs, documentos (máx. 10MB cada uno)</small>
+                            </div>
+                        </div>
+                        <div id="previewArchivosRespuesta" style="margin-top: 10px; display: none;">
+                            <h4 style="color: var(--carla-primary); margin-bottom: 10px;">Archivos seleccionados:</h4>
+                            <div id="listaArchivosRespuesta"></div>
+                        </div>
+                    </div>
+                    
+                    <div style="margin-bottom: 20px;">
+                        <label style="display: block; margin-bottom: 8px; font-weight: 600; color: var(--carla-primary);">Nuevo Estado</label>
+                        <select id="nuevoEstado" style="width: 100%; padding: 12px; border: 2px solid #E5E7EB; border-radius: 10px; font-size: 14px;">
+                            <option value="${ticket.estado}">Mantener: ${ticket.estado}</option>
+                            <option value="En Proceso">En Proceso</option>
+                            <option value="Cerrado">Cerrado</option>
+                        </select>
+                    </div>
+                </form>
+                
+                <div style="display: flex; gap: 15px;">
+                    <button onclick="cerrarRespuestaModal()" style="flex: 1; background: var(--carla-gray); color: white; border: none; padding: 15px; border-radius: 12px; font-size: 16px; font-weight: 600; cursor: pointer;">
+                        <i class="fas fa-times"></i> Cancelar
+                    </button>
+                    <button onclick="enviarRespuestaCarla('${ticketId}')" style="flex: 2; background: var(--carla-gradient); color: white; border: none; padding: 15px; border-radius: 12px; font-size: 16px; font-weight: 600; cursor: pointer;">
                         <i class="fas fa-paper-plane"></i> Enviar Respuesta
                     </button>
                 </div>
@@ -272,37 +694,92 @@ function abrirTicketCarla(ticketId) {
         </div>
     `;
     
-    document.body.appendChild(modal);
+    document.body.insertAdjacentHTML('beforeend', modal);
 }
 
-function cerrarModalTicketCarla() {
-    const modal = document.querySelector('.modal-ticket');
+function cerrarRespuestaModal() {
+    const modal = document.getElementById('respuestaModal');
     if (modal) {
         modal.remove();
     }
 }
 
 function enviarRespuestaCarla(ticketId) {
-    const respuesta = document.getElementById('respuestaTicket').value;
-    if (!respuesta.trim()) {
-        mostrarNotificacionCarla('❌ Escribe una respuesta', 'error');
+    const mensaje = document.getElementById('mensajeRespuesta').value;
+    const nuevoEstado = document.getElementById('nuevoEstado').value;
+    const archivosInput = document.getElementById('archivosRespuesta');
+    
+    if (!mensaje.trim()) {
+        mostrarNotificacionCarla('⚠️ Por favor, escribe un mensaje', 'warning');
         return;
     }
     
+    const tickets = JSON.parse(localStorage.getItem('cresalia_tickets') || '[]');
+    const ticketIndex = tickets.findIndex(t => t.id === ticketId);
+    
+    if (ticketIndex === -1) {
+        mostrarNotificacionCarla('❌ Ticket no encontrado', 'error');
+        return;
+    }
+    
+    // Procesar archivos si los hay
+    let archivosAdjuntos = [];
+    if (archivosInput && archivosInput.files && archivosInput.files.length > 0) {
+        archivosAdjuntos = Array.from(archivosInput.files).map(file => ({
+            nombre: file.name,
+            tamaño: file.size,
+            tipo: file.type,
+            fecha: new Date().toISOString(),
+            url: URL.createObjectURL(file) // Para preview local
+        }));
+    }
+    
     // Agregar respuesta al ticket
-    agregarRespuestaTicket(ticketId, respuesta);
+    if (!tickets[ticketIndex].respuestas) {
+        tickets[ticketIndex].respuestas = [];
+    }
     
-    // Cerrar modal y actualizar
-    cerrarModalTicketCarla();
-    cargarTicketsCarla();
+    tickets[ticketIndex].respuestas.push({
+        mensaje: mensaje,
+        fecha: new Date().toLocaleString(),
+        autor: 'Crisla',
+        archivos: archivosAdjuntos
+    });
     
-    mostrarNotificacionCarla('✅ Respuesta enviada', 'success');
+    // Actualizar estado si cambió
+    tickets[ticketIndex].estado = nuevoEstado;
+    
+    // Guardar cambios
+    localStorage.setItem('cresalia_tickets', JSON.stringify(tickets));
+    
+    mostrarNotificacionCarla('✅ Respuesta enviada exitosamente' + (archivosAdjuntos.length > 0 ? ` con ${archivosAdjuntos.length} archivo(s)` : ''), 'success');
+    cerrarRespuestaModal();
+    
+    // Recargar la sección actual
+    const seccionActiva = document.querySelector('.carla-section.active');
+    if (seccionActiva) {
+        const seccionId = seccionActiva.id;
+        mostrarSeccionCarla(seccionId);
+    }
 }
 
 function cambiarEstadoTicketCarla(ticketId) {
-    actualizarEstadoTicket(ticketId, 'atendido');
-    cargarTicketsCarla();
-    mostrarNotificacionCarla('✅ Ticket marcado como atendido', 'success');
+    const tickets = JSON.parse(localStorage.getItem('cresalia_tickets') || '[]');
+    const ticketIndex = tickets.findIndex(t => t.id === ticketId);
+    
+    if (ticketIndex !== -1) {
+        tickets[ticketIndex].estado = 'En Proceso';
+        localStorage.setItem('cresalia_tickets', JSON.stringify(tickets));
+        
+        // Recargar la sección actual
+        const seccionActiva = document.querySelector('.carla-section.active');
+        if (seccionActiva) {
+            const seccionId = seccionActiva.id;
+            mostrarSeccionCarla(seccionId);
+        }
+        
+        mostrarNotificacionCarla('✅ Ticket marcado como "En Proceso"', 'success');
+    }
 }
 
 // ===== CHAT EN VIVO =====
@@ -310,44 +787,319 @@ function cargarChatCarla() {
     const container = document.getElementById('chatContainer');
     if (!container) return;
     
+    // Cargar chats existentes
+    const chats = JSON.parse(localStorage.getItem('crisla_chats') || '[]');
+    
+    if (chats.length === 0) {
+        // Crear algunos chats de ejemplo
+        const chatsEjemplo = [
+            {
+                id: 'chat-001',
+                usuario: 'María García',
+                email: 'maria@email.com',
+                tienda: 'TechStore Argentina',
+                estado: 'activo',
+                ultimoMensaje: 'Hola, necesito ayuda con mi tienda',
+                timestamp: Date.now() - 1800000, // 30 minutos atrás
+                mensajes: [
+                    {
+                        autor: 'usuario',
+                        mensaje: 'Hola, necesito ayuda con mi tienda',
+                        timestamp: Date.now() - 1800000
+                    }
+                ]
+            },
+            {
+                id: 'chat-002',
+                usuario: 'Juan Pérez',
+                email: 'juan@email.com',
+                tienda: 'Fashion Store',
+                estado: 'activo',
+                ultimoMensaje: '¿Cómo puedo configurar los pagos?',
+                timestamp: Date.now() - 3600000, // 1 hora atrás
+                mensajes: [
+                    {
+                        autor: 'usuario',
+                        mensaje: '¿Cómo puedo configurar los pagos?',
+                        timestamp: Date.now() - 3600000
+                    }
+                ]
+            }
+        ];
+        localStorage.setItem('crisla_chats', JSON.stringify(chatsEjemplo));
+    }
+    
     container.innerHTML = `
         <div class="chat-live">
             <div class="chat-header">
                 <h3><i class="fas fa-comments"></i> Chat en Vivo</h3>
                 <span class="online-indicator">● En línea</span>
             </div>
-            <div class="chat-messages" id="chatMessages">
-                <div class="welcome-message">
-                    <i class="fas fa-crown"></i>
-                    <h4>¡Hola Carla!</h4>
-                    <p>Aquí puedes ver los chats en vivo de los clientes</p>
-                </div>
-            </div>
-            <div class="chat-input">
-                <input type="text" id="chatInput" placeholder="Escribe tu mensaje...">
-                <button onclick="enviarMensajeChat()" class="btn-enviar-chat">
-                    <i class="fas fa-paper-plane"></i>
-                </button>
+            
+            <div class="chats-list" id="chatsList">
+                <!-- Los chats se cargarán aquí -->
             </div>
         </div>
     `;
     
-    // Las simulaciones se manejan automáticamente en modo desarrollo
-    console.log('💬 Chat de Carla cargado');
+    cargarListaChats();
+    console.log('💬 Chat de Crisla cargado');
 }
 
-function enviarMensajeChat() {
-    const input = document.getElementById('chatInput');
+function cargarListaChats() {
+    const chats = JSON.parse(localStorage.getItem('crisla_chats') || '[]');
+    const container = document.getElementById('chatsList');
+    
+    if (!container) return;
+    
+    if (chats.length === 0) {
+        container.innerHTML = `
+            <div class="no-chats">
+                <i class="fas fa-comments"></i>
+                <h4>No hay chats activos</h4>
+                <p>Los clientes aparecerán aquí cuando inicien un chat</p>
+            </div>
+        `;
+        return;
+    }
+    
+    // Ordenar por último mensaje (más recientes primero)
+    chats.sort((a, b) => b.timestamp - a.timestamp);
+    
+    container.innerHTML = chats.map(chat => `
+        <div class="chat-item ${chat.estado}" onclick="abrirChatModal('${chat.id}')">
+            <div class="chat-avatar">
+                <i class="fas fa-user"></i>
+            </div>
+            <div class="chat-info">
+                <div class="chat-usuario">
+                    <h4>${chat.usuario}</h4>
+                    <span class="chat-tienda">${chat.tienda}</span>
+                </div>
+                <div class="chat-ultimo-mensaje">
+                    <p>${chat.ultimoMensaje}</p>
+                    <span class="chat-tiempo">${formatearTiempo(chat.timestamp)}</span>
+                </div>
+            </div>
+            <div class="chat-estado">
+                <span class="estado-${chat.estado}">${chat.estado}</span>
+            </div>
+        </div>
+    `).join('');
+}
+
+function abrirChatModal(chatId) {
+    const chats = JSON.parse(localStorage.getItem('crisla_chats') || '[]');
+    const chat = chats.find(c => c.id === chatId);
+    
+    if (!chat) return;
+    
+    const modal = `
+        <div id="chatModal" class="modal" style="display: flex; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); z-index: 10000; align-items: center; justify-content: center;" onclick="if(event.target.id === 'chatModal') cerrarChatModal()">
+            <div class="modal-content" style="max-width: 700px; max-height: 80vh; display: flex; flex-direction: column; background: white; border-radius: 20px; padding: 25px; box-shadow: 0 25px 80px rgba(0,0,0,0.3); position: relative;" onclick="event.stopPropagation()">
+                <div class="modal-header" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; padding-bottom: 15px; border-bottom: 2px solid #F9A8D4;">
+                    <div>
+                        <h2 style="color: var(--carla-primary); margin: 0;">💬 Chat con ${chat.usuario}</h2>
+                        <p style="color: var(--carla-gray); margin: 5px 0 0 0; font-size: 14px;">${chat.tienda} • ${chat.email}</p>
+                        <small style="color: #9CA3AF; font-size: 11px;">💡 Presiona ESC o haz clic fuera para cerrar</small>
+                    </div>
+                    <div style="display: flex; gap: 10px; align-items: center;">
+                        <button onclick="cerrarChatModal()" style="background: #FF6B6B; color: white; border: none; font-size: 18px; cursor: pointer; padding: 8px 12px; border-radius: 50%; transition: all 0.3s ease; box-shadow: 0 2px 10px rgba(255,107,107,0.3);" title="Cerrar Chat (ESC)" onmouseover="this.style.background='#FF5252'; this.style.transform='scale(1.1)'" onmouseout="this.style.background='#FF6B6B'; this.style.transform='scale(1)'">
+                            <i class="fas fa-times"></i>
+                        </button>
+                    </div>
+                </div>
+                
+                <div class="chat-messages-container" style="flex: 1; overflow-y: auto; max-height: 400px; padding: 20px; background: linear-gradient(135deg, #FDF2F8, #FCE7F3); border-radius: 15px; border: 2px solid #F9A8D4; margin-bottom: 20px;">
+                    <div id="chatMessages" class="chat-messages">
+                        ${chat.mensajes.map(mensaje => `
+                            <div class="mensaje ${mensaje.autor}">
+                                <div class="mensaje-contenido">
+                                    <span class="mensaje-texto">${mensaje.mensaje}</span>
+                                    ${mensaje.archivos && mensaje.archivos.length > 0 ? `
+                                        <div class="mensaje-archivos" style="margin-top: 10px;">
+                                            ${mensaje.archivos.map(archivo => `
+                                                <div style="display: inline-block; margin: 5px; padding: 8px; background: rgba(255,255,255,0.2); border-radius: 8px; font-size: 12px;">
+                                                    <i class="fas fa-paperclip"></i> ${archivo.nombre}
+                                                </div>
+                                            `).join('')}
+                                        </div>
+                                    ` : ''}
+                                    <span class="mensaje-tiempo">${new Date(mensaje.timestamp).toLocaleTimeString()}</span>
+                                </div>
+                            </div>
+                        `).join('')}
+                    </div>
+                </div>
+                
+                <div class="chat-input-container" style="display: flex; gap: 10px; align-items: flex-end;">
+                    <div style="flex: 1; display: flex; flex-direction: column; gap: 10px;">
+                        <input type="text" id="chatInputModal" placeholder="Escribe tu respuesta..." style="padding: 15px; border: 2px solid #E5E7EB; border-radius: 10px; font-size: 14px;" onkeypress="if(event.key==='Enter') enviarMensajeChatModal('${chat.id}')">
+                        <input type="file" id="chatArchivos" multiple accept="image/*,video/*,audio/*,.pdf,.doc,.docx,.txt,.zip,.rar" style="padding: 10px; border: 2px dashed #E5E7EB; border-radius: 10px; font-size: 12px; background: #FDF2F8;" title="Adjuntar archivos">
+                        <div id="previewChatArchivos" style="display: none; font-size: 12px; color: var(--carla-gray);">
+                            <strong>Archivos:</strong> <span id="listaChatArchivos"></span>
+                        </div>
+                    </div>
+                    <button onclick="enviarMensajeChatModal('${chat.id}')" style="background: var(--carla-gradient); color: white; border: none; padding: 15px 20px; border-radius: 10px; cursor: pointer; font-size: 16px;">
+                        <i class="fas fa-paper-plane"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+    `;
+    
+    document.body.insertAdjacentHTML('beforeend', modal);
+    
+    // Enfocar el input
+    setTimeout(() => {
+        const input = document.getElementById('chatInputModal');
+        if (input) input.focus();
+        
+        // Configurar preview de archivos para chat
+        configurarPreviewArchivos('chatArchivos', 'previewChatArchivos', 'listaChatArchivos');
+    }, 100);
+}
+
+function cerrarChatModal() {
+    console.log('🔒 Cerrando modal de chat...');
+    
+    const modal = document.getElementById('chatModal');
+    if (modal) {
+        // Agregar animación de cierre
+        modal.style.opacity = '0';
+        modal.style.transform = 'scale(0.9)';
+        
+        setTimeout(() => {
+            modal.remove();
+            console.log('✅ Modal de chat cerrado exitosamente');
+        }, 300);
+    } else {
+        console.log('⚠️ Modal de chat no encontrado');
+    }
+    
+    // También cerrar cualquier otro modal que pueda estar abierto
+    const otrosModales = document.querySelectorAll('.modal');
+    otrosModales.forEach(modal => {
+        if (modal.id !== 'chatModal') {
+            modal.style.opacity = '0';
+            setTimeout(() => modal.remove(), 300);
+        }
+    });
+}
+
+// Función para cerrar todos los modales (útil para emergencias)
+function cerrarTodosLosModales() {
+    console.log('🚨 Cerrando todos los modales...');
+    
+    const modales = document.querySelectorAll('.modal, .modal-overlay, [id*="modal"], [class*="modal"]');
+    modales.forEach(modal => {
+        modal.style.opacity = '0';
+        modal.style.transform = 'scale(0.9)';
+        setTimeout(() => modal.remove(), 300);
+    });
+    
+    console.log('✅ Todos los modales cerrados');
+}
+
+// Función para agregar botón de emergencia en el header
+function agregarBotonEmergenciaModales() {
+    const header = document.querySelector('.carla-header-right');
+    if (header && !document.getElementById('botonEmergenciaModales')) {
+        const botonEmergencia = document.createElement('button');
+        botonEmergencia.id = 'botonEmergenciaModales';
+        botonEmergencia.innerHTML = '<i class="fas fa-times-circle"></i> Cerrar Todos';
+        botonEmergencia.style.cssText = `
+            background: #FF6B6B;
+            color: white;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 20px;
+            cursor: pointer;
+            font-size: 12px;
+            margin-left: 10px;
+            transition: all 0.3s ease;
+        `;
+        botonEmergencia.onclick = cerrarTodosLosModales;
+        botonEmergencia.title = 'Cerrar todos los modales abiertos';
+        header.appendChild(botonEmergencia);
+    }
+}
+
+// Agregar botón de emergencia cuando se cargue la página
+document.addEventListener('DOMContentLoaded', function() {
+    setTimeout(agregarBotonEmergenciaModales, 1000);
+    
+    // Agregar soporte para tecla Escape
+    document.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape') {
+            console.log('⌨️ Tecla Escape presionada - cerrando modales...');
+            cerrarTodosLosModales();
+        }
+    });
+});
+
+function enviarMensajeChatModal(chatId) {
+    const input = document.getElementById('chatInputModal');
     const mensaje = input.value.trim();
+    const archivosInput = document.getElementById('chatArchivos');
     
-    if (!mensaje) return;
+    if (!mensaje && (!archivosInput || !archivosInput.files || archivosInput.files.length === 0)) return;
     
+    const chats = JSON.parse(localStorage.getItem('crisla_chats') || '[]');
+    const chatIndex = chats.findIndex(c => c.id === chatId);
+    
+    if (chatIndex === -1) return;
+    
+    // Procesar archivos si los hay
+    let archivosAdjuntos = [];
+    if (archivosInput && archivosInput.files && archivosInput.files.length > 0) {
+        archivosAdjuntos = Array.from(archivosInput.files).map(file => ({
+            nombre: file.name,
+            tamaño: file.size,
+            tipo: file.type,
+            fecha: new Date().toISOString(),
+            url: URL.createObjectURL(file)
+        }));
+    }
+    
+    // Crear mensaje
+    const mensajeCompleto = mensaje || (archivosAdjuntos.length > 0 ? '📎 Archivo(s) enviado(s)' : '');
+    
+    // Agregar mensaje de Crisla
+    chats[chatIndex].mensajes.push({
+        autor: 'crisla',
+        mensaje: mensajeCompleto,
+        timestamp: Date.now(),
+        archivos: archivosAdjuntos
+    });
+    
+    // Actualizar último mensaje y timestamp
+    chats[chatIndex].ultimoMensaje = mensajeCompleto;
+    chats[chatIndex].timestamp = Date.now();
+    
+    // Guardar cambios
+    localStorage.setItem('crisla_chats', JSON.stringify(chats));
+    
+    // Actualizar el modal
     const chatMessages = document.getElementById('chatMessages');
     const mensajeElement = document.createElement('div');
-    mensajeElement.className = 'mensaje-carla';
+    mensajeElement.className = 'mensaje crisla';
+    
+    let archivosHTML = '';
+    if (archivosAdjuntos.length > 0) {
+        archivosHTML = `<div class="mensaje-archivos" style="margin-top: 10px;">
+            ${archivosAdjuntos.map(archivo => `
+                <div style="display: inline-block; margin: 5px; padding: 8px; background: rgba(255,255,255,0.2); border-radius: 8px; font-size: 12px;">
+                    <i class="fas fa-paperclip"></i> ${archivo.nombre}
+                </div>
+            `).join('')}
+        </div>`;
+    }
+    
     mensajeElement.innerHTML = `
         <div class="mensaje-contenido">
-            <span class="mensaje-texto">${mensaje}</span>
+            <span class="mensaje-texto">${mensajeCompleto}</span>
+            ${archivosHTML}
             <span class="mensaje-tiempo">${new Date().toLocaleTimeString()}</span>
         </div>
     `;
@@ -356,1141 +1108,151 @@ function enviarMensajeChat() {
     chatMessages.scrollTop = chatMessages.scrollHeight;
     
     input.value = '';
+    if (archivosInput) archivosInput.value = '';
+    
+    // Limpiar preview
+    const preview = document.getElementById('previewChatArchivos');
+    if (preview) preview.style.display = 'none';
+    
+    // Actualizar la lista de chats
+    cargarListaChats();
 }
 
-function simularMensajesEnVivo() {
-    // Función desactivada para producción
-    console.log('🎯 Simulación de mensajes en vivo desactivada para producción');
-    return;
+function formatearTiempo(timestamp) {
+    const ahora = Date.now();
+    const diferencia = ahora - timestamp;
     
-    // Código original comentado:
-    /*
-    const mensajes = [
-        "Hola, necesito ayuda con mi pedido",
-        "¿Cuánto tiempo tarda la entrega?",
-        "Tengo un problema con mi factura",
-        "¿Pueden ayudarme con el servicio técnico?"
-    ];
-    
-    setInterval(() => {
-        if (Math.random() > 0.7) { // 30% de probabilidad
-            const mensaje = mensajes[Math.floor(Math.random() * mensajes.length)];
-            const chatMessages = document.getElementById('chatMessages');
-            
-            const mensajeElement = document.createElement('div');
-            mensajeElement.className = 'mensaje-cliente';
-            mensajeElement.innerHTML = `
-                <div class="mensaje-contenido">
-                    <span class="mensaje-texto">${mensaje}</span>
-                    <span class="mensaje-tiempo">${new Date().toLocaleTimeString()}</span>
-                </div>
-            `;
-            
-            chatMessages.appendChild(mensajeElement);
-            chatMessages.scrollTop = chatMessages.scrollHeight;
-            
-            mostrarNotificacionCarla('💬 Nuevo mensaje en chat', 'info');
-        }
-    }, 10000); // Cada 10 segundos
-    */
-}
-
-// ===== HISTORIAL =====
-function cargarHistorialCarla() {
-    const container = document.getElementById('historialContainer');
-    if (!container) return;
-    
-    const tickets = obtenerTickets();
-    const ticketsAtendidos = tickets.filter(t => t.estado === 'atendido');
-    
-    container.innerHTML = `
-        <div class="historial-stats">
-            <div class="stat-card">
-                <h3>Total de Tickets</h3>
-                <span class="stat-number">${tickets.length}</span>
-            </div>
-            <div class="stat-card">
-                <h3>Atendidos</h3>
-                <span class="stat-number">${ticketsAtendidos.length}</span>
-            </div>
-            <div class="stat-card">
-                <h3>Pendientes</h3>
-                <span class="stat-number">${tickets.length - ticketsAtendidos.length}</span>
-            </div>
-        </div>
-        <div class="historial-list">
-            ${ticketsAtendidos.map(ticket => `
-                <div class="historial-item">
-                    <div class="historial-header">
-                        <span class="ticket-id">#${ticket.id}</span>
-                        <span class="ticket-fecha">${new Date(ticket.fecha).toLocaleDateString()}</span>
-                    </div>
-                    <div class="historial-content">
-                        <h4>${ticket.titulo}</h4>
-                        <p>${ticket.descripcion}</p>
-                        <span class="cliente">Cliente: ${ticket.cliente}</span>
-                    </div>
-                </div>
-            `).join('')}
-        </div>
-    `;
-}
-
-// ===== CONFIGURACIÓN =====
-function cargarConfiguracionCarla() {
-    // La configuración ya está en el HTML
-    console.log('Configuración de Carla cargada');
+    if (diferencia < 60000) return 'Ahora';
+    if (diferencia < 3600000) return `${Math.floor(diferencia / 60000)}m`;
+    if (diferencia < 86400000) return `${Math.floor(diferencia / 3600000)}h`;
+    return `${Math.floor(diferencia / 86400000)}d`;
 }
 
 // ===== FUNCIONES DE UTILIDAD =====
-function toggleCarlaPassword() {
-    const passwordInput = document.getElementById('carlaPassword');
-    const toggleIcon = document.getElementById('toggleCarlaPassword');
+function iniciarBackupAutomaticoCarla() {
+    carlaBackupTimer = setInterval(() => {
+        console.log('💾 Backup automático ejecutado');
+    }, CRISLA_CONFIG.backupInterval);
+}
+
+function iniciarSimulacionesDesarrollo() {
+    console.log('🎭 Simulaciones de desarrollo activadas');
+}
+
+function detenerSimulacionesDesarrollo() {
+    console.log('🎭 Simulaciones de desarrollo detenidas');
+}
+
+function actualizarInterfazModoDesarrollo() {
+    console.log('🎨 Interfaz de modo desarrollo actualizada');
+}
+
+function cargarHistorialCarla() {
+    console.log('📚 Cargando historial...');
+}
+
+function cargarReportesCarla() {
+    console.log('📊 Cargando reportes...');
+}
+
+function cargarConfiguracionCarla() {
+    console.log('⚙️ Cargando configuración...');
+}
+
+function cargarLogsUsuariosCarla() {
+    console.log('📋 Cargando logs de usuarios...');
+}
+
+function simularNuevoTicket() {
+    const tickets = JSON.parse(localStorage.getItem('cresalia_tickets') || '[]');
     
-    if (passwordInput.type === 'password') {
-        passwordInput.type = 'text';
-        toggleIcon.className = 'fas fa-eye-slash';
-    } else {
-        passwordInput.type = 'password';
-        toggleIcon.className = 'fas fa-eye';
+    // Crear un ticket de ejemplo
+    const nuevoTicket = {
+        id: 'TKT-' + (Date.now().toString().slice(-4)),
+        tipoUsuario: Math.random() > 0.5 ? 'Cliente' : 'Usuario',
+        tipoProblema: ['configuracion', 'pago', 'producto', 'tecnico'][Math.floor(Math.random() * 4)],
+        prioridad: ['Baja', 'Media', 'Alta'][Math.floor(Math.random() * 3)],
+        nombre: ['Ana García', 'Carlos López', 'María Rodríguez', 'Juan Pérez'][Math.floor(Math.random() * 4)],
+        email: 'usuario@email.com',
+        descripcion: 'Este es un ticket de prueba generado automáticamente',
+        tienda: 'Tienda de Prueba',
+        estado: 'Abierto',
+        fecha: new Date().toLocaleString(),
+        timestamp: Date.now()
+    };
+    
+    tickets.push(nuevoTicket);
+    localStorage.setItem('cresalia_tickets', JSON.stringify(tickets));
+    
+    // Actualizar dashboard
+    cargarDashboardCarla();
+    
+    mostrarNotificacionCarla('🎫 Nuevo ticket simulado creado', 'success');
+}
+
+// ===== FUNCIONES DE ARCHIVOS =====
+function configurarPreviewArchivos(inputId, previewId, listaId) {
+    const input = document.getElementById(inputId);
+    const preview = document.getElementById(previewId);
+    const lista = document.getElementById(listaId);
+    
+    if (input && preview && lista) {
+        input.addEventListener('change', function() {
+            if (this.files && this.files.length > 0) {
+                if (inputId === 'archivosRespuesta') {
+                    // Preview detallado para tickets
+                    lista.innerHTML = Array.from(this.files).map(file => `
+                        <div style="display: flex; align-items: center; gap: 10px; padding: 8px; background: var(--carla-light); border-radius: 8px; margin-bottom: 5px; border: 1px solid var(--carla-accent);">
+                            <i class="fas fa-file" style="color: var(--carla-primary);"></i>
+                            <span style="flex: 1; font-size: 12px;">${file.name}</span>
+                            <span style="font-size: 11px; color: var(--carla-gray);">${(file.size / 1024 / 1024).toFixed(2)} MB</span>
+                        </div>
+                    `).join('');
+                } else {
+                    // Preview simple para chat
+                    lista.textContent = Array.from(this.files).map(f => f.name).join(', ');
+                }
+                preview.style.display = 'block';
+            } else {
+                preview.style.display = 'none';
+            }
+        });
     }
 }
 
 function mostrarNotificacionCarla(mensaje, tipo = 'info') {
-    const notificacion = document.createElement('div');
-    notificacion.className = `notificacion-carla notificacion-${tipo}`;
-    notificacion.innerHTML = `
-        <div class="notificacion-contenido">
-            <span>${mensaje}</span>
-        </div>
-    `;
-    
-    // Estilos para notificación
-    notificacion.style.cssText = `
+    // Sistema de notificaciones simple
+    const notification = document.createElement('div');
+    notification.style.cssText = `
         position: fixed;
         top: 20px;
         right: 20px;
-        background: ${tipo === 'success' ? '#10B981' : tipo === 'error' ? '#EF4444' : tipo === 'warning' ? '#F59E0B' : '#3B82F6'};
-        color: white;
-        padding: 1rem 1.5rem;
+        padding: 15px 20px;
         border-radius: 10px;
-        box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+        color: white;
+        font-weight: 600;
         z-index: 10000;
-        animation: slideInRight 0.3s ease-out;
-        font-weight: 500;
-        max-width: 300px;
+        animation: slideIn 0.3s ease;
     `;
     
-    document.body.appendChild(notificacion);
+    switch(tipo) {
+        case 'success':
+            notification.style.background = 'linear-gradient(135deg, #10B981, #34D399)';
+            break;
+        case 'error':
+            notification.style.background = 'linear-gradient(135deg, #EF4444, #F87171)';
+            break;
+        case 'warning':
+            notification.style.background = 'linear-gradient(135deg, #F59E0B, #FBBF24)';
+            break;
+        default:
+            notification.style.background = 'linear-gradient(135deg, #7C3AED, #EC4899)';
+    }
+    
+    notification.textContent = mensaje;
+    document.body.appendChild(notification);
     
     setTimeout(() => {
-        if (notificacion.parentElement) {
-            notificacion.remove();
-        }
+        notification.remove();
     }, 3000);
-}
-
-// ===== FUNCIONES DE INTEGRACIÓN CON LA PÁGINA PRINCIPAL =====
-// Estas funciones deben estar disponibles globalmente para que la página principal las use
-
-// Función para crear tickets desde el chat de soporte
-function crearTicketDesdeChat(datos) {
-    const ticket = {
-        id: Date.now().toString(),
-        titulo: datos.titulo || 'Consulta desde chat',
-        descripcion: datos.mensaje,
-        cliente: datos.nombre || 'Cliente',
-        email: datos.email || 'cliente@email.com',
-        telefono: datos.telefono || 'Sin teléfono',
-        fecha: new Date().toISOString(),
-        estado: 'pendiente',
-        tipo: 'chat',
-        respuestas: []
-    };
-    
-    guardarTicket(ticket);
-    mostrarNotificacionCarla('🎫 Nuevo ticket creado desde chat', 'info');
-}
-
-// Función para guardar tickets
-function guardarTicket(ticket) {
-    let tickets = JSON.parse(localStorage.getItem('ticketsCarla') || '[]');
-    tickets.push(ticket);
-    localStorage.setItem('ticketsCarla', JSON.stringify(tickets));
-    
-    // También guardar en tickets de soporte general
-    let ticketsSoporte = JSON.parse(localStorage.getItem('ticketsSoporte') || '[]');
-    ticketsSoporte.push(ticket);
-    localStorage.setItem('ticketsSoporte', JSON.stringify(ticketsSoporte));
-}
-
-// Función para obtener tickets
-function obtenerTickets() {
-    return JSON.parse(localStorage.getItem('ticketsCarla') || '[]');
-}
-
-// Función para actualizar estado de ticket
-function actualizarEstadoTicket(ticketId, nuevoEstado) {
-    let tickets = obtenerTickets();
-    const ticketIndex = tickets.findIndex(t => t.id === ticketId);
-    
-    if (ticketIndex !== -1) {
-        tickets[ticketIndex].estado = nuevoEstado;
-        tickets[ticketIndex].fechaActualizacion = new Date().toISOString();
-        localStorage.setItem('ticketsCarla', JSON.stringify(tickets));
-    }
-}
-
-// Función para agregar respuesta a ticket
-function agregarRespuestaTicket(ticketId, respuesta) {
-    let tickets = obtenerTickets();
-    const ticketIndex = tickets.findIndex(t => t.id === ticketId);
-    
-    if (ticketIndex !== -1) {
-        if (!tickets[ticketIndex].respuestas) {
-            tickets[ticketIndex].respuestas = [];
-        }
-        
-        tickets[ticketIndex].respuestas.push({
-            texto: respuesta,
-            fecha: new Date().toISOString(),
-            autor: 'Carla'
-        });
-        
-        localStorage.setItem('ticketsCarla', JSON.stringify(tickets));
-    }
-}
-
-// Función para obtener estadísticas de tickets
-function obtenerEstadisticasTickets() {
-    const tickets = obtenerTickets();
-    const hoy = new Date().toDateString();
-    
-    return {
-        total: tickets.length,
-        pendientes: tickets.filter(t => t.estado === 'pendiente').length,
-        atendidos: tickets.filter(t => t.estado === 'atendido').length,
-        hoy: tickets.filter(t => new Date(t.fecha).toDateString() === hoy).length
-    };
-}
-
-// ===== SISTEMA DE REPORTES =====
-function cargarReportesCarla() {
-    console.log('📊 Cargando reportes...');
-    generarReporte();
-}
-
-function generarReporte() {
-    const periodo = document.getElementById('filtroFecha').value;
-    const tipo = document.getElementById('filtroTipo').value;
-    
-    console.log(`📊 Generando reporte: ${tipo} - ${periodo}`);
-    
-    // Generar reporte según el tipo
-    switch(tipo) {
-        case 'tickets':
-            generarReporteTickets(periodo);
-            break;
-        case 'satisfaccion':
-            generarReporteSatisfaccion(periodo);
-            break;
-        case 'tiempo':
-            generarReporteTiempo(periodo);
-            break;
-        case 'categorias':
-            generarReporteCategorias(periodo);
-            break;
-    }
-}
-
-function generarReporteTickets(periodo) {
-    const tickets = obtenerTickets();
-    const ticketsFiltrados = filtrarTicketsPorPeriodo(tickets, periodo);
-    
-    // Resumen general
-    const resumen = {
-        total: ticketsFiltrados.length,
-        pendientes: ticketsFiltrados.filter(t => t.estado === 'pendiente').length,
-        atendidos: ticketsFiltrados.filter(t => t.estado === 'atendido').length,
-        urgentes: ticketsFiltrados.filter(t => t.prioridad === 'urgente').length,
-        promedioTiempo: calcularTiempoPromedioResolucion(ticketsFiltrados)
-    };
-    
-    document.getElementById('reporteResumen').innerHTML = `
-        <div class="reporte-stat">
-            <span class="stat-numero">${resumen.total}</span>
-            <span class="stat-label">Total Tickets</span>
-        </div>
-        <div class="reporte-stat">
-            <span class="stat-numero">${resumen.pendientes}</span>
-            <span class="stat-label">Pendientes</span>
-        </div>
-        <div class="reporte-stat">
-            <span class="stat-numero">${resumen.atendidos}</span>
-            <span class="stat-label">Atendidos</span>
-        </div>
-        <div class="reporte-stat">
-            <span class="stat-numero">${resumen.urgentes}</span>
-            <span class="stat-label">Urgentes</span>
-        </div>
-        <div class="reporte-stat">
-            <span class="stat-numero">${resumen.promedioTiempo}</span>
-            <span class="stat-label">Min Promedio</span>
-        </div>
-    `;
-    
-    // Gráfico de tickets por día
-    const ticketsPorDia = agruparTicketsPorDia(ticketsFiltrados);
-    document.getElementById('reporteGraficoTickets').innerHTML = `
-        <div class="grafico-barras">
-            ${Object.entries(ticketsPorDia).map(([fecha, cantidad]) => `
-                <div class="barra">
-                    <div class="barra-valor" style="height: ${(cantidad / Math.max(...Object.values(ticketsPorDia))) * 100}%"></div>
-                    <span class="barra-label">${fecha}</span>
-                </div>
-            `).join('')}
-        </div>
-    `;
-    
-    // Métricas de rendimiento
-    document.getElementById('reporteMetricas').innerHTML = `
-        <div class="metrica">
-            <div class="metrica-icono">⚡</div>
-            <div class="metrica-info">
-                <span class="metrica-valor">${resumen.promedioTiempo} min</span>
-                <span class="metrica-label">Tiempo Promedio</span>
-            </div>
-        </div>
-        <div class="metrica">
-            <div class="metrica-icono">📈</div>
-            <div class="metrica-info">
-                <span class="metrica-valor">${Math.round((resumen.atendidos / resumen.total) * 100)}%</span>
-                <span class="metrica-label">Tasa de Resolución</span>
-            </div>
-        </div>
-        <div class="metrica">
-            <div class="metrica-icono">🎯</div>
-            <div class="metrica-info">
-                <span class="metrica-valor">${resumen.urgentes}</span>
-                <span class="metrica-label">Tickets Urgentes</span>
-            </div>
-        </div>
-    `;
-    
-    // Top clientes
-    const topClientes = obtenerTopClientes(ticketsFiltrados);
-    document.getElementById('reporteClientes').innerHTML = `
-        <div class="top-clientes">
-            ${topClientes.map((cliente, index) => `
-                <div class="cliente-item">
-                    <span class="cliente-posicion">#${index + 1}</span>
-                    <span class="cliente-nombre">${cliente.nombre}</span>
-                    <span class="cliente-tickets">${cliente.tickets} tickets</span>
-                </div>
-            `).join('')}
-        </div>
-    `;
-}
-
-function filtrarTicketsPorPeriodo(tickets, periodo) {
-    const ahora = new Date();
-    const inicio = new Date();
-    
-    switch(periodo) {
-        case 'hoy':
-            inicio.setHours(0, 0, 0, 0);
-            break;
-        case 'semana':
-            inicio.setDate(inicio.getDate() - 7);
-            break;
-        case 'mes':
-            inicio.setMonth(inicio.getMonth() - 1);
-            break;
-        case 'trimestre':
-            inicio.setMonth(inicio.getMonth() - 3);
-            break;
-        case 'año':
-            inicio.setFullYear(inicio.getFullYear() - 1);
-            break;
-    }
-    
-    return tickets.filter(ticket => {
-        const fechaTicket = new Date(ticket.fecha);
-        return fechaTicket >= inicio && fechaTicket <= ahora;
-    });
-}
-
-function agruparTicketsPorDia(tickets) {
-    const agrupados = {};
-    
-    tickets.forEach(ticket => {
-        const fecha = new Date(ticket.fecha).toLocaleDateString('es-ES', { 
-            month: 'short', 
-            day: 'numeric' 
-        });
-        agrupados[fecha] = (agrupados[fecha] || 0) + 1;
-    });
-    
-    return agrupados;
-}
-
-function calcularTiempoPromedioResolucion(tickets) {
-    const ticketsResueltos = tickets.filter(t => t.estado === 'atendido' && t.tiempoResolucion);
-    
-    if (ticketsResueltos.length === 0) return 0;
-    
-    const tiempoTotal = ticketsResueltos.reduce((total, ticket) => total + ticket.tiempoResolucion, 0);
-    return Math.round(tiempoTotal / ticketsResueltos.length);
-}
-
-function obtenerTopClientes(tickets) {
-    const clientes = {};
-    
-    tickets.forEach(ticket => {
-        const nombre = ticket.cliente;
-        clientes[nombre] = (clientes[nombre] || 0) + 1;
-    });
-    
-    return Object.entries(clientes)
-        .map(([nombre, tickets]) => ({ nombre, tickets }))
-        .sort((a, b) => b.tickets - a.tickets)
-        .slice(0, 5);
-}
-
-function generarReporteSatisfaccion(periodo) {
-    // Implementar reporte de satisfacción
-    document.getElementById('reporteResumen').innerHTML = '<p>Reporte de satisfacción en desarrollo...</p>';
-}
-
-function generarReporteTiempo(periodo) {
-    // Implementar reporte de tiempo de respuesta
-    document.getElementById('reporteResumen').innerHTML = '<p>Reporte de tiempo en desarrollo...</p>';
-}
-
-function generarReporteCategorias(periodo) {
-    // Implementar reporte por categorías
-    document.getElementById('reporteResumen').innerHTML = '<p>Reporte por categorías en desarrollo...</p>';
-}
-
-function exportarReporte() {
-    const periodo = document.getElementById('filtroFecha').value;
-    const tipo = document.getElementById('filtroTipo').value;
-    
-    // Crear contenido del PDF
-    const contenido = `
-        <h1>Reporte de Atención al Cliente - FRIOCAS</h1>
-        <p><strong>Período:</strong> ${periodo}</p>
-        <p><strong>Tipo:</strong> ${tipo}</p>
-        <p><strong>Fecha:</strong> ${new Date().toLocaleDateString()}</p>
-        <hr>
-        <div id="contenidoReporte">
-            ${document.getElementById('reporteResumen').innerHTML}
-        </div>
-    `;
-    
-    // Simular descarga de PDF
-    const blob = new Blob([contenido], { type: 'text/html' });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = `reporte-${tipo}-${periodo}-${new Date().toISOString().split('T')[0]}.html`;
-    a.click();
-    
-    mostrarNotificacionCarla('📄 Reporte exportado correctamente', 'success');
-}
-
-// ===== CONFIGURACIÓN DE EVENTOS DE NAVEGACIÓN =====
-document.addEventListener('click', function(event) {
-    if (event.target.classList.contains('carla-nav-btn')) {
-        const seccion = event.target.getAttribute('data-section');
-        mostrarSeccionCarla(seccion);
-    }
-});
-
-// Función para mostrar sección (alias para compatibilidad)
-function mostrarSeccion(seccion) {
-    mostrarSeccionCarla(seccion);
-}
-
-// Función para mostrar formulario de ticket
-function mostrarFormularioTicket() {
-    // Crear modal para nuevo ticket
-    const modal = document.createElement('div');
-    modal.className = 'modal-ticket';
-    modal.innerHTML = `
-        <div class="modal-ticket-content">
-            <div class="modal-ticket-header">
-                <h3>Nuevo Ticket</h3>
-                <button onclick="cerrarModalTicketCarla()" class="cerrar-modal">
-                    <i class="fas fa-times"></i>
-                </button>
-            </div>
-            <div class="modal-ticket-body">
-                <form id="formNuevoTicket">
-                    <div class="form-group">
-                        <label for="ticketTitulo">Título del Ticket</label>
-                        <input type="text" id="ticketTitulo" required>
-                    </div>
-                    <div class="form-group">
-                        <label for="ticketCliente">Cliente</label>
-                        <input type="text" id="ticketCliente" required>
-                    </div>
-                    <div class="form-group">
-                        <label for="ticketEmail">Email</label>
-                        <input type="email" id="ticketEmail" required>
-                    </div>
-                    <div class="form-group">
-                        <label for="ticketTelefono">Teléfono</label>
-                        <input type="tel" id="ticketTelefono" required>
-                    </div>
-                    <div class="form-group">
-                        <label for="ticketDescripcion">Descripción</label>
-                        <textarea id="ticketDescripcion" rows="4" required></textarea>
-                    </div>
-                    <button type="submit" class="btn-enviar">
-                        <i class="fas fa-paper-plane"></i> Crear Ticket
-                    </button>
-                </form>
-            </div>
-        </div>
-    `;
-    
-    document.body.appendChild(modal);
-    
-    // Configurar evento del formulario
-    document.getElementById('formNuevoTicket').addEventListener('submit', function(e) {
-        e.preventDefault();
-        
-        const ticket = {
-            id: Date.now().toString(),
-            titulo: document.getElementById('ticketTitulo').value,
-            descripcion: document.getElementById('ticketDescripcion').value,
-            cliente: document.getElementById('ticketCliente').value,
-            email: document.getElementById('ticketEmail').value,
-            telefono: document.getElementById('ticketTelefono').value,
-            fecha: new Date().toISOString(),
-            estado: 'pendiente',
-            respuestas: []
-        };
-        
-        guardarTicket(ticket);
-        cerrarModalTicketCarla();
-        cargarTicketsCarla();
-        mostrarNotificacionCarla('✅ Ticket creado exitosamente', 'success');
-    });
-}
-
-// ===== SISTEMA DE SIMULACIONES EN MODO DESARROLLO =====
-let simulacionTicketsInterval;
-let simulacionChatInterval;
-
-function simularNuevoTicket() {
-    if (!CARLA_CONFIG.modoDesarrollo) {
-        console.log('🎯 Simulación de tickets desactivada (modo producción)');
-        return;
-    }
-    
-    const clientes = ['María González', 'Juan Pérez', 'Ana López', 'Carlos Rodríguez', 'Laura Martínez'];
-    const problemas = [
-        'Problema con la facturación',
-        'Consulta sobre servicios',
-        'Problema técnico',
-        'Solicitud de información',
-        'Reclamo por entrega'
-    ];
-    
-    const ticket = {
-        id: Date.now().toString(),
-        titulo: problemas[Math.floor(Math.random() * problemas.length)],
-        descripcion: 'Ticket generado automáticamente en modo desarrollo',
-        cliente: clientes[Math.floor(Math.random() * clientes.length)],
-        email: 'cliente@ejemplo.com',
-        telefono: '+54 9 11 1234-5678',
-        fecha: new Date().toISOString(),
-        estado: 'pendiente',
-        respuestas: []
-    };
-    
-    guardarTicket(ticket);
-    mostrarNotificacionCarla('🎫 Nuevo ticket simulado creado', 'info');
-    
-    // Actualizar dashboard si está visible
-    if (document.getElementById('dashboardContainer').style.display !== 'none') {
-        cargarDashboardCarla();
-    }
-    
-    // Actualizar tickets si está visible
-    if (document.getElementById('ticketsContainer').style.display !== 'none') {
-        cargarTicketsCarla();
-    }
-}
-
-function simularMensajesEnVivo() {
-    if (!CARLA_CONFIG.modoDesarrollo) {
-        console.log('🎯 Simulación de chat desactivada (modo producción)');
-        return;
-    }
-    
-    const mensajes = [
-        "Hola, necesito ayuda con mi pedido #12345",
-        "¿Cuánto tiempo tarda la entrega a domicilio?",
-        "Tengo un problema con mi factura del mes pasado",
-        "¿Pueden ayudarme con el servicio técnico de mi equipo?",
-        "Quisiera consultar sobre los horarios de atención",
-        "¿Tienen stock del producto X?",
-        "Necesito información sobre garantías",
-        "¿Cómo puedo hacer un cambio de producto?"
-    ];
-    
-    const chatMessages = document.getElementById('chatMessages');
-    if (!chatMessages) return;
-    
-    const mensaje = mensajes[Math.floor(Math.random() * mensajes.length)];
-    const mensajeElement = document.createElement('div');
-    mensajeElement.className = 'mensaje-cliente';
-    mensajeElement.innerHTML = `
-        <div class="mensaje-contenido">
-            <span class="mensaje-texto">${mensaje}</span>
-            <span class="mensaje-tiempo">${new Date().toLocaleTimeString()}</span>
-        </div>
-    `;
-    
-    chatMessages.appendChild(mensajeElement);
-    chatMessages.scrollTop = chatMessages.scrollHeight;
-    
-    mostrarNotificacionCarla('💬 Nuevo mensaje simulado en chat', 'info');
-}
-
-function iniciarSimulacionesDesarrollo() {
-    if (!CARLA_CONFIG.modoDesarrollo) {
-        console.log('🎯 Modo desarrollo desactivado - simulaciones no iniciadas');
-        return;
-    }
-    
-    console.log('🚀 Iniciando simulaciones en modo desarrollo...');
-    
-    // Simulación de tickets cada 30 segundos
-    simulacionTicketsInterval = setInterval(() => {
-        if (carlaLoggedIn && Math.random() > 0.7) { // 30% de probabilidad
-            simularNuevoTicket();
-        }
-    }, 30000);
-    
-    // Simulación de chat cada 15 segundos
-    simulacionChatInterval = setInterval(() => {
-        if (carlaLoggedIn && Math.random() > 0.6) { // 40% de probabilidad
-            simularMensajesEnVivo();
-        }
-    }, 15000);
-    
-    mostrarNotificacionCarla('🚀 Simulaciones de desarrollo iniciadas', 'success');
-}
-
-function detenerSimulacionesDesarrollo() {
-    if (simulacionTicketsInterval) {
-        clearInterval(simulacionTicketsInterval);
-        simulacionTicketsInterval = null;
-    }
-    
-    if (simulacionChatInterval) {
-        clearInterval(simulacionChatInterval);
-        simulacionChatInterval = null;
-    }
-    
-    console.log('🛑 Simulaciones de desarrollo detenidas');
-}
-
-function actualizarInterfazModoDesarrollo() {
-    const btnDesarrollo = document.getElementById('btnModoDesarrollo');
-    const infoDesarrollo = document.getElementById('infoModoDesarrollo');
-    
-    if (!btnDesarrollo || !infoDesarrollo) return;
-    
-    if (CARLA_CONFIG.modoDesarrollo) {
-        // Modo desarrollo activo
-        btnDesarrollo.classList.add('activo');
-        btnDesarrollo.innerHTML = '<i class="fas fa-stop"></i> <span id="textoModoDesarrollo">Desactivar Modo Desarrollo</span>';
-        infoDesarrollo.textContent = 'Simulaciones activas - Tickets y chat en vivo se generarán automáticamente';
-        infoDesarrollo.classList.add('activo');
-    } else {
-        // Modo desarrollo inactivo
-        btnDesarrollo.classList.remove('activo');
-        btnDesarrollo.innerHTML = '<i class="fas fa-code"></i> <span id="textoModoDesarrollo">Activar Modo Desarrollo</span>';
-        infoDesarrollo.textContent = 'Las simulaciones están desactivadas para producción';
-        infoDesarrollo.classList.remove('activo');
-    }
-}
-
-function toggleModoDesarrollo() {
-    CARLA_CONFIG.modoDesarrollo = !CARLA_CONFIG.modoDesarrollo;
-    
-    if (CARLA_CONFIG.modoDesarrollo) {
-        iniciarSimulacionesDesarrollo();
-        mostrarNotificacionCarla('🚀 Modo desarrollo ACTIVADO', 'success');
-    } else {
-        detenerSimulacionesDesarrollo();
-        mostrarNotificacionCarla('🛑 Modo desarrollo DESACTIVADO', 'info');
-    }
-    
-    // Actualizar interfaz visual
-    actualizarInterfazModoDesarrollo();
-    
-    // Guardar configuración
-    localStorage.setItem('carlaModoDesarrollo', CARLA_CONFIG.modoDesarrollo);
-}
-
-console.log('🎯 Sistema de Carla cargado completamente');
-
-// ===== SISTEMA DE BACKUP AUTOMÁTICO =====
-function iniciarBackupAutomaticoCarla() {
-    console.log('💾 Iniciando sistema de backup automático para Carla...');
-    
-    // Realizar backup inicial
-    realizarBackupCarla();
-    
-    // Configurar backup automático cada 5 minutos
-    carlaBackupTimer = setInterval(() => {
-        if (carlaLoggedIn) {
-            realizarBackupCarla();
-        }
-    }, CARLA_CONFIG.backupInterval);
-    
-    console.log('✅ Sistema de backup automático iniciado');
-}
-
-function realizarBackupCarla() {
-    try {
-        const timestamp = new Date().toISOString();
-        const backupData = {
-            timestamp: timestamp,
-            tickets: obtenerTickets(),
-            configuracion: {
-                notificaciones: document.getElementById('notificacionesCarla')?.checked || true,
-                tema: 'carla-exclusivo',
-                ultimaActividad: timestamp
-            },
-            estadisticas: {
-                totalTickets: obtenerTickets().length,
-                ticketsPendientes: obtenerTickets().filter(t => t.estado === 'pendiente').length,
-                ticketsAtendidos: obtenerTickets().filter(t => t.estado === 'atendido').length
-            }
-        };
-        
-        // Obtener backups existentes
-        let backups = JSON.parse(localStorage.getItem('carlaBackups') || '[]');
-        
-        // Agregar nuevo backup
-        backups.push(backupData);
-        
-        // Mantener solo los últimos X backups
-        if (backups.length > CARLA_CONFIG.maxBackups) {
-            backups = backups.slice(-CARLA_CONFIG.maxBackups);
-        }
-        
-        // Guardar backups
-        localStorage.setItem('carlaBackups', JSON.stringify(backups));
-        
-        console.log(`💾 Backup automático realizado: ${timestamp}`);
-        
-        // Notificación silenciosa (solo en consola)
-        if (carlaLoggedIn) {
-            mostrarNotificacionCarla('💾 Backup automático completado', 'info');
-        }
-        
-        return true;
-    } catch (error) {
-        console.error('❌ Error en backup automático:', error);
-        return false;
-    }
-}
-
-function restaurarBackupCarla(backupIndex) {
-    try {
-        const backups = JSON.parse(localStorage.getItem('carlaBackups') || '[]');
-        const backup = backups[backupIndex];
-        
-        if (!backup) {
-            mostrarNotificacionCarla('❌ Backup no encontrado', 'error');
-            return false;
-        }
-        
-        // Restaurar tickets
-        localStorage.setItem('ticketsCarla', JSON.stringify(backup.tickets));
-        
-        // Restaurar configuración
-        if (backup.configuracion) {
-            const notificacionesCheckbox = document.getElementById('notificacionesCarla');
-            if (notificacionesCheckbox) {
-                notificacionesCheckbox.checked = backup.configuracion.notificaciones;
-            }
-        }
-        
-        // Recargar datos
-        cargarDashboardCarla();
-        cargarTicketsCarla();
-        
-        mostrarNotificacionCarla(`✅ Backup restaurado del ${new Date(backup.timestamp).toLocaleString()}`, 'success');
-        
-        return true;
-    } catch (error) {
-        console.error('❌ Error restaurando backup:', error);
-        mostrarNotificacionCarla('❌ Error al restaurar backup', 'error');
-        return false;
-    }
-}
-
-function obtenerBackupsCarla() {
-    return JSON.parse(localStorage.getItem('carlaBackups') || '[]');
-}
-
-function eliminarBackupCarla(backupIndex) {
-    try {
-        let backups = JSON.parse(localStorage.getItem('carlaBackups') || '[]');
-        backups.splice(backupIndex, 1);
-        localStorage.setItem('carlaBackups', JSON.stringify(backups));
-        
-        mostrarNotificacionCarla('✅ Backup eliminado', 'success');
-        return true;
-    } catch (error) {
-        console.error('❌ Error eliminando backup:', error);
-        mostrarNotificacionCarla('❌ Error al eliminar backup', 'error');
-        return false;
-    }
-}
-
-function mostrarBackupsCarla() {
-    const backups = obtenerBackupsCarla();
-    
-    if (backups.length === 0) {
-        mostrarNotificacionCarla('📭 No hay backups disponibles', 'info');
-        return;
-    }
-    
-    // Crear modal de backups
-    const modal = document.createElement('div');
-    modal.className = 'modal-backup';
-    modal.innerHTML = `
-        <div class="modal-backup-content">
-            <div class="modal-backup-header">
-                <h3>💾 Backups Disponibles</h3>
-                <button onclick="cerrarModalBackupCarla()" class="cerrar-modal">
-                    <i class="fas fa-times"></i>
-                </button>
-            </div>
-            <div class="modal-backup-body">
-                <div class="backups-list">
-                    ${backups.map((backup, index) => `
-                        <div class="backup-item">
-                            <div class="backup-info">
-                                <span class="backup-fecha">${new Date(backup.timestamp).toLocaleString()}</span>
-                                <span class="backup-stats">
-                                    📊 ${backup.tickets.length} tickets | 
-                                    ⏳ ${backup.tickets.filter(t => t.estado === 'pendiente').length} pendientes
-                                </span>
-                            </div>
-                            <div class="backup-actions">
-                                <button onclick="restaurarBackupCarla(${index})" class="btn-restaurar">
-                                    <i class="fas fa-undo"></i> Restaurar
-                                </button>
-                                <button onclick="eliminarBackupCarla(${index})" class="btn-eliminar">
-                                    <i class="fas fa-trash"></i>
-                                </button>
-                            </div>
-                        </div>
-                    `).join('')}
-                </div>
-            </div>
-        </div>
-    `;
-    
-    document.body.appendChild(modal);
-}
-
-function cerrarModalBackupCarla() {
-    const modal = document.querySelector('.modal-backup');
-    if (modal) {
-        modal.remove();
-    }
-}
-
-// Función para backup manual
-function realizarBackupManualCarla() {
-    const resultado = realizarBackupCarla();
-    if (resultado) {
-        mostrarNotificacionCarla('💾 Backup manual completado exitosamente', 'success');
-    } else {
-        mostrarNotificacionCarla('❌ Error en backup manual', 'error');
-    }
-}
-
-// ===== FUNCIONES DE INTEGRACIÓN CON LA PÁGINA PRINCIPAL =====
-// Estas funciones deben estar disponibles globalmente para que la página principal las use
-
-// Función para crear tickets desde el chat de soporte
-function crearTicketDesdeChat(datos) {
-    const ticket = {
-        id: Date.now().toString(),
-        titulo: datos.titulo || 'Consulta desde chat',
-        descripcion: datos.mensaje,
-        cliente: datos.nombre || 'Cliente',
-        email: datos.email || 'cliente@email.com',
-        telefono: datos.telefono || 'Sin teléfono',
-        fecha: new Date().toISOString(),
-        estado: 'pendiente',
-        tipo: 'chat',
-        respuestas: []
-    };
-    
-    guardarTicket(ticket);
-    mostrarNotificacionCarla('🎫 Nuevo ticket creado desde chat', 'info');
-}
-
-// Función para guardar tickets
-function guardarTicket(ticket) {
-    let tickets = JSON.parse(localStorage.getItem('ticketsCarla') || '[]');
-    tickets.push(ticket);
-    localStorage.setItem('ticketsCarla', JSON.stringify(tickets));
-    
-    // También guardar en tickets de soporte general
-    let ticketsSoporte = JSON.parse(localStorage.getItem('ticketsSoporte') || '[]');
-    ticketsSoporte.push(ticket);
-    localStorage.setItem('ticketsSoporte', JSON.stringify(ticketsSoporte));
-}
-
-// Función para obtener tickets
-function obtenerTickets() {
-    return JSON.parse(localStorage.getItem('ticketsCarla') || '[]');
-}
-
-// Función para actualizar estado de ticket
-function actualizarEstadoTicket(ticketId, nuevoEstado) {
-    let tickets = obtenerTickets();
-    const ticketIndex = tickets.findIndex(t => t.id === ticketId);
-    
-    if (ticketIndex !== -1) {
-        tickets[ticketIndex].estado = nuevoEstado;
-        tickets[ticketIndex].fechaActualizacion = new Date().toISOString();
-        localStorage.setItem('ticketsCarla', JSON.stringify(tickets));
-    }
-}
-
-// Función para agregar respuesta a ticket
-function agregarRespuestaTicket(ticketId, respuesta) {
-    let tickets = obtenerTickets();
-    const ticketIndex = tickets.findIndex(t => t.id === ticketId);
-    
-    if (ticketIndex !== -1) {
-        if (!tickets[ticketIndex].respuestas) {
-            tickets[ticketIndex].respuestas = [];
-        }
-        
-        tickets[ticketIndex].respuestas.push({
-            texto: respuesta,
-            fecha: new Date().toISOString(),
-            autor: 'Carla'
-        });
-        
-        localStorage.setItem('ticketsCarla', JSON.stringify(tickets));
-    }
-}
-
-// Función para obtener estadísticas de tickets
-function obtenerEstadisticasTickets() {
-    const tickets = obtenerTickets();
-    const hoy = new Date().toDateString();
-    
-    return {
-        total: tickets.length,
-        pendientes: tickets.filter(t => t.estado === 'pendiente').length,
-        atendidos: tickets.filter(t => t.estado === 'atendido').length,
-        hoy: tickets.filter(t => new Date(t.fecha).toDateString() === hoy).length
-    };
-}
-
-// ===== GESTIÓN DE LOGS DE USUARIOS PARA CARLA =====
-function cargarLogsUsuariosCarla() {
-    const logs = JSON.parse(localStorage.getItem('userLogs') || '[]');
-    const usersLogsCarla = document.getElementById('usersLogsCarla');
-    
-    if (!usersLogsCarla) return;
-    
-    // Actualizar estadísticas
-    actualizarEstadisticasUsuariosCarla(logs);
-    
-    if (logs.length === 0) {
-        usersLogsCarla.innerHTML = `
-            <div class="no-logs-carla" style="text-align: center; color: var(--gray-500); padding: 2rem;">
-                <i class="fas fa-users" style="font-size: 2rem; margin-bottom: 1rem;"></i>
-                <p>No hay logs de usuarios registrados</p>
-                <p style="font-size: 0.9rem;">Los logs aparecerán cuando los usuarios interactúen con el sitio</p>
-            </div>
-        `;
-    } else {
-        // Ordenar logs por fecha (más recientes primero)
-        const logsOrdenados = logs.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
-        
-        usersLogsCarla.innerHTML = logsOrdenados.map(log => `
-            <div class="log-item-carla ${log.type}">
-                <div class="log-icon-carla">
-                    <i class="fas ${getLogIconCarla(log.type)}"></i>
-                </div>
-                <div class="log-content-carla">
-                    <div class="log-header-carla">
-                        <span class="log-user-carla">${log.userName || log.email}</span>
-                        <span class="log-time-carla">${formatearFechaCarla(log.timestamp)}</span>
-                    </div>
-                    <div class="log-description-carla">${getLogDescriptionCarla(log)}</div>
-                    <div class="log-details-carla">
-                        <span class="log-type-carla">${getLogTypeNameCarla(log.type)}</span>
-                        ${log.details ? `<span class="log-details-text-carla">${log.details}</span>` : ''}
-                    </div>
-                </div>
-            </div>
-        `).join('');
-    }
-}
-
-function actualizarEstadisticasUsuariosCarla(logs) {
-    const usuariosUnicos = new Set(logs.map(log => log.email));
-    const loginsHoy = logs.filter(log => 
-        log.type === 'login' && 
-        new Date(log.timestamp).toDateString() === new Date().toDateString()
-    );
-    const compras = logs.filter(log => log.type === 'purchase');
-    const errores = logs.filter(log => log.type === 'error');
-    
-    document.getElementById('totalUsersCarla').textContent = usuariosUnicos.size;
-    document.getElementById('activeUsersCarla').textContent = loginsHoy.length;
-    document.getElementById('totalPurchasesCarla').textContent = compras.length;
-    document.getElementById('totalErrorsCarla').textContent = errores.length;
-}
-
-function getLogIconCarla(type) {
-    const icons = {
-        'login': 'fa-sign-in-alt',
-        'register': 'fa-user-plus',
-        'purchase': 'fa-shopping-cart',
-        'logout': 'fa-sign-out-alt',
-        'view': 'fa-eye',
-        'search': 'fa-search',
-        'error': 'fa-exclamation-triangle'
-    };
-    return icons[type] || 'fa-info-circle';
-}
-
-function getLogTypeNameCarla(type) {
-    const names = {
-        'login': 'Inicio de Sesión',
-        'register': 'Registro',
-        'purchase': 'Compra',
-        'logout': 'Cierre de Sesión',
-        'view': 'Visualización',
-        'search': 'Búsqueda',
-        'error': 'Error'
-    };
-    return names[type] || type;
-}
-
-function getLogDescriptionCarla(log) {
-    switch (log.type) {
-        case 'login':
-            return `Usuario inició sesión desde ${log.ip || 'IP desconocida'}`;
-        case 'register':
-            return `Nuevo usuario registrado: ${log.userName}`;
-        case 'purchase':
-            return `Compra realizada por $${log.amount || 0}`;
-        case 'logout':
-            return `Usuario cerró sesión`;
-        case 'view':
-            return `Vió la página: ${log.page || 'desconocida'}`;
-        case 'search':
-            return `Buscó: "${log.query || 'desconocido'}"`;
-        case 'error':
-            return `Error reportado: ${log.error || 'Error desconocido'}`;
-        default:
-            return log.description || 'Actividad del usuario';
-    }
-}
-
-function formatearFechaCarla(timestamp) {
-    const fecha = new Date(timestamp);
-    const ahora = new Date();
-    const diffMs = ahora - fecha;
-    const diffMins = Math.floor(diffMs / 60000);
-    const diffHours = Math.floor(diffMs / 3600000);
-    const diffDays = Math.floor(diffMs / 86400000);
-    
-    if (diffMins < 1) return 'Hace un momento';
-    if (diffMins < 60) return `Hace ${diffMins} min`;
-    if (diffHours < 24) return `Hace ${diffHours} horas`;
-    if (diffDays < 7) return `Hace ${diffDays} días`;
-    
-    return fecha.toLocaleDateString('es-AR', {
-        day: '2-digit',
-        month: '2-digit',
-        year: 'numeric',
-        hour: '2-digit',
-        minute: '2-digit'
-    });
-}
-
-function filtrarUsuariosCarla() {
-    const searchTerm = document.getElementById('searchUsersCarla').value.toLowerCase();
-    const logItems = document.querySelectorAll('.log-item-carla');
-    
-    logItems.forEach(item => {
-        const userText = item.querySelector('.log-user-carla').textContent.toLowerCase();
-        const description = item.querySelector('.log-description-carla').textContent.toLowerCase();
-        
-        if (userText.includes(searchTerm) || description.includes(searchTerm)) {
-            item.style.display = 'block';
-        } else {
-            item.style.display = 'none';
-        }
-    });
-}
-
-function filtrarActividadCarla() {
-    const filterType = document.getElementById('filterActivityCarla').value;
-    const logItems = document.querySelectorAll('.log-item-carla');
-    
-    logItems.forEach(item => {
-        if (filterType === 'all' || item.classList.contains(filterType)) {
-            item.style.display = 'block';
-        } else {
-            item.style.display = 'none';
-        }
-    });
-}
-
-function exportarLogsCarla() {
-    const logs = JSON.parse(localStorage.getItem('userLogs') || '[]');
-    const csvContent = "data:text/csv;charset=utf-8," 
-        + "Usuario,Email,Tipo,Descripción,Fecha\n"
-        + logs.map(log => 
-            `"${log.userName || ''}","${log.email || ''}","${getLogTypeNameCarla(log.type)}","${getLogDescriptionCarla(log)}","${formatearFechaCarla(log.timestamp)}"`
-        ).join("\n");
-    
-    const encodedUri = encodeURI(csvContent);
-    const link = document.createElement("a");
-    link.setAttribute("href", encodedUri);
-    link.setAttribute("download", `logs_usuarios_carla_${new Date().toISOString().split('T')[0]}.csv`);
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-    
-    mostrarNotificacionCarla('✅ Logs exportados correctamente', 'success');
-}
-
-function limpiarLogsCarla() {
-    if (confirm('¿Estás seguro de que quieres limpiar todos los logs? Esta acción no se puede deshacer.')) {
-        localStorage.removeItem('userLogs');
-        cargarLogsUsuariosCarla();
-        mostrarNotificacionCarla('✅ Logs limpiados correctamente', 'success');
-    }
-}
-
-function actualizarLogsCarla() {
-    cargarLogsUsuariosCarla();
-    mostrarNotificacionCarla('🔄 Logs actualizados', 'info');
 }
