@@ -1,0 +1,23 @@
+========================================
+   QUÉ HACER AHORA - INSTRUCCIONES SIMPLES
+========================================
+
+1. Busca el archivo: subir-a-github.bat
+   (Está en tu carpeta Cresalia-Web)
+
+2. Haz DOBLE CLICK en ese archivo
+
+3. Espera a que termine
+
+4. ¡LISTO!
+
+========================================
+
+No necesitas hacer nada más.
+No necesitas escribir comandos.
+No necesitas pegar nada.
+
+Solo doble click en: subir-a-github.bat
+
+========================================
+
