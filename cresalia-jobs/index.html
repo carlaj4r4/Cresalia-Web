@@ -462,11 +462,152 @@
         }
         
         function mostrarRegistroEmpleador() {
-            alert('💼 Registro de empleador en desarrollo');
+            const modal = document.createElement('div');
+            modal.style.cssText = 'position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 10000; display: flex; align-items: center; justify-content: center;';
+            modal.innerHTML = `
+                <div style="background: white; border-radius: 20px; padding: 30px; max-width: 600px; width: 90%; max-height: 90vh; overflow-y: auto;">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                        <h2 style="color: #667eea;">💼 Registro de Empleador</h2>
+                        <button onclick="this.closest('div[style*=\"position: fixed\"]').remove()" style="background: none; border: none; font-size: 2rem; cursor: pointer; color: #6B7280;">&times;</button>
+                    </div>
+                    <form id="formEmpleador" onsubmit="registrarEmpleador(event)">
+                        <div class="form-group">
+                            <label>Nombre de la Empresa *</label>
+                            <input type="text" id="empresaNombre" required placeholder="Ej: Mi Empresa S.A.">
+                        </div>
+                        <div class="form-group">
+                            <label>Razón Social</label>
+                            <input type="text" id="empresaRazonSocial" placeholder="Razón social completa">
+                        </div>
+                        <div class="form-group">
+                            <label>Email de Contacto *</label>
+                            <input type="email" id="empresaEmail" required placeholder="contacto@empresa.com">
+                        </div>
+                        <div class="form-group">
+                            <label>Teléfono</label>
+                            <input type="tel" id="empresaTelefono" placeholder="+54 11 1234-5678">
+                        </div>
+                        <div class="form-group">
+                            <label>Sector</label>
+                            <select id="empresaSector">
+                                <option value="">Seleccionar</option>
+                                <option value="tecnologia">Tecnología</option>
+                                <option value="marketing">Marketing</option>
+                                <option value="ventas">Ventas</option>
+                                <option value="salud">Salud</option>
+                                <option value="educacion">Educación</option>
+                                <option value="retail">Retail</option>
+                                <option value="otros">Otros</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Descripción de la Empresa</label>
+                            <textarea id="empresaDescripcion" rows="4" placeholder="Describe tu empresa..."></textarea>
+                        </div>
+                        <button type="submit" class="btn" style="width: 100%;">
+                            <i class="fas fa-check"></i> Registrar Empresa
+                        </button>
+                    </form>
+                </div>
+            `;
+            document.body.appendChild(modal);
         }
         
         function mostrarRegistroBuscador() {
-            alert('👤 Registro de buscador en desarrollo');
+            const modal = document.createElement('div');
+            modal.style.cssText = 'position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 10000; display: flex; align-items: center; justify-content: center;';
+            modal.innerHTML = `
+                <div style="background: white; border-radius: 20px; padding: 30px; max-width: 600px; width: 90%; max-height: 90vh; overflow-y: auto;">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                        <h2 style="color: #667eea;">👤 Registro de Buscador</h2>
+                        <button onclick="this.closest('div[style*=\"position: fixed\"]').remove()" style="background: none; border: none; font-size: 2rem; cursor: pointer; color: #6B7280;">&times;</button>
+                    </div>
+                    <form id="formBuscador" onsubmit="registrarBuscador(event)">
+                        <div class="form-group">
+                            <label>Nombre Completo *</label>
+                            <input type="text" id="buscadorNombre" required placeholder="Tu nombre completo">
+                        </div>
+                        <div class="form-group">
+                            <label>Email *</label>
+                            <input type="email" id="buscadorEmail" required placeholder="tu@email.com">
+                        </div>
+                        <div class="form-group">
+                            <label>Teléfono</label>
+                            <input type="tel" id="buscadorTelefono" placeholder="+54 11 1234-5678">
+                        </div>
+                        <div class="form-group">
+                            <label>Ubicación</label>
+                            <input type="text" id="buscadorUbicacion" placeholder="Ciudad, País">
+                        </div>
+                        <div class="form-group">
+                            <label>Perfil Profesional</label>
+                            <textarea id="buscadorPerfil" rows="4" placeholder="Describe tu experiencia y habilidades..."></textarea>
+                        </div>
+                        <div class="form-group">
+                            <label>Años de Experiencia</label>
+                            <input type="number" id="buscadorExperiencia" min="0" max="50" placeholder="0">
+                        </div>
+                        <button type="submit" class="btn" style="width: 100%;">
+                            <i class="fas fa-check"></i> Registrar Perfil
+                        </button>
+                    </form>
+                </div>
+            `;
+            document.body.appendChild(modal);
+        }
+        
+        async function registrarEmpleador(event) {
+            event.preventDefault();
+            if (!sistemaJobs) {
+                alert('❌ Sistema no inicializado');
+                return;
+            }
+            
+            const datos = {
+                nombre_empresa: document.getElementById('empresaNombre').value,
+                razon_social: document.getElementById('empresaRazonSocial').value || document.getElementById('empresaNombre').value,
+                email: document.getElementById('empresaEmail').value,
+                telefono: document.getElementById('empresaTelefono').value,
+                sector: document.getElementById('empresaSector').value,
+                descripcion: document.getElementById('empresaDescripcion').value
+            };
+            
+            const resultado = await sistemaJobs.registrarEmpleador(datos);
+            
+            if (resultado.success) {
+                alert('✅ ¡Empresa registrada exitosamente!');
+                document.querySelector('div[style*="position: fixed"]').remove();
+                location.reload();
+            } else {
+                alert('❌ Error: ' + (resultado.error || 'No se pudo registrar la empresa'));
+            }
+        }
+        
+        async function registrarBuscador(event) {
+            event.preventDefault();
+            if (!sistemaJobs) {
+                alert('❌ Sistema no inicializado');
+                return;
+            }
+            
+            const datos = {
+                nombre: document.getElementById('buscadorNombre').value,
+                email: document.getElementById('buscadorEmail').value,
+                telefono: document.getElementById('buscadorTelefono').value,
+                ubicacion: document.getElementById('buscadorUbicacion').value,
+                perfil_profesional: document.getElementById('buscadorPerfil').value,
+                experiencia_años: parseInt(document.getElementById('buscadorExperiencia').value) || 0
+            };
+            
+            const resultado = await sistemaJobs.registrarBuscador(datos);
+            
+            if (resultado.success) {
+                alert('✅ ¡Perfil registrado exitosamente!');
+                document.querySelector('div[style*="position: fixed"]').remove();
+                location.reload();
+            } else {
+                alert('❌ Error: ' + (resultado.error || 'No se pudo registrar el perfil'));
+            }
         }
         
         console.log('%c💼 Bienvenido/a a Cresalia Jobs', 'color: #667eea; font-size: 18px; font-weight: bold;');
