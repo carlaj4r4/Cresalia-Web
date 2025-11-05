@@ -326,6 +326,24 @@ DROP POLICY IF EXISTS "grupos_public_read" ON grupos_chat_seguro;
 CREATE POLICY "grupos_public_read" ON grupos_chat_seguro
     FOR SELECT USING (tipo_grupo = 'publico' OR activo = true);
 
+DROP POLICY IF EXISTS "grupos_public_create" ON grupos_chat_seguro;
+CREATE POLICY "grupos_public_create" ON grupos_chat_seguro
+    FOR INSERT WITH CHECK (true);
+
+DROP POLICY IF EXISTS "grupos_public_update" ON grupos_chat_seguro;
+CREATE POLICY "grupos_public_update" ON grupos_chat_seguro
+    FOR UPDATE USING (creado_por = current_setting('app.current_user_hash', true) OR 
+                      current_setting('app.current_user_hash', true) = ANY(moderadores));
+
+-- Miembros de grupos: Cualquiera puede unirse a grupos públicos
+DROP POLICY IF EXISTS "miembros_grupos_read" ON miembros_grupos_chat;
+CREATE POLICY "miembros_grupos_read" ON miembros_grupos_chat
+    FOR SELECT USING (true);
+
+DROP POLICY IF EXISTS "miembros_grupos_create" ON miembros_grupos_chat;
+CREATE POLICY "miembros_grupos_create" ON miembros_grupos_chat
+    FOR INSERT WITH CHECK (true);
+
 -- Reportes: Cualquiera puede crear reportes
 DROP POLICY IF EXISTS "reportes_create" ON reportes_chat_seguro;
 CREATE POLICY "reportes_create" ON reportes_chat_seguro
