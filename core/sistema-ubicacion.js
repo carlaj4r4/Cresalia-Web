@@ -107,15 +107,26 @@ class SistemaUbicacion {
                         </label>
                         <select id="ubicacion-pais" class="form-select">
                             <option value="AR" ${this.ubicacion?.pais === 'AR' ? 'selected' : ''}>Argentina 🇦🇷</option>
-                            <option value="CL" ${this.ubicacion?.pais === 'CL' ? 'selected' : ''}>Chile 🇨🇱</option>
-                            <option value="UY" ${this.ubicacion?.pais === 'UY' ? 'selected' : ''}>Uruguay 🇺🇾</option>
-                            <option value="PY" ${this.ubicacion?.pais === 'PY' ? 'selected' : ''}>Paraguay 🇵🇾</option>
                             <option value="BO" ${this.ubicacion?.pais === 'BO' ? 'selected' : ''}>Bolivia 🇧🇴</option>
-                            <option value="PE" ${this.ubicacion?.pais === 'PE' ? 'selected' : ''}>Perú 🇵🇪</option>
+                            <option value="CL" ${this.ubicacion?.pais === 'CL' ? 'selected' : ''}>Chile 🇨🇱</option>
                             <option value="CO" ${this.ubicacion?.pais === 'CO' ? 'selected' : ''}>Colombia 🇨🇴</option>
+                            <option value="CR" ${this.ubicacion?.pais === 'CR' ? 'selected' : ''}>Costa Rica 🇨🇷</option>
+                            <option value="CU" ${this.ubicacion?.pais === 'CU' ? 'selected' : ''}>Cuba 🇨🇺</option>
+                            <option value="DO" ${this.ubicacion?.pais === 'DO' ? 'selected' : ''}>República Dominicana 🇩🇴</option>
                             <option value="EC" ${this.ubicacion?.pais === 'EC' ? 'selected' : ''}>Ecuador 🇪🇨</option>
-                            <option value="MX" ${this.ubicacion?.pais === 'MX' ? 'selected' : ''}>México 🇲🇽</option>
+                            <option value="SV" ${this.ubicacion?.pais === 'SV' ? 'selected' : ''}>El Salvador 🇸🇻</option>
                             <option value="ES" ${this.ubicacion?.pais === 'ES' ? 'selected' : ''}>España 🇪🇸</option>
+                            <option value="GQ" ${this.ubicacion?.pais === 'GQ' ? 'selected' : ''}>Guinea Ecuatorial 🇬🇶</option>
+                            <option value="GT" ${this.ubicacion?.pais === 'GT' ? 'selected' : ''}>Guatemala 🇬🇹</option>
+                            <option value="HN" ${this.ubicacion?.pais === 'HN' ? 'selected' : ''}>Honduras 🇭🇳</option>
+                            <option value="MX" ${this.ubicacion?.pais === 'MX' ? 'selected' : ''}>México 🇲🇽</option>
+                            <option value="NI" ${this.ubicacion?.pais === 'NI' ? 'selected' : ''}>Nicaragua 🇳🇮</option>
+                            <option value="PA" ${this.ubicacion?.pais === 'PA' ? 'selected' : ''}>Panamá 🇵🇦</option>
+                            <option value="PY" ${this.ubicacion?.pais === 'PY' ? 'selected' : ''}>Paraguay 🇵🇾</option>
+                            <option value="PE" ${this.ubicacion?.pais === 'PE' ? 'selected' : ''}>Perú 🇵🇪</option>
+                            <option value="PR" ${this.ubicacion?.pais === 'PR' ? 'selected' : ''}>Puerto Rico 🇵🇷</option>
+                            <option value="UY" ${this.ubicacion?.pais === 'UY' ? 'selected' : ''}>Uruguay 🇺🇾</option>
+                            <option value="VE" ${this.ubicacion?.pais === 'VE' ? 'selected' : ''}>Venezuela 🇻🇪</option>
                         </select>
                     </div>
 

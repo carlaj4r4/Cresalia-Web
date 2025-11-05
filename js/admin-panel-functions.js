@@ -752,8 +752,28 @@ async function cargarConfiguracionGeneral() {
                     <div class="form-group">
                         <label>Zona Horaria:</label>
                         <select id="zonaHoraria" class="form-control">
-                            <option value="America/Argentina/Buenos_Aires" selected>Argentina (GMT-3)</option>
-                            <option value="UTC">UTC</option>
+                            <option value="America/Argentina/Buenos_Aires" selected>Argentina 🇦🇷 (GMT-3)</option>
+                            <option value="America/La_Paz">Bolivia 🇧🇴 (GMT-4)</option>
+                            <option value="America/Santiago">Chile 🇨🇱 (GMT-3)</option>
+                            <option value="America/Bogota">Colombia 🇨🇴 (GMT-5)</option>
+                            <option value="America/Costa_Rica">Costa Rica 🇨🇷 (GMT-6)</option>
+                            <option value="America/Havana">Cuba 🇨🇺 (GMT-5)</option>
+                            <option value="America/Santo_Domingo">República Dominicana 🇩🇴 (GMT-4)</option>
+                            <option value="America/Guayaquil">Ecuador 🇪🇨 (GMT-5)</option>
+                            <option value="America/El_Salvador">El Salvador 🇸🇻 (GMT-6)</option>
+                            <option value="Europe/Madrid">España 🇪🇸 (GMT+1)</option>
+                            <option value="Africa/Malabo">Guinea Ecuatorial 🇬🇶 (GMT+1)</option>
+                            <option value="America/Guatemala">Guatemala 🇬🇹 (GMT-6)</option>
+                            <option value="America/Tegucigalpa">Honduras 🇭🇳 (GMT-6)</option>
+                            <option value="America/Mexico_City">México 🇲🇽 (GMT-6)</option>
+                            <option value="America/Managua">Nicaragua 🇳🇮 (GMT-6)</option>
+                            <option value="America/Panama">Panamá 🇵🇦 (GMT-5)</option>
+                            <option value="America/Asuncion">Paraguay 🇵🇾 (GMT-4)</option>
+                            <option value="America/Lima">Perú 🇵🇪 (GMT-5)</option>
+                            <option value="America/Puerto_Rico">Puerto Rico 🇵🇷 (GMT-4)</option>
+                            <option value="America/Montevideo">Uruguay 🇺🇾 (GMT-3)</option>
+                            <option value="America/Caracas">Venezuela 🇻🇪 (GMT-4)</option>
+                            <option value="UTC">UTC (GMT+0)</option>
                         </select>
                     </div>
                 </div>
