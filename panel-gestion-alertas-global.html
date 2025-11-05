@@ -10,6 +10,13 @@
     <link rel="icon" type="image/png" href="assets/logo/logo-cresalia.png">
     <link rel="apple-touch-icon" href="assets/logo/logo-cresalia.png">
     
+    <!-- Protección Anti-DevTools -->
+    <script src="core/proteccion-devtools-avanzada.js?v=2.0"></script>
+    
+    <!-- Sistema de Seguridad para Paneles Admin -->
+    <script src="js/seguridad-paneles-admin.js"></script>
+    <script src="js/seguridad-validacion-entrada.js"></script>
+    
     <!-- Supabase -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="config-supabase-seguro.js"></script>
@@ -394,6 +401,7 @@
             <button class="tab active" data-tab="crear">➕ Crear Nueva Alerta</button>
             <button class="tab" data-tab="activas">🚨 Alertas Activas</button>
             <button class="tab" data-tab="todas">📋 Todas las Alertas</button>
+            <button class="tab" data-tab="mensajes">💜 Mensajes Personalizados</button>
         </div>
         
         <!-- Mensajes -->
@@ -484,11 +492,20 @@
                     </div>
                     
                     <div class="form-group">
-                        <label>Comunidades Afectadas</label>
+                        <label>Comunidades y Páginas Públicas Afectadas</label>
+                        <div style="background: rgba(220, 38, 38, 0.1); border-left: 4px solid #dc2626; padding: 12px; border-radius: 8px; margin-bottom: 15px;">
+                            <p style="margin: 0; font-size: 0.9rem; opacity: 0.9;">
+                                <i class="fas fa-info-circle"></i> <strong>Importante:</strong> Las alertas se mostrarán automáticamente en:
+                                <br>• Todas las comunidades de apoyo
+                                <br>• Páginas públicas principales (index-cresalia.html, landing-cresalia-DEFINITIVO.html)
+                                <br>• Cresalia Jobs (marketplace de empleo)
+                                <br>• Paneles de compradores y vendedores
+                            </p>
+                        </div>
                         <div class="comunidades-checkbox">
                             <div class="checkbox-item">
                                 <input type="checkbox" id="checkTodas" checked>
-                                <label for="checkTodas"><strong>Todas las comunidades (mostrar en todas)</strong></label>
+                                <label for="checkTodas"><strong>🌐 Todas las comunidades Y páginas públicas (mostrar en todo Cresalia)</strong></label>
                             </div>
                             <hr style="margin: 15px 0; border-color: rgba(255,255,255,0.1);">
                             <div class="checkbox-item">
@@ -539,6 +556,22 @@
                                 <input type="checkbox" class="check-comunidad" value="gamers-videojuegos" data-comunidad="Gamers Videojuegos">
                                 <label>🎮 Gamers Videojuegos</label>
                             </div>
+                            <div class="checkbox-item">
+                                <input type="checkbox" class="check-comunidad" value="madres-padres-solteros" data-comunidad="Madres y Padres Solteros">
+                                <label>👨‍👩‍👧‍👦 Madres y Padres Solteros/Viudos</label>
+                            </div>
+                            <div class="checkbox-item">
+                                <input type="checkbox" class="check-comunidad" value="medicos-enfermeros" data-comunidad="Médicos y Enfermeros">
+                                <label>👨‍⚕️👩‍⚕️ Médicos y Enfermeros/as</label>
+                            </div>
+                            <div class="checkbox-item">
+                                <input type="checkbox" class="check-comunidad" value="bomberos" data-comunidad="Bomberos">
+                                <label>🚒 Bomberos</label>
+                            </div>
+                            <div class="checkbox-item">
+                                <input type="checkbox" class="check-comunidad" value="veterinarios" data-comunidad="Veterinarios">
+                                <label>🐾 Veterinarios</label>
+                            </div>
                         </div>
                     </div>
                     
@@ -579,6 +612,64 @@
                 </div>
             </div>
         </div>
+        
+        <!-- Tab: Mensajes Personalizados -->
+        <div class="tab-content" id="mensajes">
+            <div class="card">
+                <h2>💜 Mensajes Personalizados</h2>
+                <p style="margin-bottom: 20px; opacity: 0.9;">Dejá un mensaje personalizado para tus usuarios. Aparecerá en todas las páginas públicas y comunidades de Cresalia.</p>
+                
+                <form id="formMensajePersonalizado">
+                    <div class="form-group">
+                        <label>Título del Mensaje *</label>
+                        <input type="text" id="tituloMensaje" placeholder="Ej: ¡Bienvenidos a Cresalia! 💜" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>Mensaje *</label>
+                        <textarea id="contenidoMensaje" placeholder="Escribí tu mensaje aquí... Puede ser de bienvenida, agradecimiento, o cualquier cosa que quieras compartir con la comunidad 💜" rows="6" required></textarea>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>Tipo de Mensaje</label>
+                        <select id="tipoMensaje">
+                            <option value="bienvenida">👋 Bienvenida</option>
+                            <option value="agradecimiento">🙏 Agradecimiento</option>
+                            <option value="informacion">ℹ️ Información</option>
+                            <option value="actualizacion">🔄 Actualización</option>
+                            <option value="motivacion">💪 Motivación</option>
+                            <option value="otro">💬 Otro</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>
+                            <input type="checkbox" id="mensajeActivo" checked>
+                            Mostrar mensaje activamente
+                        </label>
+                    </div>
+                    
+                    <div class="form-actions">
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-heart"></i> Guardar Mensaje
+                        </button>
+                        <button type="button" class="btn btn-secondary" onclick="cargarMensajesPersonalizados()">
+                            <i class="fas fa-sync"></i> Ver Mensajes Guardados
+                        </button>
+                    </div>
+                </form>
+                
+                <div id="mensajesGuardados" style="margin-top: 30px;">
+                    <h3 style="margin-bottom: 15px;">Mensajes Guardados</h3>
+                    <div id="listaMensajes" class="alertas-list">
+                        <div class="loading">
+                            <div class="spinner"></div>
+                            <p>Cargando mensajes...</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
     
     <script>
@@ -588,11 +679,22 @@
         document.addEventListener('DOMContentLoaded', () => {
             if (typeof window.SUPABASE_CONFIG !== 'undefined') {
                 const config = window.SUPABASE_CONFIG;
-                if (config.url && config.serviceRoleKey && !config.serviceRoleKey.includes('REEMPLAZA')) {
-                    supabase = window.supabase.createClient(config.url, config.serviceRoleKey);
-                } else {
-                    mostrarError('⚠️ Configuración de Supabase no válida. Usa serviceRoleKey para crear/editar alertas.');
+                
+                // Intentar usar serviceRoleKey primero (para admin), si no, usar anonKey
+                if (config.url) {
+                    if (config.serviceRoleKey && !config.serviceRoleKey.includes('REEMPLAZA')) {
+                        supabase = window.supabase.createClient(config.url, config.serviceRoleKey);
+                        console.log('✅ Supabase inicializado con serviceRoleKey (admin)');
+                    } else if (config.anonKey && !config.anonKey.includes('REEMPLAZA')) {
+                        supabase = window.supabase.createClient(config.url, config.anonKey);
+                        console.log('✅ Supabase inicializado con anonKey (lectura/escritura limitada)');
+                        mostrarError('⚠️ Usando anonKey. Para crear/editar alertas, configura serviceRoleKey en config-supabase-seguro.js');
+                    } else {
+                        mostrarError('⚠️ Configuración de Supabase no válida. Verifica config-supabase-seguro.js');
+                    }
                 }
+            } else {
+                mostrarError('⚠️ SUPABASE_CONFIG no está definido. Verifica que config-supabase-seguro.js esté cargado.');
             }
             
             inicializarEventos();
@@ -646,6 +748,15 @@
         async function crearAlerta(e) {
             e.preventDefault();
             
+            // ===== VALIDACIÓN DE SEGURIDAD =====
+            if (typeof window.seguridadAdmin !== 'undefined') {
+                const validacion = window.seguridadAdmin.validarFormulario('formCrearAlerta');
+                if (!validacion.valido) {
+                    mostrarError('⚠️ ' + validacion.errores.join(', '));
+                    return;
+                }
+            }
+            
             if (!supabase) {
                 mostrarError('No hay conexión con Supabase. Verifica la configuración.');
                 return;
@@ -654,7 +765,8 @@
             const todasSeleccionadas = document.getElementById('checkTodas').checked;
             const comunidadesSeleccionadas = Array.from(document.querySelectorAll('.check-comunidad:checked')).map(c => c.value);
             
-            const alerta = {
+            // Validar y sanitizar datos
+            let datosAlerta = {
                 tipo: document.getElementById('tipoAlerta').value,
                 titulo: document.getElementById('tituloAlerta').value,
                 descripcion: document.getElementById('descripcionAlerta').value,
@@ -670,6 +782,39 @@
                 verificada: false,
                 creador_email: 'CRISLA'
             };
+            
+            // Sanitizar con sistema de seguridad
+            if (typeof window.seguridadValidacion !== 'undefined') {
+                datosAlerta = window.seguridadValidacion.limpiarObjeto(datosAlerta);
+                
+                // Validar campos críticos
+                const validacionTitulo = window.seguridadValidacion.validarTexto(datosAlerta.titulo, 'titulo', {
+                    maxLength: 200,
+                    minLength: 5,
+                    required: true
+                });
+                
+                if (!validacionTitulo.valido) {
+                    mostrarError('⚠️ ' + validacionTitulo.error);
+                    return;
+                }
+                
+                const validacionDescripcion = window.seguridadValidacion.validarTexto(datosAlerta.descripcion, 'descripcion', {
+                    maxLength: 5000,
+                    minLength: 10,
+                    required: true
+                });
+                
+                if (!validacionDescripcion.valido) {
+                    mostrarError('⚠️ ' + validacionDescripcion.error);
+                    return;
+                }
+                
+                datosAlerta.titulo = validacionTitulo.valor;
+                datosAlerta.descripcion = validacionDescripcion.valor;
+            }
+            
+            const alerta = datosAlerta;
             
             try {
                 const { data, error } = await supabase
@@ -774,7 +919,7 @@
             
             const comunidades = alerta.comunidades_afectadas 
                 ? alerta.comunidades_afectadas.join(', ')
-                : 'Todas las comunidades';
+                : '🌐 Todas las comunidades y páginas públicas';
             
             const fechaCreacion = new Date(alerta.fecha_creacion).toLocaleString('es-AR');
             const fechaExp = alerta.fecha_expiracion 
@@ -884,6 +1029,171 @@
             setTimeout(() => {
                 errorDiv.style.display = 'none';
             }, 5000);
+        }
+        
+        // ===== MENSAJES PERSONALIZADOS =====
+        document.getElementById('formMensajePersonalizado').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const titulo = document.getElementById('tituloMensaje').value;
+            const contenido = document.getElementById('contenidoMensaje').value;
+            const tipo = document.getElementById('tipoMensaje').value;
+            const activo = document.getElementById('mensajeActivo').checked;
+            
+            try {
+                // Guardar mensaje personalizado
+                // Usamos tabla específica de mensajes_personalizados
+                const mensajeData = {
+                    titulo: titulo,
+                    contenido: contenido,
+                    tipo: tipo,
+                    activo: activo,
+                    comunidades_afectadas: ['todas'],
+                    fecha_expiracion: null // Sin expiración por defecto
+                };
+                
+                if (supabase) {
+                    const { data, error } = await supabase
+                        .from('mensajes_personalizados')
+                        .insert([mensajeData])
+                        .select()
+                        .single();
+                    
+                    if (error) throw error;
+                    
+                    mostrarExito('💜 Mensaje personalizado guardado exitosamente');
+                    document.getElementById('formMensajePersonalizado').reset();
+                    cargarMensajesPersonalizados();
+                } else {
+                    // Modo local
+                    const mensajes = JSON.parse(localStorage.getItem('mensajes_personalizados') || '[]');
+                    mensajes.push({
+                        id: 'local_' + Date.now(),
+                        ...mensajeData,
+                        created_at: new Date().toISOString()
+                    });
+                    localStorage.setItem('mensajes_personalizados', JSON.stringify(mensajes));
+                    mostrarExito('💜 Mensaje personalizado guardado (modo local)');
+                    document.getElementById('formMensajePersonalizado').reset();
+                    cargarMensajesPersonalizados();
+                }
+            } catch (error) {
+                mostrarError('Error guardando mensaje: ' + error.message);
+            }
+        });
+        
+        async function cargarMensajesPersonalizados() {
+            const listaMensajes = document.getElementById('listaMensajes');
+            listaMensajes.innerHTML = '<div class="loading"><div class="spinner"></div><p>Cargando mensajes...</p></div>';
+            
+            try {
+                let mensajes = [];
+                
+                if (supabase) {
+                    const { data, error } = await supabase
+                        .from('mensajes_personalizados')
+                        .select('*')
+                        .order('fecha_creacion', { ascending: false });
+                    
+                    if (error) throw error;
+                    mensajes = data || [];
+                } else {
+                    mensajes = JSON.parse(localStorage.getItem('mensajes_personalizados') || '[]');
+                }
+                
+                if (mensajes.length === 0) {
+                    listaMensajes.innerHTML = '<p style="text-align: center; opacity: 0.7; padding: 40px;">No hay mensajes guardados aún. ¡Creá uno para empezar! 💜</p>';
+                    return;
+                }
+                
+                listaMensajes.innerHTML = mensajes.map(mensaje => `
+                    <div class="alerta-item ${!mensaje.activo ? 'inactiva' : ''}">
+                        <div class="alerta-info">
+                            <div class="alerta-titulo">${mensaje.titulo}</div>
+                            <div class="alerta-meta">
+                                <span class="badge badge-${mensaje.tipo || 'media'}">${mensaje.tipo || 'Mensaje'}</span>
+                                <span>${mensaje.activo ? '✅ Activo' : '⏸️ Inactivo'}</span>
+                                <span>📅 ${new Date(mensaje.fecha_creacion || mensaje.created_at).toLocaleDateString()}</span>
+                            </div>
+                            <p style="margin-top: 10px; opacity: 0.9;">${mensaje.contenido}</p>
+                        </div>
+                        <div class="alerta-actions">
+                            <button class="btn btn-secondary" onclick="toggleMensajePersonalizado('${mensaje.id}')">
+                                ${mensaje.activo ? '⏸️ Desactivar' : '▶️ Activar'}
+                            </button>
+                            <button class="btn btn-danger" onclick="eliminarMensajePersonalizado('${mensaje.id}')">
+                                🗑️ Eliminar
+                            </button>
+                        </div>
+                    </div>
+                `).join('');
+            } catch (error) {
+                listaMensajes.innerHTML = `<p style="color: #dc2626;">Error cargando mensajes: ${error.message}</p>`;
+            }
+        }
+        
+        async function toggleMensajePersonalizado(id) {
+            try {
+                if (supabase) {
+                    const { data: mensaje } = await supabase
+                        .from('mensajes_personalizados')
+                        .select('activo')
+                        .eq('id', id)
+                        .single();
+                    
+                    if (mensaje) {
+                        const { error } = await supabase
+                            .from('mensajes_personalizados')
+                            .update({ activo: !mensaje.activo })
+                            .eq('id', id);
+                        
+                        if (error) throw error;
+                    }
+                } else {
+                    const mensajes = JSON.parse(localStorage.getItem('mensajes_personalizados') || '[]');
+                    const mensaje = mensajes.find(m => m.id === id);
+                    if (mensaje) {
+                        mensaje.activa = !mensaje.activa;
+                        localStorage.setItem('mensajes_personalizados', JSON.stringify(mensajes));
+                    }
+                }
+                
+                mostrarExito('✅ Estado del mensaje actualizado');
+                cargarMensajesPersonalizados();
+            } catch (error) {
+                mostrarError('Error: ' + error.message);
+            }
+        }
+        
+        async function eliminarMensajePersonalizado(id) {
+            if (!confirm('¿Eliminar este mensaje personalizado?')) return;
+            
+            try {
+                if (supabase) {
+                    const { error } = await supabase
+                        .from('mensajes_personalizados')
+                        .delete()
+                        .eq('id', id);
+                    
+                    if (error) throw error;
+                } else {
+                    const mensajes = JSON.parse(localStorage.getItem('mensajes_personalizados') || '[]');
+                    const mensajesFiltrados = mensajes.filter(m => m.id !== id);
+                    localStorage.setItem('mensajes_personalizados', JSON.stringify(mensajesFiltrados));
+                }
+                
+                mostrarExito('✅ Mensaje eliminado');
+                cargarMensajesPersonalizados();
+            } catch (error) {
+                mostrarError('Error: ' + error.message);
+            }
+        }
+        
+        // Cargar mensajes al cargar la página
+        if (document.getElementById('mensajes')) {
+            document.querySelector('[data-tab="mensajes"]')?.addEventListener('click', () => {
+                cargarMensajesPersonalizados();
+            });
         }
     </script>
 </body>

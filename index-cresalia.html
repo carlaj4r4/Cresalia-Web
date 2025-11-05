@@ -145,6 +145,9 @@
         </div>
     </nav>
 
+    <!-- Área de Alertas de Emergencia Global -->
+    <div id="alertas-emergencia-comunidades"></div>
+
     <!-- ===== CARRITO FLOTANTE PARA MÓVILES ===== -->
     <div id="floatingCart" class="floating-cart" onclick="toggleCart()">
         <div class="floating-cart-content">
@@ -894,6 +897,8 @@
                         <h5>Enlaces Rápidos</h5>
                         <ul class="footer-links">
                             <li><a href="#inicio">Inicio</a></li>
+                            <li><a href="cresalia-jobs/index.html">💼 Cresalia Jobs</a></li>
+                            <li><a href="cresalia-animales/index.html">🐾 Cresalia Animales</a></li>
                             <li><a href="#productos">Productos</a></li>
                             <li><a href="#servicios">Servicios</a></li>
                             <li><a href="#ayuda">Ayuda</a></li>
@@ -919,7 +924,7 @@
                             <li><a href="comunidades/adultos-mayores/" style="color: #F59E0B;">👴👵 Adultos Mayores</a></li>
                             <li><a href="comunidades/cuidadores/" style="color: #10B981;">🤲 Cuidadores</a></li>
                             <li><a href="comunidades/enfermedades-cronicas/" style="color: #EF4444;">🏥 Enfermedades Crónicas</a></li>
-                            <li><a href="comunidades/cresalia-jobs/" style="color: #F59E0B;">💼 Cresalia Jobs</a> <span style="font-size: 0.75rem; background: #F59E0B; color: white; padding: 2px 6px; border-radius: 4px; margin-left: 5px;">Próximamente</span></li>
+                            <li><a href="cresalia-animales/index.html" style="color: #059669;">🐾 Cresalia Animales</a></li>
                         </ul>
                         <p style="font-size: 0.85rem; color: #6B7280; margin-top: 10px; font-style: italic;">Parte del ecosistema Cresalia 💜</p>
                     </div>
@@ -2784,10 +2789,21 @@
         console.log('📱 Sistema PWA Cresalia cargado' + (PWA_CONFIG.enabled ? ' y activo' : ' (desactivado)'));
     </script>
     
+    <!-- Mercado Pago SDK (solo para SaaS principal) -->
+    <script src="https://sdk.mercadopago.com/js/v2"></script>
+    
+    <!-- Configuración Mercado Pago -->
+    <script src="config-mercado-pago.js"></script>
+    
+    <!-- Integración Mercado Pago -->
+    <script src="js/mercado-pago-integration.js"></script>
+    
     <!-- Sistema de Alertas de Emergencia Global -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="config-supabase-seguro.js"></script>
     <script src="js/sistema-alertas-comunidades.js"></script>
+    <!-- Sistema de Check-in Automático de Emergencias -->
+    <script src="js/sistema-checkin-emergencias.js"></script>
     <script>
         // Inicializar sistema de alertas global (sin comunidad específica)
         document.addEventListener('DOMContentLoaded', () => {
@@ -2795,8 +2811,11 @@
                 if (typeof SistemaAlertasComunidades !== 'undefined') {
                     window.alertasGlobalCresalia = new SistemaAlertasComunidades('global');
                 }
+                // Sistema de check-in se inicializa automáticamente
             }, 500);
         });
     </script>
+    <!-- Sistema de Feedbacks General -->
+    <script src="js/sistema-feedbacks-general.js"></script>
 </body>
 </html>

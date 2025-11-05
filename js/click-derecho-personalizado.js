@@ -322,8 +322,10 @@ Año: 2024
 };
 
 // Agregar estilos de animación
-const style = document.createElement('style');
-style.textContent = `
+if (!document.getElementById('click-derecho-personalizado-styles')) {
+    const styleElement = document.createElement('style');
+    styleElement.id = 'click-derecho-personalizado-styles';
+    styleElement.textContent = `
     @keyframes menuFadeIn {
         from {
             opacity: 0;
@@ -357,7 +359,8 @@ style.textContent = `
         }
     }
 `;
-document.head.appendChild(style);
+    document.head.appendChild(styleElement);
+}
 
 // Auto-inicializar al cargar
 document.addEventListener('DOMContentLoaded', () => {

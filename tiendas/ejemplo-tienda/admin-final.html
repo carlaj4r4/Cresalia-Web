@@ -826,9 +826,43 @@
                 opacity: 0;
             }
         }
+        
+        @keyframes slideInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        @keyframes slideOutDown {
+            from {
+                opacity: 1;
+                transform: translateY(0);
+            }
+            to {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+        }
+        
+        @keyframes spin {
+            from {
+                transform: rotate(0deg);
+            }
+            to {
+                transform: rotate(360deg);
+            }
+        }
     </style>
 </head>
 <body>
+    <!-- Área de Alertas de Emergencia Global -->
+    <div id="alertas-emergencia-comunidades"></div>
+    
     <div class="admin-container">
         <button class="menu-toggle" onclick="toggleSidebar()">
             <i class="fas fa-bars"></i>
@@ -4119,6 +4153,58 @@
             
             guardarConfiguracion() {
                 localStorage.setItem('configuracion_tienda_completa', JSON.stringify(this.configuracion));
+                // Actualizar timestamp de sincronización para que la tienda detecte cambios
+                localStorage.setItem('tienda_ultima_sincronizacion', new Date().toISOString());
+                
+                // Mostrar mensaje de sincronización
+                this.mostrarMensajeSincronizacion();
+            }
+            
+            mostrarMensajeSincronizacion() {
+                // Crear o actualizar mensaje de sincronización
+                let mensajeSincronizacion = document.getElementById('mensajeSincronizacionTienda');
+                if (!mensajeSincronizacion) {
+                    mensajeSincronizacion = document.createElement('div');
+                    mensajeSincronizacion.id = 'mensajeSincronizacionTienda';
+                    mensajeSincronizacion.style.cssText = `
+                        position: fixed;
+                        bottom: 20px;
+                        right: 20px;
+                        background: linear-gradient(135deg, #10B981, #059669);
+                        color: white;
+                        padding: 16px 24px;
+                        border-radius: 12px;
+                        box-shadow: 0 8px 24px rgba(16, 185, 129, 0.3);
+                        z-index: 999999;
+                        display: flex;
+                        align-items: center;
+                        gap: 12px;
+                        font-weight: 600;
+                        animation: slideInUp 0.3s ease-out;
+                        max-width: 350px;
+                    `;
+                    document.body.appendChild(mensajeSincronizacion);
+                }
+                
+                mensajeSincronizacion.innerHTML = `
+                    <i class="fas fa-sync-alt" style="animation: spin 1s linear infinite;"></i>
+                    <div>
+                        <div style="font-size: 0.9rem; opacity: 0.95;">✅ Cambios guardados</div>
+                        <div style="font-size: 0.75rem; opacity: 0.8; margin-top: 4px;">Sincronización automática activa</div>
+                    </div>
+                `;
+                
+                // Ocultar después de 3 segundos
+                setTimeout(() => {
+                    if (mensajeSincronizacion) {
+                        mensajeSincronizacion.style.animation = 'slideOutDown 0.3s ease-out';
+                        setTimeout(() => {
+                            if (mensajeSincronizacion && mensajeSincronizacion.parentNode) {
+                                mensajeSincronizacion.remove();
+                            }
+                        }, 300);
+                    }
+                }, 3000);
             }
             
             actualizarInformacionTienda(datos) {
@@ -7412,12 +7498,19 @@
         }
         
         function mostrarTabHistorial(tab) {
-            document.getElementById('contenidoPagos').style.display = tab === 'pagos' ? 'block' : 'none';
-            document.getElementById('contenidoSuscripciones').style.display = tab === 'suscripciones' ? 'block' : 'none';
-            document.getElementById('tabPagos').style.background = tab === 'pagos' ? '#8B5CF6' : '#E5E7EB';
-            document.getElementById('tabPagos').style.color = tab === 'pagos' ? 'white' : '#6B7280';
-            document.getElementById('tabSuscripciones').style.background = tab === 'suscripciones' ? '#8B5CF6' : '#E5E7EB';
-            document.getElementById('tabSuscripciones').style.color = tab === 'suscripciones' ? 'white' : '#6B7280';
+            const contenidoPagos = document.getElementById('contenidoPagos');
+            const contenidoSuscripciones = document.getElementById('contenidoSuscripciones');
+            const tabPagos = document.getElementById('tabPagos');
+            const tabSuscripciones = document.getElementById('tabSuscripciones');
+            
+            if (contenidoPagos && contenidoSuscripciones && tabPagos && tabSuscripciones) {
+                contenidoPagos.style.display = tab === 'pagos' ? 'block' : 'none';
+                contenidoSuscripciones.style.display = tab === 'suscripciones' ? 'block' : 'none';
+                tabPagos.style.background = tab === 'pagos' ? '#8B5CF6' : '#E5E7EB';
+                tabPagos.style.color = tab === 'pagos' ? 'white' : '#6B7280';
+                tabSuscripciones.style.background = tab === 'suscripciones' ? '#8B5CF6' : '#E5E7EB';
+                tabSuscripciones.style.color = tab === 'suscripciones' ? 'white' : '#6B7280';
+            }
         }
         
         function cerrarModalSeguro(btn) {
@@ -7869,6 +7962,21 @@
                                 </div>
                                 
                                 <div style="margin-bottom: 20px;">
+                                    <label style="display: block; margin-bottom: 8px; font-weight: 600; color: #374151;">Imagen del Producto</label>
+                                    <input type="file" id="imagenProducto" accept="image/*" onchange="previewImagenProducto(event)" 
+                                           style="width: 100%; padding: 12px; border: 1px solid #D1D5DB; border-radius: 8px; font-size: 1rem;">
+                                    <div id="previewImagenProducto" style="margin-top: 12px; ${esEdicion && productoEditar.imagen ? 'display: block;' : 'display: none;'}">
+                                        <img id="imgPreviewProducto" src="${esEdicion && productoEditar.imagen ? productoEditar.imagen : ''}" 
+                                             style="max-width: 200px; max-height: 200px; border-radius: 8px; border: 2px solid #E5E7EB;" 
+                                             alt="Vista previa">
+                                        <button type="button" onclick="eliminarImagenProducto()" 
+                                                style="margin-top: 8px; padding: 6px 12px; background: #EF4444; color: white; border: none; border-radius: 6px; cursor: pointer; font-size: 0.875rem;">
+                                            <i class="fas fa-trash"></i> Eliminar imagen
+                                        </button>
+                                    </div>
+                                </div>
+                                
+                                <div style="margin-bottom: 20px;">
                                     <label style="display: flex; align-items: center; gap: 8px; color: #374151; cursor: pointer;">
                                         <input type="checkbox" id="enOfertaProducto" ${esEdicion && productoEditar.enOferta ? 'checked' : ''}>
                                         <span style="font-weight: 600;">🔥 Marcar como producto en oferta</span>
@@ -7894,7 +8002,16 @@
                             <div id="listaProductos" style="display: grid; gap: 15px; max-height: 400px; overflow-y: auto;">
                                 ${sistemaProductos.productos.length > 0 ? 
                                     sistemaProductos.productos.map(producto => `
-                                        <div style="background: white; border: 1px solid #E5E7EB; border-radius: 12px; padding: 20px; display: grid; grid-template-columns: 1fr auto; gap: 20px; align-items: center;">
+                                        <div style="background: white; border: 1px solid #E5E7EB; border-radius: 12px; padding: 20px; display: grid; grid-template-columns: auto 1fr auto; gap: 20px; align-items: center;">
+                                            ${producto.imagen ? `
+                                                <div style="width: 80px; height: 80px; border-radius: 8px; overflow: hidden; border: 2px solid #E5E7EB; flex-shrink: 0;">
+                                                    <img src="${producto.imagen}" alt="${producto.nombre}" style="width: 100%; height: 100%; object-fit: cover;">
+                                                </div>
+                                            ` : `
+                                                <div style="width: 80px; height: 80px; border-radius: 8px; background: #F3F4F6; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
+                                                    <i class="fas fa-image" style="font-size: 2rem; color: #9CA3AF;"></i>
+                                                </div>
+                                            `}
                                             <div>
                                                 <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 8px;">
                                                     <h4 style="margin: 0; color: #374151; font-size: 1.1rem;">${producto.nombre}</h4>
@@ -7932,31 +8049,97 @@
         function guardarProductoCompleto(event, productoId = null) {
             event.preventDefault();
             
-            const producto = {
-                nombre: document.getElementById('nombreProducto').value,
-                precio: document.getElementById('precioProducto').value,
-                categoria: document.getElementById('categoriaProducto').value,
-                descripcion: document.getElementById('descripcionProducto').value,
-                stock: document.getElementById('stockProducto').value || 0,
-                descuento: document.getElementById('descuentoProducto').value || 0,
-                enOferta: document.getElementById('enOfertaProducto').checked
+            const imagenInput = document.getElementById('imagenProducto');
+            const imgPreview = document.getElementById('imgPreviewProducto');
+            
+            // Función para procesar la imagen
+            const procesarImagen = () => {
+                return new Promise((resolve) => {
+                    // Si hay una imagen nueva seleccionada
+                    if (imagenInput && imagenInput.files && imagenInput.files[0]) {
+                        const reader = new FileReader();
+                        reader.onload = function(e) {
+                            resolve(e.target.result); // Retorna base64
+                        };
+                        reader.onerror = () => resolve(null);
+                        reader.readAsDataURL(imagenInput.files[0]);
+                    } 
+                    // Si hay una imagen existente en el preview
+                    else if (imgPreview && imgPreview.src && imgPreview.src.startsWith('data:')) {
+                        resolve(imgPreview.src);
+                    } 
+                    // Si estamos editando y el producto ya tiene imagen
+                    else if (productoId) {
+                        const productoExistente = sistemaProductos.obtenerProducto(productoId);
+                        resolve(productoExistente?.imagen || null);
+                    } 
+                    else {
+                        resolve(null);
+                    }
+                });
             };
             
-            if (productoId) {
-                // Editar producto existente
-                sistemaProductos.editarProducto(productoId, producto);
-                mostrarNotificacion('✅ Producto actualizado exitosamente', 'success');
-            } else {
-                // Agregar nuevo producto
-                sistemaProductos.agregarProducto(producto);
-                mostrarNotificacion('✅ Producto agregado exitosamente', 'success');
+            // Procesar imagen y luego guardar producto
+            procesarImagen().then((imagenBase64) => {
+                const producto = {
+                    nombre: document.getElementById('nombreProducto').value,
+                    precio: document.getElementById('precioProducto').value,
+                    categoria: document.getElementById('categoriaProducto').value,
+                    descripcion: document.getElementById('descripcionProducto').value,
+                    stock: document.getElementById('stockProducto').value || 0,
+                    descuento: document.getElementById('descuentoProducto').value || 0,
+                    enOferta: document.getElementById('enOfertaProducto').checked,
+                    imagen: imagenBase64 || null
+                };
+                
+                if (productoId) {
+                    // Editar producto existente
+                    sistemaProductos.editarProducto(productoId, producto);
+                    mostrarNotificacion('✅ Producto actualizado exitosamente', 'success');
+                } else {
+                    // Agregar nuevo producto
+                    sistemaProductos.agregarProducto(producto);
+                    mostrarNotificacion('✅ Producto agregado exitosamente', 'success');
+                }
+                
+                // Cerrar modal - la lista se actualizará cuando se abra nuevamente
+                cerrarModalGestionProductos();
+                if (!productoId) {
+                    // Solo reabrir si es un producto nuevo (para agregar más)
+                    setTimeout(() => {
+                        mostrarFormularioProducto();
+                    }, 100);
+                }
+                // Si es edición, solo cerrar (no reabrir)
+            });
+        }
+        
+        // Función para previsualizar imagen
+        function previewImagenProducto(event) {
+            const file = event.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    const preview = document.getElementById('previewImagenProducto');
+                    const img = document.getElementById('imgPreviewProducto');
+                    if (preview && img) {
+                        img.src = e.target.result;
+                        preview.style.display = 'block';
+                    }
+                };
+                reader.readAsDataURL(file);
             }
+        }
+        
+        // Función para eliminar imagen
+        function eliminarImagenProducto() {
+            const imagenInput = document.getElementById('imagenProducto');
+            const preview = document.getElementById('previewImagenProducto');
+            const img = document.getElementById('imgPreviewProducto');
             
-            // Cerrar y reabrir modal para actualizar la lista
-            cerrarModalGestionProductos();
-            if (!productoId) {
-                setTimeout(() => mostrarFormularioProducto(), 100);
-            }
+            if (imagenInput) imagenInput.value = '';
+            if (img) img.src = '';
+            if (preview) preview.style.display = 'none';
         }
         
         // Función para eliminar producto completo

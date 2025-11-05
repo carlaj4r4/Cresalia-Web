@@ -59,26 +59,67 @@ class SistemaAlertasComunidades {
     async cargarAlertas() {
         try {
             let alertas = [];
+            let mensajesPersonalizados = [];
             
             if (this.supabase) {
-                // Cargar desde Supabase
-                const { data, error } = await this.supabase
-                    .rpc('obtener_alertas_activas', {
-                        p_usuario_hash: this.autorHash
-                    });
+                // Cargar alertas de emergencia desde Supabase
+                try {
+                    const { data, error } = await this.supabase
+                        .rpc('obtener_alertas_activas', {
+                            p_usuario_hash: this.autorHash
+                        });
+                    
+                    if (!error && data) {
+                        alertas = data;
+                    }
+                } catch (error) {
+                    console.log('No se pudieron cargar alertas (puede ser que la función RPC no exista):', error);
+                }
                 
-                if (!error && data) {
-                    alertas = data;
+                // Cargar mensajes personalizados de la fundadora
+                try {
+                    const { data: mensajes, error: errorMensajes } = await this.supabase
+                        .from('mensajes_personalizados')
+                        .select('*')
+                        .eq('activo', true)
+                        .order('orden', { ascending: true })
+                        .order('fecha_creacion', { ascending: false });
+                    
+                    if (!errorMensajes && mensajes) {
+                        // Filtrar por fecha de expiración si existe
+                        mensajesPersonalizados = mensajes.filter(m => 
+                            !m.fecha_expiracion || new Date(m.fecha_expiracion) > new Date()
+                        );
+                    }
+                } catch (error) {
+                    console.log('No se pudieron cargar mensajes personalizados:', error);
                 }
             } else {
                 // Modo local
                 alertas = JSON.parse(localStorage.getItem('alertas_emergencia_comunidades') || '[]')
                     .filter(a => a.activa && (!a.fecha_expiracion || new Date(a.fecha_expiracion) > new Date()));
+                
+                mensajesPersonalizados = JSON.parse(localStorage.getItem('mensajes_personalizados') || '[]')
+                    .filter(m => m.activo && (!m.fecha_expiracion || new Date(m.fecha_expiracion) > new Date()));
             }
             
-            if (alertas.length > 0) {
-                this.mostrarAlertas(alertas);
-                this.marcarComoVista(alertas[0].id); // Marcar la primera como vista
+            // Combinar mensajes personalizados con alertas (mensajes primero, luego alertas críticas)
+            const todosLosMensajes = [
+                ...mensajesPersonalizados.map(m => ({
+                    ...m,
+                    es_mensaje_personalizado: true,
+                    tipo: m.tipo || 'otro',
+                    severidad: 'baja' // Los mensajes personalizados son informativos
+                })),
+                ...alertas
+            ];
+            
+            if (todosLosMensajes.length > 0) {
+                this.mostrarAlertas(todosLosMensajes);
+                // Marcar la primera como vista (solo si es alerta, no mensaje personalizado)
+                if (!todosLosMensajes[0].es_mensaje_personalizado) {
+                    this.marcarComoVista(todosLosMensajes[0].id);
+                }
             }
         } catch (error) {
             console.error('Error cargando alertas:', error);
@@ -153,6 +194,22 @@ class SistemaAlertasComunidades {
                     background: linear-gradient(135deg, #10B981 0%, #059669 100%);
                     color: white;
                     border-left: 5px solid #6EE7B7;
+                }
+                
+                .alerta-mensaje-personalizado {
+                    background: linear-gradient(135deg, #C084FC 0%, #A78BFA 100%);
+                    color: white;
+                    border-left: 5px solid #E9D5FF;
+                    box-shadow: 0 4px 20px rgba(192, 132, 252, 0.3);
+                }
+                
+                .alerta-mensaje-personalizado .alerta-titulo {
+                    color: white;
+                }
+                
+                .alerta-mensaje-personalizado .alerta-tipo {
+                    opacity: 0.95;
+                    font-style: italic;
                 }
                 
                 .alerta-header {
@@ -231,6 +288,36 @@ class SistemaAlertasComunidades {
     }
     
     renderizarAlerta(alerta) {
+        // Si es un mensaje personalizado, renderizar con estilo cálido
+        if (alerta.es_mensaje_personalizado) {
+            const iconosMensajes = {
+                'bienvenida': '👋',
+                'agradecimiento': '🙏',
+                'informacion': 'ℹ️',
+                'actualizacion': '🔄',
+                'motivacion': '💪',
+                'otro': '💜'
+            };
+            
+            const icono = iconosMensajes[alerta.tipo] || '💜';
+            const titulo = alerta.titulo || 'Mensaje de Cresalia';
+            const contenido = alerta.contenido || alerta.descripcion || '';
+            
+            return `
+                <div class="alerta-emergencia alerta-mensaje-personalizado">
+                    <div class="alerta-header">
+                        <div>
+                            <div class="alerta-titulo">${icono} ${this.escapeHtml(titulo)}</div>
+                            <div class="alerta-tipo">💜 Mensaje de la Fundadora</div>
+                        </div>
+                        <button class="cerrar-alerta" onclick="this.closest('.alerta-emergencia').remove()">×</button>
+                    </div>
+                    <div class="alerta-descripcion">${this.escapeHtml(contenido)}</div>
+                </div>
+            `;
+        }
+        
+        // Renderizar alerta de emergencia normal
         const iconos = {
             'inundacion': '🌊',
             'incendio': '🔥',

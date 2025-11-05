@@ -25,7 +25,11 @@ INSERT INTO comunidades (nombre, slug, descripcion) VALUES
 ('Cuidadores', 'cuidadores', 'Apoyo para cuidadores'),
 ('Enfermedades Crónicas', 'enfermedades-cronicas', 'Espacio para personas con enfermedades crónicas'),
 ('Otakus - Anime y Manga', 'otakus-anime-manga', 'Comunidad para personas que aman el anime y manga sin ser juzgadas'),
-('Gamers - Videojuegos', 'gamers-videojuegos', 'Comunidad para gamers que comparten su pasión por los videojuegos sin ser juzgados')
+('Gamers - Videojuegos', 'gamers-videojuegos', 'Comunidad para gamers que comparten su pasión por los videojuegos sin ser juzgados'),
+('Madres y Padres Solteros/Viudos', 'madres-padres-solteros', 'Espacio seguro para quienes crían solos - por elección, viudez o cualquier circunstancia'),
+('Médicos y Enfermeros/as', 'medicos-enfermeros', 'Refugio para profesionales de la salud que necesitan desahogo y apoyo emocional'),
+('Bomberos', 'bomberos', 'Comunidad para bomberos voluntarios y profesionales que arriesgan sus vidas'),
+('Veterinarios', 'veterinarios', 'Refugio para veterinarios que necesitan desahogo y apoyo emocional por eutanasias, burnout y experiencias difíciles')
 ON CONFLICT (slug) DO NOTHING;
 
 -- Tabla de posts (publicaciones)

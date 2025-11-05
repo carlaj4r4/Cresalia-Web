@@ -1,0 +1,513 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Crear Campaña de Emergencia - Cresalia Solidario</title>
+    <link rel="icon" type="image/x-icon" href="../favicon.ico">
+    <link rel="icon" type="image/png" sizes="32x32" href="../assets/logo/logo-cresalia.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="../assets/logo/logo-cresalia.png">
+    <link rel="apple-touch-icon" sizes="180x180" href="../assets/logo/logo-cresalia.png">
+    
+    <!-- Protección Anti-DevTools -->
+    <script src="../core/proteccion-devtools-avanzada.js?v=2.0"></script>
+    
+    <!-- Sistema de Seguridad para Paneles Admin -->
+    <script src="../js/seguridad-paneles-admin.js"></script>
+    <script src="../js/seguridad-validacion-entrada.js"></script>
+    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="../config-supabase-seguro.js"></script>
+    <script src="../js/sistema-cresalia-solidario-emergencias.js"></script>
+    
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #EF4444 0%, #DC2626 50%, #B91C1C 100%);
+            min-height: 100vh;
+            padding: 20px;
+            color: #333;
+        }
+        
+        .container-main {
+            max-width: 900px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+        }
+        
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 3px solid #EF4444;
+        }
+        
+        .header h1 {
+            color: #EF4444;
+            font-size: 2rem;
+            margin-bottom: 10px;
+        }
+        
+        .back-btn {
+            display: inline-block;
+            background: #EC4899;
+            color: white;
+            padding: 12px 25px;
+            border-radius: 10px;
+            text-decoration: none;
+            font-weight: 600;
+            margin-bottom: 20px;
+            transition: all 0.3s;
+        }
+        
+        .back-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(236, 72, 153, 0.4);
+        }
+        
+        .warning-box {
+            background: #FEF2F2;
+            border-left: 4px solid #EF4444;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 25px;
+        }
+        
+        .warning-box strong {
+            color: #DC2626;
+            display: block;
+            margin-bottom: 10px;
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #374151;
+        }
+        
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #E5E7EB;
+            border-radius: 8px;
+            font-size: 1rem;
+            transition: all 0.3s;
+            font-family: inherit;
+        }
+        
+        .form-group input:focus,
+        .form-group select:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: #EF4444;
+            box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.1);
+        }
+        
+        .form-group textarea {
+            resize: vertical;
+            min-height: 120px;
+        }
+        
+        .form-group small {
+            display: block;
+            margin-top: 5px;
+            color: #6B7280;
+            font-size: 0.85rem;
+        }
+        
+        .necesidades-list {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 10px;
+            margin-top: 10px;
+        }
+        
+        .necesidad-checkbox {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 10px;
+            border: 2px solid #E5E7EB;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        .necesidad-checkbox:hover {
+            border-color: #EF4444;
+            background: #FEF2F2;
+        }
+        
+        .necesidad-checkbox input[type="checkbox"] {
+            width: auto;
+            cursor: pointer;
+        }
+        
+        .necesidad-checkbox input:checked + span {
+            color: #EF4444;
+            font-weight: 600;
+        }
+        
+        .btn-submit {
+            width: 100%;
+            background: linear-gradient(135deg, #EF4444 0%, #DC2626 100%);
+            color: white;
+            border: none;
+            padding: 15px;
+            border-radius: 10px;
+            font-weight: 600;
+            font-size: 1.1rem;
+            cursor: pointer;
+            transition: all 0.3s;
+            margin-top: 20px;
+        }
+        
+        .btn-submit:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(239, 68, 68, 0.4);
+        }
+        
+        .btn-submit:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+        
+        .success-message {
+            background: #10B981;
+            color: white;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            text-align: center;
+            font-weight: 600;
+        }
+        
+        .error-message {
+            background: #EF4444;
+            color: white;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            text-align: center;
+            font-weight: 600;
+        }
+    </style>
+</head>
+<body>
+    <div class="container-main">
+        <a href="index.html" class="back-btn">
+            <i class="fas fa-arrow-left"></i> Volver a Campañas
+        </a>
+        
+        <div class="header">
+            <h1>🚨 Crear Campaña de Emergencia</h1>
+            <p style="color: #6B7280;">Solo para desastres naturales verificados</p>
+        </div>
+        
+        <div class="warning-box">
+            <strong>⚠️ IMPORTANTE:</strong>
+            <p>Este formulario es SOLO para crear campañas de desastres naturales VERIFICADOS por autoridades oficiales.</p>
+            <p style="margin-top: 10px;"><strong>Requisitos:</strong></p>
+            <ul style="margin-left: 20px; margin-top: 10px;">
+                <li>Debe estar verificado por autoridades (municipalidad, bomberos, gobierno)</li>
+                <li>Debe ser un desastre natural real (inundación, incendio, terremoto, etc.)</li>
+                <li>Debes tener evidencias de verificación (documentos oficiales, noticias verificadas, etc.)</li>
+                <li>NO es para reparaciones por capricho o mejoras por conveniencia</li>
+            </ul>
+        </div>
+        
+        <div id="mensajes"></div>
+        
+        <form id="formCrearCampana">
+            <div class="form-group">
+                <label>Título de la Campaña *</label>
+                <input type="text" id="tituloCampana" placeholder="Ej: Inundación en La Plata - Enero 2024" required>
+                <small>Un título claro que describa el desastre</small>
+            </div>
+            
+            <div class="form-group">
+                <label>Descripción *</label>
+                <textarea id="descripcionCampana" placeholder="Describí la situación, qué pasó, qué se necesita, etc." required></textarea>
+                <small>Descripción detallada de la emergencia</small>
+            </div>
+            
+            <div class="form-group">
+                <label>Tipo de Desastre *</label>
+                <select id="tipoDesastre" required>
+                    <option value="">Seleccionar...</option>
+                    <option value="inundacion">🌊 Inundación</option>
+                    <option value="incendio">🔥 Incendio</option>
+                    <option value="terremoto">🌍 Terremoto</option>
+                    <option value="tornado">🌪️ Tornado</option>
+                    <option value="tormenta">⛈️ Tormenta</option>
+                    <option value="otro_desastre">🚨 Otro Desastre Natural</option>
+                </select>
+            </div>
+            
+            <div class="form-group">
+                <label>Ubicación *</label>
+                <input type="text" id="ubicacionCampana" placeholder="Ej: La Plata, Buenos Aires" required>
+                <small>Ciudad y provincia donde ocurrió el desastre</small>
+            </div>
+            
+            <div class="form-group">
+                <label>Fecha del Desastre *</label>
+                <input type="date" id="fechaDesastre" required>
+            </div>
+            
+            <div class="form-group">
+                <label>Fuente de Verificación *</label>
+                <select id="fuenteVerificacion" required>
+                    <option value="">Seleccionar...</option>
+                    <option value="municipalidad">🏛️ Municipalidad</option>
+                    <option value="bomberos">🚒 Bomberos</option>
+                    <option value="medios_oficiales">📰 Medios Oficiales Verificados</option>
+                    <option value="verificacion_personal">👤 Verificación Personal (si fuiste a ver)</option>
+                    <option value="gobierno">🏛️ Gobierno</option>
+                </select>
+                <small>¿Quién verificó que es un desastre real?</small>
+            </div>
+            
+            <div class="form-group">
+                <label>Evidencias de Verificación *</label>
+                <textarea id="evidenciasVerificacion" placeholder="Links de noticias, documentos oficiales, fotos de verificación personal, etc. (separar por líneas)" required></textarea>
+                <small>Links o referencias que demuestren que es un desastre real verificado</small>
+            </div>
+            
+            <div class="form-group">
+                <label>Necesidades</label>
+                <div class="necesidades-list">
+                    <label class="necesidad-checkbox">
+                        <input type="checkbox" value="colchas" name="necesidades">
+                        <span>🛏️ Colchas/Frazadas</span>
+                    </label>
+                    <label class="necesidad-checkbox">
+                        <input type="checkbox" value="ropa" name="necesidades">
+                        <span>👕 Ropa</span>
+                    </label>
+                    <label class="necesidad-checkbox">
+                        <input type="checkbox" value="alimentos" name="necesidades">
+                        <span>🍞 Alimentos</span>
+                    </label>
+                    <label class="necesidad-checkbox">
+                        <input type="checkbox" value="agua" name="necesidades">
+                        <span>💧 Agua</span>
+                    </label>
+                    <label class="necesidad-checkbox">
+                        <input type="checkbox" value="medicamentos" name="necesidades">
+                        <span>💊 Medicamentos</span>
+                    </label>
+                    <label class="necesidad-checkbox">
+                        <input type="checkbox" value="productos_higiene" name="necesidades">
+                        <span>🧴 Productos de Higiene</span>
+                    </label>
+                    <label class="necesidad-checkbox">
+                        <input type="checkbox" value="materiales_construccion" name="necesidades">
+                        <span>🔨 Materiales de Construcción</span>
+                    </label>
+                    <label class="necesidad-checkbox">
+                        <input type="checkbox" value="ventiladores" name="necesidades">
+                        <span>🌀 Ventiladores</span>
+                    </label>
+                    <label class="necesidad-checkbox">
+                        <input type="checkbox" value="calefactores" name="necesidades">
+                        <span>🔥 Calefactores</span>
+                    </label>
+                    <label class="necesidad-checkbox">
+                        <input type="checkbox" value="herramientas" name="necesidades">
+                        <span>🛠️ Herramientas</span>
+                    </label>
+                </div>
+            </div>
+            
+            <div class="form-group">
+                <label>Necesidades Prioritarias</label>
+                <div class="necesidades-list">
+                    <label class="necesidad-checkbox">
+                        <input type="checkbox" value="colchas" name="necesidades_prioritarias">
+                        <span>🛏️ Colchas/Frazadas</span>
+                    </label>
+                    <label class="necesidad-checkbox">
+                        <input type="checkbox" value="ropa" name="necesidades_prioritarias">
+                        <span>👕 Ropa</span>
+                    </label>
+                    <label class="necesidad-checkbox">
+                        <input type="checkbox" value="alimentos" name="necesidades_prioritarias">
+                        <span>🍞 Alimentos</span>
+                    </label>
+                    <label class="necesidad-checkbox">
+                        <input type="checkbox" value="agua" name="necesidades_prioritarias">
+                        <span>💧 Agua</span>
+                    </label>
+                    <label class="necesidad-checkbox">
+                        <input type="checkbox" value="medicamentos" name="necesidades_prioritarias">
+                        <span>💊 Medicamentos</span>
+                    </label>
+                </div>
+                <small>Marcá las necesidades más urgentes</small>
+            </div>
+            
+            <div class="form-group">
+                <label>
+                    <input type="checkbox" id="necesitaSangre">
+                    Se necesitan donaciones de sangre
+                </label>
+            </div>
+            
+            <div id="sangreGroup" style="display: none;">
+                <div class="form-group">
+                    <label>Tipos de Sangre Requeridos</label>
+                    <div class="necesidades-list">
+                        <label class="necesidad-checkbox">
+                            <input type="checkbox" value="O+" name="tipos_sangre">
+                            <span>O+</span>
+                        </label>
+                        <label class="necesidad-checkbox">
+                            <input type="checkbox" value="O-" name="tipos_sangre">
+                            <span>O-</span>
+                        </label>
+                        <label class="necesidad-checkbox">
+                            <input type="checkbox" value="A+" name="tipos_sangre">
+                            <span>A+</span>
+                        </label>
+                        <label class="necesidad-checkbox">
+                            <input type="checkbox" value="A-" name="tipos_sangre">
+                            <span>A-</span>
+                        </label>
+                        <label class="necesidad-checkbox">
+                            <input type="checkbox" value="B+" name="tipos_sangre">
+                            <span>B+</span>
+                        </label>
+                        <label class="necesidad-checkbox">
+                            <input type="checkbox" value="B-" name="tipos_sangre">
+                            <span>B-</span>
+                        </label>
+                        <label class="necesidad-checkbox">
+                            <input type="checkbox" value="AB+" name="tipos_sangre">
+                            <span>AB+</span>
+                        </label>
+                        <label class="necesidad-checkbox">
+                            <input type="checkbox" value="AB-" name="tipos_sangre">
+                            <span>AB-</span>
+                        </label>
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label>Hospital o Centro de Contacto</label>
+                    <input type="text" id="hospitalContacto" placeholder="Nombre del hospital o centro donde se necesita sangre">
+                </div>
+            </div>
+            
+            <div class="form-group">
+                <label>Fecha Límite de la Campaña (opcional)</label>
+                <input type="date" id="fechaLimite">
+                <small>Si no se especifica, la campaña seguirá activa hasta que la cierres manualmente</small>
+            </div>
+            
+            <button type="submit" class="btn-submit" id="btnSubmit">
+                <i class="fas fa-check-circle"></i> Crear Campaña
+            </button>
+        </form>
+    </div>
+    
+    <script>
+        let sistemaEmergencias = null;
+        
+        document.addEventListener('DOMContentLoaded', () => {
+            if (typeof SistemaCresaliaSolidarioEmergencias !== 'undefined') {
+                sistemaEmergencias = new SistemaCresaliaSolidarioEmergencias();
+                window.sistemaEmergencias = sistemaEmergencias;
+            }
+            
+            // Mostrar/ocultar grupo de sangre
+            document.getElementById('necesitaSangre').addEventListener('change', (e) => {
+                document.getElementById('sangreGroup').style.display = e.target.checked ? 'block' : 'none';
+            });
+            
+            // Formulario
+            document.getElementById('formCrearCampana').addEventListener('submit', async (e) => {
+                e.preventDefault();
+                
+                const btnSubmit = document.getElementById('btnSubmit');
+                btnSubmit.disabled = true;
+                btnSubmit.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Creando...';
+                
+                try {
+                    const necesidades = Array.from(document.querySelectorAll('input[name="necesidades"]:checked'))
+                        .map(input => input.value);
+                    
+                    const necesidadesPrioritarias = Array.from(document.querySelectorAll('input[name="necesidades_prioritarias"]:checked'))
+                        .map(input => input.value);
+                    
+                    const tiposSangre = document.getElementById('necesitaSangre').checked
+                        ? Array.from(document.querySelectorAll('input[name="tipos_sangre"]:checked'))
+                            .map(input => input.value)
+                        : [];
+                    
+                    const evidencias = document.getElementById('evidenciasVerificacion').value
+                        .split('\n')
+                        .filter(line => line.trim())
+                        .map(line => line.trim());
+                    
+                    const datosCampana = {
+                        titulo: document.getElementById('tituloCampana').value,
+                        descripcion: document.getElementById('descripcionCampana').value,
+                        tipo_desastre: document.getElementById('tipoDesastre').value,
+                        ubicacion: document.getElementById('ubicacionCampana').value,
+                        fecha_desastre: document.getElementById('fechaDesastre').value,
+                        fuente_verificacion: document.getElementById('fuenteVerificacion').value,
+                        evidencias_verificacion: evidencias,
+                        necesidades: necesidades,
+                        necesidades_prioritarias: necesidadesPrioritarias,
+                        necesita_sangre: document.getElementById('necesitaSangre').checked,
+                        tipo_sangre_requerido: tiposSangre,
+                        hospital_contacto: document.getElementById('hospitalContacto').value || null,
+                        fecha_limite: document.getElementById('fechaLimite').value || null
+                    };
+                    
+                    const campana = await sistemaEmergencias.crearCampana(datosCampana);
+                    
+                    mostrarMensaje('success', '✅ Campaña creada exitosamente. Verificá la campaña para activarla.');
+                    
+                    setTimeout(() => {
+                        window.location.href = 'index.html';
+                    }, 2000);
+                } catch (error) {
+                    console.error('Error:', error);
+                    mostrarMensaje('error', 'Error al crear campaña: ' + error.message);
+                    btnSubmit.disabled = false;
+                    btnSubmit.innerHTML = '<i class="fas fa-check-circle"></i> Crear Campaña';
+                }
+            });
+        });
+        
+        function mostrarMensaje(tipo, mensaje) {
+            const mensajesDiv = document.getElementById('mensajes');
+            mensajesDiv.innerHTML = `<div class="${tipo === 'success' ? 'success-message' : 'error-message'}">${mensaje}</div>`;
+            
+            setTimeout(() => {
+                mensajesDiv.innerHTML = '';
+            }, 5000);
+        }
+    </script>
+</body>
+</html>
+

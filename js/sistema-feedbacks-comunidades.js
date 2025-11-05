@@ -117,11 +117,24 @@ class SistemaFeedbacksComunidades {
                     margin: 0;
                 }
                 .cerrar-feedback {
-                    background: none;
+                    background: #F3F4F6;
                     border: none;
                     font-size: 28px;
                     cursor: pointer;
                     color: #6B7280;
+                    width: 40px;
+                    height: 40px;
+                    border-radius: 50%;
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    transition: all 0.2s;
+                    line-height: 1;
+                }
+                .cerrar-feedback:hover {
+                    background: #E5E7EB;
+                    color: #374151;
+                    transform: scale(1.1);
                 }
                 .form-feedback-group {
                     margin-bottom: 20px;
@@ -183,7 +196,7 @@ class SistemaFeedbacksComunidades {
             <div class="modal-feedback-content">
                 <div class="modal-feedback-header">
                     <h3>💜 Compartí tu Feedback</h3>
-                    <button class="cerrar-feedback" onclick="window.feedbackComunidad?.cerrarModal()">&times;</button>
+                    <button class="cerrar-feedback" onclick="window.feedbacksComunidad?.cerrarModal() || window.feedbackComunidad?.cerrarModal()">&times;</button>
                 </div>
                 <form id="form-feedback-comunidad">
                     <div class="form-feedback-group">
@@ -233,6 +246,20 @@ class SistemaFeedbacksComunidades {
         `;
         document.body.appendChild(modal);
         
+        // Cerrar modal al hacer click fuera o en el fondo
+        modal.addEventListener('click', (e) => {
+            if (e.target === modal) {
+                this.cerrarModal();
+            }
+        });
+        
+        // También cerrar con ESC
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape' && modal.classList.contains('active')) {
+                this.cerrarModal();
+            }
+        });
+        
         // Configurar submit
         document.getElementById('form-feedback-comunidad').addEventListener('submit', (e) => {
             e.preventDefault();
@@ -253,17 +280,47 @@ class SistemaFeedbacksComunidades {
         const ayudo = document.getElementById('feedback-ayudo').checked;
         const calificacion = document.getElementById('feedback-calificacion').value ? parseInt(document.getElementById('feedback-calificacion').value) : null;
         
+        // ===== VALIDACIÓN DE SEGURIDAD =====
+        if (typeof window.seguridadValidacion === 'undefined') {
+            console.warn('⚠️ Sistema de seguridad no cargado, usando validación básica');
+        } else {
+            // Validar mensaje
+            const validacionMensaje = window.seguridadValidacion.validarTexto(mensaje, 'mensaje', {
+                maxLength: 2000,
+                minLength: 10,
+                required: true
+            });
+            
+            if (!validacionMensaje.valido) {
+                alert('⚠️ ' + validacionMensaje.error);
+                return;
+            }
+            
+            // Detectar ataques
+            const deteccion = window.seguridadValidacion.detectarAtaques(mensaje);
+            if (deteccion.detectado) {
+                alert('⚠️ El mensaje contiene contenido no permitido. Por favor, escribí un mensaje válido.');
+                console.warn('Intento de ataque bloqueado:', deteccion.tipos);
+                return;
+            }
+        }
+        
         if (!tipo || !mensaje) {
             alert('⚠️ Por favor completá el tipo y el mensaje');
             return;
         }
         
         try {
+            // Sanitizar mensaje
+            const mensajeSanitizado = typeof window.seguridadValidacion !== 'undefined' 
+                ? window.seguridadValidacion.sanitizar(mensaje)
+                : mensaje;
+            
             const feedbackData = {
                 comunidad_slug: this.comunidadSlug,
                 autor_hash: this.autorHash,
                 tipo_feedback: tipo,
-                mensaje: mensaje,
+                mensaje: mensajeSanitizado,
                 ayudó: ayudo || null,
                 calificacion: calificacion,
                 estado: 'pendiente'

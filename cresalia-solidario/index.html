@@ -1,0 +1,294 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cresalia Solidario - Ayuda Urgente</title>
+    <link rel="icon" type="image/x-icon" href="../favicon.ico">
+    <link rel="icon" type="image/png" sizes="32x32" href="../assets/logo/logo-cresalia.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="../assets/logo/logo-cresalia.png">
+    <link rel="apple-touch-icon" sizes="180x180" href="../assets/logo/logo-cresalia.png">
+    
+    <!-- PWA Manifest -->
+    <link rel="manifest" href="../comunidades/manifest-comunidades.json">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    <meta name="apple-mobile-web-app-title" content="Cresalia Solidario">
+    <meta name="theme-color" content="#10B981">
+    
+    <!-- Protección Anti-DevTools -->
+    <script src="../core/proteccion-devtools-avanzada.js?v=2.0"></script>
+    
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    
+    <!-- Supabase -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="../config-supabase-seguro.js"></script>
+    
+    <!-- Sistema de Alertas de Emergencia -->
+    <script src="../js/sistema-alertas-comunidades.js"></script>
+    <!-- Sistema de Check-in Automático de Emergencias -->
+    <script src="../js/sistema-checkin-emergencias.js"></script>
+    
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #10B981 0%, #059669 50%, #047857 100%);
+            min-height: 100vh;
+            padding: 20px;
+            color: #333;
+        }
+        
+        .container-main {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+        }
+        
+        .back-btn {
+            display: inline-block;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 12px 25px;
+            border-radius: 10px;
+            text-decoration: none;
+            margin-bottom: 20px;
+            transition: all 0.3s;
+        }
+        
+        .back-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+        
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+        
+        .header h1 {
+            font-size: 3rem;
+            background: linear-gradient(135deg, #10B981 0%, #059669 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 10px;
+        }
+        
+        .subtitle {
+            color: #6B7280;
+            font-size: 1.2rem;
+            margin-bottom: 20px;
+        }
+        
+        .info-box {
+            background: linear-gradient(135deg, #ECFDF5 0%, #D1FAE5 100%);
+            border-left: 5px solid #10B981;
+            padding: 25px;
+            border-radius: 10px;
+            margin-bottom: 30px;
+        }
+        
+        .info-box h3 {
+            color: #047857;
+            margin-bottom: 15px;
+            font-size: 1.3rem;
+        }
+        
+        .info-box p {
+            color: #065F46;
+            line-height: 1.8;
+            margin-bottom: 10px;
+        }
+        
+        .info-box ul {
+            margin-left: 20px;
+            color: #065F46;
+            line-height: 1.8;
+        }
+        
+        .info-box ul li {
+            margin-bottom: 8px;
+        }
+        
+        .nav-menu {
+            background: white;
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            justify-content: center;
+        }
+        
+        .nav-menu a {
+            padding: 10px 20px;
+            background: linear-gradient(135deg, #10B981 0%, #059669 100%);
+            color: white;
+            text-decoration: none;
+            border-radius: 8px;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+        
+        .nav-menu a:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(16, 185, 129, 0.4);
+        }
+        
+        .card {
+            background: white;
+            border: 2px solid #E5E7EB;
+            border-radius: 15px;
+            padding: 30px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        
+        .card h2 {
+            color: #047857;
+            margin-bottom: 20px;
+            font-size: 1.8rem;
+        }
+        
+        .card p {
+            color: #374151;
+            line-height: 1.8;
+            margin-bottom: 15px;
+        }
+        
+        .btn {
+            display: inline-block;
+            padding: 15px 30px;
+            background: linear-gradient(135deg, #10B981 0%, #059669 100%);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-weight: 600;
+            font-size: 1.1rem;
+            cursor: pointer;
+            text-decoration: none;
+            transition: all 0.3s;
+        }
+        
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 20px rgba(16, 185, 129, 0.4);
+        }
+        
+        .coming-soon {
+            text-align: center;
+            padding: 60px 20px;
+            color: #6B7280;
+        }
+        
+        .coming-soon i {
+            font-size: 4rem;
+            color: #10B981;
+            margin-bottom: 20px;
+        }
+        
+        .coming-soon h2 {
+            font-size: 2rem;
+            margin-bottom: 15px;
+            color: #047857;
+        }
+        
+        .coming-soon p {
+            font-size: 1.1rem;
+            line-height: 1.8;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+    </style>
+</head>
+<body>
+    <div class="container-main">
+        <a href="../index-cresalia.html" class="back-btn">
+            <i class="fas fa-arrow-left"></i> Volver a Cresalia
+        </a>
+        
+        <!-- Área de Alertas de Emergencia Global -->
+        <div id="alertas-emergencia-comunidades"></div>
+        
+        <div class="header">
+            <h1>💰 Cresalia Solidario</h1>
+            <p class="subtitle">Ayuda Urgente - Donaciones de Dinero</p>
+        </div>
+        
+        <!-- Menú de Navegación -->
+        <div class="nav-menu">
+            <a href="../index-cresalia.html">🏠 Inicio Cresalia</a>
+            <a href="../cresalia-solidario-emergencias/index.html">📦 Emergencias (Materiales)</a>
+            <a href="../cresalia-animales/index.html">🐾 Cresalia Animales</a>
+            <a href="../cresalia-jobs/index.html">💼 Cresalia Jobs</a>
+        </div>
+        
+        <div class="info-box">
+            <h3>💜 ¿Qué es Cresalia Solidario?</h3>
+            <p><strong>Cresalia Solidario</strong> es nuestro sistema de ayuda urgente para situaciones críticas.</p>
+            <p>Aquí podrás:</p>
+            <ul>
+                <li>✅ Solicitar ayuda urgente (con verificación estricta)</li>
+                <li>✅ Donar dinero de forma segura y transparente</li>
+                <li>✅ Ver solicitudes verificadas y reales</li>
+                <li>✅ Seguir el impacto de tus donaciones</li>
+            </ul>
+            <p style="margin-top: 15px;"><strong>💡 Sistema de Verificación:</strong> Todas las solicitudes requieren múltiples evidencias y verificación cruzada para proteger a donantes y beneficiarios.</p>
+        </div>
+        
+        <div class="card">
+            <div class="coming-soon">
+                <i class="fas fa-heart"></i>
+                <h2>Próximamente</h2>
+                <p>Estamos trabajando en el sistema de donaciones de dinero con verificación estricta y seguridad máxima. Estará disponible muy pronto.</p>
+                <p style="margin-top: 20px;">
+                    <strong>Mientras tanto, podés:</strong><br>
+                    - Ver solicitudes de emergencias materiales en <a href="../cresalia-solidario-emergencias/index.html" style="color: #10B981; font-weight: 600;">Cresalia Solidario Emergencias</a><br>
+                    - Ayudar a animales en <a href="../cresalia-animales/index.html" style="color: #10B981; font-weight: 600;">Cresalia Animales</a>
+                </p>
+            </div>
+        </div>
+        
+        <div class="card">
+            <h2>🔒 Seguridad y Transparencia</h2>
+            <p>Nuestro sistema de ayuda urgente incluye:</p>
+            <ul style="margin-left: 20px; color: #374151; line-height: 2;">
+                <li>✅ Verificación estricta de identidad</li>
+                <li>✅ Múltiples evidencias requeridas</li>
+                <li>✅ Cierre automático al alcanzar la meta</li>
+                <li>✅ Período de espera de 6 meses entre solicitudes</li>
+                <li>✅ Agradecimientos públicos obligatorios</li>
+                <li>✅ Reconocimiento opcional de donantes</li>
+            </ul>
+        </div>
+    </div>
+    
+    <script>
+        // Inicializar sistema de alertas
+        document.addEventListener('DOMContentLoaded', () => {
+            setTimeout(() => {
+                if (typeof SistemaAlertasComunidades !== 'undefined') {
+                    window.alertasSolidario = new SistemaAlertasComunidades('cresalia-solidario');
+                }
+            }, 500);
+        });
+    </script>
+    <!-- Sistema de Feedbacks General -->
+    <script src="../js/sistema-feedbacks-general.js"></script>
+</body>
+</html>
+

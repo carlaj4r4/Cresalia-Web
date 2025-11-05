@@ -1,0 +1,598 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Panel de Verificación - Cresalia Solidario</title>
+    <link rel="icon" type="image/x-icon" href="../favicon.ico">
+    <link rel="icon" type="image/png" sizes="32x32" href="../assets/logo/logo-cresalia.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="../assets/logo/logo-cresalia.png">
+    <link rel="apple-touch-icon" sizes="180x180" href="../assets/logo/logo-cresalia.png">
+    
+    <!-- Protección Anti-DevTools -->
+    <script src="../core/proteccion-devtools-avanzada.js?v=2.0"></script>
+    
+    <!-- Sistema de Seguridad para Paneles Admin -->
+    <script src="../js/seguridad-paneles-admin.js"></script>
+    <script src="../js/seguridad-validacion-entrada.js"></script>
+    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="../config-supabase-seguro.js"></script>
+    <script src="../js/sistema-cresalia-solidario-emergencias.js"></script>
+    
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #EF4444 0%, #DC2626 50%, #B91C1C 100%);
+            min-height: 100vh;
+            padding: 20px;
+            color: #333;
+        }
+        
+        .container-main {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+        }
+        
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 3px solid #EF4444;
+        }
+        
+        .header h1 {
+            color: #EF4444;
+            font-size: 2rem;
+            margin-bottom: 10px;
+        }
+        
+        .back-btn {
+            display: inline-block;
+            background: #EC4899;
+            color: white;
+            padding: 12px 25px;
+            border-radius: 10px;
+            text-decoration: none;
+            font-weight: 600;
+            margin-bottom: 20px;
+            transition: all 0.3s;
+        }
+        
+        .back-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(236, 72, 153, 0.4);
+        }
+        
+        .tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            border-bottom: 2px solid #E5E7EB;
+        }
+        
+        .tab {
+            background: none;
+            border: none;
+            padding: 15px 25px;
+            font-size: 1rem;
+            font-weight: 600;
+            color: #6B7280;
+            cursor: pointer;
+            border-bottom: 3px solid transparent;
+            transition: all 0.3s;
+        }
+        
+        .tab:hover {
+            color: #EF4444;
+        }
+        
+        .tab.active {
+            color: #EF4444;
+            border-bottom-color: #EF4444;
+        }
+        
+        .tab-content {
+            display: none;
+        }
+        
+        .tab-content.active {
+            display: block;
+        }
+        
+        .campana-card {
+            background: white;
+            border: 2px solid #E5E7EB;
+            border-radius: 15px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+        
+        .campana-card.pendiente {
+            border-color: #F59E0B;
+        }
+        
+        .campana-card.activa {
+            border-color: #10B981;
+        }
+        
+        .campana-card.rechazada {
+            border-color: #EF4444;
+            opacity: 0.7;
+        }
+        
+        .campana-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: start;
+            margin-bottom: 15px;
+        }
+        
+        .campana-titulo {
+            font-size: 1.3rem;
+            font-weight: 700;
+            color: #374151;
+            margin-bottom: 5px;
+        }
+        
+        .campana-estado {
+            display: inline-block;
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 600;
+        }
+        
+        .campana-estado.pendiente {
+            background: #FEF3C7;
+            color: #92400E;
+        }
+        
+        .campana-estado.activa {
+            background: #D1FAE5;
+            color: #065F46;
+        }
+        
+        .campana-estado.rechazada {
+            background: #FEE2E2;
+            color: #991B1B;
+        }
+        
+        .campana-info {
+            margin-bottom: 15px;
+            color: #6B7280;
+        }
+        
+        .campana-info strong {
+            color: #374151;
+        }
+        
+        .evidencias-box {
+            background: #F3F4F6;
+            padding: 15px;
+            border-radius: 8px;
+            margin: 15px 0;
+        }
+        
+        .evidencias-box strong {
+            display: block;
+            margin-bottom: 10px;
+            color: #374151;
+        }
+        
+        .evidencias-box ul {
+            margin-left: 20px;
+        }
+        
+        .evidencias-box li {
+            margin-bottom: 5px;
+        }
+        
+        .evidencias-box a {
+            color: #667eea;
+            text-decoration: none;
+        }
+        
+        .evidencias-box a:hover {
+            text-decoration: underline;
+        }
+        
+        .btn-accion {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            margin-right: 10px;
+        }
+        
+        .btn-accion.aprobar {
+            background: #10B981;
+            color: white;
+        }
+        
+        .btn-accion.aprobar:hover {
+            background: #059669;
+        }
+        
+        .btn-accion.rechazar {
+            background: #EF4444;
+            color: white;
+        }
+        
+        .btn-accion.rechazar:hover {
+            background: #DC2626;
+        }
+        
+        .btn-accion.cerrar {
+            background: #6B7280;
+            color: white;
+        }
+        
+        .btn-accion.cerrar:hover {
+            background: #4B5563;
+        }
+        
+        .modal-rechazo {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.7);
+            z-index: 10000;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+        
+        .modal-rechazo.active {
+            display: flex;
+        }
+        
+        .modal-content {
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            max-width: 500px;
+            width: 100%;
+        }
+        
+        .modal-content h3 {
+            margin-bottom: 15px;
+            color: #374151;
+        }
+        
+        .modal-content textarea {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #E5E7EB;
+            border-radius: 8px;
+            min-height: 100px;
+            margin-bottom: 15px;
+            font-family: inherit;
+        }
+        
+        .modal-actions {
+            display: flex;
+            gap: 10px;
+            justify-content: flex-end;
+        }
+        
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            color: #6B7280;
+        }
+        
+        .loading {
+            text-align: center;
+            padding: 40px;
+        }
+        
+        .spinner {
+            border: 4px solid #F3F4F6;
+            border-top: 4px solid #EF4444;
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 20px;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+    <div class="container-main">
+        <a href="index.html" class="back-btn">
+            <i class="fas fa-arrow-left"></i> Volver a Campañas
+        </a>
+        
+        <div class="header">
+            <h1>🔍 Panel de Verificación</h1>
+            <p style="color: #6B7280;">Verificá y gestioná campañas de emergencia</p>
+        </div>
+        
+        <div class="tabs">
+            <button class="tab active" data-tab="pendientes">⏳ Pendientes</button>
+            <button class="tab" data-tab="activas">✅ Activas</button>
+            <button class="tab" data-tab="rechazadas">❌ Rechazadas</button>
+            <button class="tab" data-tab="todas">📋 Todas</button>
+        </div>
+        
+        <div class="tab-content active" id="pendientes">
+            <div id="pendientesContainer" class="loading">
+                <div class="spinner"></div>
+                <p>Cargando campañas pendientes...</p>
+            </div>
+        </div>
+        
+        <div class="tab-content" id="activas">
+            <div id="activasContainer" class="loading">
+                <div class="spinner"></div>
+                <p>Cargando campañas activas...</p>
+            </div>
+        </div>
+        
+        <div class="tab-content" id="rechazadas">
+            <div id="rechazadasContainer" class="loading">
+                <div class="spinner"></div>
+                <p>Cargando campañas rechazadas...</p>
+            </div>
+        </div>
+        
+        <div class="tab-content" id="todas">
+            <div id="todasContainer" class="loading">
+                <div class="spinner"></div>
+                <p>Cargando todas las campañas...</p>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Modal para rechazar campaña -->
+    <div class="modal-rechazo" id="modalRechazo">
+        <div class="modal-content">
+            <h3>❌ Rechazar Campaña</h3>
+            <p style="margin-bottom: 15px; color: #6B7280;">¿Por qué rechazás esta campaña?</p>
+            <textarea id="razonRechazo" placeholder="Ej: No es un desastre natural verificado, no hay evidencias suficientes, etc."></textarea>
+            <div class="modal-actions">
+                <button class="btn-accion cerrar" onclick="cerrarModalRechazo()">Cancelar</button>
+                <button class="btn-accion rechazar" onclick="confirmarRechazo()">Rechazar</button>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        let sistemaEmergencias = null;
+        let campanaActual = null;
+        
+        document.addEventListener('DOMContentLoaded', () => {
+            if (typeof SistemaCresaliaSolidarioEmergencias !== 'undefined') {
+                sistemaEmergencias = new SistemaCresaliaSolidarioEmergencias();
+                window.sistemaEmergencias = sistemaEmergencias;
+            }
+            
+            // Cargar campañas
+            cargarCampanas();
+            
+            // Tabs
+            document.querySelectorAll('.tab').forEach(tab => {
+                tab.addEventListener('click', () => {
+                    const tabId = tab.dataset.tab;
+                    document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+                    document.querySelectorAll('.tab-content').forEach(tc => tc.classList.remove('active'));
+                    tab.classList.add('active');
+                    document.getElementById(tabId).classList.add('active');
+                    cargarCampanas(tabId);
+                });
+            });
+        });
+        
+        async function cargarCampanas(tab = 'pendientes') {
+            if (!sistemaEmergencias || !sistemaEmergencias.supabase) {
+                mostrarError('No hay conexión con Supabase');
+                return;
+            }
+            
+            const containerId = tab + 'Container';
+            const container = document.getElementById(containerId);
+            
+            try {
+                container.innerHTML = '<div class="loading"><div class="spinner"></div><p>Cargando...</p></div>';
+                
+                let query = sistemaEmergencias.supabase
+                    .from('campañas_emergencia')
+                    .select('*')
+                    .order('fecha_desastre', { ascending: false });
+                
+                if (tab === 'pendientes') {
+                    query = query.eq('estado', 'pendiente');
+                } else if (tab === 'activas') {
+                    query = query.eq('estado', 'activa');
+                } else if (tab === 'rechazadas') {
+                    query = query.eq('estado', 'rechazada');
+                }
+                // Si es 'todas', no filtramos
+                
+                const { data, error } = await query;
+                
+                if (error) throw error;
+                
+                if (!data || data.length === 0) {
+                    container.innerHTML = '<div class="empty-state"><i class="fas fa-inbox" style="font-size: 4rem; color: #D1D5DB; margin-bottom: 20px;"></i><h3>No hay campañas</h3></div>';
+                    return;
+                }
+                
+                container.innerHTML = data.map(campana => renderizarCampana(campana)).join('');
+            } catch (error) {
+                console.error('Error cargando campañas:', error);
+                container.innerHTML = '<div class="empty-state"><p>Error: ' + error.message + '</p></div>';
+            }
+        }
+        
+        function renderizarCampana(campana) {
+            const iconosDesastres = {
+                'inundacion': '🌊',
+                'incendio': '🔥',
+                'terremoto': '🌍',
+                'tornado': '🌪️',
+                'tormenta': '⛈️',
+                'otro_desastre': '🚨'
+            };
+            
+            const nombresDesastres = {
+                'inundacion': 'Inundación',
+                'incendio': 'Incendio',
+                'terremoto': 'Terremoto',
+                'tornado': 'Tornado',
+                'tormenta': 'Tormenta',
+                'otro_desastre': 'Otro Desastre'
+            };
+            
+            const icono = iconosDesastres[campana.tipo_desastre] || '🚨';
+            const nombre = nombresDesastres[campana.tipo_desastre] || 'Desastre Natural';
+            
+            const fechaDesastre = new Date(campana.fecha_desastre).toLocaleDateString('es-AR');
+            
+            let evidenciasHTML = '';
+            if (campana.evidencias_verificacion && campana.evidencias_verificacion.length > 0) {
+                evidenciasHTML = `
+                    <div class="evidencias-box">
+                        <strong>📋 Evidencias de Verificación:</strong>
+                        <ul>
+                            ${campana.evidencias_verificacion.map(ev => {
+                                const esLink = ev.startsWith('http');
+                                return `<li>${esLink ? `<a href="${ev}" target="_blank">${ev}</a>` : ev}</li>`;
+                            }).join('')}
+                        </ul>
+                    </div>
+                `;
+            }
+            
+            let accionesHTML = '';
+            if (campana.estado === 'pendiente') {
+                accionesHTML = `
+                    <button class="btn-accion aprobar" onclick="aprobarCampana('${campana.id}')">
+                        <i class="fas fa-check"></i> Aprobar y Activar
+                    </button>
+                    <button class="btn-accion rechazar" onclick="rechazarCampana('${campana.id}')">
+                        <i class="fas fa-times"></i> Rechazar
+                    </button>
+                `;
+            } else if (campana.estado === 'activa') {
+                accionesHTML = `
+                    <button class="btn-accion cerrar" onclick="cerrarCampana('${campana.id}')">
+                        <i class="fas fa-lock"></i> Cerrar Campaña
+                    </button>
+                `;
+            }
+            
+            return `
+                <div class="campana-card ${campana.estado}">
+                    <div class="campana-header">
+                        <div>
+                            <div class="campana-titulo">${icono} ${sistemaEmergencias.escapeHtml(campana.titulo)}</div>
+                            <span class="campana-estado ${campana.estado}">${campana.estado === 'pendiente' ? '⏳ Pendiente' : campana.estado === 'activa' ? '✅ Activa' : '❌ Rechazada'}</span>
+                        </div>
+                    </div>
+                    
+                    <div class="campana-info">
+                        <strong>Tipo:</strong> ${nombre}<br>
+                        <strong>Ubicación:</strong> ${sistemaEmergencias.escapeHtml(campana.ubicacion)}<br>
+                        <strong>Fecha del Desastre:</strong> ${fechaDesastre}<br>
+                        <strong>Fuente de Verificación:</strong> ${sistemaEmergencias.escapeHtml(campana.fuente_verificacion || 'N/A')}<br>
+                        ${campana.razon_rechazo ? `<strong>Razón de Rechazo:</strong> ${sistemaEmergencias.escapeHtml(campana.razon_rechazo)}<br>` : ''}
+                    </div>
+                    
+                    <div style="margin: 15px 0; color: #374151; line-height: 1.6;">
+                        ${sistemaEmergencias.escapeHtml(campana.descripcion)}
+                    </div>
+                    
+                    ${evidenciasHTML}
+                    
+                    ${accionesHTML}
+                </div>
+            `;
+        }
+        
+        async function aprobarCampana(campanaId) {
+            if (!confirm('¿Estás segura de aprobar esta campaña? Se activará automáticamente.')) return;
+            
+            try {
+                await sistemaEmergencias.verificarCampana(campanaId, true);
+                cargarCampanas(document.querySelector('.tab.active').dataset.tab);
+            } catch (error) {
+                alert('Error: ' + error.message);
+            }
+        }
+        
+        function rechazarCampana(campanaId) {
+            campanaActual = campanaId;
+            document.getElementById('modalRechazo').classList.add('active');
+        }
+        
+        function cerrarModalRechazo() {
+            document.getElementById('modalRechazo').classList.remove('active');
+            document.getElementById('razonRechazo').value = '';
+            campanaActual = null;
+        }
+        
+        async function confirmarRechazo() {
+            const razon = document.getElementById('razonRechazo').value.trim();
+            if (!razon) {
+                alert('Por favor, ingresá una razón para rechazar la campaña');
+                return;
+            }
+            
+            try {
+                await sistemaEmergencias.verificarCampana(campanaActual, false, razon);
+                cerrarModalRechazo();
+                cargarCampanas(document.querySelector('.tab.active').dataset.tab);
+            } catch (error) {
+                alert('Error: ' + error.message);
+            }
+        }
+        
+        async function cerrarCampana(campanaId) {
+            if (!confirm('¿Estás segura de cerrar esta campaña? Ya no aparecerá en la lista de campañas activas.')) return;
+            
+            try {
+                if (!sistemaEmergencias.supabase) throw new Error('No hay conexión');
+                
+                await sistemaEmergencias.supabase
+                    .from('campañas_emergencia')
+                    .update({ estado: 'cerrada', fecha_cierre: new Date().toISOString() })
+                    .eq('id', campanaId);
+                
+                alert('✅ Campaña cerrada');
+                cargarCampanas(document.querySelector('.tab.active').dataset.tab);
+            } catch (error) {
+                alert('Error: ' + error.message);
+            }
+        }
+        
+        function mostrarError(mensaje) {
+            alert('Error: ' + mensaje);
+        }
+    </script>
+</body>
+</html>
+

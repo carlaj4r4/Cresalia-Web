@@ -1,14 +1,29 @@
 // ===== INTEGRACIÓN CON MERCADO PAGO PARA CRESALIA =====
 // Sistema de pagos y suscripciones
 
-// Configuración de Mercado Pago (Carla debe reemplazar con sus credenciales)
-const MERCADO_PAGO_CONFIG = {
-    // Obtén estas credenciales en: https://www.mercadopago.com.ar/developers/panel/credentials
-    publicKey: 'TEST-xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx', // Reemplazar con tu Public Key
-    accessToken: 'TEST-xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx-xxxxxxxx-xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx', // Reemplazar con tu Access Token
-    sandbox: true, // Cambiar a false en producción
-    currency: 'ARS' // Moneda argentina
-};
+// ===== CONFIGURACIÓN MERCADO PAGO - CRESALIA =====
+// ✅ HABILITADO: Usando credenciales reales de producción
+
+// Usar configuración global si está disponible, sino usar estas
+const MERCADO_PAGO_CONFIG = typeof window !== 'undefined' && window.CONFIG_MERCADO_PAGO 
+    ? {
+        // Usar configuración global
+        publicKey: window.CONFIG_MERCADO_PAGO.production.publicKey,
+        accessToken: window.CONFIG_MERCADO_PAGO.production.accessToken,
+        sandbox: false, // ✅ PRODUCCIÓN: Usando credenciales reales
+        currency: 'ARS',
+        statement_descriptor: 'Cresalia', // Lo que aparece en el resumen de cuenta
+        enabled: true // ✅ Mercado Pago habilitado
+    }
+    : {
+        // Fallback: Credenciales directas (si no hay configuración global)
+        publicKey: 'CREDENTIAL_REMOVED',
+        accessToken: 'CREDENTIAL_REMOVED',
+        sandbox: false, // ✅ PRODUCCIÓN: Usando credenciales reales
+        currency: 'ARS',
+        statement_descriptor: 'Cresalia',
+        enabled: true
+    };
 
 // Planes de suscripción disponibles
 const PLANES_SUSCRIPCION = {
@@ -98,17 +113,32 @@ function inicializarMercadoPago() {
     
     // Verificar que Mercado Pago SDK esté cargado
     if (typeof MercadoPago === 'undefined') {
-        console.error('❌ Mercado Pago SDK no está cargado');
+        console.error('❌ Mercado Pago SDK no está cargado. Asegurate de cargar el script: https://sdk.mercadopago.com/js/v2');
+        return false;
+    }
+    
+    // Verificar configuración
+    if (!MERCADO_PAGO_CONFIG.publicKey || MERCADO_PAGO_CONFIG.publicKey.includes('TEST-') || MERCADO_PAGO_CONFIG.publicKey.includes('xxxx')) {
+        console.warn('⚠️ Mercado Pago no configurado correctamente. Verificá tus credenciales en config-mercado-pago.js');
+        return false;
+    }
+    
+    // Verificar que está habilitado
+    if (MERCADO_PAGO_CONFIG.enabled === false) {
+        console.warn('⚠️ Mercado Pago está deshabilitado en la configuración');
         return false;
     }
     
     try {
-        // Inicializar Mercado Pago con las credenciales
+        // Inicializar Mercado Pago con las credenciales REALES de producción
         const mp = new MercadoPago(MERCADO_PAGO_CONFIG.publicKey, {
             locale: 'es-AR'
         });
         
         console.log('✅ Mercado Pago inicializado correctamente');
+        console.log('✅ Modo:', MERCADO_PAGO_CONFIG.sandbox ? 'SANDBOX (pruebas)' : 'PRODUCCIÓN (real)');
+        console.log('✅ Statement Descriptor:', MERCADO_PAGO_CONFIG.statement_descriptor || 'Cresalia');
+        
         return mp;
     } catch (error) {
         console.error('❌ Error inicializando Mercado Pago:', error);
@@ -142,9 +172,11 @@ async function crearPreferenciaPago(planId, datosUsuario) {
                 }
             ],
             payer: {
-                name: datosUsuario.nombre,
+                // Solo email para verificación interna de Mercado Pago
+                // El nombre comercial será "Cresalia" (configurado en statement_descriptor)
                 email: datosUsuario.email
             },
+            statement_descriptor: 'Cresalia', // Lo que verá el cliente en su resumen de cuenta
             back_urls: {
                 success: `${window.location.origin}/pago-exitoso.html`,
                 failure: `${window.location.origin}/pago-fallido.html`,
@@ -152,11 +184,12 @@ async function crearPreferenciaPago(planId, datosUsuario) {
             },
             auto_return: 'approved',
             notification_url: `${window.location.origin}/api/notificaciones-pago`,
-            external_reference: `${datosUsuario.email}_${planId}_${Date.now()}`,
+            external_reference: `cresalia_${planId}_${Date.now()}`,
             metadata: {
                 plan: planId,
-                usuario_email: datosUsuario.email,
-                usuario_nombre: datosUsuario.nombre
+                // NO incluir datos personales en metadata
+                plataforma: 'cresalia',
+                tipo: 'suscripcion'
             }
         };
         

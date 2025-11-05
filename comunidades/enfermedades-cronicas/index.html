@@ -9,7 +9,7 @@
     <link rel="apple-touch-icon" href="../../assets/logo/logo-cresalia.png">
     
     <!-- PWA Manifest -->
-    <link rel="manifest" href="../../comunidades/manifest-comunidades.json">
+    <link rel="manifest" href="../../comunidades/manifest-comunidades.json" onerror="console.log('ℹ️ Manifest no disponible en local (normal en file://)')">
     <meta name="mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="default">
@@ -417,6 +417,15 @@
                 <a href="../gamers-videojuegos/index.html" class="community-link" style="background: linear-gradient(135deg, #6366F1, #8B5CF6);">
                     🎮 Gamers
                 </a>
+                <a href="../madres-padres-solteros/index.html" class="community-link" style="background: linear-gradient(135deg, #F472B6, #EC4899);">
+                    👨‍👩‍👧‍👦 Madres y Padres Solteros
+                </a>
+                <a href="../medicos-enfermeros/index.html" class="community-link" style="background: linear-gradient(135deg, #10B981, #059669);">
+                    👨‍⚕️👩‍⚕️ Médicos y Enfermeros
+                </a>
+                <a href="../bomberos/index.html" class="community-link" style="background: linear-gradient(135deg, #EF4444, #DC2626);">
+                    🚒 Bomberos
+                </a>
                 <a href="../../cresalia-jobs/index.html" class="community-link" style="background: linear-gradient(135deg, #F59E0B, #EAB308);">
                     💼 Cresalia Jobs
                 </a>
@@ -481,29 +490,44 @@
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="../../config-supabase-seguro.js"></script>
     <script src="../../js/sistema-alertas-comunidades.js"></script>
+    <!-- Sistema de Check-in Automático de Emergencias -->
+    <script src="../../js/sistema-checkin-emergencias.js"></script>
+    <script src="../../js/sistema-feedbacks-comunidades.js"></script>
     <script>
         // Inicializar sistema de alertas
         let alertasComunidad;
+        let feedbacksComunidad;
         document.addEventListener('DOMContentLoaded', () => {
             setTimeout(() => {
                 alertasComunidad = new SistemaAlertasComunidades('enfermedades-cronicas');
                 window.alertasComunidad = alertasComunidad;
+                
+                // Inicializar sistema de feedbacks
+                if (typeof SistemaFeedbacksComunidades !== 'undefined') {
+                    feedbacksComunidad = new SistemaFeedbacksComunidades('enfermedades-cronicas');
+                    window.feedbacksComunidad = feedbacksComunidad;
+                }
             }, 500);
         });
         
         // Registrar Service Worker para PWA
-        if ('serviceWorker' in navigator) {
+        if ('serviceWorker' in navigator && window.location.protocol !== 'file:') {
             window.addEventListener('load', () => {
                 navigator.serviceWorker.register('../../sw.js')
                     .then(registration => {
                         console.log('✅ Service Worker registrado');
                     })
                     .catch(error => {
-                        console.log('⚠️ Service Worker no disponible');
+                        // Solo loguear en producción, no en local
+                        if (window.location.protocol !== 'file:') {
+                            console.log('⚠️ Service Worker no disponible');
+                        }
                     });
             });
         }
     </script>
+    <!-- Sistema de Feedbacks General -->
+    <script src="../../js/sistema-feedbacks-general.js"></script>
 </body>
 </html>
 

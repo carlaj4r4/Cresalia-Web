@@ -1,0 +1,847 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Comunidad Bomberos - Cresalia</title>
+    <link rel="icon" type="image/x-icon" href="../../favicon.ico">
+    <link rel="icon" type="image/png" href="../../assets/logo/logo-cresalia.png">
+    <link rel="apple-touch-icon" href="../../assets/logo/logo-cresalia.png">
+    
+    <!-- PWA Manifest -->
+    <link rel="manifest" href="../../comunidades/manifest-comunidades.json">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    <meta name="apple-mobile-web-app-title" content="Cresalia Comunidades">
+    <meta name="theme-color" content="#EF4444">
+    
+    <!-- Protección Anti-DevTools -->
+    <script src="../../core/proteccion-devtools-avanzada.js?v=2.0"></script>
+    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            -webkit-user-select: none;
+            -moz-user-select: none;
+            -ms-user-select: none;
+            user-select: none;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #EF4444 0%, #DC2626 50%, #B91C1C 100%);
+            min-height: 100vh;
+            padding: 20px;
+            position: relative;
+        }
+        
+        body::before {
+            content: 'CONFIDENCIAL';
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%) rotate(-45deg);
+            font-size: 120px;
+            color: rgba(239, 68, 68, 0.05);
+            z-index: 0;
+            pointer-events: none;
+            font-weight: 900;
+            letter-spacing: 20px;
+        }
+        
+        .page-wrapper {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            flex-direction: column;
+            gap: 30px;
+        }
+        
+        .container {
+            background: white;
+            border-radius: 24px;
+            padding: 60px 40px;
+            max-width: 100%;
+            text-align: center;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            position: relative;
+            z-index: 1;
+        }
+        
+        .foro-container {
+            background: white;
+            border-radius: 24px;
+            padding: 40px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            position: relative;
+            z-index: 1;
+            text-align: left;
+        }
+        
+        .foro-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 2px solid #E5E7EB;
+        }
+        
+        .foro-header h2 {
+            color: #374151;
+            font-size: 2rem;
+            margin: 0;
+        }
+        
+        .btn-primary {
+            background: linear-gradient(135deg, #EF4444 0%, #DC2626 100%);
+            color: white;
+            padding: 12px 30px;
+            border-radius: 10px;
+            border: none;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(239, 68, 68, 0.4);
+        }
+        
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.7);
+            z-index: 10000;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+        
+        .modal-content {
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            max-width: 600px;
+            width: 100%;
+            max-height: 90vh;
+            overflow-y: auto;
+            position: relative;
+        }
+        
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+        }
+        
+        .modal-header h3 {
+            color: #374151;
+            margin: 0;
+        }
+        
+        .cerrar-modal {
+            background: none;
+            border: none;
+            font-size: 28px;
+            cursor: pointer;
+            color: #6B7280;
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            color: #374151;
+            font-weight: 600;
+        }
+        
+        .form-group input,
+        .form-group textarea {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #E5E7EB;
+            border-radius: 10px;
+            font-family: inherit;
+            font-size: 1rem;
+            transition: border-color 0.3s ease;
+            -webkit-user-select: text;
+            -moz-user-select: text;
+            -ms-user-select: text;
+            user-select: text;
+        }
+        
+        .form-group input:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: #EF4444;
+        }
+        
+        .form-group textarea {
+            min-height: 150px;
+            resize: vertical;
+        }
+        
+        #posts-container {
+            margin-top: 30px;
+        }
+        
+        .post {
+            background: #F9FAFB;
+            border-radius: 15px;
+            padding: 25px;
+            margin-bottom: 25px;
+            border-left: 4px solid #EF4444;
+        }
+        
+        .post-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 15px;
+        }
+        
+        .post-autor {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+        
+        .post-autor strong {
+            color: #374151;
+            font-size: 1.1rem;
+        }
+        
+        .post-fecha {
+            color: #9CA3AF;
+            font-size: 0.9rem;
+        }
+        
+        .post-acciones {
+            display: flex;
+            gap: 10px;
+        }
+        
+        .btn-editar, .btn-borrar {
+            background: none;
+            border: none;
+            color: #6B7280;
+            cursor: pointer;
+            padding: 5px 10px;
+            border-radius: 5px;
+            transition: all 0.3s ease;
+        }
+        
+        .btn-editar:hover {
+            background: #FEE2E2;
+            color: #EF4444;
+        }
+        
+        .btn-borrar:hover {
+            background: #FEE2E2;
+            color: #DC2626;
+        }
+        
+        .post-titulo {
+            color: #374151;
+            font-size: 1.3rem;
+            margin-bottom: 15px;
+        }
+        
+        .post-contenido {
+            color: #4B5563;
+            line-height: 1.8;
+            margin-bottom: 20px;
+            white-space: pre-wrap;
+        }
+        
+        .post-footer {
+            display: flex;
+            gap: 15px;
+            padding-top: 15px;
+            border-top: 1px solid #E5E7EB;
+        }
+        
+        .btn-comentar, .btn-reaccionar {
+            background: none;
+            border: none;
+            color: #EF4444;
+            cursor: pointer;
+            padding: 8px 15px;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+        
+        .btn-comentar:hover, .btn-reaccionar:hover {
+            background: rgba(239, 68, 68, 0.1);
+        }
+        
+        .comentarios-container {
+            margin-top: 20px;
+            padding-top: 20px;
+            border-top: 1px solid #E5E7EB;
+        }
+        
+        .comentarios-list {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+        
+        .comentario {
+            background: white;
+            padding: 15px;
+            border-radius: 10px;
+            border-left: 3px solid rgba(239, 68, 68, 0.3);
+        }
+        
+        .comentario-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+        
+        .comentario-header strong {
+            color: #374151;
+        }
+        
+        .comentario-fecha {
+            color: #9CA3AF;
+            font-size: 0.85rem;
+        }
+        
+        .comentario-contenido {
+            color: #4B5563;
+            line-height: 1.6;
+            white-space: pre-wrap;
+        }
+        
+        .form-comentar {
+            margin-top: 15px;
+            padding: 15px;
+            background: #F9FAFB;
+            border-radius: 10px;
+        }
+        
+        .form-comentar textarea {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #E5E7EB;
+            border-radius: 8px;
+            font-family: inherit;
+            resize: vertical;
+            margin-bottom: 10px;
+            -webkit-user-select: text;
+            -moz-user-select: text;
+            -ms-user-select: text;
+            user-select: text;
+        }
+        
+        .form-comentar-botones {
+            display: flex;
+            gap: 10px;
+        }
+        
+        .btn-secondary {
+            background: #E5E7EB;
+            color: #374151;
+            padding: 10px 20px;
+            border-radius: 8px;
+            border: none;
+            font-weight: 600;
+            cursor: pointer;
+        }
+        
+        .sin-posts, .cargando {
+            text-align: center;
+            padding: 60px 20px;
+            color: #6B7280;
+        }
+        
+        .sin-posts h3 {
+            color: #374151;
+            margin-bottom: 15px;
+        }
+        
+        .error {
+            background: #FEE2E2;
+            color: #DC2626;
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+        }
+        
+        .trigger-warning {
+            background: #FEF3C7;
+            border: 2px solid #F59E0B;
+            padding: 20px;
+            border-radius: 12px;
+            margin: 25px 0;
+            color: #92400E;
+            font-weight: 500;
+        }
+        
+        .trigger-warning strong {
+            color: #B45309;
+            display: block;
+            margin-bottom: 8px;
+            font-size: 1.1em;
+        }
+        
+        .icon {
+            font-size: 80px;
+            margin-bottom: 30px;
+        }
+        
+        h1 {
+            color: #374151;
+            margin-bottom: 20px;
+            font-size: 2.5rem;
+        }
+        
+        .subtitle {
+            background: linear-gradient(135deg, #EF4444, #DC2626, #B91C1C);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            font-weight: 700;
+            font-size: 1.3rem;
+            margin-bottom: 20px;
+        }
+        
+        p {
+            color: #6B7280;
+            font-size: 1.1rem;
+            line-height: 1.8;
+            margin-bottom: 30px;
+        }
+        
+        .btn {
+            display: inline-block;
+            background: linear-gradient(135deg, #EF4444 0%, #DC2626 100%);
+            color: white;
+            padding: 15px 40px;
+            border-radius: 12px;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 1.1rem;
+            transition: all 0.3s ease;
+            margin: 5px;
+            cursor: pointer;
+            border: none;
+        }
+        
+        .btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 30px rgba(239, 68, 68, 0.4);
+        }
+        
+        .btn-rules {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+        
+        .btn-home {
+            background: linear-gradient(135deg, #EC4899, #F9A8D4);
+        }
+        
+        .btn-home:hover {
+            box-shadow: 0 10px 30px rgba(236, 72, 153, 0.4);
+        }
+        
+        .safe-space {
+            background: linear-gradient(135deg, rgba(239, 68, 68, 0.1), rgba(220, 38, 38, 0.1), rgba(185, 28, 28, 0.1));
+            padding: 30px;
+            border-radius: 15px;
+            margin: 30px 0;
+            border: 3px solid;
+            border-image: linear-gradient(135deg, #EF4444, #DC2626, #B91C1C) 1;
+        }
+        
+        .safe-space h3 {
+            color: #374151;
+            margin-bottom: 15px;
+            font-size: 1.5rem;
+        }
+        
+        .safe-space p {
+            margin-bottom: 0;
+        }
+        
+        .features {
+            margin-top: 40px;
+            padding-top: 40px;
+            border-top: 2px solid #E5E7EB;
+        }
+        
+        .feature {
+            margin-bottom: 20px;
+            color: #374151;
+            font-size: 1rem;
+            text-align: left;
+            padding-left: 20px;
+        }
+        
+        .feature i {
+            margin-right: 10px;
+            color: #EF4444;
+            font-size: 1.2rem;
+        }
+        
+        .divider {
+            height: 4px;
+            background: linear-gradient(90deg, #EF4444, #DC2626, #B91C1C);
+            border-radius: 2px;
+            margin: 30px 0;
+        }
+        
+        .other-communities {
+            margin-top: 50px;
+            padding-top: 30px;
+            border-top: 2px solid #E5E7EB;
+        }
+        
+        .other-communities h3 {
+            color: #374151;
+            margin-bottom: 20px;
+        }
+        
+        .community-links {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            justify-content: center;
+        }
+        
+        .community-link {
+            display: inline-block;
+            padding: 10px 20px;
+            color: white;
+            text-decoration: none;
+            border-radius: 8px;
+            font-size: 0.9rem;
+            transition: all 0.3s ease;
+        }
+        
+        .community-link:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        }
+        
+        #copyWarning {
+            display: none;
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: #EF4444;
+            color: white;
+            padding: 15px 20px;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.5);
+            z-index: 10000;
+            font-weight: 600;
+        }
+        
+        @media (max-width: 768px) {
+            .container {
+                padding: 40px 25px;
+            }
+            
+            h1 {
+                font-size: 2rem;
+            }
+            
+            .icon {
+                font-size: 60px;
+            }
+            
+            .feature {
+                text-align: center;
+                padding-left: 0;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div id="copyWarning">
+        ⚠️ Este contenido está protegido. No copies historias de otros usuarios.
+    </div>
+    
+    <div class="page-wrapper">
+    <div class="container">
+        <div class="icon">🚒</div>
+        <h1>Comunidad Bomberos</h1>
+        <p class="subtitle">Un Refugio para Héroes que Arriesgan Todo</p>
+        
+        <div class="trigger-warning">
+            <strong>⚠️ Advertencia de Contenido:</strong>
+            Esta comunidad puede contener contenido sensible sobre experiencias difíciles, traumas, tragedias y situaciones extremas. 
+            Si estás en un momento vulnerable, por favor considerá tu bienestar emocional antes de participar. 
+            No estás obligado/a a leer nada que te haga daño. Tu bienestar es lo más importante.
+        </div>
+        
+        <p>Un espacio seguro y anónimo para bomberos voluntarios y profesionales que necesitan desahogo, reconocimiento y apoyo. Aquí tu valentía es reconocida, tu sacrificio es validado, y tu humanidad es respetada.</p>
+        
+        <div class="safe-space">
+            <h3>🚒 Este es un espacio SEGURO para ti</h3>
+            <p>Ser bombero NO significa ser invencible. NO significa "no sentir". Arriesgás tu vida para salvar otras. Ves tragedias, pérdidas, dolor constante. Tu trauma es REAL. Tu necesidad de desahogo es VÁLIDA. Aquí no te dirán "es tu trabajo" u "otras personas tienen peores problemas". Tu humanidad importa. 🚒</p>
+        </div>
+        
+        <div class="safe-space" style="background: linear-gradient(135deg, rgba(239, 68, 68, 0.15), rgba(220, 38, 38, 0.15), rgba(185, 28, 28, 0.15)); margin-top: 20px;">
+            <h3>🚒 Para Bomberos Voluntarios y Profesionales</h3>
+            <p>Ya seas bombero voluntario o profesional, arriesgás tu vida para salvar otras. La gente espera que estés siempre disponible. Te juzgan cuando no podés apagar rápido un incendio, cuando no pudiste rescatar a tiempo. Pero cuando sos "héroe", el reconocimiento dura poco. Este espacio es para reconocer tu VALENTÍA, tu SACRIFICIO y tu HUMANIDAD. Aquí no sos invisible. Tu trabajo ES esencial, incluso cuando no recibís el reconocimiento que merecés. 🚒</p>
+        </div>
+        
+        <div class="divider"></div>
+        
+        <a href="../reglas-comunidad.html" class="btn btn-rules">
+            <i class="fas fa-shield-alt"></i> Leer Reglas (IMPORTANTE)
+        </a>
+        
+        <a href="../../index-cresalia.html" class="btn btn-home">
+            <i class="fas fa-home"></i> Volver a Cresalia
+        </a>
+        
+        <div class="features">
+            <h3 style="color: #374151; margin-bottom: 25px; text-align: center;">Lo que encontrarás aquí:</h3>
+            <div class="feature">
+                <i class="fas fa-comments"></i> <strong>Desahogo anónimo:</strong> Comparte experiencias difíciles, rescates fallidos, tragedias sin ser juzgado
+            </div>
+            <div class="feature">
+                <i class="fas fa-users"></i> <strong>Comunidad que entiende:</strong> Otros bomberos que viven lo mismo
+            </div>
+            <div class="feature">
+                <i class="fas fa-heart-broken"></i> <strong>Apoyo emocional:</strong> Ventila sobre trauma, PTSD, carga emocional, juicios injustos
+            </div>
+            <div class="feature">
+                <i class="fas fa-trophy"></i> <strong>Reconocimiento:</strong> Tu valentía ES reconocida aquí. Tu sacrificio NO es invisible
+            </div>
+            <div class="feature">
+                <i class="fas fa-hand-holding-heart"></i> <strong>Validación:</strong> No tenés que ser "héroe" siempre. Podés ser humano aquí
+            </div>
+            <div class="feature">
+                <i class="fas fa-shield-alt"></i> <strong>Anonimato total:</strong> Comparte sin miedo a ser identificado/a en tu cuartel
+            </div>
+            <div class="feature">
+                <i class="fas fa-lightbulb"></i> <strong>Compartir experiencias:</strong> Rescates, incendios, aprendizajes, apoyo mutuo
+            </div>
+            <div class="feature">
+                <i class="fas fa-child"></i> <strong>Para voluntarios:</strong> Espacio especialmente para reconocer el trabajo NO PAGO y esencial
+            </div>
+            <div class="feature">
+                <i class="fas fa-edit"></i> <strong>Control total:</strong> Edita o borra tus mensajes cuando quieras
+            </div>
+        </div>
+        
+        <div class="divider"></div>
+        
+        <div class="safe-space">
+            <h3>🚒 Tu sacrificio NO es invisible</h3>
+            <p>Arriesgás tu vida. Trabajás gratis (si sos voluntario). La gente espera que siempre estés disponible, pero no dona. Te juzgan cuando las cosas salen mal, pero el reconocimiento es efímero. Esto DUELA. Pero aquí tu SACRIFICIO es reconocido. Tu VALENTÍA es validada. Tu HUMANIDAD es respetada. No tenés que ser "héroe perfecto" todo el tiempo. Podés ser humano. 🚒</p>
+        </div>
+        
+        <div class="safe-space" style="background: linear-gradient(135deg, rgba(239, 68, 68, 0.15), rgba(220, 38, 38, 0.15), rgba(185, 28, 28, 0.15)); margin-top: 20px;">
+            <h3>❤️ Recordá siempre</h3>
+            <p>No podés salvar a todos, y eso NO es tu culpa. No podés apagar todos los incendios rápido, y eso NO significa que no trabajaste bien. No podés estar disponible 24/7 sin recursos, y eso NO te hace menos bombero. Tu VALENTÍA es real. Tu SACRIFICIO es inmenso. Y aquí lo RECONOCEMOS. ❤️</p>
+        </div>
+        
+        
+        <!-- Otras Comunidades -->
+        <div class="other-communities">
+            <h3>Otras Comunidades de Apoyo</h3>
+            <div class="community-links">
+                <a href="../madres-padres-solteros/index.html" class="community-link" style="background: linear-gradient(135deg, #F472B6, #EC4899);">
+                    👨‍👩‍👧‍👦 Madres y Padres Solteros
+                </a>
+                <a href="../medicos-enfermeros/index.html" class="community-link" style="background: linear-gradient(135deg, #10B981, #059669);">
+                    👨‍⚕️👩‍⚕️ Médicos y Enfermeros
+                </a>
+                <a href="../veterinarios/index.html" class="community-link" style="background: linear-gradient(135deg, #059669, #047857);">
+                    🐾 Veterinarios
+                </a>
+                <a href="../otakus-anime-manga/index.html" class="community-link" style="background: linear-gradient(135deg, #FF6B9D, #C471ED);">
+                    🌸 Otakus
+                </a>
+                <a href="../gamers-videojuegos/index.html" class="community-link" style="background: linear-gradient(135deg, #6366F1, #8B5CF6);">
+                    🎮 Gamers
+                </a>
+                <a href="../estres-laboral/index.html" class="community-link" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
+                    💼 Estrés Laboral
+                </a>
+                <a href="../mujeres-sobrevivientes/index.html" class="community-link" style="background: linear-gradient(135deg, #C084FC, #E879F9);">
+                    💜 Mujeres Sobrevivientes
+                </a>
+                <a href="../hombres-sobrevivientes/index.html" class="community-link" style="background: linear-gradient(135deg, #3B82F6, #1E40AF);">
+                    💙 Hombres Sobrevivientes
+                </a>
+                <a href="../lgbtq-experiencias/index.html" class="community-link" style="background: linear-gradient(135deg, #FF6B6B, #FF8E53);">
+                    🏳️‍🌈 Experiencias LGBTQ+
+                </a>
+                <a href="../anti-bullying/index.html" class="community-link" style="background: linear-gradient(135deg, #60A5FA, #34D399);">
+                    🛡️ Anti-Bullying
+                </a>
+                <a href="../discapacidad/index.html" class="community-link" style="background: linear-gradient(135deg, #8B5CF6, #A78BFA);">
+                    ♿ Personas con Discapacidad
+                </a>
+                <a href="../inmigrantes-racializados/index.html" class="community-link" style="background: linear-gradient(135deg, #D97706, #F59E0B);">
+                    🌍 Inmigrantes y Racializados
+                </a>
+                <a href="../adultos-mayores/index.html" class="community-link" style="background: linear-gradient(135deg, #F59E0B, #FBBF24);">
+                    👴👵 Adultos Mayores
+                </a>
+                <a href="../cuidadores/index.html" class="community-link" style="background: linear-gradient(135deg, #10B981, #34D399);">
+                    🤲 Cuidadores
+                </a>
+                <a href="../enfermedades-cronicas/index.html" class="community-link" style="background: linear-gradient(135deg, #EF4444, #F87171);">
+                    🏥 Enfermedades Crónicas
+                </a>
+                <a href="../../cresalia-jobs/index.html" class="community-link" style="background: linear-gradient(135deg, #F59E0B, #EAB308);">
+                    💼 Cresalia Jobs
+                </a>
+            </div>
+        </div>
+        
+        <p style="margin-top: 40px; font-size: 0.9rem; color: #9CA3AF;">
+            🚒❤️ Parte del ecosistema Cresalia - Tu valentía y sacrificio son reconocidos aquí
+        </p>
+    </div>
+    
+    <!-- SISTEMA DE FORO -->
+    <div class="foro-container">
+        <div class="foro-header">
+            <h2>🚒 Foro de la Comunidad</h2>
+            <button class="btn-primary" id="btn-crear-post">
+                <i class="fas fa-plus"></i> Crear Post
+            </button>
+        </div>
+        
+        <div id="posts-container">
+            <!-- Los posts se cargarán aquí -->
+        </div>
+    </div>
+    
+    <!-- Modal crear post -->
+    <div class="modal" id="modal-crear-post">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>🚒 Crear Nuevo Post</h3>
+                <button class="cerrar-modal" id="cerrar-form-post">&times;</button>
+            </div>
+            <form id="form-crear-post">
+                <div class="form-group">
+                    <label for="autor-alias">Tu alias (opcional):</label>
+                    <input type="text" id="autor-alias" placeholder="Ej: Bombero Anónimo, Voluntario..." maxlength="50">
+                </div>
+                <div class="form-group">
+                    <label for="post-titulo">Título (opcional):</label>
+                    <input type="text" id="post-titulo" placeholder="Un título para tu post..." maxlength="500">
+                </div>
+                <div class="form-group">
+                    <label for="post-contenido">Tu mensaje: *</label>
+                    <textarea id="post-contenido" placeholder="Compartí tus experiencias, busca apoyo, ventila sobre juicios injustos, falta de recursos, o simplemente desahógate... (mínimo 10 caracteres)" required></textarea>
+                </div>
+                <div style="display: flex; gap: 10px; justify-content: flex-end;">
+                    <button type="button" class="btn-secondary" id="cancelar-form-post">Cancelar</button>
+                    <button type="submit" class="btn-primary">
+                        <i class="fas fa-paper-plane"></i> Publicar
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+    </div>
+    
+    <!-- Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="../../config-supabase-seguro.js"></script>
+    <script src="../../js/sistema-foro-comunidades.js"></script>
+    <script src="../../js/sistema-feedbacks-comunidades.js"></script>
+    <script src="../../js/sistema-validacion-identidades.js"></script>
+    <script src="../../js/sistema-alertas-comunidades.js"></script>
+    <!-- Sistema de Check-in Automático de Emergencias -->
+    <script src="../../js/sistema-checkin-emergencias.js"></script>
+    <script>
+        let foroComunidad;
+        let validacionIdentidad;
+        let alertasComunidad;
+        document.addEventListener('DOMContentLoaded', () => {
+            foroComunidad = new SistemaForoComunidades('bomberos');
+            window.foroComunidad = foroComunidad;
+            
+            setTimeout(() => {
+                validacionIdentidad = new SistemaValidacionIdentidades('bomberos');
+                window.validacionIdentidad = validacionIdentidad;
+                
+                alertasComunidad = new SistemaAlertasComunidades('bomberos');
+                window.alertasComunidad = alertasComunidad;
+            }, 500);
+            
+            document.getElementById('cancelar-form-post')?.addEventListener('click', () => {
+                foroComunidad.ocultarFormularioPost();
+            });
+        });
+        
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('../../sw.js')
+                    .then(registration => {
+                        console.log('✅ Service Worker registrado');
+                    })
+                    .catch(error => {
+                        console.log('⚠️ Service Worker no disponible');
+                    });
+            });
+        }
+    </script>
+    <script>
+        document.addEventListener('copy', function(e) {
+            e.preventDefault();
+            const copyWarning = document.getElementById('copyWarning');
+            copyWarning.style.display = 'block';
+            setTimeout(() => {
+                copyWarning.style.display = 'none';
+            }, 3000);
+            return false;
+        });
+        
+        document.addEventListener('contextmenu', function(e) {
+            e.preventDefault();
+            alert('⚠️ El menú contextual está desactivado para proteger el contenido compartido.');
+            return false;
+        });
+        
+        document.addEventListener('keyup', function(e) {
+            if (e.key === 'PrintScreen') {
+                navigator.clipboard.writeText('');
+                alert('⚠️ Las capturas de pantalla están desactivadas para proteger las historias compartidas.');
+            }
+        });
+        
+        console.log('%c🚒 Bienvenido/a a Cresalia - Comunidad Bomberos', 'color: #EF4444; font-size: 18px; font-weight: bold;');
+        console.log('%c🛡️ Este contenido está protegido. No copies historias de otros usuarios.', 'font-size: 14px;');
+        console.log('%cExplotar el dolor ajeno es inaceptable. Gracias por respetar esta comunidad. 🚒', 'font-size: 14px; font-weight: bold;');
+    </script>
+    <!-- Sistema de Feedbacks General -->
+    <script src="../../js/sistema-feedbacks-general.js"></script>
+</body>
+</html>
+

@@ -24,8 +24,15 @@
     <meta name="msapplication-tap-highlight" content="no">
     <meta name="theme-color" content="#7C3AED">
     
-    <!-- PWA Manifest -->
-    <link rel="manifest" href="/manifest.json">
+    <!-- PWA Manifest (solo para protocolos http/https) -->
+    <script>
+        if (window.location.protocol === 'http:' || window.location.protocol === 'https:') {
+            const manifestLink = document.createElement('link');
+            manifestLink.rel = 'manifest';
+            manifestLink.href = '/manifest.json';
+            document.head.appendChild(manifestLink);
+        }
+    </script>
     
     <!-- Apple Touch Icons -->
     <link rel="apple-touch-icon" href="/icons/icon-152x152.png">
@@ -618,6 +625,9 @@
     </style>
 </head>
 <body>
+    <!-- Área de Alertas de Emergencia Global -->
+    <div id="alertas-emergencia-comunidades"></div>
+    
     <!-- Header -->
     <header class="hero-section">
         <div class="container">
@@ -1045,8 +1055,35 @@
         
         // Demo de notificación inicial y cargar año del footer
         document.addEventListener('DOMContentLoaded', function() {
+            // Cargar datos de la tienda inmediatamente
+            cargarDatosTienda();
+            
             // Cargar año dinámico del footer
             cargarAñoFooter();
+            
+            // Escuchar cambios en localStorage para sincronización automática
+            window.addEventListener('storage', function(e) {
+                if (e.key === 'configuracion_tienda_completa' || 
+                    e.key === 'tienda_actual' || 
+                    e.key === 'techstore_configuracion' ||
+                    e.key === 'tienda_ultima_sincronizacion') {
+                    console.log('🔄 Cambios detectados en configuración, recargando datos...');
+                    cargarDatosTienda();
+                    aplicarPersonalizacion();
+                }
+            });
+            
+            // Sincronización periódica cada 2 segundos
+            setInterval(function() {
+                const ultimaSincronizacion = localStorage.getItem('tienda_ultima_sincronizacion');
+                if (ultimaSincronizacion) {
+                    const tiempoTranscurrido = Date.now() - new Date(ultimaSincronizacion).getTime();
+                    if (tiempoTranscurrido < 5000) { // 5 segundos
+                        cargarDatosTienda();
+                        aplicarPersonalizacion();
+                    }
+                }
+            }, 2000);
             
             setTimeout(() => {
                 if (window.elegantNotifications) {
@@ -1102,15 +1139,22 @@
     <script>
         // Cargar nombre de la tienda dinámicamente
         function cargarDatosTienda() {
+            // Intentar cargar desde múltiples fuentes para sincronización
             const tiendaActual = JSON.parse(localStorage.getItem('tienda_actual') || '{}');
             const config = JSON.parse(localStorage.getItem('techstore_configuracion') || '{}');
+            const configCompleta = JSON.parse(localStorage.getItem('configuracion_tienda_completa') || '{}');
             
-            // Datos básicos
-            const nombreTienda = tiendaActual.nombre_tienda || config.nombreTienda || 'Mi Tienda';
-            const descripcion = config.descripcion || tiendaActual.descripcion || 'Tu tienda de confianza para productos de calidad.';
-            const email = tiendaActual.email || config.email || 'info@mitienda.com';
-            const telefono = config.telefono || '+00 00 0000-0000';
-            const direccion = config.direccion || 'Tu Ciudad';
+            // Priorizar configuracion_tienda_completa (del admin), luego tienda_actual, luego techstore_configuracion
+            const informacionTienda = configCompleta.informacionTienda || {};
+            
+            // Datos básicos con prioridad correcta
+            const nombreTienda = informacionTienda.nombre || tiendaActual.nombre_tienda || config.nombreTienda || 'Mi Tienda';
+            const descripcion = informacionTienda.descripcion || config.descripcion || tiendaActual.descripcion || 'Tu tienda de confianza para productos de calidad.';
+            const email = informacionTienda.email || tiendaActual.email || config.email || 'info@mitienda.com';
+            const telefono = informacionTienda.telefono || config.telefono || '+00 00 0000-0000';
+            const direccion = (configCompleta.ubicacion?.direccion || '') + 
+                             (configCompleta.ubicacion?.ciudad ? ', ' + configCompleta.ubicacion.ciudad : '') || 
+                             config.direccion || 'Tu Ciudad';
             const plan = tiendaActual.plan || 'basico';
             const whatsapp = config.whatsapp || '';
             
@@ -2242,10 +2286,10 @@
         
     </script>
     
-    <!-- PWA Service Worker -->
+    <!-- PWA Service Worker (solo para protocolos http/https) -->
     <script>
-        // Registrar Service Worker
-        if ('serviceWorker' in navigator) {
+        // Registrar Service Worker solo en protocolos http/https
+        if ('serviceWorker' in navigator && (window.location.protocol === 'http:' || window.location.protocol === 'https:')) {
             window.addEventListener('load', async () => {
                 try {
                     const registration = await navigator.serviceWorker.register('/sw.js');
@@ -2269,6 +2313,8 @@
                     console.error('❌ Error al registrar Service Worker:', error);
                 }
             });
+        } else {
+            console.log('ℹ️ Service Worker deshabilitado para protocolo file://');
         }
         
         // Instalar PWA
@@ -2326,6 +2372,8 @@
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="../../config-supabase-seguro.js"></script>
     <script src="../../js/sistema-alertas-comunidades.js"></script>
+    <!-- Sistema de Check-in Automático de Emergencias -->
+    <script src="../../js/sistema-checkin-emergencias.js"></script>
     <script>
         document.addEventListener('DOMContentLoaded', () => {
             setTimeout(() => {

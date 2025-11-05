@@ -149,16 +149,23 @@ class PaymentSystem {
                     quantity: 1
                 }],
                 payer: {
-                    name: tenant.nombre,
+                    // Solo email para verificación interna
+                    // El nombre comercial será "Cresalia"
                     email: tenant.email
                 },
+                statement_descriptor: 'Cresalia', // Lo que verá el cliente
                 back_urls: {
                     success: `${window.location.origin}/success.html?tenant=${tenant.id}&plan=${plan}`,
                     failure: `${window.location.origin}/failure.html?tenant=${tenant.id}`,
                     pending: `${window.location.origin}/pending.html?tenant=${tenant.id}`
                 },
                 auto_return: 'approved',
-                external_reference: `cresalia_${tenant.id}_${Date.now()}`
+                external_reference: `cresalia_${tenant.id}_${Date.now()}`,
+                metadata: {
+                    // NO incluir datos personales
+                    plataforma: 'cresalia',
+                    tipo: 'suscripcion'
+                }
             };
 
             // Crear preferencia en el backend

@@ -1,0 +1,405 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Donar Materiales - Cresalia Solidario</title>
+    <link rel="icon" type="image/x-icon" href="../favicon.ico">
+    <link rel="icon" type="image/png" sizes="32x32" href="../assets/logo/logo-cresalia.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="../assets/logo/logo-cresalia.png">
+    <link rel="apple-touch-icon" sizes="180x180" href="../assets/logo/logo-cresalia.png">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="../config-supabase-seguro.js"></script>
+    <script src="../js/sistema-cresalia-solidario-emergencias.js"></script>
+    
+    <!-- Sistema de Alertas de Emergencia -->
+    <script src="../js/sistema-alertas-comunidades.js"></script>
+    <!-- Sistema de Check-in Automático de Emergencias -->
+    <script src="../js/sistema-checkin-emergencias.js"></script>
+    
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #EF4444 0%, #DC2626 50%, #B91C1C 100%);
+            min-height: 100vh;
+            padding: 20px;
+            color: #333;
+        }
+        
+        .container-main {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+        }
+        
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 3px solid #EF4444;
+        }
+        
+        .header h1 {
+            color: #EF4444;
+            font-size: 2rem;
+            margin-bottom: 10px;
+        }
+        
+        .back-btn {
+            display: inline-block;
+            background: #EC4899;
+            color: white;
+            padding: 12px 25px;
+            border-radius: 10px;
+            text-decoration: none;
+            font-weight: 600;
+            margin-bottom: 20px;
+            transition: all 0.3s;
+        }
+        
+        .back-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(236, 72, 153, 0.4);
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #374151;
+        }
+        
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #E5E7EB;
+            border-radius: 8px;
+            font-size: 1rem;
+            transition: all 0.3s;
+        }
+        
+        .form-group input:focus,
+        .form-group select:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: #EF4444;
+            box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.1);
+        }
+        
+        .form-group textarea {
+            resize: vertical;
+            min-height: 100px;
+        }
+        
+        .form-group small {
+            display: block;
+            margin-top: 5px;
+            color: #6B7280;
+            font-size: 0.85rem;
+        }
+        
+        .checkbox-group {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .checkbox-group input[type="checkbox"] {
+            width: auto;
+        }
+        
+        .btn-submit {
+            width: 100%;
+            background: linear-gradient(135deg, #EF4444 0%, #DC2626 100%);
+            color: white;
+            border: none;
+            padding: 15px;
+            border-radius: 10px;
+            font-weight: 600;
+            font-size: 1.1rem;
+            cursor: pointer;
+            transition: all 0.3s;
+            margin-top: 20px;
+        }
+        
+        .btn-submit:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(239, 68, 68, 0.4);
+        }
+        
+        .info-box {
+            background: #FEF2F2;
+            border-left: 4px solid #EF4444;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+        
+        .productos-list {
+            margin-top: 10px;
+        }
+        
+        .producto-item {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 10px;
+            align-items: center;
+        }
+        
+        .producto-item input {
+            flex: 1;
+        }
+        
+        .btn-remove-producto {
+            background: #EF4444;
+            color: white;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        
+        .btn-add-producto {
+            background: #10B981;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-top: 10px;
+        }
+    </style>
+</head>
+<body>
+    <!-- Área de Alertas de Emergencia Global -->
+    <div id="alertas-emergencia-comunidades"></div>
+    
+    <div class="container-main">
+        <a href="index.html" class="back-btn">
+            <i class="fas fa-arrow-left"></i> Volver a Campañas
+        </a>
+        
+        <div class="header">
+            <h1>💜 Donar Materiales</h1>
+            <p style="color: #6B7280;">Tu ayuda hace la diferencia</p>
+        </div>
+        
+        <div class="info-box">
+            <strong>💜 Gracias por querer ayudar:</strong> Tu donación será recibida con gratitud. 
+            Podés donar productos, materiales, servicios o sangre (si la campaña lo requiere).
+        </div>
+        
+        <form id="formDonar">
+            <input type="hidden" id="campanaId">
+            
+            <div class="form-group">
+                <label>Nombre Completo *</label>
+                <input type="text" id="nombreDonante" required>
+                <small>Tu nombre aparecerá públicamente (a menos que elijas donar anónimamente)</small>
+            </div>
+            
+            <div class="form-group">
+                <label>Email *</label>
+                <input type="email" id="emailDonante" required>
+                <small>Para coordinar la entrega</small>
+            </div>
+            
+            <div class="form-group">
+                <label>Teléfono</label>
+                <input type="tel" id="telefonoDonante">
+                <small>Opcional, para coordinar mejor</small>
+            </div>
+            
+            <div class="form-group">
+                <label>Ubicación</label>
+                <input type="text" id="ubicacionDonante" placeholder="Ciudad, Provincia">
+                <small>Opcional, para coordinar entregas cercanas</small>
+            </div>
+            
+            <div class="form-group">
+                <div class="checkbox-group">
+                    <input type="checkbox" id="donanteAnonimo">
+                    <label for="donanteAnonimo" style="margin: 0;">Donar anónimamente</label>
+                </div>
+                <small>Si elegís esta opción, tu nombre no aparecerá públicamente</small>
+            </div>
+            
+            <div class="form-group">
+                <label>Tipo de Donación *</label>
+                <select id="tipoDonacion" required>
+                    <option value="">Seleccionar...</option>
+                    <option value="productos">📦 Productos (colchas, ropa, alimentos, etc.)</option>
+                    <option value="materiales">🔨 Materiales de construcción</option>
+                    <option value="servicios">🛠️ Servicios (transporte, mano de obra, etc.)</option>
+                    <option value="sangre">🩸 Donación de sangre</option>
+                    <option value="dinero">💰 Dinero (para comprar materiales)</option>
+                </select>
+            </div>
+            
+            <div class="form-group" id="productosGroup" style="display: none;">
+                <label>Productos que donás *</label>
+                <div id="productosList" class="productos-list"></div>
+                <button type="button" class="btn-add-producto" onclick="agregarProducto()">
+                    <i class="fas fa-plus"></i> Agregar Producto
+                </button>
+            </div>
+            
+            <div class="form-group" id="sangreGroup" style="display: none;">
+                <label>Tipo de Sangre *</label>
+                <select id="tipoSangre">
+                    <option value="">Seleccionar...</option>
+                    <option value="O+">O+</option>
+                    <option value="O-">O-</option>
+                    <option value="A+">A+</option>
+                    <option value="A-">A-</option>
+                    <option value="B+">B+</option>
+                    <option value="B-">B-</option>
+                    <option value="AB+">AB+</option>
+                    <option value="AB-">AB-</option>
+                </select>
+            </div>
+            
+            <div class="form-group" id="hospitalGroup" style="display: none;">
+                <label>Hospital o Centro de Donación</label>
+                <input type="text" id="hospitalDestino" placeholder="Nombre del hospital o centro">
+            </div>
+            
+            <div class="form-group">
+                <label>Descripción de la Donación *</label>
+                <textarea id="descripcionDonacion" required placeholder="Describí qué donás, cantidad, estado, etc."></textarea>
+            </div>
+            
+            <div class="form-group">
+                <label>Método de Entrega *</label>
+                <select id="metodoEntrega" required>
+                    <option value="llevar_personalmente">Llevar personalmente</option>
+                    <option value="transporte_coordinado">Transporte coordinado</option>
+                    <option value="punto_acopio">Punto de acopio</option>
+                </select>
+            </div>
+            
+            <button type="submit" class="btn-submit">
+                <i class="fas fa-heart"></i> Enviar Donación
+            </button>
+        </form>
+    </div>
+    
+    <script>
+        let sistemaEmergencias = null;
+        let productosCount = 0;
+        
+        document.addEventListener('DOMContentLoaded', () => {
+            if (typeof SistemaCresaliaSolidarioEmergencias !== 'undefined') {
+                sistemaEmergencias = new SistemaCresaliaSolidarioEmergencias();
+                window.sistemaEmergencias = sistemaEmergencias;
+            }
+            
+            // Obtener ID de campaña de la URL
+            const urlParams = new URLSearchParams(window.location.search);
+            const campanaId = urlParams.get('campana');
+            if (campanaId) {
+                document.getElementById('campanaId').value = campanaId;
+            }
+            
+            // Cambiar formulario según tipo de donación
+            document.getElementById('tipoDonacion').addEventListener('change', (e) => {
+                const tipo = e.target.value;
+                document.getElementById('productosGroup').style.display = tipo === 'productos' ? 'block' : 'none';
+                document.getElementById('sangreGroup').style.display = tipo === 'sangre' ? 'block' : 'none';
+                document.getElementById('hospitalGroup').style.display = tipo === 'sangre' ? 'block' : 'none';
+            });
+            
+            // Formulario
+            document.getElementById('formDonar').addEventListener('submit', async (e) => {
+                e.preventDefault();
+                
+                const datos = {
+                    nombre: document.getElementById('nombreDonante').value,
+                    email: document.getElementById('emailDonante').value,
+                    telefono: document.getElementById('telefonoDonante').value,
+                    ubicacion: document.getElementById('ubicacionDonante').value,
+                    anonimo: document.getElementById('donanteAnonimo').checked,
+                    tipo_donacion: document.getElementById('tipoDonacion').value,
+                    descripcion: document.getElementById('descripcionDonacion').value,
+                    metodo_entrega: document.getElementById('metodoEntrega').value,
+                    tipo_sangre: document.getElementById('tipoSangre').value || null,
+                    hospital_destino: document.getElementById('hospitalDestino').value || null
+                };
+                
+                // Recopilar productos
+                if (datos.tipo_donacion === 'productos') {
+                    const productos = [];
+                    document.querySelectorAll('.producto-item').forEach(item => {
+                        const nombre = item.querySelector('input[type="text"]').value;
+                        const cantidad = item.querySelector('input[type="number"]').value;
+                        if (nombre) {
+                            productos.push({ nombre, cantidad: cantidad || 1 });
+                        }
+                    });
+                    datos.productos = productos;
+                }
+                
+                const campanaId = document.getElementById('campanaId').value;
+                if (!campanaId) {
+                    alert('Error: No se encontró la campaña');
+                    return;
+                }
+                
+                try {
+                    await sistemaEmergencias.donarMateriales(campanaId, datos);
+                    setTimeout(() => {
+                        window.location.href = 'index.html';
+                    }, 2000);
+                } catch (error) {
+                    console.error('Error:', error);
+                }
+            });
+        });
+        
+        function agregarProducto() {
+            productosCount++;
+            const productosList = document.getElementById('productosList');
+            const productoItem = document.createElement('div');
+            productoItem.className = 'producto-item';
+            productoItem.innerHTML = `
+                <input type="text" placeholder="Nombre del producto" required>
+                <input type="number" placeholder="Cantidad" min="1" value="1" style="width: 100px;">
+                <button type="button" class="btn-remove-producto" onclick="this.parentElement.remove()">
+                    <i class="fas fa-times"></i>
+                </button>
+            `;
+            productosList.appendChild(productoItem);
+        }
+    </script>
+    
+    <script>
+        // Inicializar sistema de alertas
+        document.addEventListener('DOMContentLoaded', () => {
+            setTimeout(() => {
+                if (typeof SistemaAlertasComunidades !== 'undefined') {
+                    window.alertasSolidarioEmergencias = new SistemaAlertasComunidades('cresalia-solidario-emergencias');
+                }
+            }, 500);
+        });
+    </script>
+    <!-- Sistema de Feedbacks General -->
+    <script src="../js/sistema-feedbacks-general.js"></script>
+</body>
+</html>
+

@@ -1,0 +1,575 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cresalia Animales - Red de Rescate y Refugios</title>
+    <link rel="icon" type="image/x-icon" href="../favicon.ico">
+    <link rel="icon" type="image/png" sizes="32x32" href="../assets/logo/logo-cresalia.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="../assets/logo/logo-cresalia.png">
+    <link rel="apple-touch-icon" sizes="180x180" href="../assets/logo/logo-cresalia.png">
+    
+    <!-- PWA Manifest -->
+    <link rel="manifest" href="../comunidades/manifest-comunidades.json">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    <meta name="apple-mobile-web-app-title" content="Cresalia Animales">
+    <meta name="theme-color" content="#059669">
+    
+    <!-- Protección Anti-DevTools -->
+    <script src="../core/proteccion-devtools-avanzada.js?v=2.0"></script>
+    
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    
+    <!-- Supabase -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="../config-supabase-seguro.js"></script>
+    
+    <!-- Sistema de Alertas de Emergencia -->
+    <script src="../js/sistema-alertas-comunidades.js"></script>
+    <!-- Sistema de Check-in Automático de Emergencias -->
+    <script src="../js/sistema-checkin-emergencias.js"></script>
+    
+    <!-- Sistema de Interconexiones -->
+    <script src="../js/sistema-interconexiones-global.js"></script>
+    
+    <!-- Sistema Cresalia Animales -->
+    <script src="../js/sistema-cresalia-animales.js"></script>
+    
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #059669 0%, #047857 50%, #065F46 100%);
+            min-height: 100vh;
+            padding: 20px;
+            color: #333;
+        }
+        
+        .container-main {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+        }
+        
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 3px solid #059669;
+        }
+        
+        .header h1 {
+            color: #059669;
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+        }
+        
+        .header .subtitle {
+            color: #6B7280;
+            font-size: 1.2rem;
+        }
+        
+        .back-btn {
+            display: inline-block;
+            background: #EC4899;
+            color: white;
+            padding: 12px 25px;
+            border-radius: 10px;
+            text-decoration: none;
+            font-weight: 600;
+            margin-bottom: 20px;
+            transition: all 0.3s;
+        }
+        
+        .back-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(236, 72, 153, 0.4);
+        }
+        
+        .tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 30px;
+            flex-wrap: wrap;
+            border-bottom: 2px solid #E5E7EB;
+        }
+        
+        .tab {
+            background: transparent;
+            border: none;
+            padding: 15px 25px;
+            font-size: 1rem;
+            cursor: pointer;
+            color: #6B7280;
+            font-weight: 600;
+            border-bottom: 3px solid transparent;
+            transition: all 0.3s;
+        }
+        
+        .tab:hover {
+            color: #059669;
+        }
+        
+        .tab.active {
+            color: #059669;
+            border-bottom-color: #059669;
+        }
+        
+        .tab-content {
+            display: none;
+        }
+        
+        .tab-content.active {
+            display: block;
+        }
+        
+        .ethical-box {
+            background: linear-gradient(135deg, rgba(5, 150, 105, 0.1), rgba(4, 120, 87, 0.1));
+            padding: 20px;
+            border-radius: 15px;
+            margin-bottom: 30px;
+            border-left: 5px solid #059669;
+        }
+        
+        .ethical-box h3 {
+            color: #047857;
+            margin-bottom: 10px;
+        }
+        
+        .btn-primary {
+            background: linear-gradient(135deg, #059669, #047857);
+            color: white;
+            padding: 12px 30px;
+            border: none;
+            border-radius: 10px;
+            font-weight: 600;
+            cursor: pointer;
+            font-size: 1rem;
+            transition: all 0.3s;
+        }
+        
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(5, 150, 105, 0.4);
+        }
+        
+        .animal-card, .necesidad-card, .organizacion-card {
+            background: #F9FAFB;
+            border: 2px solid #E5E7EB;
+            border-radius: 15px;
+            padding: 20px;
+            margin-bottom: 20px;
+            transition: all 0.3s;
+        }
+        
+        .animal-card:hover, .necesidad-card:hover, .organizacion-card:hover {
+            border-color: #059669;
+            box-shadow: 0 5px 15px rgba(5, 150, 105, 0.2);
+        }
+        
+        .animal-header, .necesidad-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+        
+        .animal-header h3, .necesidad-header h3 {
+            color: #374151;
+            font-size: 1.3rem;
+        }
+        
+        .badge-urgencia {
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 600;
+        }
+        
+        .badge-emergencia {
+            background: #DC2626;
+            color: white;
+        }
+        
+        .badge-alta {
+            background: #EA580C;
+            color: white;
+        }
+        
+        .badge-media {
+            background: #F59E0B;
+            color: white;
+        }
+        
+        .badge-baja {
+            background: #3B82F6;
+            color: white;
+        }
+        
+        .badge-verificado {
+            background: #10B981;
+            color: white;
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            display: inline-block;
+            margin-top: 10px;
+        }
+        
+        .animal-info, .necesidad-info {
+            margin-bottom: 15px;
+        }
+        
+        .animal-info p, .necesidad-info p {
+            margin-bottom: 8px;
+            color: #6B7280;
+        }
+        
+        .animal-descripcion, .necesidad-descripcion {
+            margin: 15px 0;
+            padding: 15px;
+            background: white;
+            border-radius: 10px;
+            color: #374151;
+        }
+        
+        .btn-ayudar {
+            background: linear-gradient(135deg, #059669, #047857);
+            color: white;
+            padding: 10px 25px;
+            border: none;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .btn-ayudar:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(5, 150, 105, 0.4);
+        }
+        
+        .modal-ayudar-animal {
+            display: flex;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.7);
+            z-index: 10000;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+        
+        .modal-content {
+            background: white;
+            border-radius: 15px;
+            max-width: 600px;
+            width: 100%;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+        
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px;
+            border-bottom: 2px solid #E5E7EB;
+        }
+        
+        .modal-header h3 {
+            color: #374151;
+        }
+        
+        .cerrar-modal {
+            background: none;
+            border: none;
+            font-size: 2rem;
+            color: #6B7280;
+            cursor: pointer;
+            padding: 0;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .modal-body {
+            padding: 20px;
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            color: #374151;
+            font-weight: 600;
+        }
+        
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #E5E7EB;
+            border-radius: 8px;
+            font-size: 1rem;
+            transition: all 0.3s;
+        }
+        
+        .form-group input:focus,
+        .form-group select:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: #059669;
+        }
+        
+        .form-group textarea {
+            min-height: 100px;
+            resize: vertical;
+        }
+        
+        .form-acciones {
+            display: flex;
+            gap: 15px;
+            margin-top: 30px;
+        }
+        
+        .btn-cancelar {
+            background: #E5E7EB;
+            color: #374151;
+            padding: 10px 25px;
+            border: none;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .btn-cancelar:hover {
+            background: #D1D5DB;
+        }
+        
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            color: #6B7280;
+        }
+        
+        .empty-state i {
+            font-size: 4rem;
+            margin-bottom: 20px;
+            opacity: 0.5;
+        }
+        
+        @media (max-width: 768px) {
+            .container-main {
+                padding: 20px;
+            }
+            
+            .header h1 {
+                font-size: 2rem;
+            }
+            
+            .tabs {
+                overflow-x: auto;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container-main">
+        <a href="../index-cresalia.html" class="back-btn">
+            <i class="fas fa-arrow-left"></i> Volver a Cresalia
+        </a>
+        
+        <div class="header">
+            <h1>🐾 Cresalia Animales</h1>
+            <p class="subtitle">Red de Rescate y Refugios - Ayuda Directa, Sin Comisiones</p>
+        </div>
+        
+        <!-- Área de Alertas de Emergencia Global -->
+        <div id="alertas-emergencia-comunidades"></div>
+        
+        <!-- Menú de Navegación e Interconexiones -->
+        <div style="background: white; padding: 15px; border-radius: 10px; margin-bottom: 20px; box-shadow: 0 2px 10px rgba(0,0,0,0.1);">
+            <div style="display: flex; flex-wrap: wrap; gap: 10px; justify-content: center; align-items: center;">
+                <a href="../index-cresalia.html" style="padding: 10px 20px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; text-decoration: none; border-radius: 8px; font-weight: 600; transition: transform 0.2s;">
+                    🏠 Inicio Cresalia
+                </a>
+                <a href="../cresalia-jobs/index.html" style="padding: 10px 20px; background: linear-gradient(135deg, #3B82F6 0%, #2563EB 100%); color: white; text-decoration: none; border-radius: 8px; font-weight: 600; transition: transform 0.2s;">
+                    💼 Cresalia Jobs
+                </a>
+                <div style="padding: 10px 20px; background: #E5E7EB; color: #6B7280; border-radius: 8px; font-weight: 600;">
+                    📋 Comunidades:
+                </div>
+                <a href="../comunidades/mujeres-sobrevivientes/index.html" style="padding: 8px 15px; background: #F3E8FF; color: #7C3AED; text-decoration: none; border-radius: 8px; font-size: 0.9rem;">
+                    💜 Mujeres
+                </a>
+                <a href="../comunidades/hombres-sobrevivientes/index.html" style="padding: 8px 15px; background: #DBEAFE; color: #2563EB; text-decoration: none; border-radius: 8px; font-size: 0.9rem;">
+                    💙 Hombres
+                </a>
+                <a href="../comunidades/lgbtq-experiencias/index.html" style="padding: 8px 15px; background: #FCE7F3; color: #DB2777; text-decoration: none; border-radius: 8px; font-size: 0.9rem;">
+                    🏳️‍🌈 LGBTQ+
+                </a>
+                <a href="../comunidades/estres-laboral/index.html" style="padding: 8px 15px; background: #FEF3C7; color: #D97706; text-decoration: none; border-radius: 8px; font-size: 0.9rem;">
+                    💼 Estrés Laboral
+                </a>
+            </div>
+        </div>
+        
+        <div class="ethical-box">
+            <h3>💚 Nuestra Promesa Ética</h3>
+            <p><strong>NO monetizaremos con publicidad invasiva.</strong> NO cobraremos comisiones por donaciones. NO usaremos el sufrimiento animal para marketing. Este espacio es PURO AMOR por los animales. Sin intereses ocultos. Solo ayudar.</p>
+            <p style="margin-top: 10px;"><strong>Transparencia:</strong> Si alguna organización cobra comisiones, debe ser transparente. Todos necesitamos sobrevivir, está bien, pero seamos honestos.</p>
+        </div>
+        
+        <div class="tabs">
+            <button class="tab active" data-tab="animales">🐾 Animales que Necesitan Ayuda</button>
+            <button class="tab" data-tab="refugios">🏠 Necesidades de Refugios</button>
+            <button class="tab" data-tab="organizaciones">💜 Refugios y Organizaciones</button>
+            <button class="tab" data-tab="publicar">➕ Publicar Necesidad</button>
+        </div>
+        
+        <!-- Tab: Animales que Necesitan Ayuda -->
+        <div class="tab-content active" id="animales">
+            <h2 style="margin-bottom: 20px; color: #374151;">🐾 Animales que Necesitan Ayuda Urgente</h2>
+            <div id="animales-necesitan-ayuda">
+                <div class="empty-state">
+                    <div class="spinner" style="border: 4px solid #E5E7EB; border-top: 4px solid #059669; border-radius: 50%; width: 50px; height: 50px; animation: spin 1s linear infinite; margin: 0 auto 20px;"></div>
+                    <p>Cargando animales que necesitan ayuda...</p>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Tab: Necesidades de Refugios -->
+        <div class="tab-content" id="refugios">
+            <h2 style="margin-bottom: 20px; color: #374151;">🏠 Necesidades de Refugios y Organizaciones</h2>
+            <div id="necesidades-refugios">
+                <div class="empty-state">
+                    <div class="spinner" style="border: 4px solid #E5E7EB; border-top: 4px solid #059669; border-radius: 50%; width: 50px; height: 50px; animation: spin 1s linear infinite; margin: 0 auto 20px;"></div>
+                    <p>Cargando necesidades...</p>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Tab: Organizaciones -->
+        <div class="tab-content" id="organizaciones">
+            <h2 style="margin-bottom: 20px; color: #374151;">💜 Refugios y Organizaciones Verificadas</h2>
+            <div id="organizaciones-lista">
+                <div class="empty-state">
+                    <div class="spinner" style="border: 4px solid #E5E7EB; border-top: 4px solid #059669; border-radius: 50%; width: 50px; height: 50px; animation: spin 1s linear infinite; margin: 0 auto 20px;"></div>
+                    <p>Cargando organizaciones...</p>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Tab: Publicar Necesidad -->
+        <div class="tab-content" id="publicar">
+            <h2 style="margin-bottom: 20px; color: #374151;">➕ Publicar Necesidad</h2>
+            <div style="background: #F9FAFB; padding: 30px; border-radius: 15px;">
+                <h3 style="margin-bottom: 20px; color: #374151;">¿Qué quieres publicar?</h3>
+                
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 20px; margin-bottom: 30px;">
+                    <button class="btn-primary" onclick="sistemaAnimales.mostrarModalPublicarAnimal()" style="padding: 20px; text-align: center;">
+                        <i class="fas fa-paw" style="font-size: 2rem; display: block; margin-bottom: 10px;"></i>
+                        Animal que Necesita Ayuda
+                    </button>
+                    
+                    <button class="btn-primary" onclick="sistemaAnimales.mostrarModalPublicarNecesidad()" style="padding: 20px; text-align: center;">
+                        <i class="fas fa-home" style="font-size: 2rem; display: block; margin-bottom: 10px;"></i>
+                        Necesidad de Refugio
+                    </button>
+                    
+                    <button class="btn-primary" onclick="sistemaAnimales.mostrarModalRegistrarOrganizacion()" style="padding: 20px; text-align: center;">
+                        <i class="fas fa-heart" style="font-size: 2rem; display: block; margin-bottom: 10px;"></i>
+                        Registrar Organización
+                    </button>
+                </div>
+                
+                <div class="ethical-box">
+                    <h3>📝 Recordatorio Importante</h3>
+                    <p><strong>Necesidades reales, no números irreales.</strong> Sé específico en qué necesitas. Si tu organización cobra comisiones, sé transparente. Todos necesitamos sobrevivir, está bien, pero seamos honestos.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        // Tabs
+        document.querySelectorAll('.tab').forEach(tab => {
+            tab.addEventListener('click', () => {
+                const tabId = tab.dataset.tab;
+                
+                document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+                document.querySelectorAll('.tab-content').forEach(tc => tc.classList.remove('active'));
+                
+                tab.classList.add('active');
+                document.getElementById(tabId).classList.add('active');
+            });
+        });
+        
+        // Los modales están implementados en sistema-cresalia-animales.js
+        // Solo necesitamos que los botones los llamen correctamente
+        
+        // Inicializar Sistema de Alertas de Emergencia
+        let alertasAnimales;
+        document.addEventListener('DOMContentLoaded', () => {
+            setTimeout(() => {
+                if (typeof SistemaAlertasComunidades !== 'undefined') {
+                    alertasAnimales = new SistemaAlertasComunidades('cresalia-animales');
+                    window.alertasAnimales = alertasAnimales;
+                }
+                
+                // Inicializar Sistema de Interconexiones
+                if (typeof SistemaInterconexionesGlobal !== 'undefined') {
+                    window.interconexionesGlobal = new SistemaInterconexionesGlobal();
+                }
+            }, 500);
+        });
+        
+        // Service Worker
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('../sw.js')
+                    .then(registration => {
+                        console.log('✅ Service Worker registrado');
+                    })
+                    .catch(error => {
+                        console.log('⚠️ Service Worker no disponible');
+                    });
+            });
+        }
+        
+        console.log('%c🐾 Bienvenido/a a Cresalia Animales', 'color: #059669; font-size: 18px; font-weight: bold;');
+        console.log('%c💚 Ayuda directa, sin comisiones, con transparencia', 'font-size: 14px;');
+    </script>
+    
+    <style>
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
+    <!-- Sistema de Feedbacks General -->
+    <script src="../js/sistema-feedbacks-general.js"></script>
+</body>
+</html>
