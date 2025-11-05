@@ -1,0 +1,1158 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Panel de Moderación - Cresalia Chat Seguro</title>
+    
+    <!-- Favicon -->
+    <link rel="icon" type="image/x-icon" href="favicon.ico">
+    <link rel="icon" type="image/png" sizes="32x32" href="assets/logo/logo-cresalia.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="assets/logo/logo-cresalia.png">
+    <link rel="apple-touch-icon" sizes="180x180" href="assets/logo/logo-cresalia.png">
+    
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    
+    <!-- Supabase -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="config-supabase-seguro.js"></script>
+    
+    <!-- Protección Anti-DevTools -->
+    <script src="core/proteccion-devtools-avanzada.js?v=2.0"></script>
+    
+    <!-- Seguridad de Paneles -->
+    <script src="js/seguridad-paneles-admin.js"></script>
+    <script src="js/seguridad-validacion-entrada.js"></script>
+    
+    <!-- Sistema de Chat Seguro -->
+    <script src="js/sistema-chat-seguro.js"></script>
+    
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667EEA 0%, #764BA2 100%);
+            min-height: 100vh;
+            padding: 20px;
+            color: #333;
+        }
+        
+        .container {
+            max-width: 1600px;
+            margin: 0 auto;
+        }
+        
+        .header {
+            background: white;
+            border-radius: 20px;
+            padding: 30px;
+            margin-bottom: 20px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .header h1 {
+            color: #667EEA;
+            font-size: 2rem;
+        }
+        
+        .header .badge {
+            background: linear-gradient(135deg, #667EEA, #764BA2);
+            color: white;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 0.9rem;
+        }
+        
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+        
+        .stat-card {
+            background: white;
+            border-radius: 15px;
+            padding: 25px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        
+        .stat-icon {
+            width: 60px;
+            height: 60px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            color: white;
+        }
+        
+        .stat-icon.pendiente {
+            background: linear-gradient(135deg, #F59E0B, #EF4444);
+        }
+        
+        .stat-icon.revisando {
+            background: linear-gradient(135deg, #3B82F6, #2563EB);
+        }
+        
+        .stat-icon.resuelto {
+            background: linear-gradient(135deg, #10B981, #059669);
+        }
+        
+        .stat-icon.moderacion {
+            background: linear-gradient(135deg, #8B5CF6, #7C3AED);
+        }
+        
+        .stat-info h3 {
+            color: #374151;
+            font-size: 2rem;
+            margin-bottom: 5px;
+        }
+        
+        .stat-info p {
+            color: #6B7280;
+            font-size: 0.9rem;
+        }
+        
+        .tabs {
+            background: white;
+            border-radius: 15px;
+            padding: 10px;
+            margin-bottom: 20px;
+            display: flex;
+            gap: 10px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+        
+        .tab-btn {
+            flex: 1;
+            padding: 15px;
+            border: none;
+            background: transparent;
+            border-radius: 10px;
+            cursor: pointer;
+            font-weight: 600;
+            color: #6B7280;
+            transition: all 0.3s;
+        }
+        
+        .tab-btn:hover {
+            background: #F3F4F6;
+        }
+        
+        .tab-btn.active {
+            background: linear-gradient(135deg, #667EEA, #764BA2);
+            color: white;
+        }
+        
+        .tab-content {
+            display: none;
+        }
+        
+        .tab-content.active {
+            display: block;
+        }
+        
+        .content-card {
+            background: white;
+            border-radius: 15px;
+            padding: 25px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
+        }
+        
+        .content-card h2 {
+            color: #374151;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .filtros {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+        
+        .filtro-input {
+            flex: 1;
+            min-width: 200px;
+            padding: 12px;
+            border: 2px solid #E5E7EB;
+            border-radius: 10px;
+            font-size: 1rem;
+            outline: none;
+            transition: all 0.3s;
+        }
+        
+        .filtro-input:focus {
+            border-color: #667EEA;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+        
+        .btn {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .btn-primary {
+            background: linear-gradient(135deg, #667EEA, #764BA2);
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+        
+        .btn-danger {
+            background: #EF4444;
+            color: white;
+        }
+        
+        .btn-danger:hover {
+            background: #DC2626;
+        }
+        
+        .btn-success {
+            background: #10B981;
+            color: white;
+        }
+        
+        .btn-success:hover {
+            background: #059669;
+        }
+        
+        .btn-warning {
+            background: #F59E0B;
+            color: white;
+        }
+        
+        .btn-warning:hover {
+            background: #D97706;
+        }
+        
+        .lista-item {
+            background: #F9FAFB;
+            border: 2px solid #E5E7EB;
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 15px;
+            transition: all 0.3s;
+        }
+        
+        .lista-item:hover {
+            border-color: #667EEA;
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.1);
+        }
+        
+        .lista-item-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: start;
+            margin-bottom: 15px;
+        }
+        
+        .lista-item-info h4 {
+            color: #374151;
+            margin-bottom: 5px;
+        }
+        
+        .lista-item-info p {
+            color: #6B7280;
+            font-size: 0.9rem;
+        }
+        
+        .badge-estado {
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 600;
+        }
+        
+        .badge-estado.pendiente {
+            background: #FEF3C7;
+            color: #92400E;
+        }
+        
+        .badge-estado.revisando {
+            background: #DBEAFE;
+            color: #1E40AF;
+        }
+        
+        .badge-estado.resuelto {
+            background: #D1FAE5;
+            color: #065F46;
+        }
+        
+        .badge-estado.critico {
+            background: #FEE2E2;
+            color: #991B1B;
+        }
+        
+        .lista-item-acciones {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+        
+        .mensaje-preview {
+            background: white;
+            border-left: 4px solid #667EEA;
+            padding: 15px;
+            border-radius: 8px;
+            margin: 15px 0;
+            font-style: italic;
+            color: #4B5563;
+        }
+        
+        .mensaje-preview.moderado {
+            border-left-color: #F59E0B;
+            background: #FEF3C7;
+        }
+        
+        .mensaje-preview.bloqueado {
+            border-left-color: #EF4444;
+            background: #FEE2E2;
+        }
+        
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            color: #9CA3AF;
+        }
+        
+        .empty-state i {
+            font-size: 4rem;
+            margin-bottom: 20px;
+            opacity: 0.5;
+        }
+        
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            z-index: 10000;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .modal.active {
+            display: flex;
+        }
+        
+        .modal-content {
+            background: white;
+            border-radius: 20px;
+            padding: 30px;
+            max-width: 600px;
+            width: 90%;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+        
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        
+        .modal-header h2 {
+            color: #374151;
+        }
+        
+        .cerrar-modal {
+            background: none;
+            border: none;
+            font-size: 2rem;
+            cursor: pointer;
+            color: #6B7280;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            transition: all 0.3s;
+        }
+        
+        .cerrar-modal:hover {
+            background: #F3F4F6;
+            color: #374151;
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            color: #374151;
+            font-weight: 600;
+        }
+        
+        .form-group textarea,
+        .form-group select {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #E5E7EB;
+            border-radius: 10px;
+            font-size: 1rem;
+            font-family: inherit;
+            outline: none;
+            transition: all 0.3s;
+        }
+        
+        .form-group textarea:focus,
+        .form-group select:focus {
+            border-color: #667EEA;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+        
+        .form-group textarea {
+            min-height: 120px;
+            resize: vertical;
+        }
+        
+        @media (max-width: 768px) {
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .tabs {
+                flex-direction: column;
+            }
+            
+            .lista-item-header {
+                flex-direction: column;
+                gap: 10px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <div>
+                <h1><i class="fas fa-shield-alt"></i> Panel de Moderación - Chat Seguro</h1>
+                <p style="color: #6B7280; margin-top: 5px;">Gestiona reportes, moderación automática y usuarios</p>
+            </div>
+            <div class="badge">Moderador</div>
+        </div>
+        
+        <!-- Estadísticas -->
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-icon pendiente">
+                    <i class="fas fa-exclamation-triangle"></i>
+                </div>
+                <div class="stat-info">
+                    <h3 id="statPendientes">0</h3>
+                    <p>Reportes Pendientes</p>
+                </div>
+            </div>
+            
+            <div class="stat-card">
+                <div class="stat-icon revisando">
+                    <i class="fas fa-eye"></i>
+                </div>
+                <div class="stat-info">
+                    <h3 id="statRevisando">0</h3>
+                    <p>En Revisión</p>
+                </div>
+            </div>
+            
+            <div class="stat-card">
+                <div class="stat-icon moderacion">
+                    <i class="fas fa-robot"></i>
+                </div>
+                <div class="stat-info">
+                    <h3 id="statModeracion">0</h3>
+                    <p>Mensajes Moderados</p>
+                </div>
+            </div>
+            
+            <div class="stat-card">
+                <div class="stat-icon resuelto">
+                    <i class="fas fa-check-circle"></i>
+                </div>
+                <div class="stat-info">
+                    <h3 id="statResueltos">0</h3>
+                    <p>Resueltos Hoy</p>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Tabs -->
+        <div class="tabs">
+            <button class="tab-btn active" onclick="mostrarTab('reportes')">
+                <i class="fas fa-flag"></i> Reportes
+            </button>
+            <button class="tab-btn" onclick="mostrarTab('moderacion')">
+                <i class="fas fa-robot"></i> Moderación Automática
+            </button>
+            <button class="tab-btn" onclick="mostrarTab('usuarios')">
+                <i class="fas fa-users"></i> Usuarios
+            </button>
+            <button class="tab-btn" onclick="mostrarTab('bloqueos')">
+                <i class="fas fa-ban"></i> Bloqueos
+            </button>
+        </div>
+        
+        <!-- Tab: Reportes -->
+        <div id="tab-reportes" class="tab-content active">
+            <div class="content-card">
+                <h2><i class="fas fa-flag"></i> Reportes de Usuarios</h2>
+                
+                <div class="filtros">
+                    <input type="text" id="filtroReportes" class="filtro-input" placeholder="Buscar reportes..." onkeyup="filtrarReportes()">
+                    <select id="filtroEstadoReportes" class="filtro-input" onchange="filtrarReportes()" style="max-width: 200px;">
+                        <option value="">Todos los estados</option>
+                        <option value="pendiente">Pendiente</option>
+                        <option value="revisando">Revisando</option>
+                        <option value="resuelto">Resuelto</option>
+                        <option value="rechazado">Rechazado</option>
+                    </select>
+                    <select id="filtroTipoReportes" class="filtro-input" onchange="filtrarReportes()" style="max-width: 200px;">
+                        <option value="">Todos los tipos</option>
+                        <option value="acoso">Acoso</option>
+                        <option value="contenido_inapropiado">Contenido Inapropiado</option>
+                        <option value="spam">Spam</option>
+                        <option value="phishing">Phishing</option>
+                        <option value="menor_peligro">Menor en Peligro</option>
+                    </select>
+                </div>
+                
+                <div id="listaReportes">
+                    <div class="empty-state">
+                        <i class="fas fa-flag"></i>
+                        <p>Cargando reportes...</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Tab: Moderación Automática -->
+        <div id="tab-moderacion" class="tab-content">
+            <div class="content-card">
+                <h2><i class="fas fa-robot"></i> Logs de Moderación Automática</h2>
+                
+                <div class="filtros">
+                    <input type="text" id="filtroModeracion" class="filtro-input" placeholder="Buscar en logs..." onkeyup="filtrarModeracion()">
+                    <select id="filtroTipoModeracion" class="filtro-input" onchange="filtrarModeracion()" style="max-width: 200px;">
+                        <option value="">Todos los tipos</option>
+                        <option value="palabra_prohibida">Palabra Prohibida</option>
+                        <option value="acoso">Acoso</option>
+                        <option value="spam">Spam</option>
+                        <option value="phishing">Phishing</option>
+                    </select>
+                </div>
+                
+                <div id="listaModeracion">
+                    <div class="empty-state">
+                        <i class="fas fa-robot"></i>
+                        <p>Cargando logs de moderación...</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Tab: Usuarios -->
+        <div id="tab-usuarios" class="tab-content">
+            <div class="content-card">
+                <h2><i class="fas fa-users"></i> Gestión de Usuarios</h2>
+                
+                <div class="filtros">
+                    <input type="text" id="filtroUsuarios" class="filtro-input" placeholder="Buscar usuarios..." onkeyup="filtrarUsuarios()">
+                </div>
+                
+                <div id="listaUsuarios">
+                    <div class="empty-state">
+                        <i class="fas fa-users"></i>
+                        <p>Cargando usuarios...</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Tab: Bloqueos -->
+        <div id="tab-bloqueos" class="tab-content">
+            <div class="content-card">
+                <h2><i class="fas fa-ban"></i> Usuarios Bloqueados</h2>
+                
+                <div class="filtros">
+                    <input type="text" id="filtroBloqueos" class="filtro-input" placeholder="Buscar bloqueos..." onkeyup="filtrarBloqueos()">
+                </div>
+                
+                <div id="listaBloqueos">
+                    <div class="empty-state">
+                        <i class="fas fa-ban"></i>
+                        <p>Cargando bloqueos...</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Modal de Revisión de Reporte -->
+    <div id="modalReporte" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2><i class="fas fa-eye"></i> Revisar Reporte</h2>
+                <button class="cerrar-modal" onclick="cerrarModalReporte()">&times;</button>
+            </div>
+            
+            <div id="contenidoModalReporte">
+                <!-- Se llena dinámicamente -->
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        let reportes = [];
+        let moderacionLogs = [];
+        let usuarios = [];
+        let bloqueos = [];
+        let supabase = null;
+        
+        // Inicializar
+        document.addEventListener('DOMContentLoaded', async () => {
+            // Inicializar Supabase
+            if (typeof window.supabase !== 'undefined' && window.SUPABASE_CONFIG) {
+                try {
+                    const config = window.SUPABASE_CONFIG;
+                    if (config.url && config.anonKey && !config.anonKey.includes('REEMPLAZA')) {
+                        supabase = window.supabase.createClient(config.url, config.anonKey);
+                        console.log('✅ Supabase inicializado para moderación');
+                    }
+                } catch (error) {
+                    console.error('❌ Error inicializando Supabase:', error);
+                }
+            }
+            
+            await cargarDatos();
+            setInterval(cargarDatos, 30000); // Actualizar cada 30 segundos
+        });
+        
+        // Mostrar tab
+        function mostrarTab(tab) {
+            document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+            document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+            
+            document.getElementById(`tab-${tab}`).classList.add('active');
+            event.target.classList.add('active');
+        }
+        
+        // Cargar datos
+        async function cargarDatos() {
+            await Promise.all([
+                cargarReportes(),
+                cargarModeracionLogs(),
+                cargarUsuarios(),
+                cargarBloqueos(),
+                actualizarEstadisticas()
+            ]);
+        }
+        
+        // Cargar reportes
+        async function cargarReportes() {
+            if (!supabase) {
+                document.getElementById('listaReportes').innerHTML = `
+                    <div class="empty-state">
+                        <i class="fas fa-exclamation-triangle"></i>
+                        <p>No hay conexión con Supabase</p>
+                    </div>
+                `;
+                return;
+            }
+            
+            try {
+                const { data, error } = await supabase
+                    .from('reportes_chat_seguro')
+                    .select('*')
+                    .order('fecha_reporte', { ascending: false })
+                    .limit(100);
+                
+                if (error) throw error;
+                
+                reportes = data || [];
+                renderizarReportes();
+            } catch (error) {
+                console.error('Error cargando reportes:', error);
+                document.getElementById('listaReportes').innerHTML = `
+                    <div class="empty-state">
+                        <i class="fas fa-exclamation-triangle"></i>
+                        <p>Error al cargar reportes</p>
+                    </div>
+                `;
+            }
+        }
+        
+        // Renderizar reportes
+        function renderizarReportes(filtrados = null) {
+            const lista = filtrados || reportes;
+            const container = document.getElementById('listaReportes');
+            
+            if (lista.length === 0) {
+                container.innerHTML = `
+                    <div class="empty-state">
+                        <i class="fas fa-flag"></i>
+                        <p>No hay reportes</p>
+                    </div>
+                `;
+                return;
+            }
+            
+            container.innerHTML = lista.map(reporte => {
+                const estadoClase = reporte.estado === 'pendiente' ? 'pendiente' :
+                                  reporte.estado === 'revisando' ? 'revisando' :
+                                  reporte.estado === 'resuelto' ? 'resuelto' : 'critico';
+                
+                return `
+                    <div class="lista-item">
+                        <div class="lista-item-header">
+                            <div class="lista-item-info">
+                                <h4>
+                                    ${reporte.tipo_reporte.replace('_', ' ').toUpperCase()}
+                                    ${reporte.nivel_riesgo === 'critico' ? '<span class="badge-estado critico" style="margin-left: 10px;">CRÍTICO</span>' : ''}
+                                </h4>
+                                <p><strong>Reportado por:</strong> ${reporte.reportado_por_nombre}</p>
+                                <p><strong>Reportado:</strong> ${reporte.reportado_usuario_nombre || 'N/A'}</p>
+                                <p><strong>Fecha:</strong> ${new Date(reporte.fecha_reporte).toLocaleString('es-ES')}</p>
+                            </div>
+                            <span class="badge-estado ${estadoClase}">${reporte.estado.toUpperCase()}</span>
+                        </div>
+                        
+                        <div class="mensaje-preview">
+                            <strong>Descripción:</strong><br>
+                            ${reporte.descripcion}
+                        </div>
+                        
+                        <div class="lista-item-acciones">
+                            ${reporte.estado === 'pendiente' ? `
+                                <button class="btn btn-primary" onclick="revisarReporte('${reporte.id}')">
+                                    <i class="fas fa-eye"></i> Revisar
+                                </button>
+                            ` : ''}
+                            ${reporte.estado === 'revisando' ? `
+                                <button class="btn btn-success" onclick="resolverReporte('${reporte.id}')">
+                                    <i class="fas fa-check"></i> Resolver
+                                </button>
+                                <button class="btn btn-warning" onclick="rechazarReporte('${reporte.id}')">
+                                    <i class="fas fa-times"></i> Rechazar
+                                </button>
+                            ` : ''}
+                            <button class="btn btn-danger" onclick="verDetallesReporte('${reporte.id}')">
+                                <i class="fas fa-info-circle"></i> Detalles
+                            </button>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+        
+        // Cargar logs de moderación
+        async function cargarModeracionLogs() {
+            if (!supabase) return;
+            
+            try {
+                const { data, error } = await supabase
+                    .from('moderacion_automatica_chat')
+                    .select('*')
+                    .order('fecha_deteccion', { ascending: false })
+                    .limit(100);
+                
+                if (error) throw error;
+                
+                moderacionLogs = data || [];
+                renderizarModeracionLogs();
+            } catch (error) {
+                console.error('Error cargando logs de moderación:', error);
+            }
+        }
+        
+        // Renderizar logs de moderación
+        function renderizarModeracionLogs(filtrados = null) {
+            const lista = filtrados || moderacionLogs;
+            const container = document.getElementById('listaModeracion');
+            
+            if (lista.length === 0) {
+                container.innerHTML = `
+                    <div class="empty-state">
+                        <i class="fas fa-robot"></i>
+                        <p>No hay logs de moderación</p>
+                    </div>
+                `;
+                return;
+            }
+            
+            container.innerHTML = lista.map(log => {
+                const tipoClase = log.tipo_deteccion === 'acoso' ? 'critico' :
+                                 log.tipo_deteccion === 'phishing' ? 'critico' :
+                                 log.tipo_deteccion === 'spam' ? 'pendiente' : 'revisando';
+                
+                return `
+                    <div class="lista-item">
+                        <div class="lista-item-header">
+                            <div class="lista-item-info">
+                                <h4>${log.tipo_deteccion.replace('_', ' ').toUpperCase()}</h4>
+                                <p><strong>Confianza:</strong> ${(log.confianza * 100).toFixed(1)}%</p>
+                                <p><strong>Acción:</strong> ${log.accion}</p>
+                                <p><strong>Fecha:</strong> ${new Date(log.fecha_deteccion).toLocaleString('es-ES')}</p>
+                                ${log.palabras_detectadas && log.palabras_detectadas.length > 0 ? `
+                                    <p><strong>Palabras detectadas:</strong> ${log.palabras_detectadas.join(', ')}</p>
+                                ` : ''}
+                            </div>
+                            <span class="badge-estado ${tipoClase}">${log.accion.toUpperCase()}</span>
+                        </div>
+                        
+                        ${log.mensaje_editado ? `
+                            <div class="mensaje-preview moderado">
+                                <strong>Mensaje editado:</strong><br>
+                                ${log.mensaje_editado}
+                            </div>
+                        ` : ''}
+                    </div>
+                `;
+            }).join('');
+        }
+        
+        // Cargar usuarios
+        async function cargarUsuarios() {
+            // Implementar carga de usuarios desde conversaciones
+            usuarios = [];
+            renderizarUsuarios();
+        }
+        
+        // Renderizar usuarios
+        function renderizarUsuarios() {
+            const container = document.getElementById('listaUsuarios');
+            container.innerHTML = `
+                <div class="empty-state">
+                    <i class="fas fa-users"></i>
+                    <p>Funcionalidad en desarrollo</p>
+                </div>
+            `;
+        }
+        
+        // Cargar bloqueos
+        async function cargarBloqueos() {
+            if (!supabase) return;
+            
+            try {
+                const { data, error } = await supabase
+                    .from('bloqueos_chat_seguro')
+                    .select('*')
+                    .eq('activo', true)
+                    .order('fecha_bloqueo', { ascending: false })
+                    .limit(100);
+                
+                if (error) throw error;
+                
+                bloqueos = data || [];
+                renderizarBloqueos();
+            } catch (error) {
+                console.error('Error cargando bloqueos:', error);
+            }
+        }
+        
+        // Renderizar bloqueos
+        function renderizarBloqueos() {
+            const container = document.getElementById('listaBloqueos');
+            
+            if (bloqueos.length === 0) {
+                container.innerHTML = `
+                    <div class="empty-state">
+                        <i class="fas fa-ban"></i>
+                        <p>No hay usuarios bloqueados</p>
+                    </div>
+                `;
+                return;
+            }
+            
+            container.innerHTML = bloqueos.map(bloqueo => `
+                <div class="lista-item">
+                    <div class="lista-item-header">
+                        <div class="lista-item-info">
+                            <h4>Usuario Bloqueado</h4>
+                            <p><strong>Bloqueado por:</strong> ${bloqueo.bloqueador_id}</p>
+                            <p><strong>Bloqueado:</strong> ${bloqueo.bloqueado_id}</p>
+                            <p><strong>Razón:</strong> ${bloqueo.razon || 'No especificada'}</p>
+                            <p><strong>Fecha:</strong> ${new Date(bloqueo.fecha_bloqueo).toLocaleString('es-ES')}</p>
+                        </div>
+                    </div>
+                    <div class="lista-item-acciones">
+                        <button class="btn btn-success" onclick="desbloquearUsuario('${bloqueo.id}')">
+                            <i class="fas fa-unlock"></i> Desbloquear
+                        </button>
+                    </div>
+                </div>
+            `).join('');
+        }
+        
+        // Actualizar estadísticas
+        async function actualizarEstadisticas() {
+            if (!supabase) return;
+            
+            try {
+                const [reportesData, moderacionData] = await Promise.all([
+                    supabase.from('reportes_chat_seguro').select('estado', { count: 'exact' }),
+                    supabase.from('moderacion_automatica_chat').select('id', { count: 'exact' })
+                ]);
+                
+                const reportesPorEstado = {};
+                reportes.forEach(r => {
+                    reportesPorEstado[r.estado] = (reportesPorEstado[r.estado] || 0) + 1;
+                });
+                
+                document.getElementById('statPendientes').textContent = reportesPorEstado.pendiente || 0;
+                document.getElementById('statRevisando').textContent = reportesPorEstado.revisando || 0;
+                document.getElementById('statModeracion').textContent = moderacionLogs.length;
+                document.getElementById('statResueltos').textContent = reportesPorEstado.resuelto || 0;
+            } catch (error) {
+                console.error('Error actualizando estadísticas:', error);
+            }
+        }
+        
+        // Revisar reporte
+        function revisarReporte(reporteId) {
+            const reporte = reportes.find(r => r.id === reporteId);
+            if (!reporte) return;
+            
+            if (!supabase) {
+                alert('No hay conexión con Supabase');
+                return;
+            }
+            
+            supabase
+                .from('reportes_chat_seguro')
+                .update({ estado: 'revisando', fecha_revision: new Date().toISOString() })
+                .eq('id', reporteId)
+                .then(() => {
+                    cargarReportes();
+                    mostrarNotificacion('Reporte marcado como en revisión', 'success');
+                });
+        }
+        
+        // Resolver reporte
+        async function resolverReporte(reporteId) {
+            const accion = prompt('¿Qué acción se tomó? (ej: usuario bloqueado, mensaje eliminado, advertencia)');
+            if (!accion) return;
+            
+            if (!supabase) {
+                alert('No hay conexión con Supabase');
+                return;
+            }
+            
+            try {
+                await supabase
+                    .from('reportes_chat_seguro')
+                    .update({
+                        estado: 'resuelto',
+                        accion_tomada: accion,
+                        fecha_resolucion: new Date().toISOString()
+                    })
+                    .eq('id', reporteId);
+                
+                cargarReportes();
+                mostrarNotificacion('Reporte resuelto correctamente', 'success');
+            } catch (error) {
+                console.error('Error resolviendo reporte:', error);
+                mostrarNotificacion('Error al resolver reporte', 'error');
+            }
+        }
+        
+        // Rechazar reporte
+        async function rechazarReporte(reporteId) {
+            if (!confirm('¿Estás seguro de rechazar este reporte?')) return;
+            
+            if (!supabase) {
+                alert('No hay conexión con Supabase');
+                return;
+            }
+            
+            try {
+                await supabase
+                    .from('reportes_chat_seguro')
+                    .update({ estado: 'rechazado', fecha_resolucion: new Date().toISOString() })
+                    .eq('id', reporteId);
+                
+                cargarReportes();
+                mostrarNotificacion('Reporte rechazado', 'info');
+            } catch (error) {
+                console.error('Error rechazando reporte:', error);
+                mostrarNotificacion('Error al rechazar reporte', 'error');
+            }
+        }
+        
+        // Ver detalles del reporte
+        function verDetallesReporte(reporteId) {
+            const reporte = reportes.find(r => r.id === reporteId);
+            if (!reporte) return;
+            
+            document.getElementById('contenidoModalReporte').innerHTML = `
+                <div class="form-group">
+                    <label>Tipo de Reporte</label>
+                    <p style="padding: 10px; background: #F3F4F6; border-radius: 8px;">${reporte.tipo_reporte}</p>
+                </div>
+                
+                <div class="form-group">
+                    <label>Descripción</label>
+                    <p style="padding: 10px; background: #F3F4F6; border-radius: 8px;">${reporte.descripcion}</p>
+                </div>
+                
+                <div class="form-group">
+                    <label>Reportado por</label>
+                    <p style="padding: 10px; background: #F3F4F6; border-radius: 8px;">${reporte.reportado_por_nombre}</p>
+                </div>
+                
+                <div class="form-group">
+                    <label>Usuario Reportado</label>
+                    <p style="padding: 10px; background: #F3F4F6; border-radius: 8px;">${reporte.reportado_usuario_nombre || 'N/A'}</p>
+                </div>
+                
+                <div class="form-group">
+                    <label>Estado</label>
+                    <p style="padding: 10px; background: #F3F4F6; border-radius: 8px;">${reporte.estado}</p>
+                </div>
+                
+                ${reporte.accion_tomada ? `
+                    <div class="form-group">
+                        <label>Acción Tomada</label>
+                        <p style="padding: 10px; background: #F3F4F6; border-radius: 8px;">${reporte.accion_tomada}</p>
+                    </div>
+                ` : ''}
+            `;
+            
+            document.getElementById('modalReporte').classList.add('active');
+        }
+        
+        // Cerrar modal
+        function cerrarModalReporte() {
+            document.getElementById('modalReporte').classList.remove('active');
+        }
+        
+        // Desbloquear usuario
+        async function desbloquearUsuario(bloqueoId) {
+            if (!confirm('¿Estás seguro de desbloquear a este usuario?')) return;
+            
+            if (!supabase) {
+                alert('No hay conexión con Supabase');
+                return;
+            }
+            
+            try {
+                await supabase
+                    .from('bloqueos_chat_seguro')
+                    .update({ activo: false, fecha_desbloqueo: new Date().toISOString() })
+                    .eq('id', bloqueoId);
+                
+                cargarBloqueos();
+                mostrarNotificacion('Usuario desbloqueado', 'success');
+            } catch (error) {
+                console.error('Error desbloqueando usuario:', error);
+                mostrarNotificacion('Error al desbloquear usuario', 'error');
+            }
+        }
+        
+        // Filtros
+        function filtrarReportes() {
+            const texto = document.getElementById('filtroReportes').value.toLowerCase();
+            const estado = document.getElementById('filtroEstadoReportes').value;
+            const tipo = document.getElementById('filtroTipoReportes').value;
+            
+            const filtrados = reportes.filter(r => {
+                const matchTexto = !texto || 
+                    r.descripcion.toLowerCase().includes(texto) ||
+                    r.reportado_por_nombre.toLowerCase().includes(texto) ||
+                    (r.reportado_usuario_nombre && r.reportado_usuario_nombre.toLowerCase().includes(texto));
+                
+                const matchEstado = !estado || r.estado === estado;
+                const matchTipo = !tipo || r.tipo_reporte === tipo;
+                
+                return matchTexto && matchEstado && matchTipo;
+            });
+            
+            renderizarReportes(filtrados);
+        }
+        
+        function filtrarModeracion() {
+            const texto = document.getElementById('filtroModeracion').value.toLowerCase();
+            const tipo = document.getElementById('filtroTipoModeracion').value;
+            
+            const filtrados = moderacionLogs.filter(l => {
+                const matchTexto = !texto || 
+                    l.tipo_deteccion.toLowerCase().includes(texto) ||
+                    (l.mensaje_editado && l.mensaje_editado.toLowerCase().includes(texto));
+                
+                const matchTipo = !tipo || l.tipo_deteccion === tipo;
+                
+                return matchTexto && matchTipo;
+            });
+            
+            renderizarModeracionLogs(filtrados);
+        }
+        
+        function filtrarUsuarios() {
+            // Implementar
+        }
+        
+        function filtrarBloqueos() {
+            // Implementar
+        }
+        
+        // Notificaciones
+        function mostrarNotificacion(mensaje, tipo) {
+            const notificacion = document.createElement('div');
+            notificacion.style.cssText = `
+                position: fixed;
+                top: 20px;
+                right: 20px;
+                padding: 15px 25px;
+                background: ${tipo === 'success' ? '#10B981' : tipo === 'error' ? '#EF4444' : '#3B82F6'};
+                color: white;
+                border-radius: 10px;
+                box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+                z-index: 10001;
+                animation: slideIn 0.3s ease-out;
+            `;
+            notificacion.textContent = mensaje;
+            document.body.appendChild(notificacion);
+            
+            setTimeout(() => {
+                notificacion.style.animation = 'slideOut 0.3s ease-out';
+                setTimeout(() => notificacion.remove(), 300);
+            }, 3000);
+        }
+    </script>
+</body>
+</html>
+

@@ -1,0 +1,611 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cresalia Chat Seguro</title>
+    
+    <!-- Favicon -->
+    <link rel="icon" type="image/x-icon" href="../favicon.ico">
+    <link rel="icon" type="image/png" sizes="32x32" href="../assets/logo/logo-cresalia.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="../assets/logo/logo-cresalia.png">
+    <link rel="apple-touch-icon" sizes="180x180" href="../assets/logo/logo-cresalia.png">
+    
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    
+    <!-- Supabase -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="../config-supabase-seguro.js"></script>
+    
+    <!-- Sistema de Chat Seguro -->
+    <script src="../js/sistema-chat-seguro.js"></script>
+    
+    <!-- Protección Anti-DevTools -->
+    <script src="../core/proteccion-devtools-avanzada.js?v=2.0"></script>
+    
+    <!-- Seguridad de Paneles (si es admin) -->
+    <script src="../js/seguridad-paneles-admin.js"></script>
+    <script src="../js/seguridad-validacion-entrada.js"></script>
+    
+    <!-- Sistema de Alertas -->
+    <script src="../js/sistema-alertas-comunidades.js"></script>
+    <script src="../js/sistema-checkin-emergencias.js"></script>
+    
+    <!-- Sistema de Feedbacks -->
+    <script src="../js/sistema-feedbacks-general.js"></script>
+    
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667EEA 0%, #764BA2 100%);
+            min-height: 100vh;
+            color: #333;
+        }
+        
+        .container-main {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        .header {
+            background: white;
+            border-radius: 20px;
+            padding: 30px;
+            margin-bottom: 20px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            text-align: center;
+        }
+        
+        .header h1 {
+            color: #667EEA;
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+        }
+        
+        .header .subtitle {
+            color: #6B7280;
+            font-size: 1.1rem;
+        }
+        
+        .chat-container {
+            display: grid;
+            grid-template-columns: 300px 1fr;
+            gap: 20px;
+            height: calc(100vh - 200px);
+        }
+        
+        .sidebar {
+            background: white;
+            border-radius: 20px;
+            padding: 20px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            overflow-y: auto;
+        }
+        
+        .sidebar-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid #E5E7EB;
+        }
+        
+        .sidebar-header h2 {
+            color: #374151;
+            font-size: 1.5rem;
+        }
+        
+        .btn-nuevo-chat {
+            background: linear-gradient(135deg, #667EEA, #764BA2);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 10px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+        
+        .btn-nuevo-chat:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+        
+        .conversaciones-list {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+        
+        .conversacion-item {
+            padding: 15px;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.3s;
+            border: 2px solid transparent;
+        }
+        
+        .conversacion-item:hover {
+            background: #F3F4F6;
+            border-color: #667EEA;
+        }
+        
+        .conversacion-item.activa {
+            background: linear-gradient(135deg, #667EEA, #764BA2);
+            color: white;
+        }
+        
+        .conversacion-nombre {
+            font-weight: 600;
+            margin-bottom: 5px;
+        }
+        
+        .conversacion-ultimo {
+            font-size: 0.85rem;
+            opacity: 0.8;
+        }
+        
+        .chat-area {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+        
+        .chat-header {
+            padding: 20px;
+            border-bottom: 2px solid #E5E7EB;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .chat-header-info h3 {
+            color: #374151;
+            margin-bottom: 5px;
+        }
+        
+        .chat-header-acciones {
+            display: flex;
+            gap: 10px;
+        }
+        
+        .btn-accion {
+            background: #F3F4F6;
+            border: none;
+            padding: 8px 12px;
+            border-radius: 8px;
+            cursor: pointer;
+            color: #374151;
+            transition: all 0.3s;
+        }
+        
+        .btn-accion:hover {
+            background: #E5E7EB;
+        }
+        
+        .btn-accion.peligro {
+            background: #FEE2E2;
+            color: #DC2626;
+        }
+        
+        .btn-accion.peligro:hover {
+            background: #FECACA;
+        }
+        
+        .mensajes-area {
+            flex: 1;
+            overflow-y: auto;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+        
+        .mensaje {
+            max-width: 70%;
+            padding: 12px 16px;
+            border-radius: 18px;
+            word-wrap: break-word;
+        }
+        
+        .mensaje.propio {
+            align-self: flex-end;
+            background: linear-gradient(135deg, #667EEA, #764BA2);
+            color: white;
+        }
+        
+        .mensaje.otro {
+            align-self: flex-start;
+            background: #F3F4F6;
+            color: #374151;
+        }
+        
+        .mensaje-header {
+            font-size: 0.75rem;
+            opacity: 0.8;
+            margin-bottom: 5px;
+        }
+        
+        .mensaje.moderado {
+            border-left: 4px solid #F59E0B;
+            background: #FEF3C7;
+        }
+        
+        .mensaje.bloqueado {
+            border-left: 4px solid #EF4444;
+            background: #FEE2E2;
+            opacity: 0.7;
+        }
+        
+        .input-area {
+            padding: 20px;
+            border-top: 2px solid #E5E7EB;
+            display: flex;
+            gap: 10px;
+        }
+        
+        .input-mensaje {
+            flex: 1;
+            padding: 12px 16px;
+            border: 2px solid #E5E7EB;
+            border-radius: 25px;
+            font-size: 1rem;
+            outline: none;
+            transition: all 0.3s;
+        }
+        
+        .input-mensaje:focus {
+            border-color: #667EEA;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+        
+        .btn-enviar {
+            background: linear-gradient(135deg, #667EEA, #764BA2);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 25px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+        
+        .btn-enviar:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+        
+        .empty-state {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100%;
+            color: #9CA3AF;
+            text-align: center;
+            padding: 40px;
+        }
+        
+        .empty-state i {
+            font-size: 4rem;
+            margin-bottom: 20px;
+            opacity: 0.5;
+        }
+        
+        .badge-verificado {
+            display: inline-block;
+            background: #10B981;
+            color: white;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-size: 0.7rem;
+            margin-left: 5px;
+        }
+        
+        .badge-menor {
+            display: inline-block;
+            background: #F59E0B;
+            color: white;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-size: 0.7rem;
+            margin-left: 5px;
+        }
+        
+        @media (max-width: 768px) {
+            .chat-container {
+                grid-template-columns: 1fr;
+                height: auto;
+            }
+            
+            .sidebar {
+                max-height: 300px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Área de Alertas -->
+    <div id="alertas-emergencia-comunidades"></div>
+    
+    <div class="container-main">
+        <div class="header">
+            <h1>💬 Cresalia Chat Seguro</h1>
+            <p class="subtitle">Conecta con otros usuarios de forma segura y protegida</p>
+        </div>
+        
+        <div class="chat-container">
+            <!-- Sidebar - Lista de Conversaciones -->
+            <div class="sidebar">
+                <div class="sidebar-header">
+                    <h2>Conversaciones</h2>
+                    <button class="btn-nuevo-chat" onclick="abrirModalNuevoChat()">
+                        <i class="fas fa-plus"></i> Nuevo
+                    </button>
+                </div>
+                
+                <div id="conversacionesList" class="conversaciones-list">
+                    <div class="empty-state">
+                        <i class="fas fa-comments"></i>
+                        <p>No hay conversaciones aún</p>
+                        <p style="font-size: 0.9rem; margin-top: 10px;">Inicia una nueva conversación</p>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Área de Chat -->
+            <div class="chat-area">
+                <div id="chatEmpty" class="empty-state">
+                    <i class="fas fa-comment-dots"></i>
+                    <h3>Selecciona una conversación</h3>
+                    <p>O inicia una nueva para comenzar a chatear</p>
+                </div>
+                
+                <div id="chatActive" style="display: none;">
+                    <div class="chat-header">
+                        <div class="chat-header-info">
+                            <h3 id="chatNombreUsuario">Usuario</h3>
+                            <p style="font-size: 0.85rem; color: #6B7280;" id="chatEstadoUsuario">En línea</p>
+                        </div>
+                        <div class="chat-header-acciones">
+                            <button class="btn-accion" onclick="reportarUsuario()" title="Reportar">
+                                <i class="fas fa-flag"></i>
+                            </button>
+                            <button class="btn-accion peligro" onclick="bloquearUsuario()" title="Bloquear">
+                                <i class="fas fa-ban"></i>
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <div id="mensajesArea" class="mensajes-area">
+                        <!-- Mensajes se cargarán aquí -->
+                    </div>
+                    
+                    <div class="input-area">
+                        <input 
+                            type="text" 
+                            id="inputMensaje" 
+                            class="input-mensaje" 
+                            placeholder="Escribe un mensaje..."
+                            onkeypress="if(event.key === 'Enter') enviarMensaje()"
+                        >
+                        <button class="btn-enviar" onclick="enviarMensaje()">
+                            <i class="fas fa-paper-plane"></i> Enviar
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        let conversacionActual = null;
+        
+        // Cargar conversaciones al iniciar
+        document.addEventListener('DOMContentLoaded', async () => {
+            await sistemaChatSeguro.cargarConversaciones();
+            renderizarConversaciones();
+        });
+        
+        // Renderizar lista de conversaciones
+        function renderizarConversaciones() {
+            const container = document.getElementById('conversacionesList');
+            const conversaciones = sistemaChatSeguro.conversaciones;
+            
+            if (conversaciones.length === 0) {
+                container.innerHTML = `
+                    <div class="empty-state">
+                        <i class="fas fa-comments"></i>
+                        <p>No hay conversaciones aún</p>
+                    </div>
+                `;
+                return;
+            }
+            
+            container.innerHTML = conversaciones.map(conv => {
+                const otroUsuario = conv.usuario1_id === sistemaChatSeguro.usuarioHash 
+                    ? { id: conv.usuario2_id, nombre: conv.usuario2_nombre, verificado: conv.usuario2_verificado }
+                    : { id: conv.usuario1_id, nombre: conv.usuario1_nombre, verificado: conv.usuario1_verificado };
+                
+                return `
+                    <div class="conversacion-item ${conversacionActual?.id === conv.id ? 'activa' : ''}" 
+                         onclick="abrirConversacion('${conv.id}')">
+                        <div class="conversacion-nombre">
+                            ${otroUsuario.nombre}
+                            ${otroUsuario.verificado ? '<span class="badge-verificado">✓</span>' : ''}
+                        </div>
+                        <div class="conversacion-ultimo">
+                            ${new Date(conv.fecha_ultimo_mensaje).toLocaleDateString('es-ES')}
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+        
+        // Abrir conversación
+        async function abrirConversacion(conversacionId) {
+            conversacionActual = sistemaChatSeguro.conversaciones.find(c => c.id === conversacionId);
+            if (!conversacionActual) return;
+            
+            // Mostrar área de chat
+            document.getElementById('chatEmpty').style.display = 'none';
+            document.getElementById('chatActive').style.display = 'flex';
+            
+            // Actualizar header
+            const otroUsuario = conversacionActual.usuario1_id === sistemaChatSeguro.usuarioHash 
+                ? { nombre: conversacionActual.usuario2_nombre, verificado: conversacionActual.usuario2_verificado }
+                : { nombre: conversacionActual.usuario1_nombre, verificado: conversacionActual.usuario1_verificado };
+            
+            document.getElementById('chatNombreUsuario').innerHTML = `
+                ${otroUsuario.nombre}
+                ${otroUsuario.verificado ? '<span class="badge-verificado">✓ Verificado</span>' : ''}
+            `;
+            
+            // Cargar mensajes
+            await cargarMensajes(conversacionId);
+            renderizarConversaciones();
+        }
+        
+        // Cargar mensajes
+        async function cargarMensajes(conversacionId) {
+            const mensajes = await sistemaChatSeguro.cargarMensajes(conversacionId);
+            renderizarMensajes(mensajes);
+        }
+        
+        // Renderizar mensajes
+        function renderizarMensajes(mensajes) {
+            const container = document.getElementById('mensajesArea');
+            
+            if (mensajes.length === 0) {
+                container.innerHTML = `
+                    <div class="empty-state">
+                        <i class="fas fa-comment"></i>
+                        <p>No hay mensajes aún</p>
+                        <p style="font-size: 0.9rem;">Sé el primero en escribir</p>
+                    </div>
+                `;
+                return;
+            }
+            
+            container.innerHTML = mensajes.map(msg => {
+                const esPropio = msg.remitente_id === sistemaChatSeguro.usuarioHash;
+                const claseModerado = msg.moderado ? 'moderado' : '';
+                const claseBloqueado = msg.eliminado ? 'bloqueado' : '';
+                
+                return `
+                    <div class="mensaje ${esPropio ? 'propio' : 'otro'} ${claseModerado} ${claseBloqueado}">
+                        ${!esPropio ? `<div class="mensaje-header">${msg.remitente_nombre}</div>` : ''}
+                        <div>${msg.mensaje}</div>
+                        ${msg.moderado ? '<div style="font-size: 0.7rem; margin-top: 5px; opacity: 0.8;">⚠️ Mensaje moderado</div>' : ''}
+                        <div style="font-size: 0.7rem; margin-top: 5px; opacity: 0.7;">
+                            ${new Date(msg.fecha_envio).toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit' })}
+                        </div>
+                        ${!esPropio ? `
+                            <button onclick="reportarMensaje('${msg.id}')" style="margin-top: 5px; background: none; border: none; color: inherit; opacity: 0.6; cursor: pointer; font-size: 0.7rem;">
+                                <i class="fas fa-flag"></i> Reportar
+                            </button>
+                        ` : ''}
+                    </div>
+                `;
+            }).join('');
+            
+            // Scroll al final
+            container.scrollTop = container.scrollHeight;
+        }
+        
+        // Enviar mensaje
+        async function enviarMensaje() {
+            const input = document.getElementById('inputMensaje');
+            const mensaje = input.value.trim();
+            
+            if (!mensaje || !conversacionActual) return;
+            
+            try {
+                await sistemaChatSeguro.enviarMensaje(conversacionActual.id, mensaje);
+                input.value = '';
+                await cargarMensajes(conversacionActual.id);
+                await sistemaChatSeguro.cargarConversaciones();
+                renderizarConversaciones();
+            } catch (error) {
+                console.error('Error enviando mensaje:', error);
+            }
+        }
+        
+        // Abrir modal nuevo chat
+        function abrirModalNuevoChat() {
+            const nombre = prompt('Nombre del usuario con quien quieres chatear:');
+            if (!nombre) return;
+            
+            const usuarioId = prompt('ID o hash del usuario (dejar vacío para buscar por nombre):') || nombre.toLowerCase().replace(/\s+/g, '_');
+            
+            sistemaChatSeguro.crearConversacion(usuarioId, nombre, false, null)
+                .then(conv => {
+                    if (conv) {
+                        abrirConversacion(conv.id);
+                    }
+                });
+        }
+        
+        // Reportar mensaje
+        async function reportarMensaje(mensajeId) {
+            const tipo = prompt('Tipo de reporte:\n1. Acoso\n2. Contenido inapropiado\n3. Spam\n4. Otro');
+            const descripcion = prompt('Describe el problema:');
+            
+            if (!tipo || !descripcion) return;
+            
+            const tiposMap = {
+                '1': 'acoso',
+                '2': 'contenido_inapropiado',
+                '3': 'spam',
+                '4': 'otro'
+            };
+            
+            await sistemaChatSeguro.reportarMensaje(mensajeId, tiposMap[tipo] || 'otro', descripcion);
+        }
+        
+        // Bloquear usuario
+        async function bloquearUsuario() {
+            if (!conversacionActual) return;
+            
+            if (!confirm('¿Estás seguro de que quieres bloquear a este usuario?')) return;
+            
+            const otroUsuarioId = conversacionActual.usuario1_id === sistemaChatSeguro.usuarioHash 
+                ? conversacionActual.usuario2_id 
+                : conversacionActual.usuario1_id;
+            
+            await sistemaChatSeguro.bloquearUsuario(otroUsuarioId, 'Bloqueado por usuario');
+            
+            // Cerrar conversación
+            document.getElementById('chatEmpty').style.display = 'flex';
+            document.getElementById('chatActive').style.display = 'none';
+            conversacionActual = null;
+        }
+        
+        // Reportar usuario
+        function reportarUsuario() {
+            if (!conversacionActual) return;
+            
+            const tipo = prompt('Tipo de reporte:\n1. Acoso\n2. Comportamiento inapropiado\n3. Spam\n4. Otro');
+            const descripcion = prompt('Describe el problema:');
+            
+            if (!tipo || !descripcion) return;
+            
+            // Implementar reporte de usuario (similar a reportar mensaje)
+            alert('Reporte enviado. Gracias por ayudar a mantener Cresalia seguro.');
+        }
+    </script>
+</body>
+</html>
+

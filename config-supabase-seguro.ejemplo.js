@@ -1,17 +1,20 @@
-// ===== CONFIGURACIÓN SEGURA DE SUPABASE =====
-// IMPORTANTE: Reemplaza estas claves con las reales de tu dashboard
+// ===== ARCHIVO DE EJEMPLO - CONFIGURACIÓN SEGURA DE SUPABASE =====
+// Copia este archivo como "config-supabase-seguro.js" y configura tus credenciales
+// IMPORTANTE: config-supabase-seguro.js está en .gitignore y NO se subirá al repositorio
 
 const SUPABASE_CONFIG = {
     // 🔗 URL de tu proyecto (copia desde Supabase Dashboard → Settings → API)
-    url: 'https://zbomxayytvwjbdzbegcw.supabase.co',
+    url: 'REEMPLAZA_CON_TU_URL_DE_SUPABASE',
     
     // 🔑 Clave anónima (pública) - Segura para frontend
-    anonKey: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inpib214YXl5dHZ3amJkemJlZ2N3Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjIwODczMDMsImV4cCI6MjA3NzY2MzMwM30.ZYpckr8rPaN1vAemdjHxPSe6QvF6R1Ylic6JoNKnsBA',
+    // Copia desde Supabase Dashboard → Settings → API → anon/public key
+    anonKey: 'REEMPLAZA_CON_TU_ANON_KEY',
     
     // 🔐 Clave de servicio (privada) - SOLO para backend
     // ⚠️ IMPORTANTE: Esta clave NO debe estar en GitHub
     // Si necesitás esta clave en producción, usá variables de entorno
     // Por ahora, las comunidades funcionan solo con anonKey (pública)
+    // Copia desde Supabase Dashboard → Settings → API → service_role key
     serviceRoleKey: 'REEMPLAZA_CON_TU_SERVICE_ROLE_KEY_LOCALMENTE',
     
     // Configuración de seguridad
@@ -25,7 +28,8 @@ const SUPABASE_CONFIG = {
 
 // Función para validar configuración
 function validarConfiguracion() {
-    if (SUPABASE_CONFIG.anonKey.includes('REEMPLAZA') || 
+    if (SUPABASE_CONFIG.url.includes('REEMPLAZA') || 
+        SUPABASE_CONFIG.anonKey.includes('REEMPLAZA') || 
         SUPABASE_CONFIG.serviceRoleKey.includes('REEMPLAZA')) {
         console.error('🚨 CONFIGURACIÓN INCOMPLETA: Reemplaza las claves por las reales');
         return false;
@@ -40,8 +44,4 @@ if (typeof module !== 'undefined' && module.exports) {
 
 // Hacer disponible globalmente
 window.SUPABASE_CONFIG = SUPABASE_CONFIG;
-
-
-
-
 
