@@ -88,7 +88,10 @@ async function manejarLogin(event) {
     const password = document.getElementById('password').value;
     
     // Validación de contraseña (configuración privada)
-    const adminPassword = (window.CONFIG_PRIVADO && window.CONFIG_PRIVADO.adminCresalia) || 'CREDENTIAL_REMOVED';
+    // Contraseña de admin - NO hardcodeada por seguridad
+    const adminPassword = (window.CONFIG_PRIVADO && window.CONFIG_PRIVADO.adminCresalia) || 
+                          (typeof process !== 'undefined' && process.env?.ADMIN_PASSWORD) ||
+                          null; // Si no hay configuración, requerir autenticación
     if (password === adminPassword) {
         // Crear sesión
         const sessionData = {

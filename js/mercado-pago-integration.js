@@ -16,10 +16,10 @@ const MERCADO_PAGO_CONFIG = typeof window !== 'undefined' && window.CONFIG_MERCA
         enabled: true // ✅ Mercado Pago habilitado
     }
     : {
-        // Fallback: Credenciales directas (si no hay configuración global)
-        publicKey: 'CREDENTIAL_REMOVED',
-        accessToken: 'CREDENTIAL_REMOVED',
-        sandbox: false, // ✅ PRODUCCIÓN: Usando credenciales reales
+        // Fallback: Usar variables de entorno o configuración de Vercel
+        publicKey: window?.MERCADOPAGO_PUBLIC_KEY || 'CONFIGURAR_EN_VERCEL',
+        accessToken: window?.MERCADOPAGO_ACCESS_TOKEN || 'CONFIGURAR_EN_VERCEL',
+        sandbox: false,
         currency: 'ARS',
         statement_descriptor: 'Cresalia',
         enabled: true

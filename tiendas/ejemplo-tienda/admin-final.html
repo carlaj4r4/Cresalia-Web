@@ -2713,10 +2713,10 @@
         // Todas las comisiones van a tu cuenta de Mercado Pago
         // ============================================
         
-        // Configuración de Mercado Pago (TUS CLAVES REALES)
-        const MERCADOPAGO_CONFIG = {
-            publicKey: 'CREDENTIAL_REMOVED',
-            accessToken: 'CREDENTIAL_REMOVED'
+        // Configuración de Mercado Pago (Usar configuración global o variables de entorno)
+        const MERCADOPAGO_CONFIG = window.CONFIG_MERCADO_PAGO?.production || {
+            publicKey: window?.MERCADOPAGO_PUBLIC_KEY || 'CONFIGURAR_EN_VERCEL',
+            accessToken: window?.MERCADOPAGO_ACCESS_TOKEN || 'CONFIGURAR_EN_VERCEL'
         };
         
         // Comisiones por plan (igual para todos)

@@ -91,7 +91,7 @@
 
 - [ ] **Acceso Master:**
   - Abre: `panel-master-cresalia.html`
-  - Contraseña: `CREDENTIAL_REMOVED`
+  - Contraseña: Configurar en `config-privado.js` o variables de entorno
   - ✅ Debería mostrar el panel
 
 - [ ] **Datos en Tiempo Real:**

@@ -488,7 +488,7 @@
             
             <div class="text-center mt-4">
                 <small class="text-muted">
-                    Contraseña por defecto: <strong>CREDENTIAL_REMOVED</strong>
+                    Contraseña por defecto: <strong>Configurar en config-privado.js</strong>
                 </small>
             </div>
         </div>
@@ -684,7 +684,9 @@
 
     <script>
         // Configuración
-        const ADMIN_PASSWORD = 'CREDENTIAL_REMOVED';
+        const ADMIN_PASSWORD = (window.CONFIG_PRIVADO && window.CONFIG_PRIVADO.adminCresalia) || 
+                              process.env?.ADMIN_PASSWORD || 
+                              'CONFIGURAR_EN_VARIABLES_DE_ENTORNO';
         let isLoggedIn = false;
         let productoEditando = null;
         

@@ -904,7 +904,10 @@
     
     <script>
         // No redeclarar supabase - ya está en supabase-config.js
-        const MASTER_PASSWORD = 'CREDENTIAL_REMOVED'; // La misma que tu admin
+        // Contraseña maestra - Configurar en variables de entorno o usar configuración privada
+        const MASTER_PASSWORD = (window.CONFIG_PRIVADO && window.CONFIG_PRIVADO.adminCresalia) || 
+                                 process?.env?.ADMIN_PASSWORD || 
+                                 prompt('Ingrese contraseña de administración:');
         
         // Toggle password visibility
         function togglePassword() {

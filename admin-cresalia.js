@@ -1,6 +1,8 @@
 // ===== CONFIGURACIÓN DE ADMINISTRADOR =====
 const ADMIN_CONFIG = {
-    password: (window.CONFIG_PRIVADO && window.CONFIG_PRIVADO.adminCresalia) || 'CREDENTIAL_REMOVED', // Configuración privada
+    password: (window.CONFIG_PRIVADO && window.CONFIG_PRIVADO.adminCresalia) || 
+              (typeof process !== 'undefined' && process.env?.ADMIN_PASSWORD) ||
+              null, // NO hardcodeada por seguridad
     sessionTimeout: 30 * 60 * 1000, // 30 minutos
     maxLoginAttempts: 3,
     backupInterval: 30 * 60 * 1000, // 30 minutos
