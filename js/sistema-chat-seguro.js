@@ -399,6 +399,234 @@ class SistemaChatSeguro {
         }
     }
     
+    // ===== CREAR GRUPO =====
+    async crearGrupo(nombre, descripcion, tema, tipoGrupo = 'publico', maxMiembros = 100) {
+        if (!this.supabase) {
+            this.mostrarError('No hay conexión con Supabase');
+            return;
+        }
+        
+        try {
+            const grupoData = {
+                nombre: nombre,
+                descripcion: descripcion,
+                tema: tema,
+                tipo_grupo: tipoGrupo,
+                max_miembros: maxMiembros,
+                creado_por: this.usuarioHash,
+                moderadores: [this.usuarioHash]
+            };
+            
+            const { data, error } = await this.supabase
+                .from('grupos_chat_seguro')
+                .insert([grupoData])
+                .select()
+                .single();
+            
+            if (error) throw error;
+            
+            // Agregar creador como miembro administrador
+            await this.unirseAGrupo(data.id, 'administrador');
+            
+            this.grupos.push(data);
+            return data;
+        } catch (error) {
+            console.error('Error creando grupo:', error);
+            this.mostrarError('Error al crear grupo: ' + error.message);
+            throw error;
+        }
+    }
+    
+    // ===== UNIRSE A GRUPO =====
+    async unirseAGrupo(grupoId, rol = 'miembro') {
+        if (!this.supabase) {
+            this.mostrarError('No hay conexión con Supabase');
+            return;
+        }
+        
+        try {
+            const { data, error } = await this.supabase
+                .from('miembros_grupos_chat')
+                .insert([{
+                    grupo_id: grupoId,
+                    usuario_id: this.usuarioHash,
+                    usuario_nombre: this.usuarioActual.nombre,
+                    rol: rol
+                }])
+                .select()
+                .single();
+            
+            if (error) throw error;
+            
+            return data;
+        } catch (error) {
+            console.error('Error uniéndose a grupo:', error);
+            if (!error.message.includes('duplicate')) {
+                this.mostrarError('Error al unirse al grupo: ' + error.message);
+            }
+            throw error;
+        }
+    }
+    
+    // ===== CARGAR GRUPOS =====
+    async cargarGrupos() {
+        if (!this.supabase) {
+            this.grupos = JSON.parse(localStorage.getItem('grupos_chat_seguro') || '[]');
+            return;
+        }
+        
+        try {
+            // Cargar grupos públicos y a los que pertenece el usuario
+            const { data: gruposPublicos, error: errorPublicos } = await this.supabase
+                .from('grupos_chat_seguro')
+                .select('*')
+                .eq('tipo_grupo', 'publico')
+                .eq('activo', true)
+                .order('total_miembros', { ascending: false });
+            
+            if (errorPublicos) throw errorPublicos;
+            
+            // Cargar grupos donde el usuario es miembro
+            const { data: misGrupos, error: errorMisGrupos } = await this.supabase
+                .from('miembros_grupos_chat')
+                .select('grupo_id, grupos_chat_seguro(*)')
+                .eq('usuario_id', this.usuarioHash)
+                .eq('activo', true);
+            
+            if (errorMisGrupos) throw errorMisGrupos;
+            
+            // Combinar grupos
+            const gruposIds = new Set();
+            this.grupos = [];
+            
+            // Agregar grupos públicos
+            if (gruposPublicos) {
+                gruposPublicos.forEach(g => {
+                    if (!gruposIds.has(g.id)) {
+                        gruposIds.add(g.id);
+                        this.grupos.push(g);
+                    }
+                });
+            }
+            
+            // Agregar mis grupos privados
+            if (misGrupos) {
+                misGrupos.forEach(m => {
+                    if (m.grupos_chat_seguro && !gruposIds.has(m.grupos_chat_seguro.id)) {
+                        gruposIds.add(m.grupos_chat_seguro.id);
+                        this.grupos.push(m.grupos_chat_seguro);
+                    }
+                });
+            }
+            
+        } catch (error) {
+            console.error('Error cargando grupos:', error);
+            this.grupos = [];
+        }
+    }
+    
+    // ===== ENVIAR MENSAJE A GRUPO =====
+    async enviarMensajeGrupo(grupoId, mensaje, opciones = {}) {
+        // Crear conversación especial para grupo
+        let conversacionGrupo = this.conversaciones.find(c => 
+            c.tipo_conversacion === 'grupo' && c.usuario2_id === grupoId
+        );
+        
+        if (!conversacionGrupo) {
+            // Crear conversación de grupo
+            conversacionGrupo = await this.crearConversacionGrupo(grupoId);
+        }
+        
+        return await this.enviarMensaje(conversacionGrupo.id, mensaje, opciones);
+    }
+    
+    // ===== CREAR CONVERSACIÓN DE GRUPO =====
+    async crearConversacionGrupo(grupoId) {
+        if (!this.supabase) {
+            this.mostrarError('No hay conexión con Supabase');
+            return;
+        }
+        
+        try {
+            const grupo = this.grupos.find(g => g.id === grupoId);
+            if (!grupo) {
+                this.mostrarError('Grupo no encontrado');
+                return;
+            }
+            
+            const conversacionData = {
+                usuario1_id: this.usuarioHash,
+                usuario1_nombre: this.usuarioActual.nombre,
+                usuario1_verificado: this.usuarioActual.verificado,
+                usuario2_id: grupoId,
+                usuario2_nombre: grupo.nombre,
+                usuario2_verificado: grupo.verificado,
+                tipo_conversacion: 'grupo'
+            };
+            
+            const { data, error } = await this.supabase
+                .from('conversaciones_chat_seguro')
+                .insert([conversacionData])
+                .select()
+                .single();
+            
+            if (error) throw error;
+            
+            this.conversaciones.push(data);
+            return data;
+        } catch (error) {
+            console.error('Error creando conversación de grupo:', error);
+            this.mostrarError('Error al crear conversación de grupo: ' + error.message);
+            throw error;
+        }
+    }
+    
+    // ===== CHAT GLOBAL =====
+    async enviarMensajeGlobal(mensaje, opciones = {}) {
+        // El chat global usa un grupo especial con ID fijo
+        const CHAT_GLOBAL_ID = 'chat_global_cresalia';
+        
+        // Verificar si existe el grupo de chat global
+        let grupoGlobal = this.grupos.find(g => g.tema === 'chat_global');
+        
+        if (!grupoGlobal) {
+            // Crear grupo de chat global si no existe
+            try {
+                grupoGlobal = await this.crearGrupo(
+                    'Chat Global Cresalia',
+                    'Chat público donde todos pueden participar',
+                    'chat_global',
+                    'publico',
+                    1000
+                );
+            } catch (error) {
+                // Si ya existe, intentar cargarlo
+                await this.cargarGrupos();
+                grupoGlobal = this.grupos.find(g => g.tema === 'chat_global');
+            }
+        }
+        
+        if (grupoGlobal) {
+            return await this.enviarMensajeGrupo(grupoGlobal.id, mensaje, opciones);
+        } else {
+            this.mostrarError('No se pudo acceder al chat global');
+            return null;
+        }
+    }
+    
+    // ===== CARGAR MENSAJES DE GRUPO =====
+    async cargarMensajesGrupo(grupoId) {
+        let conversacionGrupo = this.conversaciones.find(c => 
+            c.tipo_conversacion === 'grupo' && c.usuario2_id === grupoId
+        );
+        
+        if (!conversacionGrupo) {
+            conversacionGrupo = await this.crearConversacionGrupo(grupoId);
+        }
+        
+        return await this.cargarMensajes(conversacionGrupo.id);
+    }
+    
     // ===== REPORTAR MENSAJE =====
     async reportarMensaje(mensajeId, tipoReporte, descripcion, evidencia = []) {
         if (!this.supabase) {

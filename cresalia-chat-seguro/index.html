@@ -120,10 +120,60 @@
             box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
         }
         
+        .tabs-chat {
+            display: flex;
+            gap: 5px;
+            margin-bottom: 15px;
+            border-bottom: 2px solid #E5E7EB;
+        }
+        
+        .tab-chat {
+            flex: 1;
+            padding: 10px;
+            background: transparent;
+            border: none;
+            border-bottom: 3px solid transparent;
+            cursor: pointer;
+            color: #6B7280;
+            font-weight: 600;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 5px;
+        }
+        
+        .tab-chat:hover {
+            color: #667EEA;
+            background: #F3F4F6;
+        }
+        
+        .tab-chat.active {
+            color: #667EEA;
+            border-bottom-color: #667EEA;
+            background: #F3F4F6;
+        }
+        
+        .tab-content-chat {
+            display: none;
+        }
+        
+        .tab-content-chat.active {
+            display: block;
+        }
+        
         .conversaciones-list {
             display: flex;
             flex-direction: column;
             gap: 10px;
+        }
+        
+        .info-box {
+            background: #FEF3C7;
+            border-left: 4px solid #F59E0B;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 15px;
         }
         
         .conversacion-item {
@@ -349,18 +399,75 @@
         <div class="chat-container">
             <!-- Sidebar - Lista de Conversaciones -->
             <div class="sidebar">
-                <div class="sidebar-header">
-                    <h2>Conversaciones</h2>
-                    <button class="btn-nuevo-chat" onclick="abrirModalNuevoChat()">
-                        <i class="fas fa-plus"></i> Nuevo
+                <!-- Tabs de navegación -->
+                <div class="tabs-chat">
+                    <button class="tab-chat active" onclick="mostrarTabChat('privado')" data-tab="privado">
+                        <i class="fas fa-user"></i> Privado
+                    </button>
+                    <button class="tab-chat" onclick="mostrarTabChat('grupos')" data-tab="grupos">
+                        <i class="fas fa-users"></i> Grupos
+                    </button>
+                    <button class="tab-chat" onclick="mostrarTabChat('global')" data-tab="global">
+                        <i class="fas fa-globe"></i> Global
                     </button>
                 </div>
                 
-                <div id="conversacionesList" class="conversaciones-list">
-                    <div class="empty-state">
-                        <i class="fas fa-comments"></i>
-                        <p>No hay conversaciones aún</p>
-                        <p style="font-size: 0.9rem; margin-top: 10px;">Inicia una nueva conversación</p>
+                <!-- Tab: Chat Privado -->
+                <div id="tab-privado" class="tab-content-chat active">
+                    <div class="sidebar-header">
+                        <h2>Chat Privado</h2>
+                        <button class="btn-nuevo-chat" onclick="abrirModalNuevoChat()">
+                            <i class="fas fa-plus"></i> Nuevo
+                        </button>
+                    </div>
+                    
+                    <div id="conversacionesList" class="conversaciones-list">
+                        <div class="empty-state">
+                            <i class="fas fa-comments"></i>
+                            <p>No hay conversaciones aún</p>
+                            <p style="font-size: 0.9rem; margin-top: 10px;">Inicia una nueva conversación</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Tab: Grupos -->
+                <div id="tab-grupos" class="tab-content-chat">
+                    <div class="sidebar-header">
+                        <h2>Grupos</h2>
+                        <button class="btn-nuevo-chat" onclick="abrirModalNuevoGrupo()">
+                            <i class="fas fa-plus"></i> Crear
+                        </button>
+                    </div>
+                    
+                    <div id="gruposList" class="conversaciones-list">
+                        <div class="empty-state">
+                            <i class="fas fa-users"></i>
+                            <p>No hay grupos aún</p>
+                            <p style="font-size: 0.9rem; margin-top: 10px;">Crea o únete a un grupo</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Tab: Chat Global -->
+                <div id="tab-global" class="tab-content-chat">
+                    <div class="sidebar-header">
+                        <h2>Chat Global</h2>
+                    </div>
+                    
+                    <div class="info-box" style="background: #FEF3C7; border-left: 4px solid #F59E0B; padding: 15px; border-radius: 8px; margin-bottom: 15px;">
+                        <p style="margin: 0; font-size: 0.9rem; color: #92400E;">
+                            <i class="fas fa-info-circle"></i> Chat público donde todos pueden participar. Moderación automática activa.
+                        </p>
+                    </div>
+                    
+                    <div id="chatGlobalInfo" class="conversaciones-list">
+                        <div class="empty-state">
+                            <i class="fas fa-globe"></i>
+                            <p>Chat Global Cresalia</p>
+                            <button class="btn" onclick="abrirChatGlobal()" style="margin-top: 15px;">
+                                <i class="fas fa-comments"></i> Entrar al Chat Global
+                            </button>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -416,8 +523,238 @@
         // Cargar conversaciones al iniciar
         document.addEventListener('DOMContentLoaded', async () => {
             await sistemaChatSeguro.cargarConversaciones();
+            await sistemaChatSeguro.cargarGrupos();
             renderizarConversaciones();
+            renderizarGrupos();
         });
+        
+        // Mostrar tab de chat
+        function mostrarTabChat(tab) {
+            document.querySelectorAll('.tab-chat').forEach(t => t.classList.remove('active'));
+            document.querySelectorAll('.tab-content-chat').forEach(tc => tc.classList.remove('active'));
+            
+            document.querySelector(`[data-tab="${tab}"]`).classList.add('active');
+            document.getElementById(`tab-${tab}`).classList.add('active');
+            
+            if (tab === 'grupos') {
+                renderizarGrupos();
+            } else if (tab === 'global') {
+                verificarChatGlobal();
+            }
+        }
+        
+        // Renderizar grupos
+        function renderizarGrupos() {
+            const container = document.getElementById('gruposList');
+            const grupos = sistemaChatSeguro.grupos;
+            
+            if (grupos.length === 0) {
+                container.innerHTML = `
+                    <div class="empty-state">
+                        <i class="fas fa-users"></i>
+                        <p>No hay grupos disponibles</p>
+                        <p style="font-size: 0.9rem; margin-top: 10px;">Crea un nuevo grupo</p>
+                    </div>
+                `;
+                return;
+            }
+            
+            container.innerHTML = grupos.map(grupo => `
+                <div class="conversacion-item" onclick="abrirGrupo('${grupo.id}')">
+                    <div class="conversacion-nombre">
+                        ${grupo.nombre}
+                        ${grupo.verificado ? '<span class="badge-verificado">✓</span>' : ''}
+                    </div>
+                    <div class="conversacion-ultimo">
+                        ${grupo.total_miembros || 0} miembros
+                    </div>
+                </div>
+            `).join('');
+        }
+        
+        // Abrir grupo
+        async function abrirGrupo(grupoId) {
+            const grupo = sistemaChatSeguro.grupos.find(g => g.id === grupoId);
+            if (!grupo) return;
+            
+            // Verificar si el usuario está en el grupo
+            const esMiembro = await verificarMembresiaGrupo(grupoId);
+            if (!esMiembro && grupo.tipo_grupo !== 'publico') {
+                if (confirm(`¿Quieres unirte al grupo "${grupo.nombre}"?`)) {
+                    await sistemaChatSeguro.unirseAGrupo(grupoId);
+                } else {
+                    return;
+                }
+            }
+            
+            // Verificar membresía en grupos públicos
+            if (grupo.tipo_grupo === 'publico' && !esMiembro) {
+                try {
+                    await sistemaChatSeguro.unirseAGrupo(grupoId);
+                } catch (error) {
+                    console.log('Ya es miembro o error al unirse:', error);
+                }
+            }
+            
+            // Abrir conversación del grupo
+            conversacionActual = {
+                id: grupoId,
+                tipo: 'grupo',
+                nombre: grupo.nombre,
+                esGrupo: true
+            };
+            
+            document.getElementById('chatEmpty').style.display = 'none';
+            document.getElementById('chatActive').style.display = 'flex';
+            
+            document.getElementById('chatNombreUsuario').innerHTML = `
+                ${grupo.nombre}
+                ${grupo.verificado ? '<span class="badge-verificado">✓ Verificado</span>' : ''}
+            `;
+            
+            await cargarMensajesGrupo(grupoId);
+        }
+        
+        // Verificar membresía en grupo
+        async function verificarMembresiaGrupo(grupoId) {
+            if (!sistemaChatSeguro.supabase) return true;
+            
+            try {
+                const { data, error } = await sistemaChatSeguro.supabase
+                    .from('miembros_grupos_chat')
+                    .select('id')
+                    .eq('grupo_id', grupoId)
+                    .eq('usuario_id', sistemaChatSeguro.usuarioHash)
+                    .eq('activo', true)
+                    .single();
+                
+                return !!data;
+            } catch (error) {
+                return false;
+            }
+        }
+        
+        // Cargar mensajes de grupo
+        async function cargarMensajesGrupo(grupoId) {
+            const mensajes = await sistemaChatSeguro.cargarMensajesGrupo(grupoId);
+            renderizarMensajes(mensajes);
+        }
+        
+        // Abrir chat global
+        async function abrirChatGlobal() {
+            const grupoGlobal = sistemaChatSeguro.grupos.find(g => g.tema === 'chat_global');
+            
+            if (!grupoGlobal) {
+                // Crear grupo global si no existe
+                try {
+                    const nuevoGrupo = await sistemaChatSeguro.crearGrupo(
+                        'Chat Global Cresalia',
+                        'Chat público donde todos pueden participar',
+                        'chat_global',
+                        'publico',
+                        1000
+                    );
+                    await abrirGrupo(nuevoGrupo.id);
+                } catch (error) {
+                    alert('Error al acceder al chat global: ' + error.message);
+                }
+            } else {
+                await abrirGrupo(grupoGlobal.id);
+            }
+        }
+        
+        // Verificar chat global
+        async function verificarChatGlobal() {
+            const grupoGlobal = sistemaChatSeguro.grupos.find(g => g.tema === 'chat_global');
+            const container = document.getElementById('chatGlobalInfo');
+            
+            if (grupoGlobal) {
+                container.innerHTML = `
+                    <div class="conversacion-item" onclick="abrirChatGlobal()">
+                        <div class="conversacion-nombre">
+                            💬 Chat Global Cresalia
+                            <span class="badge-verificado">✓</span>
+                        </div>
+                        <div class="conversacion-ultimo">
+                            ${grupoGlobal.total_miembros || 0} miembros activos
+                        </div>
+                    </div>
+                `;
+            }
+        }
+        
+        // Abrir modal nuevo grupo
+        function abrirModalNuevoGrupo() {
+            const modal = document.createElement('div');
+            modal.style.cssText = 'position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 10000; display: flex; align-items: center; justify-content: center;';
+            modal.innerHTML = `
+                <div style="background: white; border-radius: 20px; padding: 30px; max-width: 500px; width: 90%;">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                        <h2 style="color: #667EEA;">👥 Crear Nuevo Grupo</h2>
+                        <button onclick="this.closest('div[style*=\"position: fixed\"]').remove()" style="background: none; border: none; font-size: 2rem; cursor: pointer; color: #6B7280;">&times;</button>
+                    </div>
+                    <form onsubmit="crearGrupo(event)">
+                        <div class="form-group">
+                            <label>Nombre del Grupo *</label>
+                            <input type="text" id="grupoNombre" required placeholder="Ej: Vendedores de Cresalia">
+                        </div>
+                        <div class="form-group">
+                            <label>Descripción</label>
+                            <textarea id="grupoDescripcion" rows="3" placeholder="Describe el propósito del grupo..."></textarea>
+                        </div>
+                        <div class="form-group">
+                            <label>Tema</label>
+                            <select id="grupoTema">
+                                <option value="vendedores">Vendedores</option>
+                                <option value="compradores">Compradores</option>
+                                <option value="emprendedores">Emprendedores</option>
+                                <option value="gaming">Gaming</option>
+                                <option value="tecnologia">Tecnología</option>
+                                <option value="otro">Otro</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Tipo de Grupo</label>
+                            <select id="grupoTipo">
+                                <option value="publico">Público (cualquiera puede unirse)</option>
+                                <option value="privado">Privado (solo por invitación)</option>
+                            </select>
+                        </div>
+                        <button type="submit" class="btn" style="width: 100%;">
+                            <i class="fas fa-check"></i> Crear Grupo
+                        </button>
+                    </form>
+                </div>
+            `;
+            document.body.appendChild(modal);
+        }
+        
+        // Crear grupo
+        async function crearGrupo(event) {
+            event.preventDefault();
+            if (!sistemaChatSeguro) {
+                alert('❌ Sistema no inicializado');
+                return;
+            }
+            
+            const nombre = document.getElementById('grupoNombre').value;
+            const descripcion = document.getElementById('grupoDescripcion').value;
+            const tema = document.getElementById('grupoTema').value;
+            const tipo = document.getElementById('grupoTipo').value;
+            
+            try {
+                const resultado = await sistemaChatSeguro.crearGrupo(nombre, descripcion, tema, tipo);
+                if (resultado) {
+                    alert('✅ ¡Grupo creado exitosamente!');
+                    document.querySelector('div[style*="position: fixed"]').remove();
+                    await sistemaChatSeguro.cargarGrupos();
+                    renderizarGrupos();
+                    mostrarTabChat('grupos');
+                }
+            } catch (error) {
+                alert('❌ Error: ' + (error.message || 'No se pudo crear el grupo'));
+            }
+        }
         
         // Renderizar lista de conversaciones
         function renderizarConversaciones() {
@@ -458,6 +795,9 @@
         async function abrirConversacion(conversacionId) {
             conversacionActual = sistemaChatSeguro.conversaciones.find(c => c.id === conversacionId);
             if (!conversacionActual) return;
+            
+            // Marcar que no es grupo
+            conversacionActual.esGrupo = false;
             
             // Mostrar área de chat
             document.getElementById('chatEmpty').style.display = 'none';
@@ -533,13 +873,23 @@
             if (!mensaje || !conversacionActual) return;
             
             try {
-                await sistemaChatSeguro.enviarMensaje(conversacionActual.id, mensaje);
+                if (conversacionActual.esGrupo) {
+                    // Es un grupo
+                    await sistemaChatSeguro.enviarMensajeGrupo(conversacionActual.id, mensaje);
+                    await cargarMensajesGrupo(conversacionActual.id);
+                    await sistemaChatSeguro.cargarGrupos();
+                    renderizarGrupos();
+                } else {
+                    // Es chat privado
+                    await sistemaChatSeguro.enviarMensaje(conversacionActual.id, mensaje);
+                    await cargarMensajes(conversacionActual.id);
+                    await sistemaChatSeguro.cargarConversaciones();
+                    renderizarConversaciones();
+                }
                 input.value = '';
-                await cargarMensajes(conversacionActual.id);
-                await sistemaChatSeguro.cargarConversaciones();
-                renderizarConversaciones();
             } catch (error) {
                 console.error('Error enviando mensaje:', error);
+                alert('Error al enviar mensaje: ' + error.message);
             }
         }
         
