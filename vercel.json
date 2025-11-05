@@ -1,41 +1,7 @@
 {
   "version": 2,
-  "builds": [
-    {
-      "src": "**/*.html",
-      "use": "@vercel/static"
-    }
-  ],
-  "routes": [
-    {
-      "src": "/tiendas/(.*)/admin-final.html",
-      "dest": "/tiendas/$1/admin-final.html"
-    },
-    {
-      "src": "/tiendas/(.*)/index.html",
-      "dest": "/tiendas/$1/index.html"
-    },
-    {
-      "src": "/comunidades/(.*)/",
-      "dest": "/comunidades/$1/index.html"
-    },
-    {
-      "src": "/comunidades/(.*)",
-      "dest": "/comunidades/$1/index.html"
-    },
-    {
-      "src": "/index-cresalia.html",
-      "dest": "/index-cresalia.html"
-    },
-    {
-      "src": "/demo-buyer-interface.html",
-      "dest": "/demo-buyer-interface.html"
-    },
-    {
-      "src": "/(.*)",
-      "dest": "/$1"
-    }
-  ],
+  "buildCommand": "echo 'Static site - no build needed'",
+  "outputDirectory": ".",
   "headers": [
     {
       "source": "/(.*)",
@@ -59,10 +25,39 @@
       ]
     }
   ],
+  "redirects": [
+    {
+      "source": "/",
+      "destination": "/index-cresalia.html",
+      "permanent": false
+    }
+  ],
   "rewrites": [
     {
       "source": "/webhook-mercadopago",
       "destination": "/api/webhook-mercadopago.js"
+    },
+    {
+      "source": "/comunidades/(.*)/",
+      "destination": "/comunidades/$1/index.html"
+    },
+    {
+      "source": "/comunidades/(.*)",
+      "destination": "/comunidades/$1/index.html"
+    },
+    {
+      "source": "/tiendas/(.*)/admin-final.html",
+      "destination": "/tiendas/$1/admin-final.html"
+    },
+    {
+      "source": "/tiendas/(.*)/index.html",
+      "destination": "/tiendas/$1/index.html"
+    },
+    {
+      "source": "/index-cresalia.html",
+      "destination": "/index-cresalia.html"
     }
-  ]
+  ],
+  "cleanUrls": false,
+  "trailingSlash": false
 }
