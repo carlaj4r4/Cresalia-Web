@@ -30,11 +30,11 @@
     <meta name="referrer" content="strict-origin-when-cross-origin">
     
     <!-- Favicon -->
-    <link rel="icon" type="image/x-icon" href="/favicon.ico">
-    <link rel="icon" type="image/png" sizes="32x32" href="/assets/logo/logo-cresalia.png">
-    <link rel="icon" type="image/png" sizes="16x16" href="/assets/logo/logo-cresalia.png">
-    <link rel="apple-touch-icon" sizes="180x180" href="/assets/logo/logo-cresalia.png">
-    <meta name="msapplication-TileImage" content="/assets/logo/logo-cresalia.png">
+    <link rel="icon" type="image/x-icon" href="favicon.ico">
+    <link rel="icon" type="image/png" sizes="32x32" href="assets/logo/logo-cresalia.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="assets/logo/logo-cresalia.png">
+    <link rel="apple-touch-icon" sizes="180x180" href="assets/logo/logo-cresalia.png">
+    <meta name="msapplication-TileImage" content="assets/logo/logo-cresalia.png">
     
     <!-- Sistema de Seguridad -->
     <script src="security-system.js?v=2.0"></script>
@@ -93,6 +93,8 @@
     
     <!-- Click Derecho Personalizado -->
     <script src="js/click-derecho-personalizado.js"></script>
+    <!-- Inyección de Variables de Entorno (debe ir antes de config-supabase-seguro.js) -->
+    <script src="js/inject-env-vars.js"></script>
 </head>
 <body>
     <!-- Navbar -->

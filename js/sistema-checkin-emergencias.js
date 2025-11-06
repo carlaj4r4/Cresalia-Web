@@ -27,6 +27,18 @@ class SistemaCheckinEmergencias {
         // Generar hash de usuario
         this.usuarioHash = this.generarHashUsuario();
         
+        // Solicitar permiso de ubicación (SOLO para detectar desastres naturales)
+        // Lo hacemos al inicio para que el usuario ya tenga el permiso cuando se necesite
+        if (navigator.geolocation && Notification.permission !== 'denied') {
+            // Solo solicitar si no se ha pedido antes o si fue denegado
+            const ubicacionPermitida = localStorage.getItem('cresalia_ubicacion_permitida');
+            if (!ubicacionPermitida) {
+                // Mostrar mensaje explicativo antes de solicitar
+                console.log('📍 Sistema Check-in: Se solicitará permiso de ubicación para detectar desastres naturales en tu zona');
+                // No solicitamos inmediatamente, lo hacemos cuando se necesita
+            }
+        }
+        
         // Verificar si hay campañas activas y si ya hizo check-in
         await this.verificarCampanasActivas();
     }
@@ -321,6 +333,37 @@ class SistemaCheckinEmergencias {
         await this.guardarCheckin(datos);
     }
     
+    // ===== SOLICITAR PERMISO DE UBICACIÓN =====
+    async solicitarUbicacion() {
+        return new Promise((resolve, reject) => {
+            if (!navigator.geolocation) {
+                console.warn('Geolocalización no disponible en este navegador');
+                resolve(null);
+                return;
+            }
+            
+            navigator.geolocation.getCurrentPosition(
+                (position) => {
+                    resolve({
+                        latitud: position.coords.latitude,
+                        longitud: position.coords.longitude,
+                        precision: position.coords.accuracy
+                    });
+                },
+                (error) => {
+                    console.warn('Error obteniendo ubicación:', error.message);
+                    // No es crítico, continuamos sin ubicación
+                    resolve(null);
+                },
+                {
+                    enableHighAccuracy: false,
+                    timeout: 10000,
+                    maximumAge: 300000 // 5 minutos
+                }
+            );
+        });
+    }
+    
     async guardarCheckin(datos) {
         if (!this.supabase) {
             this.mostrarError('No hay conexión con Supabase');
@@ -328,6 +371,14 @@ class SistemaCheckinEmergencias {
         }
         
         try {
+            // Solicitar ubicación (SOLO para detectar desastres naturales en tu zona)
+            let ubicacionUsuario = null;
+            try {
+                ubicacionUsuario = await this.solicitarUbicacion();
+            } catch (error) {
+                console.warn('No se pudo obtener ubicación:', error);
+            }
+            
             const checkinData = {
                 campaña_id: this.campanaActiva.id,
                 usuario_hash: this.usuarioHash,
@@ -336,7 +387,12 @@ class SistemaCheckinEmergencias {
                 descripcion_situacion: datos.descripcion_situacion,
                 quiere_contacto: datos.quiere_contacto || false,
                 email_contacto: datos.email_contacto || null,
-                telefono_contacto: datos.telefono_contacto || null
+                telefono_contacto: datos.telefono_contacto || null,
+                ubicacion_usuario: ubicacionUsuario ? {
+                    latitud: ubicacionUsuario.latitud,
+                    longitud: ubicacionUsuario.longitud,
+                    precision: ubicacionUsuario.precision
+                } : null
             };
             
             const { data, error } = await this.supabase

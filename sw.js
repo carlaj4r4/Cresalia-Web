@@ -121,53 +121,97 @@ self.addEventListener('fetch', event => {
 async function cacheFirst(request) {
   try {
     const cachedResponse = await caches.match(request);
-          if (cachedResponse) {
+    if (cachedResponse) {
       console.log('📦 Service Worker: Sirviendo desde cache:', request.url);
-            return cachedResponse;
-          }
+      return cachedResponse;
+    }
 
     const networkResponse = await fetch(request);
-    if (networkResponse.ok) {
-      const cache = await caches.open(STATIC_CACHE);
-      cache.put(request, networkResponse.clone());
-              }
-
-              return networkResponse;
+    if (networkResponse && networkResponse.ok) {
+      // Solo cachear si es un recurso local o de CDN confiable
+      const url = new URL(request.url);
+      if (url.hostname.includes('cresalia-web.vercel.app') || 
+          url.hostname.includes('cdnjs.cloudflare.com') || 
+          url.hostname.includes('cdn.jsdelivr.net')) {
+        const cache = await caches.open(STATIC_CACHE);
+        cache.put(request, networkResponse.clone());
+      }
+      return networkResponse;
+    }
+    
+    return networkResponse;
   } catch (error) {
     console.error('❌ Service Worker: Error en cacheFirst:', error);
-    return new Response('Error de conexión', { status: 503 });
+    // No devolver error 503, dejar que el navegador maneje el fallo
+    throw error;
   }
 }
 
 // Network First: Para contenido dinámico que debe estar actualizado
 async function networkFirst(request) {
   try {
+    const url = new URL(request.url);
+    
+    // No cachear recursos externos problemáticos
+    if (url.hostname.includes('via.placeholder.com') || 
+        url.hostname.includes('api.mercadopago.com')) {
+      return fetch(request).catch(() => new Response('', { status: 200 }));
+    }
+    
     const networkResponse = await fetch(request);
-    if (networkResponse.ok) {
-      const cache = await caches.open(DYNAMIC_CACHE);
-      cache.put(request, networkResponse.clone());
+    if (networkResponse && networkResponse.ok) {
+      // Solo cachear recursos locales o de CDN confiable
+      if (url.hostname.includes('cresalia-web.vercel.app') || 
+          url.hostname.includes('cdnjs.cloudflare.com') || 
+          url.hostname.includes('cdn.jsdelivr.net')) {
+        const cache = await caches.open(DYNAMIC_CACHE);
+        cache.put(request, networkResponse.clone());
+      }
     }
     return networkResponse;
   } catch (error) {
     console.log('📦 Service Worker: Red no disponible, sirviendo desde cache:', request.url);
     const cachedResponse = await caches.match(request);
-    return cachedResponse || new Response('Contenido no disponible offline', { status: 503 });
+    // Si no hay cache, devolver respuesta vacía en lugar de error 503
+    return cachedResponse || new Response('', { status: 200 });
   }
 }
 
 // Stale While Revalidate: Para recursos que pueden estar en cache pero se actualizan
 async function staleWhileRevalidate(request) {
-  const cache = await caches.open(DYNAMIC_CACHE);
-  const cachedResponse = await cache.match(request);
-  
-  const fetchPromise = fetch(request).then(networkResponse => {
-    if (networkResponse.ok) {
-      cache.put(request, networkResponse.clone());
+  try {
+    const url = new URL(request.url);
+    
+    // No cachear recursos externos que puedan fallar (via.placeholder.com, etc.)
+    if (url.hostname.includes('via.placeholder.com') || 
+        url.hostname.includes('api.mercadopago.com')) {
+      // Solo fetch, sin cachear
+      return fetch(request).catch(() => {
+        // Si falla, devolver respuesta vacía en lugar de error
+        return new Response('', { status: 200, statusText: 'OK' });
+      });
     }
-    return networkResponse;
-  }).catch(() => cachedResponse);
-  
-  return cachedResponse || fetchPromise;
+    
+    const cache = await caches.open(DYNAMIC_CACHE);
+    const cachedResponse = await cache.match(request);
+    
+    const fetchPromise = fetch(request).then(networkResponse => {
+      // Solo cachear si es exitoso y es un recurso local
+      if (networkResponse.ok && 
+          (url.hostname.includes('cresalia-web.vercel.app') || 
+           url.hostname.includes('cdnjs.cloudflare.com') || 
+           url.hostname.includes('cdn.jsdelivr.net'))) {
+        cache.put(request, networkResponse.clone());
+      }
+      return networkResponse;
+    }).catch(() => cachedResponse);
+    
+    return cachedResponse || fetchPromise;
+  } catch (error) {
+    console.error('❌ Service Worker: Error en staleWhileRevalidate:', error);
+    // Intentar fetch directo sin cache
+    return fetch(request).catch(() => new Response('', { status: 200 }));
+  }
 }
 
 // ============================================
