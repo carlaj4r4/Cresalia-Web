@@ -59,5 +59,12 @@
     }
   ],
   "cleanUrls": false,
-  "trailingSlash": false
+  "trailingSlash": false,
+  "crons": [
+    {
+      "path": "/api/tasks/cumpleanos",
+      "schedule": "0 8 * * *",
+      "method": "POST"
+    }
+  ]
 }
