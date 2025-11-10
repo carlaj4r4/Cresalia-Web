@@ -18,9 +18,9 @@
       font-src 'self' data: https: https://fonts.gstatic.com https://cdnjs.cloudflare.com https://cdn.jsdelivr.net;
       style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://cdnjs.cloudflare.com https://cdn.jsdelivr.net;
       style-src-elem 'self' 'unsafe-inline' https://fonts.googleapis.com https://cdnjs.cloudflare.com https://cdn.jsdelivr.net;
-      script-src 'self' 'unsafe-inline' 'unsafe-eval' https://cdnjs.cloudflare.com https://cdn.jsdelivr.net https://sdk.mercadopago.com;
-      script-src-elem 'self' 'unsafe-inline' https://cdnjs.cloudflare.com https://cdn.jsdelivr.net https://sdk.mercadopago.com;
-      connect-src 'self' https:;
+      script-src 'self' 'unsafe-inline' 'unsafe-eval' https://cdnjs.cloudflare.com https://cdn.jsdelivr.net https://sdk.mercadopago.com https://vercel.live;
+      script-src-elem 'self' 'unsafe-inline' https://cdnjs.cloudflare.com https://cdn.jsdelivr.net https://sdk.mercadopago.com https://vercel.live;
+      connect-src 'self' https: https://vercel.live;
       frame-src 'self' https:;
       form-action 'self';
       upgrade-insecure-requests;
@@ -90,6 +90,268 @@
     <link rel="stylesheet" href="css/sistema-anti-fraudes.css">
     <link rel="stylesheet" href="css/proteccion-bidireccional.css">
     <link rel="stylesheet" href="css/filtros-avanzados.css">
+    
+    <style>
+        .cumpleaneros-section {
+            position: relative;
+            padding: 80px 0;
+            background: linear-gradient(135deg, rgba(126, 58, 242, 0.08), rgba(14, 165, 233, 0.08));
+            overflow: hidden;
+        }
+
+        .cumpleaneros-section::before,
+        .cumpleaneros-section::after {
+            content: "";
+            position: absolute;
+            width: 280px;
+            height: 280px;
+            border-radius: 50%;
+            background: rgba(126, 58, 242, 0.12);
+            filter: blur(120px);
+            z-index: 0;
+        }
+
+        .cumpleaneros-section::before {
+            top: -140px;
+            left: -80px;
+        }
+
+        .cumpleaneros-section::after {
+            bottom: -160px;
+            right: -60px;
+            background: rgba(14, 165, 233, 0.12);
+        }
+
+        .cumpleaneros-header {
+            position: relative;
+            z-index: 1;
+            text-align: center;
+        }
+
+        .cumpleaneros-header .section-subtitle {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            color: #7C3AED;
+            margin-bottom: 12px;
+        }
+
+        .cumpleaneros-header .section-title {
+            font-size: 2.4rem;
+            font-weight: 700;
+            color: #111827;
+        }
+
+        .cumpleaneros-header .section-title span {
+            color: #7C3AED;
+        }
+
+        .cumpleaneros-header .section-description {
+            max-width: 640px;
+            margin: 16px auto 0;
+            color: #4B5563;
+            font-size: 1.05rem;
+        }
+
+        .cumpleaneros-panel {
+            position: relative;
+            z-index: 1;
+            border-radius: 24px;
+            padding: 32px 28px;
+            background: #ffffff;
+            box-shadow: 0 20px 45px rgba(15, 23, 42, 0.08);
+            min-height: 320px;
+            display: flex;
+            flex-direction: column;
+            gap: 18px;
+        }
+
+        .cumpleaneros-panel.servicios {
+            background: linear-gradient(160deg, rgba(236, 254, 255, 0.95), rgba(191, 219, 254, 0.7));
+        }
+
+        .cumpleaneros-panel .panel-header {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .cumpleaneros-panel .panel-icon {
+            width: 56px;
+            height: 56px;
+            border-radius: 18px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            color: #ffffff;
+            background: linear-gradient(135deg, #7C3AED, #A855F7);
+            box-shadow: 0 12px 30px rgba(124, 58, 237, 0.25);
+        }
+
+        .cumpleaneros-panel.servicios .panel-icon {
+            background: linear-gradient(135deg, #0EA5E9, #2563EB);
+            box-shadow: 0 12px 30px rgba(14, 165, 233, 0.25);
+        }
+
+        .cumpleaneros-panel h3 {
+            margin: 0;
+            font-size: 1.6rem;
+            font-weight: 700;
+            color: #111827;
+        }
+
+        .cumpleaneros-panel p {
+            margin: 0;
+            color: #4B5563;
+        }
+
+        .cumpleaneros-list {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        .cumpleaneros-card {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            padding: 18px 20px;
+            border-radius: 18px;
+            background: rgba(255, 255, 255, 0.95);
+            border: 1px solid rgba(124, 58, 237, 0.12);
+            backdrop-filter: blur(12px);
+            transition: transform 0.25s ease, box-shadow 0.25s ease;
+        }
+
+        .cumpleaneros-panel.servicios .cumpleaneros-card {
+            border-color: rgba(14, 165, 233, 0.18);
+        }
+
+        .cumpleaneros-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 18px 35px rgba(124, 58, 237, 0.15);
+        }
+
+        .cumpleaneros-avatar {
+            width: 56px;
+            height: 56px;
+            border-radius: 18px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(135deg, #7C3AED, #F472B6);
+            color: #ffffff;
+            font-size: 1.5rem;
+            font-weight: 600;
+            overflow: hidden;
+        }
+
+        .cumpleaneros-panel.servicios .cumpleaneros-avatar {
+            background: linear-gradient(135deg, #0EA5E9, #38BDF8);
+        }
+
+        .cumpleaneros-avatar img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .cumpleaneros-info {
+            flex: 1;
+        }
+
+        .cumpleaneros-info h4 {
+            margin: 0;
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: #111827;
+        }
+
+        .cumpleaneros-info .badge {
+            display: inline-block;
+            padding: 4px 10px;
+            border-radius: 999px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            margin-top: 6px;
+            color: #7C3AED;
+            background: rgba(124, 58, 237, 0.12);
+        }
+
+        .cumpleaneros-panel.servicios .cumpleaneros-info .badge {
+            color: #0EA5E9;
+            background: rgba(14, 165, 233, 0.15);
+        }
+
+        .cumpleaneros-info .cumpleaneros-meta {
+            margin-top: 8px;
+            color: #6B7280;
+            font-size: 0.92rem;
+        }
+
+        .cumpleaneros-dia {
+            font-weight: 700;
+            color: #7C3AED;
+            font-size: 1.2rem;
+            min-width: 52px;
+            text-align: right;
+        }
+
+        .cumpleaneros-panel.servicios .cumpleaneros-dia {
+            color: #0EA5E9;
+        }
+
+        .cumpleaneros-empty {
+            margin: 0;
+            padding: 18px;
+            border-radius: 16px;
+            background: rgba(255, 255, 255, 0.8);
+            border: 1px dashed rgba(124, 58, 237, 0.18);
+            color: #6B7280;
+            font-size: 0.95rem;
+            text-align: center;
+        }
+
+        .cumpleaneros-panel.servicios .cumpleaneros-empty {
+            border-color: rgba(14, 165, 233, 0.25);
+        }
+
+        .cumpleaneros-consent {
+            position: relative;
+            z-index: 1;
+            display: inline-block;
+            margin-top: 28px;
+            padding: 10px 18px;
+            border-radius: 999px;
+            background: rgba(17, 24, 39, 0.75);
+            color: #F9FAFB;
+            font-size: 0.85rem;
+        }
+
+        @media (max-width: 991px) {
+            .cumpleaneros-section {
+                padding: 60px 0;
+            }
+
+            .cumpleaneros-panel {
+                padding: 28px 24px;
+            }
+        }
+
+        @media (max-width: 575px) {
+            .cumpleaneros-card {
+                align-items: flex-start;
+            }
+
+            .cumpleaneros-dia {
+                text-align: left;
+            }
+        }
+    </style>
     
     <!-- Click Derecho Personalizado -->
     <script src="js/click-derecho-personalizado.js"></script>
@@ -875,6 +1137,65 @@
             <!-- Contenido del modal de pago se llena dinámicamente -->
         </div>
     </div>
+
+    <!-- Cumpleañeros del Mes -->
+    <section id="cumpleaneros-home" class="cumpleaneros-section">
+        <div class="container">
+            <div class="cumpleaneros-header">
+                <span class="section-subtitle"><i class="fas fa-birthday-cake"></i> Celebramos juntas y juntos</span>
+                <h2 class="section-title">Cumpleañeros del mes de <span data-mes-actual>...</span></h2>
+                <p class="section-description">
+                    Tiendas y servicios que eligieron compartir su cumpleaños con la comunidad Cresalia. ¡Gracias por inspirarnos!
+                </p>
+            </div>
+
+            <div class="row g-4 mt-4">
+                <div class="col-lg-6">
+                    <div class="cumpleaneros-panel">
+                        <div class="panel-header">
+                            <div class="panel-icon">
+                                <i class="fas fa-store"></i>
+                            </div>
+                            <div>
+                                <h3>Tiendas</h3>
+                                <p>Emprendimientos destacados que celebran este mes.</p>
+                            </div>
+                        </div>
+                        <div class="cumpleaneros-list" data-list-tiendas></div>
+                        <p class="cumpleaneros-empty" data-empty-tiendas>
+                            Aún no hay tiendas cumpliendo años en portada este mes. Si sos parte de Cresalia, activá el consentimiento en tu panel y te sumamos.
+                        </p>
+                    </div>
+                </div>
+
+                <div class="col-lg-6">
+                    <div class="cumpleaneros-panel servicios">
+                        <div class="panel-header">
+                            <div class="panel-icon">
+                                <i class="fas fa-hands-helping"></i>
+                            </div>
+                            <div>
+                                <h3>Servicios</h3>
+                                <p>Expertas y expertos que regalan su talento todo el año.</p>
+                            </div>
+                        </div>
+                        <div class="cumpleaneros-list" data-list-servicios></div>
+                        <p class="cumpleaneros-empty" data-empty-servicios>
+                            Todavía no hay servicios cumpliendo años en portada. Activá tu consentimiento desde tu panel para aparecer acá 💜
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row mt-4">
+                <div class="col-12 text-center">
+                    <span class="cumpleaneros-consent">
+                        Mostramos sólo negocios que autorizaron aparecer en Cumpleañeros del Mes. Podés activar o desactivar tu presencia cuando quieras.
+                    </span>
+                </div>
+            </div>
+        </div>
+    </section>
 
     <!-- Footer -->
     <footer class="footer">
@@ -2281,6 +2602,9 @@
     
     <!-- Filtros Avanzados -->
     <script src="js/filtros-avanzados.js"></script>
+
+    <!-- Cumpleañeros del Mes -->
+    <script src="js/cumpleaneros-home.js"></script>
     
     <!-- Inicialización de Sistemas -->
     <script>
