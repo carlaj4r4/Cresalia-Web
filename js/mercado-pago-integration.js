@@ -5,25 +5,47 @@
 // ✅ HABILITADO: Usando credenciales reales de producción
 
 // Usar configuración global si está disponible, sino usar estas
-const MERCADO_PAGO_CONFIG = typeof window !== 'undefined' && window.CONFIG_MERCADO_PAGO 
-    ? {
-        // Usar configuración global
-        publicKey: window.CONFIG_MERCADO_PAGO.production.publicKey,
-        accessToken: window.CONFIG_MERCADO_PAGO.production.accessToken,
-        sandbox: false, // ✅ PRODUCCIÓN: Usando credenciales reales
-        currency: 'ARS',
-        statement_descriptor: 'Cresalia', // Lo que aparece en el resumen de cuenta
-        enabled: true // ✅ Mercado Pago habilitado
+const MERCADO_PAGO_SETTINGS = (() => {
+    if (typeof window === 'undefined') {
+        return {
+            publicKey: 'CONFIGURAR_EN_VERCEL',
+            accessToken: 'CONFIGURAR_EN_VERCEL',
+            sandbox: false,
+            currency: 'ARS',
+            statement_descriptor: 'Cresalia',
+            enabled: true
+        };
     }
-    : {
-        // Fallback: Usar variables de entorno o configuración de Vercel
-        publicKey: window?.MERCADOPAGO_PUBLIC_KEY || 'CONFIGURAR_EN_VERCEL',
-        accessToken: window?.MERCADOPAGO_ACCESS_TOKEN || 'CONFIGURAR_EN_VERCEL',
+
+    if (window.MERCADO_PAGO_CONFIG) {
+        return window.MERCADO_PAGO_CONFIG;
+    }
+
+    if (window.CONFIG_MERCADO_PAGO) {
+        const config = {
+            publicKey: window.CONFIG_MERCADO_PAGO.production.publicKey,
+            accessToken: window.CONFIG_MERCADO_PAGO.production.accessToken,
+            sandbox: false,
+            currency: 'ARS',
+            statement_descriptor: 'Cresalia',
+            enabled: true
+        };
+        window.MERCADO_PAGO_CONFIG = config;
+        return config;
+    }
+
+    const fallbackConfig = {
+        publicKey: window.MERCADOPAGO_PUBLIC_KEY || 'CONFIGURAR_EN_VERCEL',
+        accessToken: window.MERCADOPAGO_ACCESS_TOKEN || 'CONFIGURAR_EN_VERCEL',
         sandbox: false,
         currency: 'ARS',
         statement_descriptor: 'Cresalia',
         enabled: true
     };
+
+    window.MERCADO_PAGO_CONFIG = fallbackConfig;
+    return fallbackConfig;
+})();
 
 // Planes de suscripción disponibles
 const PLANES_SUSCRIPCION = {
@@ -118,26 +140,26 @@ function inicializarMercadoPago() {
     }
     
     // Verificar configuración
-    if (!MERCADO_PAGO_CONFIG.publicKey || MERCADO_PAGO_CONFIG.publicKey.includes('TEST-') || MERCADO_PAGO_CONFIG.publicKey.includes('xxxx')) {
+    if (!MERCADO_PAGO_SETTINGS.publicKey || MERCADO_PAGO_SETTINGS.publicKey.includes('TEST-') || MERCADO_PAGO_SETTINGS.publicKey.includes('xxxx')) {
         console.warn('⚠️ Mercado Pago no configurado correctamente. Verificá tus credenciales en config-mercado-pago.js');
         return false;
     }
     
     // Verificar que está habilitado
-    if (MERCADO_PAGO_CONFIG.enabled === false) {
+    if (MERCADO_PAGO_SETTINGS.enabled === false) {
         console.warn('⚠️ Mercado Pago está deshabilitado en la configuración');
         return false;
     }
     
     try {
         // Inicializar Mercado Pago con las credenciales REALES de producción
-        const mp = new MercadoPago(MERCADO_PAGO_CONFIG.publicKey, {
+        const mp = new MercadoPago(MERCADO_PAGO_SETTINGS.publicKey, {
             locale: 'es-AR'
         });
         
         console.log('✅ Mercado Pago inicializado correctamente');
-        console.log('✅ Modo:', MERCADO_PAGO_CONFIG.sandbox ? 'SANDBOX (pruebas)' : 'PRODUCCIÓN (real)');
-        console.log('✅ Statement Descriptor:', MERCADO_PAGO_CONFIG.statement_descriptor || 'Cresalia');
+        console.log('✅ Modo:', MERCADO_PAGO_SETTINGS.sandbox ? 'SANDBOX (pruebas)' : 'PRODUCCIÓN (real)');
+        console.log('✅ Statement Descriptor:', MERCADO_PAGO_SETTINGS.statement_descriptor || 'Cresalia');
         
         return mp;
     } catch (error) {
@@ -168,7 +190,7 @@ async function crearPreferenciaPago(planId, datosUsuario) {
                     description: plan.descripcion,
                     quantity: 1,
                     unit_price: plan.precio,
-                    currency_id: MERCADO_PAGO_CONFIG.currency
+                    currency_id: MERCADO_PAGO_SETTINGS.currency
                 }
             ],
             payer: {

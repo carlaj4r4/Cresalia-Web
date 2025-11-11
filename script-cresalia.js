@@ -4324,11 +4324,23 @@ function animarMarcador() {
 let mercadopago = null;
 
 // Configuración de Mercado Pago (REEMPLAZAR CON TUS CREDENCIALES REALES)
-const MERCADO_PAGO_CONFIG = {
-    publicKey: 'TEST-12345678-1234-1234-1234-123456789012', // Reemplazar con tu clave pública real
-    accessToken: 'TEST-1234567890123456789012345678901234567890-123456-1234567890123456789012345678901234567890', // Reemplazar con tu token de acceso real
-    preferenceId: null
-};
+const MERCADO_PAGO_RUNTIME_CONFIG = (() => {
+    if (typeof window !== 'undefined' && window.MERCADO_PAGO_CONFIG) {
+        return window.MERCADO_PAGO_CONFIG;
+    }
+
+    const defaults = {
+        publicKey: 'TEST-12345678-1234-1234-1234-123456789012', // Reemplazar con tu clave pública real
+        accessToken: 'TEST-1234567890123456789012345678901234567890-123456-1234567890123456789012345678901234567890', // Reemplazar con tu token de acceso real
+        preferenceId: null
+    };
+
+    if (typeof window !== 'undefined') {
+        window.MERCADO_PAGO_CONFIG = defaults;
+    }
+
+    return defaults;
+})();
 
 // Inicializar Mercado Pago
 function inicializarMercadoPago() {
@@ -4341,7 +4353,7 @@ function inicializarMercadoPago() {
         }
         
         if (typeof MercadoPago !== 'undefined') {
-            mercadopago = new MercadoPago(MERCADO_PAGO_CONFIG.publicKey);
+            mercadopago = new MercadoPago(MERCADO_PAGO_RUNTIME_CONFIG.publicKey);
             console.log('Mercado Pago inicializado correctamente');
             return true;
         } else {
@@ -4396,7 +4408,7 @@ async function crearPreferenciaProducto(producto, cantidad = 1) {
         const response = await fetch('https://api.mercadopago.com/checkout/preferences', {
             method: 'POST',
             headers: {
-                'Authorization': `Bearer ${MERCADO_PAGO_CONFIG.accessToken}`,
+                'Authorization': `Bearer ${MERCADO_PAGO_RUNTIME_CONFIG.accessToken}`,
                 'Content-Type': 'application/json'
             },
             body: JSON.stringify(preference)
@@ -4407,7 +4419,7 @@ async function crearPreferenciaProducto(producto, cantidad = 1) {
         }
 
         const data = await response.json();
-        MERCADO_PAGO_CONFIG.preferenceId = data.id;
+        MERCADO_PAGO_RUNTIME_CONFIG.preferenceId = data.id;
         
         console.log('Preferencia de pago creada:', data.id);
         return data.id;
@@ -4472,7 +4484,7 @@ async function crearPreferenciaCarrito(productos) {
         const response = await fetch('https://api.mercadopago.com/checkout/preferences', {
             method: 'POST',
             headers: {
-                'Authorization': `Bearer ${MERCADO_PAGO_CONFIG.accessToken}`,
+                'Authorization': `Bearer ${MERCADO_PAGO_RUNTIME_CONFIG.accessToken}`,
                 'Content-Type': 'application/json'
             },
             body: JSON.stringify(preference)
@@ -4483,7 +4495,7 @@ async function crearPreferenciaCarrito(productos) {
         }
 
         const data = await response.json();
-        MERCADO_PAGO_CONFIG.preferenceId = data.id;
+        MERCADO_PAGO_RUNTIME_CONFIG.preferenceId = data.id;
         
         console.log('Preferencia de carrito creada:', data.id);
         return data.id;
@@ -4584,7 +4596,7 @@ async function generarFacturaMercadoPago(paymentId) {
         // Obtener detalles del pago
         const response = await fetch(`https://api.mercadopago.com/v1/payments/${paymentId}`, {
             headers: {
-                'Authorization': `Bearer ${MERCADO_PAGO_CONFIG.accessToken}`
+                'Authorization': `Bearer ${MERCADO_PAGO_RUNTIME_CONFIG.accessToken}`
             }
         });
 
@@ -4624,7 +4636,7 @@ async function verificarEstadoPago(paymentId) {
     try {
         const response = await fetch(`https://api.mercadopago.com/v1/payments/${paymentId}`, {
             headers: {
-                'Authorization': `Bearer ${MERCADO_PAGO_CONFIG.accessToken}`
+                'Authorization': `Bearer ${MERCADO_PAGO_RUNTIME_CONFIG.accessToken}`
             }
         });
 

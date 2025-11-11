@@ -361,11 +361,13 @@
     <script src="auth/supabase-config.js"></script>
     
     <script>
-        // Inicializar Supabase
-        let supabase;
-        
         document.addEventListener('DOMContentLoaded', function() {
-            supabase = initSupabase();
+            const supabaseClient = initSupabase();
+            if (!supabaseClient) {
+                console.error('❌ No se pudo inicializar Supabase');
+                mostrarNotificacion('No se pudo conectar con el servicio de autenticación. Intenta más tarde.', 'error');
+                return;
+            }
             
             const form = document.getElementById('registroForm');
             form.addEventListener('submit', async function(e) {
