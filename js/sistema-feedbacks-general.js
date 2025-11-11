@@ -28,11 +28,29 @@ const SistemaFeedbacksGeneral = {
     async init() {
         try {
             // Verificar si Supabase está disponible
-            if (typeof window.supabase === 'undefined' && typeof supabase === 'undefined') {
+            let supabaseClient = null;
+
+            if (typeof window.initSupabase === 'function') {
+                try {
+                    supabaseClient = window.initSupabase();
+                } catch (initError) {
+                    console.warn('⚠️ No se pudo inicializar Supabase desde initSupabase:', initError);
+                }
+            }
+
+            if (!supabaseClient && typeof window.SUPABASE_CLIENT !== 'undefined' && window.SUPABASE_CLIENT && typeof window.SUPABASE_CLIENT.from === 'function') {
+                supabaseClient = window.SUPABASE_CLIENT;
+            }
+
+            if (!supabaseClient && typeof supabase !== 'undefined' && supabase && typeof supabase.from === 'function') {
+                supabaseClient = supabase;
+            }
+
+            if (supabaseClient && typeof supabaseClient.from === 'function') {
+                this.state.supabase = supabaseClient;
+            } else {
                 console.warn('⚠️ Supabase no está disponible, usando localStorage como respaldo');
                 this.state.supabase = null;
-            } else {
-                this.state.supabase = window.supabase || supabase;
             }
 
             // Crear botón flotante si no existe

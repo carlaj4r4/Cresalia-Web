@@ -33,9 +33,13 @@ function initSupabase() {
                 { auth: SUPABASE_CONFIG.auth }
             );
             console.log('✅ Supabase inicializado');
+            window.SUPABASE_CLIENT = supabase;
         } else {
             console.error('❌ Librería de Supabase no cargada');
         }
+    }
+    if (typeof window !== 'undefined' && supabase) {
+        window.SUPABASE_CLIENT = supabase;
     }
     return supabase;
 }
