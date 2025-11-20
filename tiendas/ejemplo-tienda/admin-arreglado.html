@@ -690,18 +690,9 @@
         let isLoggedIn = false;
         let productoEditando = null;
         
-        // Datos de ejemplo (funciona sin Supabase)
-        let productos = [
-            { id: 1, nombre: 'Producto Demo 1', precio: 29.99, stock: 50, estado: 'activo', descripcion: 'Descripción del producto demo 1' },
-            { id: 2, nombre: 'Producto Demo 2', precio: 49.99, stock: 25, estado: 'activo', descripcion: 'Descripción del producto demo 2' },
-            { id: 3, nombre: 'Producto Demo 3', precio: 19.99, stock: 0, estado: 'agotado', descripcion: 'Descripción del producto demo 3' }
-        ];
-        
-        let ordenes = [
-            { id: 1, cliente: 'Juan Pérez', total: 79.98, estado: 'completada', fecha: '2024-01-15' },
-            { id: 2, cliente: 'María García', total: 29.99, estado: 'pendiente', fecha: '2024-01-14' },
-            { id: 3, cliente: 'Carlos López', total: 149.97, estado: 'procesando', fecha: '2024-01-13' }
-        ];
+        // Datos vacíos para producción (no cargar ejemplos)
+        let productos = [];
+        let ordenes = [];
         
         // Inicialización
         document.addEventListener('DOMContentLoaded', function() {

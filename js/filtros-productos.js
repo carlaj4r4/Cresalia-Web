@@ -6,129 +6,8 @@ let resultadosFiltros = []; // Renombrado para evitar conflictos con script-cres
 let paginaActual = 1;
 const productosPorPagina = 12;
 
-// Datos de ejemplo para productos
-const productosEjemplo = [
-    {
-        id: 1,
-        nombre: "iPhone 15 Pro",
-        descripcion: "El iPhone más avanzado con chip A17 Pro, cámara de 48MP y pantalla Super Retina XDR de 6.1 pulgadas.",
-        precio: 1299.99,
-        categoria: "tecnologia",
-        tienda: "TechStore Argentina",
-        valoracion: 4.8,
-        votos: 156,
-        imagen: "https://via.placeholder.com/300x200/7C3AED/FFFFFF?text=iPhone+15+Pro",
-        estado: "nuevo",
-        envio: "gratis",
-        stock: 25,
-        tags: ["smartphone", "apple", "premium", "camera"]
-    },
-    {
-        id: 2,
-        nombre: "Zapatillas Nike Air Max",
-        descripcion: "Zapatillas deportivas con tecnología Air Max para máximo confort y estilo.",
-        precio: 149.99,
-        categoria: "deportes",
-        tienda: "SportMax",
-        valoracion: 4.5,
-        votos: 89,
-        imagen: "https://via.placeholder.com/300x200/EC4899/FFFFFF?text=Nike+Air+Max",
-        estado: "nuevo",
-        envio: "rapido",
-        stock: 50,
-        tags: ["zapatillas", "nike", "deportes", "running"]
-    },
-    {
-        id: 3,
-        nombre: "Laptop Gaming ASUS",
-        descripcion: "Laptop gaming de alto rendimiento con RTX 4060, procesador Intel i7 y 16GB RAM.",
-        precio: 1599.99,
-        categoria: "tecnologia",
-        tienda: "GamingStore",
-        valoracion: 4.7,
-        votos: 234,
-        imagen: "https://via.placeholder.com/300x200/10B981/FFFFFF?text=ASUS+Gaming",
-        estado: "nuevo",
-        envio: "gratis",
-        stock: 12,
-        tags: ["laptop", "gaming", "asus", "rtx"]
-    },
-    {
-        id: 4,
-        nombre: "Vestido Elegante Negro",
-        descripcion: "Vestido de fiesta elegante en color negro, perfecto para ocasiones especiales.",
-        precio: 89.99,
-        categoria: "moda",
-        tienda: "Fashion Boutique",
-        valoracion: 4.3,
-        votos: 67,
-        imagen: "https://via.placeholder.com/300x200/F59E0B/FFFFFF?text=Vestido+Negro",
-        estado: "nuevo",
-        envio: "gratis",
-        stock: 30,
-        tags: ["vestido", "elegante", "negro", "fiesta"]
-    },
-    {
-        id: 5,
-        nombre: "Set de Herramientas Profesional",
-        descripcion: "Kit completo de herramientas para bricolaje y reparaciones del hogar.",
-        precio: 199.99,
-        categoria: "herramientas",
-        tienda: "Herramientas Pro",
-        valoracion: 4.6,
-        votos: 145,
-        imagen: "https://via.placeholder.com/300x200/EF4444/FFFFFF?text=Herramientas",
-        estado: "nuevo",
-        envio: "local",
-        stock: 18,
-        tags: ["herramientas", "bricolaje", "hogar", "profesional"]
-    },
-    {
-        id: 6,
-        nombre: "Sofá 3 Plazas Gris",
-        descripcion: "Sofá cómodo y moderno en color gris, perfecto para el salón de tu hogar.",
-        precio: 699.99,
-        categoria: "hogar",
-        tienda: "Muebles Deluxe",
-        valoracion: 4.4,
-        votos: 92,
-        imagen: "https://via.placeholder.com/300x200/6B7280/FFFFFF?text=Sofa+Gris",
-        estado: "nuevo",
-        envio: "gratis",
-        stock: 8,
-        tags: ["sofa", "hogar", "gris", "salon"]
-    },
-    {
-        id: 7,
-        nombre: "Kit de Maquillaje Profesional",
-        descripcion: "Set completo de maquillaje con 24 sombras, labiales y accesorios.",
-        precio: 79.99,
-        categoria: "belleza",
-        tienda: "Beauty Center",
-        valoracion: 4.2,
-        votos: 123,
-        imagen: "https://via.placeholder.com/300x200/F9A8D4/FFFFFF?text=Maquillaje",
-        estado: "nuevo",
-        envio: "rapido",
-        stock: 45,
-        tags: ["maquillaje", "belleza", "cosmetics", "profesional"]
-    },
-    {
-        id: 8,
-        nombre: "Bicicleta de Montaña",
-        descripcion: "Bicicleta todo terreno con 21 velocidades y suspensión delantera.",
-        precio: 449.99,
-        categoria: "deportes",
-        tienda: "Bike World",
-        valoracion: 4.5,
-        votos: 78,
-        imagen: "https://via.placeholder.com/300x200/059669/FFFFFF?text=Bicicleta",
-        estado: "nuevo",
-        envio: "local",
-        stock: 15,
-        tags: ["bicicleta", "montaña", "deportes", "outdoor"]
-    }
-];
+// Datos de ejemplo para productos (eliminados para producción)
+const productosEjemplo = [];
 
 // Inicialización
 document.addEventListener('DOMContentLoaded', function() {
@@ -181,10 +60,10 @@ async function cargarProductosEjemplo() {
     try {
         await cargarProductosReales();
     } catch (error) {
-        console.log('Cargando productos de ejemplo:', error);
-        // Si falla, usar productos de ejemplo
-        productos = [...productosEjemplo];
-        resultadosFiltros = [...productos];
+        console.log('⚠️ No se pudieron cargar productos:', error);
+        // No cargar productos de ejemplo en producción
+        productos = [];
+        resultadosFiltros = [];
         actualizarResultados();
     }
 }
@@ -203,9 +82,9 @@ async function cargarProductosReales() {
         }
     }
     
-    // Si no hay productos guardados, usar los de ejemplo
-    productos = [...productosEjemplo];
-    resultadosFiltros = [...productos];
+    // No cargar productos de ejemplo en producción - deben agregarse desde el panel
+    productos = [];
+    resultadosFiltros = [];
     
     // Guardar en localStorage para simular persistencia
     localStorage.setItem('cresalia_productos', JSON.stringify(productos));

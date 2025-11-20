@@ -46,9 +46,20 @@ secrets.json
 *.key
 *.pem
 config-privado.js
-config-mercado-pago.js
+# ⚠️ SEGURIDAD: config-mercado-pago.js puede contener credenciales reales
+# Si agregás credenciales reales, creá config-mercado-pago.local.js y agregalo aquí
+config-mercado-pago.local.js
+config-mercado-pago.real.js
+config-mercado-pago.prod.js
 config-supabase-seguro.js
 documentacion-mercado-pago.md
+
+# Archivos con credenciales reales (NUNCA subir a GitHub)
+*.real.js
+*.prod.js
+*.local.js
+*credentials*.js
+*secrets*.js
 
 # ⚠️ IMPORTANTE: config-supabase-seguro.js contiene claves de Supabase
 # NO subir este archivo a GitHub con claves reales

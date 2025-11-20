@@ -1,0 +1,486 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cresalia - Comunidad Duelo Perinatal y Fertilidad</title>
+    <link rel="icon" type="image/x-icon" href="../../favicon.ico">
+    <link rel="icon" type="image/png" href="../../assets/logo/logo-cresalia.png">
+    <link rel="apple-touch-icon" href="../../assets/logo/logo-cresalia.png">
+
+    <!-- PWA Manifest -->
+    <link rel="manifest" href="../../comunidades/manifest-comunidades.json">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    <meta name="apple-mobile-web-app-title" content="Cresalia Comunidades">
+    <meta name="theme-color" content="#C4B5FD">
+
+    <!-- Protección -->
+    <script src="../../core/proteccion-devtools-avanzada.js?v=2.0"></script>
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --lavanda: #C4B5FD;
+            --turquesa: #5EEAD4;
+            --lavanda-profunda: #A78BFA;
+            --texto-principal: #334155;
+            --texto-secundario: #64748B;
+            --fondo: linear-gradient(135deg, #C4B5FD 0%, #A855F7 40%, #14B8A6 100%);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Poppins', 'Segoe UI', sans-serif;
+            background: var(--fondo);
+            min-height: 100vh;
+            padding: 24px;
+        }
+
+        .page-wrapper {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            flex-direction: column;
+            gap: 32px;
+        }
+
+        .card {
+            background: #fff;
+            border-radius: 28px;
+            padding: 54px 42px;
+            box-shadow: 0 24px 70px rgba(15, 23, 42, 0.25);
+        }
+
+        h1 {
+            font-size: 2.8rem;
+            color: var(--texto-principal);
+        }
+
+        .subtitle {
+            display: inline-block;
+            margin-top: 18px;
+            font-size: 1.4rem;
+            font-weight: 600;
+            background: linear-gradient(135deg, #C4B5FD, #5EEAD4);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        p {
+            color: var(--texto-secundario);
+            line-height: 1.8;
+            margin-bottom: 1rem;
+            font-size: 1.05rem;
+        }
+
+        .tagline {
+            font-size: 1.15rem;
+            margin: 16px 0 32px;
+            color: var(--texto-principal);
+        }
+
+        .cta-group {
+            display: flex;
+            gap: 16px;
+            flex-wrap: wrap;
+            margin-top: 24px;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--lavanda) 0%, var(--turquesa) 100%);
+            color: #fff;
+            padding: 14px 32px;
+            border: none;
+            border-radius: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 12px 24px rgba(196, 181, 253, 0.35);
+        }
+
+        .btn-secondary {
+            background: rgba(203, 213, 225, 0.25);
+            color: var(--texto-principal);
+            padding: 12px 28px;
+            border-radius: 10px;
+            border: none;
+            font-weight: 600;
+            display: inline-flex;
+            gap: 8px;
+            align-items: center;
+            cursor: pointer;
+        }
+
+        .pill-list {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+            margin: 24px 0;
+        }
+
+        .pill {
+            background: rgba(196, 181, 253, 0.18);
+            color: var(--texto-principal);
+            padding: 10px 18px;
+            border-radius: 999px;
+            font-weight: 600;
+            font-size: 0.95rem;
+        }
+
+        .section-title {
+            font-size: 1.9rem;
+            color: var(--texto-principal);
+            margin-bottom: 14px;
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+            gap: 22px;
+            margin-top: 24px;
+        }
+
+        .info-card {
+            background: #F8FAFC;
+            border-radius: 18px;
+            padding: 24px;
+            border-left: 5px solid var(--lavanda);
+        }
+
+        .info-card h3 {
+            color: var(--texto-principal);
+            margin-bottom: 12px;
+        }
+
+        .foro-container {
+            background: #fff;
+            border-radius: 24px;
+            padding: 40px;
+            box-shadow: 0 20px 60px rgba(15, 23, 42, 0.2);
+        }
+
+        .foro-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 16px;
+            margin-bottom: 24px;
+            border-bottom: 1px solid #E2E8F0;
+            padding-bottom: 18px;
+        }
+
+        .foro-header h2 {
+            font-size: 2rem;
+            color: var(--texto-principal);
+        }
+
+        .reglas {
+            background: rgba(15, 23, 42, 0.04);
+            border-radius: 18px;
+            padding: 26px;
+            margin-top: 24px;
+        }
+
+        .reglas ul {
+            list-style: none;
+            display: grid;
+            gap: 12px;
+        }
+
+        .reglas li {
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
+            color: var(--texto-secundario);
+        }
+
+        .relacionadas {
+            margin-top: 36px;
+        }
+
+        .community-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 10px 18px;
+            background: linear-gradient(135deg, #9333EA, #F472B6);
+            color: #fff;
+            border-radius: 999px;
+            text-decoration: none;
+            font-weight: 600;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(15, 23, 42, 0.65);
+            z-index: 50;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .modal-content {
+            background: #fff;
+            border-radius: 20px;
+            padding: 32px;
+            width: 100%;
+            max-width: 620px;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 18px;
+        }
+
+        .modal-header h3 {
+            color: var(--texto-principal);
+        }
+
+        .cerrar-modal {
+            border: none;
+            background: none;
+            font-size: 28px;
+            cursor: pointer;
+            color: #94A3B8;
+        }
+
+        .form-group {
+            margin-bottom: 18px;
+        }
+
+        .form-group label {
+            display: block;
+            font-weight: 600;
+            margin-bottom: 6px;
+            color: var(--texto-principal);
+        }
+
+        .form-group input,
+        .form-group textarea {
+            width: 100%;
+            border: 2px solid #E2E8F0;
+            border-radius: 10px;
+            padding: 12px;
+            font-family: inherit;
+            font-size: 1rem;
+        }
+
+        .form-group textarea {
+            min-height: 150px;
+            resize: vertical;
+        }
+
+        @media (max-width: 768px) {
+            body { padding: 16px; }
+            .card { padding: 42px 28px; }
+            .foro-container { padding: 28px; }
+            h1 { font-size: 2.2rem; }
+        }
+    </style>
+</head>
+<body>
+    <div class="page-wrapper">
+        <section class="card" style="text-align: center;">
+            <h1>🤍 Comunidad Duelo Perinatal y Fertilidad</h1>
+            <span class="subtitle">Tu historia importa. Tu duelo es válido. No estás sola.</span>
+            <p class="tagline">
+                Un refugio amoroso para mujeres y familias que atraviesan pérdidas gestacionales, neonatales,
+                tratamientos de fertilidad o el miedo constante a volver a intentarlo.
+            </p>
+            <div class="pill-list">
+                <span class="pill">💔 Pérdida de embarazo</span>
+                <span class="pill">👶 Parto prematuro / neonatal</span>
+                <span class="pill">🌈 Embarazo arcoíris</span>
+                <span class="pill">🧬 Fertilidad y tratamientos</span>
+                <span class="pill">🤝 Parejas y acompañantes</span>
+            </div>
+            <div class="cta-group">
+                <button class="btn-primary" onclick="foroComunidad?.mostrarFormularioPost()">
+                    <i class="fas fa-heart"></i> Compartir mi historia
+                </button>
+                <a class="btn-secondary" href="../../comunidades/reglas-comunidad.html" target="_blank" rel="noopener">
+                    <i class="fas fa-shield-heart"></i> Reglas de cuidado
+                </a>
+            </div>
+        </section>
+
+        <section class="card">
+            <h2 class="section-title">¿Qué vas a encontrar aquí?</h2>
+            <div class="grid">
+                <div class="info-card">
+                    <h3>Foro seguro y empático</h3>
+                    <p>
+                        Publicaciones anónimas, moderadas por personas sensibilizadas en duelo gestacional y violencia obstétrica.
+                        Categorías por etapas: búsqueda, pérdida temprana, duelo neonatal, embarazo arcoíris y acompañantes.
+                    </p>
+                </div>
+                <div class="info-card">
+                    <h3>Recursos verificados</h3>
+                    <p>
+                        Directorio de profesionales con enfoque respetuoso, rituales simbólicos, guías para fechas difíciles,
+                        ejercicios de regulación emocional y grupos virtuales moderados por Cresalia.
+                    </p>
+                </div>
+                <div class="info-card">
+                    <h3>Privacidad y memoria</h3>
+                    <p>
+                        Opciones para guardar cartas, fotos o ecografías de forma privada. Recordatorios opcionales de aniversarios
+                        con mensajes de contención en días sensibles.
+                    </p>
+                </div>
+                <div class="info-card">
+                    <h3>Apoyo a parejas</h3>
+                    <p>
+                        Espacio específico para acompañantes que buscan comprender, sostener y sanar junto a la persona gestante.
+                        Preguntas guiadas y respuestas empáticas.
+                    </p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Foro -->
+        <section class="foro-container">
+            <div class="foro-header">
+                <h2>🤍 Foro de apoyo mutuo</h2>
+                <button class="btn-primary" id="btn-crear-post">
+                    <i class="fas fa-pen"></i> Crear Post
+                </button>
+            </div>
+            <div id="posts-container"></div>
+
+            <div class="reglas">
+                <h3 style="color: var(--texto-principal); margin-bottom: 12px;">Reglas imprescindibles</h3>
+                <ul>
+                    <li>💬 Validamos todas las pérdidas: tempranas, tardías, neonatales o proyectos truncos.</li>
+                    <li>🛑 No se permiten frases como “mejor así”, “ya tendrás otro” o juicios de fe.</li>
+                    <li>🤝 Se permiten acompañantes si hablan con respeto y sin apropiarse del espacio.</li>
+                    <li>👩‍⚕️ Para emergencias o pensamientos autolesivos, derivamos a profesionales de inmediato.</li>
+                </ul>
+            </div>
+        </section>
+
+        <!-- Recursos -->
+        <section class="card">
+            <h2 class="section-title">Recursos iniciales recomendados</h2>
+            <div class="grid">
+                <div class="info-card">
+                    <h3>Guía para fechas sensibles</h3>
+                    <p>Ideas amorosas para atravesar aniversarios, ecografías y festejos sociales sin invalidar el dolor.</p>
+                    <button class="btn-secondary" onclick="descargarRecurso('guia-fechas-dificiles.pdf')">
+                        <i class="fas fa-file-download"></i> Descargar PDF
+                    </button>
+                </div>
+                <div class="info-card">
+                    <h3>Directorio de profesionales</h3>
+                    <p>Lista curada de psicología perinatal, doulas, obstetras respetuosas y grupos de duelo.</p>
+                    <button class="btn-secondary" onclick="descargarRecurso('directorio-profesionales.xlsx')">
+                        <i class="fas fa-address-book"></i> Ver directorio
+                    </button>
+                </div>
+                <div class="info-card">
+                    <h3>Rituales de memoria</h3>
+                    <p>Plantillas para cartas a bebés estrella, caja de recuerdos y ritual de luz. Opcionales, jamás obligatorios.</p>
+                    <button class="btn-secondary" onclick="descargarRecurso('rituales-memoria.docx')">
+                        <i class="fas fa-lightbulb"></i> Descargar rituales
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <!-- Relacionadas -->
+        <section class="card">
+            <h2 class="section-title">También puede ayudarte</h2>
+            <div class="pill-list">
+                <a class="community-link" href="../mujeres-sobrevivientes/index.html">💜 Mujeres sobrevivientes</a>
+                <a class="community-link" href="../hombres-sobrevivientes/index.html" style="background: linear-gradient(135deg, #3B82F6, #1E3A8A);">💙 Hombres sobrevivientes</a>
+                <a class="community-link" href="../madres-padres-solteros/index.html" style="background: linear-gradient(135deg, #FB7185, #F472B6);">👶 Madres & Padres solos</a>
+            </div>
+        </section>
+    </div>
+
+    <!-- Modal post -->
+    <div class="modal" id="modal-crear-post">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>🤍 Compartí tu historia</h3>
+                <button class="cerrar-modal" id="cerrar-form-post">&times;</button>
+            </div>
+            <form id="form-crear-post">
+                <div class="form-group">
+                    <label for="autor-alias">Tu alias (opcional):</label>
+                    <input type="text" id="autor-alias" placeholder="Ej: Mamá de Lucía, Papá estrella, Anónimo" maxlength="60">
+                </div>
+                <div class="form-group">
+                    <label for="post-titulo">Título (opcional):</label>
+                    <input type="text" id="post-titulo" placeholder="Lo que quieras poner..." maxlength="500">
+                </div>
+                <div class="form-group">
+                    <label for="post-contenido">Tu mensaje *</label>
+                    <textarea id="post-contenido" required minlength="10" placeholder="Contanos lo que necesites. No hay temas prohibidos."></textarea>
+                </div>
+                <div style="display:flex; gap:12px; justify-content:flex-end;">
+                    <button type="button" class="btn-secondary" id="cancelar-form-post">Cancelar</button>
+                    <button type="submit" class="btn-primary">
+                        <i class="fas fa-paper-plane"></i> Publicar
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        function descargarRecurso(nombre) {
+            alert('💡 Este recurso estará disponible pronto en Cresalia. Estamos cargando la biblioteca inicial.');
+        }
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="../../config-supabase-seguro.js"></script>
+    <script src="../../js/sistema-foro-comunidades.js"></script>
+    <script src="../../js/sistema-validacion-identidades.js"></script>
+    <script src="../../js/sistema-alertas-emergencia-global.js"></script>
+    <script>
+        let foroComunidad;
+        let validacionIdentidad;
+        let alertasComunidad;
+
+        document.addEventListener('DOMContentLoaded', () => {
+            foroComunidad = new SistemaForoComunidades('duelo-perinatal');
+            window.foroComunidad = foroComunidad;
+
+            if (typeof SistemaValidacionIdentidades !== 'undefined') {
+                validacionIdentidad = new SistemaValidacionIdentidades('duelo-perinatal');
+            }
+
+            if (typeof SistemaAlertasComunidades !== 'undefined') {
+                alertasComunidad = new SistemaAlertasComunidades('duelo-perinatal');
+            }
+
+            document.getElementById('cancelar-form-post')?.addEventListener('click', () => {
+                foroComunidad.ocultarFormularioPost();
+            });
+        });
+    </script>
+</body>
+</html>
+

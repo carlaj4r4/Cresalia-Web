@@ -75,11 +75,11 @@ const SistemaFeedbacksGeneral = {
         boton.title = 'Dejar Feedback';
         boton.setAttribute('aria-label', 'Abrir formulario de feedback');
         
-        // Estilos del botón
+        // Estilos del botón (ajustado para no superponerse con soporte)
         boton.style.cssText = `
             position: fixed;
-            bottom: 30px;
-            right: 30px;
+            bottom: 20px;
+            right: 100px;
             width: 60px;
             height: 60px;
             border-radius: 50%;
@@ -89,7 +89,7 @@ const SistemaFeedbacksGeneral = {
             font-size: 24px;
             cursor: pointer;
             box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
-            z-index: 9998;
+            z-index: 9997;
             transition: all 0.3s ease;
             display: flex;
             align-items: center;
@@ -135,7 +135,7 @@ const SistemaFeedbacksGeneral = {
             width: 100%;
             height: 100%;
             background: rgba(0, 0, 0, 0.7);
-            z-index: 9999;
+            z-index: 10000;
             display: flex;
             align-items: center;
             justify-content: center;

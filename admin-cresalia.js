@@ -815,41 +815,9 @@ function cargarServicios() {
     
     if (!serviciosLista) return;
     
-    // Si no hay servicios guardados, cargar los servicios por defecto
+    // No cargar servicios por defecto en producción
     if (servicios.length === 0) {
-        console.log('🔧 Cargando servicios por defecto...');
-        
-        // Servicios por defecto de la página principal (datos-productos.js)
-        servicios = [
-            // Aire Acondicionado
-            { id: 'ac1', nombre: 'Instalación de Aire Acondicionado', categoria: 'aireAcondicionado', precio: 150000, descripcion: 'Instalación completa de sistema de aire acondicionado' },
-            { id: 'ac2', nombre: 'Mantenimiento de Aire Acondicionado', categoria: 'aireAcondicionado', precio: 25000, descripcion: 'Limpieza y recarga de gas refrigerante' },
-            
-            // Taller
-            { id: 'ta1', nombre: 'Cambio de Aceite', categoria: 'taller', precio: 18000, descripcion: 'Cambio de aceite y filtro incluido' },
-            { id: 'ta2', nombre: 'Alineación y Balanceo', categoria: 'taller', precio: 22000, descripcion: 'Alineación de dirección y balanceo de ruedas' },
-            { id: 'ta3', nombre: 'Diagnóstico Computarizado', categoria: 'taller', precio: 15000, descripcion: 'Diagnóstico completo del vehículo' },
-            
-            // Lubricentro
-            { id: 'lu1', nombre: 'Cambio de Aceite Express', categoria: 'lubricentro', precio: 15000, descripcion: 'Cambio rápido de aceite y filtros' },
-            { id: 'lu2', nombre: 'Cambio de Filtros', categoria: 'lubricentro', precio: 8000, descripcion: 'Cambio de filtros de aire, aceite y combustible' },
-            
-            // Detailing
-            { id: 'de1', nombre: 'Lavado Completo', categoria: 'detailing', precio: 8000, descripcion: 'Lavado exterior e interior completo' },
-            { id: 'de2', nombre: 'Pulido y Encerado', categoria: 'detailing', precio: 15000, descripcion: 'Pulido profesional y encerado' },
-            
-            // Gestoría
-            { id: 'ge1', nombre: 'Transferencia de Vehículo', categoria: 'gestoria', precio: 30000, descripcion: 'Tramitación de transferencia de dominio' },
-            { id: 'ge2', nombre: 'Renovación de Licencia', categoria: 'gestoria', precio: 15000, descripcion: 'Renovación de licencia de conducir' },
-            
-            // Transporte
-            { id: 'tr1', nombre: 'Traslado Local Corrientes', categoria: 'transporte', precio: 15000, descripcion: 'Traslado de pasajeros dentro de Corrientes Capital' },
-            { id: 'tr2', nombre: 'Traslado Interior Corrientes', categoria: 'transporte', precio: 25000, descripcion: 'Traslado de pasajeros al interior de la provincia de Corrientes' }
-        ];
-        
-        // Guardar servicios por defecto
-        localStorage.setItem('serviciosCRESALIA', JSON.stringify(servicios));
-        console.log('💾 Servicios por defecto cargados:', servicios.length);
+        console.log('📭 No hay servicios configurados. Agrega tus servicios desde el panel de administración.');
     }
     
     // Renderizar servicios
@@ -3473,120 +3441,9 @@ function cargarServicios() {
     // Cargar servicios guardados
     let servicios = JSON.parse(localStorage.getItem('serviciosCRESALIA') || '[]');
     
-    // Si no hay servicios guardados, cargar los servicios por defecto de la página principal
+    // No cargar servicios por defecto en producción
     if (servicios.length === 0) {
-        console.log('🔧 Cargando servicios por defecto de la página principal...');
-        
-        // Servicios por defecto hardcodeados de script-friocas.js
-        servicios = [
-            {
-                id: 'servicio-completo',
-                nombre: 'Servicio Completo',
-                descripcion: 'Lavado completo del vehículo incluyendo interior, exterior, motor y llantas',
-                precio: 25000,
-                duracion: '2-3 horas',
-                icono: 'fas fa-car',
-                incluye: [
-                    'Lavado exterior completo',
-                    'Limpieza de interior',
-                    'Limpieza de motor',
-                    'Limpieza de llantas',
-                    'Aplicación de cera',
-                    'Acondicionador de neumáticos'
-                ]
-            },
-            {
-                id: 'servicio-interior',
-                nombre: 'Servicio de Interior',
-                descripcion: 'Limpieza profunda del interior del vehículo',
-                precio: 15000,
-                duracion: '1-2 horas',
-                icono: 'fas fa-couch',
-                incluye: [
-                    'Aspirado completo',
-                    'Limpieza de asientos',
-                    'Limpieza de tablero',
-                    'Limpieza de vidrios internos',
-                    'Desodorización',
-                    'Acondicionador de plásticos'
-                ]
-            },
-            {
-                id: 'servicio-exterior',
-                nombre: 'Servicio de Exterior',
-                descripcion: 'Lavado y cuidado del exterior del vehículo',
-                precio: 12000,
-                duracion: '1-1.5 horas',
-                icono: 'fas fa-car-side',
-                incluye: [
-                    'Lavado exterior',
-                    'Limpieza de llantas',
-                    'Aplicación de cera',
-                    'Acondicionador de neumáticos',
-                    'Secado manual'
-                ]
-            },
-            {
-                id: 'servicio-motor',
-                nombre: 'Limpieza de Motor',
-                descripcion: 'Limpieza especializada del compartimento del motor',
-                precio: 8000,
-                duracion: '45-60 minutos',
-                icono: 'fas fa-cog',
-                incluye: [
-                    'Limpieza del motor',
-                    'Desengrasado',
-                    'Protección anticorrosiva',
-                    'Secado completo'
-                ]
-            },
-            {
-                id: 'servicio-llantas',
-                nombre: 'Servicio de Llantas',
-                descripcion: 'Limpieza y cuidado especializado de llantas',
-                precio: 6000,
-                duracion: '30-45 minutos',
-                icono: 'fas fa-circle',
-                incluye: [
-                    'Limpieza profunda de llantas',
-                    'Remoción de óxido',
-                    'Acondicionador de neumáticos',
-                    'Protección UV'
-                ]
-            },
-            {
-                id: 'servicio-gestoria',
-                nombre: 'Servicio de Gestoría',
-                descripcion: 'Tramitación de documentación vehicular',
-                precio: 35000,
-                duracion: '1-3 días',
-                icono: 'fas fa-file-alt',
-                incluye: [
-                    'Transferencia de dominio',
-                    'Renovación de licencia',
-                    'Tramitación de multas',
-                    'Asesoramiento legal'
-                ]
-            },
-            {
-                id: 'servicio-traslado',
-                nombre: 'Servicio de Traslado',
-                descripcion: 'Traslado del vehículo desde y hacia el taller',
-                precio: 5000,
-                duracion: '30-60 minutos',
-                icono: 'fas fa-truck',
-                incluye: [
-                    'Recogida del vehículo',
-                    'Traslado seguro',
-                    'Entrega en domicilio',
-                    'Seguro de transporte'
-                ]
-            }
-        ];
-        
-        // Guardar servicios por defecto
-        localStorage.setItem('serviciosCRESALIA', JSON.stringify(servicios));
-        console.log('💾 Servicios por defecto cargados:', servicios.length);
+        console.log('📭 No hay servicios configurados. Agrega tus servicios desde el panel de administración.');
     }
     
     // Mostrar lista de servicios

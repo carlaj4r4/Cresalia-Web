@@ -512,6 +512,176 @@
             max-width: 600px;
             margin: 0 auto;
         }
+
+        .celebracion-banner {
+            border-radius: 18px;
+            padding: 28px;
+            margin-bottom: 2rem;
+            position: relative;
+            overflow: hidden;
+            color: #FFFFFF;
+            box-shadow: 0 20px 35px rgba(15, 23, 42, 0.25);
+            display: none;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .celebracion-banner::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: radial-gradient(circle at top right, rgba(255, 255, 255, 0.28), transparent 60%);
+            pointer-events: none;
+        }
+
+        .celebracion-banner:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 25px 45px rgba(15, 23, 42, 0.28);
+        }
+
+        .celebracion-header {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+            position: relative;
+            z-index: 2;
+        }
+
+        .celebracion-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.35rem 0.9rem;
+            border-radius: 999px;
+            background: rgba(255, 255, 255, 0.18);
+            backdrop-filter: blur(6px);
+            font-weight: 600;
+            letter-spacing: 0.01em;
+            font-size: 0.9rem;
+            align-self: flex-start;
+        }
+
+        .celebracion-banner h2 {
+            font-size: 1.9rem;
+            font-weight: 700;
+            margin: 0;
+            text-shadow: 0 2px 10px rgba(15, 23, 42, 0.25);
+        }
+
+        .celebracion-banner p {
+            margin: 0;
+            font-size: 1.05rem;
+            opacity: 0.92;
+        }
+
+        .celebracion-actions {
+            display: flex;
+            gap: 0.75rem;
+            flex-wrap: wrap;
+            margin-top: 1.5rem;
+            position: relative;
+            z-index: 2;
+        }
+
+        .celebracion-actions button {
+            border: none;
+            border-radius: 999px;
+            padding: 0.65rem 1.3rem;
+            font-weight: 600;
+            font-size: 0.9rem;
+            cursor: pointer;
+            transition: transform 0.2s ease, box-shadow 0.2s ease, opacity 0.2s;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.35rem;
+        }
+
+        .celebracion-actions button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 12px 22px rgba(15, 23, 42, 0.2);
+        }
+
+        .celebracion-actions button.secondary {
+            background: rgba(255, 255, 255, 0.2);
+            color: #FFFFFF;
+        }
+
+        .celebracion-actions button.link {
+            background: transparent;
+            color: rgba(255, 255, 255, 0.85);
+            text-decoration: underline;
+            padding: 0.4rem 0;
+        }
+
+        .celebracion-metricas {
+            margin-top: 1.4rem;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+            gap: 1rem;
+            position: relative;
+            z-index: 2;
+        }
+
+        .celebracion-metrica-card {
+            background: rgba(255, 255, 255, 0.18);
+            padding: 1rem;
+            border-radius: 14px;
+            backdrop-filter: blur(6px);
+        }
+
+        .celebracion-metrica-card span {
+            display: block;
+            font-size: 2rem;
+            font-weight: 700;
+            line-height: 1.1;
+        }
+
+        .celebracion-metrica-card small {
+            display: block;
+            opacity: 0.8;
+            font-size: 0.85rem;
+            margin-top: 0.35rem;
+        }
+
+        .celebracion-banner .celebracion-close {
+            position: absolute;
+            top: 16px;
+            right: 16px;
+            background: rgba(255, 255, 255, 0.25);
+            border: none;
+            color: inherit;
+            border-radius: 999px;
+            width: 34px;
+            height: 34px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: background 0.2s ease;
+        }
+
+        .celebracion-banner .celebracion-close:hover {
+            background: rgba(255, 255, 255, 0.4);
+        }
+
+        @media (max-width: 768px) {
+            .celebracion-banner {
+                padding: 20px;
+            }
+
+            .celebracion-banner h2 {
+                font-size: 1.6rem;
+            }
+
+            .celebracion-actions {
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            .celebracion-actions button {
+                width: 100%;
+                justify-content: center;
+            }
+        }
         
         .section-header {
             margin-bottom: 1.5rem;
@@ -1027,6 +1197,12 @@
                         </a>
                     </li>
                     <li class="nav-item">
+                        <a href="#" class="nav-link" onclick="mostrarSeccion('configuracion-celebraciones')">
+                            <i class="fas fa-birthday-cake"></i>
+                            <span>Configuración de Celebraciones</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
                         <a href="#" class="nav-link" onclick="abrirGestionRemiseriaCompleta()">
                             <i class="fas fa-car"></i>
                             <span>Remisería Completa</span>
@@ -1056,6 +1232,8 @@
                     <h1>Dashboard</h1>
                     <p>Bienvenido a tu panel de administración</p>
                 </div>
+
+                <div id="celebracionBanner" class="celebracion-banner" style="display:none;"></div>
                 
                 <div class="stats-grid">
                     <div class="stat-card">
@@ -1245,6 +1423,11 @@
                     </div>
                 </div>
             </div>
+            
+            <!-- Configuración de Celebraciones Section -->
+            <div id="configuracion-celebraciones" class="content-section">
+                <!-- El contenido se cargará dinámicamente desde configuracion-celebracion-panel.js -->
+            </div>
 
             <!-- Productos Section -->
             <div id="productos" class="content-section">
@@ -1366,7 +1549,7 @@
                         </thead>
                         <tbody id="tablaTurnos">
                             <tr>
-                                <td>Cliente Demo</td>
+                                <td>-</td>
                                 <td>Consultoría</td>
                                 <td>30/10/2025</td>
                                 <td>10:00</td>
@@ -1908,7 +2091,8 @@
                 </div>
                 <div class="mb-3">
                     <label for="comisionPago" class="form-label">Comisión por Transacción (%)</label>
-                    <input type="number" id="comisionPago" name="comisionPago" class="form-control" value="3.5" step="0.1" min="0" max="10" required>
+                    <input type="number" id="comisionPago" name="comisionPago" class="form-control" value="6.17" step="0.01" min="0" max="10" required>
+                    <small class="form-text text-muted">Comisión actual de Mercado Pago (actualizada 2024)</small>
                 </div>
                 </div>
             </form>
@@ -10393,6 +10577,7 @@ Precio: $${precio}/mes
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="../../config-supabase-seguro.js"></script>
     <script src="../../js/sistema-alertas-comunidades.js"></script>
+    <script src="../../js/panel-celebracion-tiendas.js"></script>
     <script>
         document.addEventListener('DOMContentLoaded', () => {
             setTimeout(() => {

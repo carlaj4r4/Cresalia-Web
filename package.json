@@ -1,0 +1,27 @@
+{
+  "name": "cresalia-web",
+  "version": "1.0.0",
+  "description": "Plataforma SaaS multi-tenant para emprendedores y compradores",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "validate-security": "node scripts/security/validate-no-exposed-keys.js",
+    "pre-commit": "node scripts/security/pre-commit-hook.js"
+  },
+  "keywords": [
+    "saas",
+    "e-commerce",
+    "multi-tenant",
+    "mercado-pago",
+    "supabase"
+  ],
+  "author": "Cresalia",
+  "license": "MIT",
+  "devDependencies": {
+    "@supabase/supabase-js": "^2.39.0"
+  },
+  "dependencies": {
+    "@supabase/supabase-js": "^2.39.0"
+  }
+}
+
+

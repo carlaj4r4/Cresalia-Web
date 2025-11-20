@@ -22,7 +22,7 @@ class WidgetSoporteUsuarios {
                 position: fixed;
                 bottom: 20px;
                 right: 20px;
-                z-index: 9999;
+                z-index: 9998;
                 font-family: 'Poppins', sans-serif;
             ">
                 <!-- Botón flotante -->

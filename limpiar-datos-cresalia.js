@@ -30,45 +30,21 @@ localStorage.setItem('cresalia-config', JSON.stringify({
     ultimaActualizacion: new Date().toISOString()
 }));
 
-// Limpiar datos de productos (reemplazar con datos de Cresalia)
-console.log('📦 Configurando productos de Cresalia...');
-localStorage.setItem('cresalia-productos', JSON.stringify([
-    {
-        id: 1,
-        nombre: 'Producto Demo Cresalia',
-        descripcion: 'Producto de demostración del sistema Cresalia',
-        precio: 99.99,
-        stock: 10,
-        categoria: 'Demo',
-        activo: 1,
-        imagen: 'assets/placeholder-product.png'
-    }
-]));
+// Limpiar datos de productos (sin productos de ejemplo en producción)
+console.log('📦 Limpiando productos...');
+localStorage.setItem('cresalia-productos', JSON.stringify([]));
 
-// Limpiar datos de servicios
-console.log('🔧 Configurando servicios de Cresalia...');
-localStorage.setItem('cresalia-servicios', JSON.stringify([
-    {
-        id: 1,
-        nombre: 'Consultoría Cresalia',
-        descripcion: 'Servicio de consultoría para emprendedores',
-        precio: 150,
-        duracion: '1 hora',
-        activo: 1
-    }
-]));
+// Limpiar datos de servicios (sin servicios de ejemplo en producción)
+console.log('🔧 Limpiando servicios...');
+localStorage.setItem('cresalia-servicios', JSON.stringify([]));
 
 // Limpiar datos de ofertas
 console.log('🏷️ Configurando ofertas de Cresalia...');
 localStorage.setItem('cresalia-ofertas', JSON.stringify([]));
 
-// Limpiar datos de categorías
-console.log('📂 Configurando categorías de Cresalia...');
-localStorage.setItem('cresalia-categorias', JSON.stringify([
-    { id: 1, nombre: 'General' },
-    { id: 2, nombre: 'Demo' },
-    { id: 3, nombre: 'Servicios' }
-]));
+// Limpiar datos de categorías (sin categorías de ejemplo en producción)
+console.log('📂 Limpiando categorías...');
+localStorage.setItem('cresalia-categorias', JSON.stringify([]));
 
 // Configurar sistema de pagos simple
 console.log('💳 Configurando sistema de pagos...');

@@ -332,6 +332,31 @@
             margin-bottom: 1rem;
         }
         
+        /* Banner de Celebración en Página Pública */
+        #celebracionBannerTienda {
+            display: none;
+            position: relative;
+            z-index: 1000;
+            margin-bottom: 0;
+            padding: 2rem;
+            text-align: center;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            animation: slideInUp 0.8s ease-out;
+        }
+        
+        #celebracionBannerTienda h2 {
+            margin-bottom: 1rem;
+            font-size: 2rem;
+            font-weight: 700;
+            color: inherit;
+        }
+        
+        #celebracionBannerTienda p {
+            font-size: 1.2rem;
+            opacity: 0.95;
+            margin-bottom: 0.5rem;
+        }
+        
         /* Productos Grid */
         .productos-grid {
             display: grid;
@@ -629,7 +654,10 @@
     <div id="alertas-emergencia-comunidades"></div>
     
     <!-- Header -->
-    <header class="hero-section">
+    <!-- Banner de Celebración (se muestra automáticamente si la tienda está de celebración) -->
+    <div id="celebracionBannerTienda" style="display: none; position: relative; z-index: 1000; margin-bottom: 0;"></div>
+    
+    <header class="hero-section" id="heroSectionTienda">
         <div class="container">
             <div class="hero-content">
                 <div class="row align-items-center">
@@ -2383,5 +2411,8 @@
             }, 500);
         });
     </script>
+    
+    <!-- Sistema de Celebración para Página Pública de Tienda -->
+    <script src="../../js/tienda-celebracion-publica.js"></script>
 </body>
 </html>

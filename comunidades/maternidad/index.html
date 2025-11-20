@@ -1,0 +1,390 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cresalia - Comunidad Maternidad</title>
+    <link rel="icon" type="image/x-icon" href="../../favicon.ico">
+    <link rel="icon" type="image/png" href="../../assets/logo/logo-cresalia.png">
+    <link rel="apple-touch-icon" href="../../assets/logo/logo-cresalia.png">
+
+    <!-- PWA Manifest -->
+    <link rel="manifest" href="../../comunidades/manifest-comunidades.json">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    <meta name="apple-mobile-web-app-title" content="Cresalia Maternidad">
+    <meta name="theme-color" content="#F8BBD9">
+
+    <!-- Protección -->
+    <script src="../../core/proteccion-devtools-avanzada.js?v=2.0"></script>
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="../../css/comunidad-maternidad.css">
+    
+    <style>
+        :root {
+            --rosa-suave: #F8BBD9;
+            --rosa-profundo: #F48FB1;
+            --lavanda: #CE93D8;
+            --texto-principal: #374151;
+            --texto-secundario: #64748B;
+            --fondo: linear-gradient(135deg, #F8BBD9 0%, #F48FB1 40%, #CE93D8 100%);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Poppins', 'Segoe UI', sans-serif;
+            background: var(--fondo);
+            min-height: 100vh;
+            padding: 24px;
+        }
+
+        .page-wrapper {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            flex-direction: column;
+            gap: 32px;
+        }
+
+        .card {
+            background: #fff;
+            border-radius: 28px;
+            padding: 54px 42px;
+            box-shadow: 0 24px 70px rgba(15, 23, 42, 0.25);
+        }
+
+        h1 {
+            font-size: 2.8rem;
+            color: var(--texto-principal);
+            margin-bottom: 16px;
+        }
+
+        .subtitle {
+            display: inline-block;
+            margin-top: 18px;
+            font-size: 1.4rem;
+            font-weight: 600;
+            background: linear-gradient(135deg, #F8BBD9, #CE93D8);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        p {
+            color: var(--texto-secundario);
+            line-height: 1.8;
+            margin-bottom: 1rem;
+            font-size: 1.05rem;
+        }
+
+        .tagline {
+            font-size: 1.15rem;
+            margin: 16px 0 32px;
+            color: var(--texto-principal);
+        }
+
+        .cta-group {
+            display: flex;
+            gap: 16px;
+            flex-wrap: wrap;
+            margin-top: 24px;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--rosa-suave) 0%, var(--lavanda) 100%);
+            color: #fff;
+            padding: 14px 32px;
+            border: none;
+            border-radius: 16px;
+            font-size: 1.05rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 8px 24px rgba(248, 187, 217, 0.4);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 12px 32px rgba(248, 187, 217, 0.5);
+        }
+
+        .btn-secondary {
+            background: #fff;
+            color: var(--rosa-profundo);
+            padding: 14px 32px;
+            border: 2px solid var(--rosa-profundo);
+            border-radius: 16px;
+            font-size: 1.05rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .btn-secondary:hover {
+            background: var(--rosa-profundo);
+            color: #fff;
+        }
+
+        /* Tabs */
+        .tabs-container {
+            margin-top: 32px;
+        }
+
+        .tabs {
+            display: flex;
+            gap: 12px;
+            border-bottom: 2px solid #E5E7EB;
+            margin-bottom: 32px;
+            flex-wrap: wrap;
+        }
+
+        .tab-btn {
+            background: none;
+            border: none;
+            padding: 16px 24px;
+            font-size: 1rem;
+            font-weight: 600;
+            color: var(--texto-secundario);
+            cursor: pointer;
+            border-bottom: 3px solid transparent;
+            transition: all 0.3s ease;
+        }
+
+        .tab-btn:hover {
+            color: var(--rosa-profundo);
+        }
+
+        .tab-btn.active {
+            color: var(--rosa-profundo);
+            border-bottom-color: var(--rosa-profundo);
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        /* Advertencia de contenido sensible */
+        .advertencia-contenido {
+            background: #FEF3C7;
+            border-left: 4px solid #F59E0B;
+            padding: 20px;
+            border-radius: 12px;
+            margin-bottom: 24px;
+        }
+
+        .advertencia-contenido h3 {
+            color: #92400E;
+            margin-bottom: 12px;
+            font-size: 1.2rem;
+        }
+
+        .advertencia-contenido p {
+            color: #78350F;
+            margin-bottom: 16px;
+        }
+
+        .advertencia-buttons {
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+
+        .btn-continuar {
+            background: #F59E0B;
+            color: #fff;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+        }
+
+        .btn-saltar {
+            background: #fff;
+            color: #F59E0B;
+            padding: 10px 20px;
+            border: 2px solid #F59E0B;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .card {
+                padding: 32px 24px;
+            }
+
+            h1 {
+                font-size: 2rem;
+            }
+
+            .tabs {
+                flex-direction: column;
+            }
+
+            .tab-btn {
+                width: 100%;
+                text-align: left;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="page-wrapper">
+        <!-- Header -->
+        <div class="card">
+            <h1>🤰 Comunidad Maternidad</h1>
+            <p class="subtitle">Un espacio seguro para embarazadas y futuras madres</p>
+            <p class="tagline">
+                Te acompañamos en cada etapa de tu embarazo, desde la concepción hasta el postparto. 
+                Aquí encontrarás apoyo, información confiable y un espacio donde todas las mujeres son importantes.
+            </p>
+            <div class="cta-group">
+                <button class="btn-primary" onclick="comunidadMaternidad.mostrarTab('foro')">
+                    <i class="fas fa-comments"></i> Ver Foro
+                </button>
+                <button class="btn-secondary" onclick="comunidadMaternidad.abrirDiario()">
+                    <i class="fas fa-book"></i> Mi Diario
+                </button>
+            </div>
+        </div>
+
+        <!-- Tabs Container -->
+        <div class="card tabs-container">
+            <div class="tabs">
+                <button class="tab-btn active" onclick="comunidadMaternidad.mostrarTab('foro')">
+                    <i class="fas fa-comments"></i> Foro
+                </button>
+                <button class="tab-btn" onclick="comunidadMaternidad.mostrarTab('trimestres')">
+                    <i class="fas fa-calendar-alt"></i> Por Trimestre
+                </button>
+                <button class="tab-btn" onclick="comunidadMaternidad.mostrarTab('futuras-madres')">
+                    <i class="fas fa-heart"></i> Futuras Madres
+                </button>
+                <button class="tab-btn" onclick="comunidadMaternidad.mostrarTab('recursos')">
+                    <i class="fas fa-book-medical"></i> Recursos
+                </button>
+                <button class="tab-btn" onclick="comunidadMaternidad.mostrarTab('diario')">
+                    <i class="fas fa-book"></i> Mi Diario
+                </button>
+            </div>
+
+            <!-- Tab: Foro -->
+            <div id="tab-foro" class="tab-content active">
+                <div class="foro-header">
+                    <h2><i class="fas fa-comments"></i> Foro de la Comunidad</h2>
+                    <button class="btn-primary" onclick="comunidadMaternidad.crearPublicacion()">
+                        <i class="fas fa-plus"></i> Nueva Publicación
+                    </button>
+                </div>
+                <div id="publicaciones-lista" class="publicaciones-lista"></div>
+            </div>
+
+            <!-- Tab: Por Trimestre -->
+            <div id="tab-trimestres" class="tab-content">
+                <h2><i class="fas fa-calendar-alt"></i> Por Trimestre</h2>
+                <div class="trimestres-grid">
+                    <div class="trimestre-card" onclick="comunidadMaternidad.mostrarTrimestre(1)">
+                        <h3>1️⃣ Primer Trimestre</h3>
+                        <p>Náuseas, cambios, primeros síntomas</p>
+                    </div>
+                    <div class="trimestre-card" onclick="comunidadMaternidad.mostrarTrimestre(2)">
+                        <h3>2️⃣ Segundo Trimestre</h3>
+                        <p>Crecimiento, movimientos del bebé</p>
+                    </div>
+                    <div class="trimestre-card" onclick="comunidadMaternidad.mostrarTrimestre(3)">
+                        <h3>3️⃣ Tercer Trimestre</h3>
+                        <p>Preparación, ansiedad, parto</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Tab: Futuras Madres -->
+            <div id="tab-futuras-madres" class="tab-content">
+                <div id="advertencia-futuras-madres" class="advertencia-contenido">
+                    <h3>⚠️ Contenido Sensible</h3>
+                    <p>
+                        Esta sección contiene contenido sobre dificultades para concebir, tratamientos de fertilidad, 
+                        pérdidas de embarazo y procesos de adopción. Este contenido puede ser emocionalmente difícil.
+                    </p>
+                    <p>
+                        <strong>¿Cómo te sentís hoy?</strong> Si no te sentís bien, podés evitar este contenido por hoy 
+                        y volver cuando te sientas mejor. Tu bienestar es importante.
+                    </p>
+                    <div class="advertencia-buttons">
+                        <button class="btn-continuar" onclick="comunidadMaternidad.continuarContenidoSensible()">
+                            Continuar
+                        </button>
+                        <button class="btn-saltar" onclick="comunidadMaternidad.saltarContenidoSensible()">
+                            Saltar por Hoy
+                        </button>
+                    </div>
+                </div>
+                <div id="contenido-futuras-madres" style="display: none;">
+                    <h2><i class="fas fa-heart"></i> Para Futuras Madres</h2>
+                    <p>
+                        Esta sección es para mujeres que quieren ser madres pero no pueden por diferentes motivos. 
+                        Todas son importantes y merecen apoyo.
+                    </p>
+                    <div id="futuras-madres-lista" class="publicaciones-lista"></div>
+                </div>
+            </div>
+
+            <!-- Tab: Recursos -->
+            <div id="tab-recursos" class="tab-content">
+                <h2><i class="fas fa-book-medical"></i> Recursos y Ayuda</h2>
+                <div class="recursos-grid">
+                    <div class="recurso-card" onclick="comunidadMaternidad.mostrarRecurso('medico')">
+                        <h3><i class="fas fa-stethoscope"></i> Información Médica</h3>
+                        <p>Cuándo consultar al médico, síntomas importantes, cuidados básicos</p>
+                        <button class="btn-recurso">Ver más</button>
+                    </div>
+                    <div class="recurso-card" onclick="comunidadMaternidad.mostrarRecurso('alimentacion')">
+                        <h3><i class="fas fa-utensils"></i> Alimentación</h3>
+                        <p>Qué comer durante el embarazo, alimentos a evitar, nutrición</p>
+                        <button class="btn-recurso">Ver más</button>
+                    </div>
+                    <div class="recurso-card" onclick="comunidadMaternidad.mostrarRecurso('ejercicio')">
+                        <h3><i class="fas fa-running"></i> Ejercicio Seguro</h3>
+                        <p>Ejercicios recomendados, actividades a evitar, preparación física</p>
+                        <button class="btn-recurso">Ver más</button>
+                    </div>
+                    <div class="recurso-card" onclick="comunidadMaternidad.mostrarRecurso('emocional')">
+                        <h3><i class="fas fa-heart"></i> Preparación Emocional</h3>
+                        <p>Gestión de emociones, ansiedad, miedos, preparación mental</p>
+                        <button class="btn-recurso">Ver más</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Tab: Diario -->
+            <div id="tab-diario" class="tab-content">
+                <h2><i class="fas fa-book"></i> Mi Diario Personal</h2>
+                <p>
+                    Registrá cómo te sentís cada día, tus síntomas, y seguí tu embarazo. 
+                    Esta información es privada y solo vos la podés ver.
+                </p>
+                <button class="btn-primary" onclick="comunidadMaternidad.abrirDiario()">
+                    <i class="fas fa-plus"></i> Nueva Entrada
+                </button>
+                <div id="diario-lista" class="diario-lista"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="../../js/comunidad-maternidad.js"></script>
+</body>
+</html>
+

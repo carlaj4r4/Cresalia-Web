@@ -1,0 +1,450 @@
+/* ===== ESTILOS COMUNIDAD MATERNIDAD ===== */
+
+/* Modal */
+.modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.7);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 99999;
+}
+
+.modal-content {
+    background: white;
+    border-radius: 20px;
+    max-width: 90%;
+    max-height: 90vh;
+    overflow-y: auto;
+    animation: slideUp 0.3s ease;
+}
+
+.modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 24px 32px;
+    border-bottom: 2px solid #E5E7EB;
+}
+
+.modal-header h3 {
+    margin: 0;
+    color: #374151;
+    font-size: 1.5rem;
+}
+
+.close-btn {
+    background: none;
+    border: none;
+    font-size: 1.5rem;
+    color: #9CA3AF;
+    cursor: pointer;
+    width: 36px;
+    height: 36px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    transition: all 0.2s ease;
+}
+
+.close-btn:hover {
+    background: #F3F4F6;
+    color: #374151;
+}
+
+.modal-body {
+    padding: 24px 32px;
+}
+
+.modal-footer {
+    display: flex;
+    gap: 12px;
+    justify-content: flex-end;
+    padding-top: 24px;
+    border-top: 2px solid #E5E7EB;
+}
+
+/* Formularios */
+.form-group {
+    margin-bottom: 24px;
+}
+
+.form-group label {
+    display: block;
+    font-weight: 600;
+    color: #374151;
+    margin-bottom: 8px;
+    font-size: 0.95rem;
+}
+
+.form-group input,
+.form-group select,
+.form-group textarea {
+    width: 100%;
+    padding: 12px 16px;
+    border: 2px solid #E5E7EB;
+    border-radius: 12px;
+    font-family: inherit;
+    font-size: 0.95rem;
+    transition: border-color 0.3s ease;
+}
+
+.form-group input:focus,
+.form-group select:focus,
+.form-group textarea:focus {
+    outline: none;
+    border-color: #F48FB1;
+}
+
+/* Emociones Grid */
+.emociones-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+    gap: 12px;
+    margin-top: 12px;
+}
+
+.emocion-btn {
+    padding: 16px;
+    border-radius: 12px;
+    border: 2px solid #E5E7EB;
+    background: white;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    text-align: center;
+}
+
+.emocion-btn:hover {
+    border-color: #F48FB1;
+    transform: translateY(-2px);
+}
+
+.emocion-btn.selected {
+    border-color: #F48FB1;
+    background: #FDF2F8;
+}
+
+/* Publicaciones */
+.publicaciones-lista {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.publicacion-card {
+    background: white;
+    border-radius: 16px;
+    padding: 24px;
+    border: 2px solid #E5E7EB;
+    transition: all 0.3s ease;
+}
+
+.publicacion-card:hover {
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
+    transform: translateY(-2px);
+}
+
+.publicacion-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 16px;
+}
+
+.publicacion-autor {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    color: #64748B;
+    font-weight: 600;
+}
+
+.publicacion-fecha {
+    color: #9CA3AF;
+    font-size: 0.9rem;
+}
+
+.publicacion-contenido h3 {
+    color: #374151;
+    margin-bottom: 12px;
+    font-size: 1.3rem;
+}
+
+.publicacion-contenido p {
+    color: #64748B;
+    line-height: 1.6;
+    margin-bottom: 12px;
+}
+
+.badge-sensible {
+    display: inline-block;
+    background: #FEF3C7;
+    color: #92400E;
+    padding: 4px 12px;
+    border-radius: 12px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    margin-top: 8px;
+}
+
+.publicacion-acciones {
+    display: flex;
+    gap: 12px;
+    margin-top: 16px;
+    padding-top: 16px;
+    border-top: 1px solid #E5E7EB;
+}
+
+.publicacion-acciones button {
+    background: none;
+    border: none;
+    color: #64748B;
+    cursor: pointer;
+    font-size: 0.9rem;
+    transition: color 0.3s ease;
+}
+
+.publicacion-acciones button:hover {
+    color: #F48FB1;
+}
+
+/* Trimestres */
+.trimestres-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 24px;
+    margin-top: 24px;
+}
+
+.trimestre-card {
+    background: linear-gradient(135deg, #F8BBD9 0%, #CE93D8 100%);
+    border-radius: 20px;
+    padding: 32px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    color: white;
+}
+
+.trimestre-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 12px 32px rgba(248, 187, 217, 0.4);
+}
+
+.trimestre-card h3 {
+    font-size: 1.5rem;
+    margin-bottom: 12px;
+}
+
+.trimestre-card p {
+    color: rgba(255, 255, 255, 0.9);
+}
+
+/* Recursos */
+.recursos-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 24px;
+    margin-top: 24px;
+}
+
+.recurso-card {
+    background: white;
+    border-radius: 16px;
+    padding: 24px;
+    border: 2px solid #E5E7EB;
+    transition: all 0.3s ease;
+}
+
+.recurso-card:hover {
+    border-color: #F48FB1;
+    transform: translateY(-2px);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
+}
+
+.recurso-card h3 {
+    color: #374151;
+    margin-bottom: 12px;
+    font-size: 1.2rem;
+}
+
+.recurso-card p {
+    color: #64748B;
+    font-size: 0.95rem;
+    margin-bottom: 16px;
+}
+
+.btn-recurso {
+    background: linear-gradient(135deg, #F8BBD9 0%, #CE93D8 100%);
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 8px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    margin-top: 12px;
+}
+
+.btn-recurso:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(248, 187, 217, 0.4);
+}
+
+.recurso-contenido {
+    text-align: left;
+}
+
+.recurso-contenido h4 {
+    color: #374151;
+    margin-top: 24px;
+    margin-bottom: 12px;
+    font-size: 1.2rem;
+}
+
+.recurso-contenido ul {
+    margin-left: 20px;
+    margin-bottom: 16px;
+}
+
+.recurso-contenido li {
+    color: #64748B;
+    line-height: 1.8;
+    margin-bottom: 8px;
+}
+
+.recurso-contenido strong {
+    color: #374151;
+}
+
+/* Diario */
+.diario-lista {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    margin-top: 24px;
+}
+
+.diario-entrada {
+    background: white;
+    border-radius: 16px;
+    padding: 24px;
+    border-left: 4px solid #F48FB1;
+    transition: all 0.3s ease;
+}
+
+.diario-entrada:hover {
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
+}
+
+.diario-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 12px;
+}
+
+.diario-fecha {
+    color: #64748B;
+    font-weight: 600;
+}
+
+.diario-emocion {
+    font-size: 2rem;
+}
+
+.diario-semana {
+    background: #FDF2F8;
+    color: #F48FB1;
+    padding: 6px 12px;
+    border-radius: 8px;
+    display: inline-block;
+    font-weight: 600;
+    margin-bottom: 12px;
+}
+
+.diario-sintomas,
+.diario-notas {
+    color: #64748B;
+    line-height: 1.6;
+    margin-top: 12px;
+}
+
+/* Foro Header */
+.foro-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 32px;
+    padding-bottom: 24px;
+    border-bottom: 2px solid #E5E7EB;
+}
+
+.foro-header h2 {
+    color: #374151;
+    font-size: 2rem;
+    margin: 0;
+}
+
+/* Animaciones */
+@keyframes slideUp {
+    from {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes slideIn {
+    from {
+        opacity: 0;
+        transform: translateX(100%);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+@keyframes slideOut {
+    from {
+        opacity: 1;
+        transform: translateX(0);
+    }
+    to {
+        opacity: 0;
+        transform: translateX(100%);
+    }
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .modal-content {
+        max-width: 95%;
+        margin: 20px;
+    }
+
+    .modal-header,
+    .modal-body {
+        padding: 20px;
+    }
+
+    .foro-header {
+        flex-direction: column;
+        gap: 16px;
+        align-items: flex-start;
+    }
+
+    .trimestres-grid,
+    .recursos-grid {
+        grid-template-columns: 1fr;
+    }
+}
+

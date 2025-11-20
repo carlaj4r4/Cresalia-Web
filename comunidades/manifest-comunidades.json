@@ -97,6 +97,18 @@
           "sizes": "96x96"
         }
       ]
+    },
+    {
+      "name": "Maternidad",
+      "short_name": "Maternidad",
+      "description": "Comunidad para embarazadas y futuras madres",
+      "url": "/comunidades/maternidad/",
+      "icons": [
+        {
+          "src": "../icons/icon-96x96.png",
+          "sizes": "96x96"
+        }
+      ]
     }
   ],
   "related_applications": [],

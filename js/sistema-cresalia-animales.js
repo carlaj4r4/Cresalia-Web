@@ -30,6 +30,9 @@ class SistemaCresaliaAnimales {
         this.cargarAnimalesNecesitanAyuda();
         this.cargarNecesidadesRefugios();
         this.cargarOrganizaciones();
+        
+        // Cargar animales que cumplen años (mes actual)
+        this.cargarAnimalesCumpleanos();
     }
     
     generarHashUsuario() {
@@ -64,6 +67,7 @@ class SistemaCresaliaAnimales {
                     urgencia: datos.urgencia || 'media',
                     tipo_ayuda_necesaria: datos.tipo_ayuda,
                     fotos: datos.fotos || [],
+                    fecha_adopcion_rescate: datos.fecha_adopcion_rescate || null,
                     publicado_por: this.usuarioHash,
                     contacto_publicador: datos.contacto || null,
                     estado: 'activa'
@@ -260,8 +264,21 @@ class SistemaCresaliaAnimales {
                     <p>${this.escapeHtml(animal.descripcion)}</p>
                 </div>
                 ${animal.fotos && animal.fotos.length > 0 ? `
-                    <div class="animal-fotos">
-                        ${animal.fotos.map(foto => `<img src="${foto}" alt="Animal" style="max-width: 200px; border-radius: 8px; margin: 5px;">`).join('')}
+                    <div class="animal-fotos" style="margin-top: 15px;">
+                        ${animal.fotos.map(foto => {
+                            const url = typeof foto === 'string' ? foto : (foto.url || foto);
+                            if (foto.type === 'video' || url.includes('.mp4') || url.includes('.webm') || url.includes('.mov')) {
+                                return `<video src="${url}" controls style="max-width: 200px; border-radius: 8px; margin: 5px;"></video>`;
+                            }
+                            return `<img src="${url}" alt="Animal" style="max-width: 200px; border-radius: 8px; margin: 5px;">`;
+                        }).join('')}
+                    </div>
+                ` : ''}
+                ${animal.fecha_adopcion_rescate ? `
+                    <div style="margin-top: 10px; padding: 10px; background: #F3E8FF; border-radius: 8px; border-left: 4px solid #7C3AED;">
+                        <p style="margin: 0; color: #7C3AED; font-weight: bold;">
+                            🎂 Adoptado/Rescatado: ${new Date(animal.fecha_adopcion_rescate).toLocaleDateString('es-AR')}
+                        </p>
                     </div>
                 ` : ''}
                 <div class="animal-acciones">
@@ -533,6 +550,88 @@ class SistemaCresaliaAnimales {
         alert(mensaje); // Temporal, mejorar después
     }
     
+    // ===== CONVERTIR ARCHIVO A BASE64 =====
+    archivoABase64(file) {
+        return new Promise((resolve, reject) => {
+            const reader = new FileReader();
+            reader.onload = () => {
+                const base64 = reader.result;
+                resolve(base64);
+            };
+            reader.onerror = (error) => reject(error);
+            reader.readAsDataURL(file);
+        });
+    }
+    
+    // ===== CARGAR ANIMALES QUE CUMPLEN AÑOS =====
+    async cargarAnimalesCumpleanos(mes = null, año = null) {
+        if (!this.supabase) return;
+        
+        try {
+            const params = new URLSearchParams();
+            if (mes) params.append('mes', mes);
+            if (año) params.append('año', año);
+            
+            const response = await fetch(`/api/animales-cumpleanos?${params.toString()}`);
+            const resultado = await response.json();
+            
+            if (resultado.success) {
+                this.renderizarAnimalesCumpleanos(resultado.animales || [], resultado.mes, resultado.año);
+            }
+        } catch (error) {
+            console.error('Error cargando animales que cumplen años:', error);
+        }
+    }
+    
+    // ===== RENDERIZAR ANIMALES QUE CUMPLEN AÑOS =====
+    renderizarAnimalesCumpleanos(animales, mes, año) {
+        const container = document.getElementById('animales-cumpleanos');
+        if (!container) return;
+        
+        if (animales.length === 0) {
+            container.innerHTML = `
+                <div style="text-align: center; padding: 40px; color: #6B7280;">
+                    <i class="fas fa-birthday-cake" style="font-size: 3rem; margin-bottom: 15px; opacity: 0.5;"></i>
+                    <p>No hay animales que cumplan años en ${mes}/${año}</p>
+                </div>
+            `;
+            return;
+        }
+        
+        container.innerHTML = `
+            <div style="text-align: center; margin-bottom: 20px;">
+                <h2 style="color: #7C3AED; margin-bottom: 10px;">🎂 Animales que Cumplen Años en ${mes}/${año}</h2>
+                <p style="color: #6B7280;">¡Feliz aniversario de adopción/rescate!</p>
+            </div>
+            ${animales.map(animal => `
+                <div class="animal-card cumpleanos-card" data-id="${animal.id}" style="border: 2px solid #EC4899; background: linear-gradient(135deg, #FCE7F3 0%, #FDF2F8 100%);">
+                    <div class="animal-header" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+                        <h3>🎂 ${animal.nombre ? `${animal.nombre} - ` : ''}${this.formatearTipoAnimal(animal.tipo_animal)}</h3>
+                        <span style="background: #EC4899; color: white; padding: 5px 15px; border-radius: 20px; font-weight: bold;">
+                            ${animal.años_desde_adopcion_rescate} ${animal.años_desde_adopcion_rescate === 1 ? 'año' : 'años'} con nosotros
+                        </span>
+                    </div>
+                    <div class="animal-info">
+                        <p><strong>Fecha de adopción/rescate:</strong> ${new Date(animal.fecha_adopcion_rescate).toLocaleDateString('es-AR')}</p>
+                        <p><strong>Celebración:</strong> ${animal.fecha_cumpleanos} (cada año)</p>
+                        ${animal.organizaciones_animales ? `<p><strong>Organización:</strong> ${animal.organizaciones_animales.nombre_organizacion}</p>` : ''}
+                    </div>
+                    ${animal.fotos && animal.fotos.length > 0 ? `
+                        <div class="animal-fotos" style="margin-top: 15px;">
+                            ${animal.fotos.map(foto => {
+                                const url = typeof foto === 'string' ? foto : (foto.url || foto);
+                                if (foto.type === 'video' || url.includes('.mp4') || url.includes('.webm')) {
+                                    return `<video src="${url}" controls style="max-width: 200px; border-radius: 8px; margin: 5px;"></video>`;
+                                }
+                                return `<img src="${url}" alt="Animal" style="max-width: 200px; border-radius: 8px; margin: 5px;">`;
+                            }).join('')}
+                        </div>
+                    ` : ''}
+                </div>
+            `).join('')}
+        `;
+    }
+    
     // ===== MODAL PARA PUBLICAR ANIMAL =====
     mostrarModalPublicarAnimal() {
         const modal = document.createElement('div');
@@ -615,6 +714,21 @@ class SistemaCresaliaAnimales {
                         </div>
                         
                         <div class="form-group">
+                            <label>Fecha de Adopción o Rescate (opcional - para calcular "cumpleaños")</label>
+                            <input type="date" id="animal-fecha-adopcion-rescate" placeholder="Fecha de adopción o rescate">
+                            <small style="color: #6B7280; margin-top: 5px; display: block;">Si el animal fue adoptado o rescatado, indicá la fecha para celebrar su "cumpleaños" 🎂</small>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label>Imágenes y Videos (opcional - subir archivos directamente)</label>
+                            <input type="file" id="animal-archivos" multiple accept="image/*,video/*" style="margin-bottom: 10px;">
+                            <div id="animal-archivos-preview" style="margin-top: 10px; display: flex; flex-wrap: wrap; gap: 10px;"></div>
+                            <small style="color: #6B7280; margin-top: 5px; display: block;">
+                                Máximo 10MB por imagen, 50MB por video. Puedes subir múltiples archivos.
+                            </small>
+                        </div>
+                        
+                        <div class="form-group">
                             <label>Urgencia *</label>
                             <select id="animal-urgencia" required>
                                 <option value="baja">🔵 Baja</option>
@@ -644,8 +758,103 @@ class SistemaCresaliaAnimales {
         
         document.body.appendChild(modal);
         
+        // Manejar subida de archivos
+        const archivosInput = document.getElementById('animal-archivos');
+        const archivosPreview = document.getElementById('animal-archivos-preview');
+        let archivosSeleccionados = [];
+        
+        archivosInput.addEventListener('change', async (e) => {
+            const files = Array.from(e.target.files);
+            archivosSeleccionados = [];
+            archivosPreview.innerHTML = '';
+            
+            for (const file of files) {
+                // Mostrar preview
+                const previewDiv = document.createElement('div');
+                previewDiv.style.cssText = 'position: relative; border: 1px solid #ddd; border-radius: 8px; padding: 10px; max-width: 150px;';
+                
+                if (file.type.startsWith('image/')) {
+                    const img = document.createElement('img');
+                    img.src = URL.createObjectURL(file);
+                    img.style.cssText = 'max-width: 100%; height: auto; border-radius: 4px;';
+                    previewDiv.appendChild(img);
+                } else if (file.type.startsWith('video/')) {
+                    const video = document.createElement('video');
+                    video.src = URL.createObjectURL(file);
+                    video.style.cssText = 'max-width: 100%; height: auto; border-radius: 4px;';
+                    video.controls = true;
+                    previewDiv.appendChild(video);
+                }
+                
+                const nombreArchivo = document.createElement('p');
+                nombreArchivo.textContent = file.name;
+                nombreArchivo.style.cssText = 'font-size: 0.8rem; margin: 5px 0 0 0; word-break: break-word;';
+                previewDiv.appendChild(nombreArchivo);
+                
+                const btnEliminar = document.createElement('button');
+                btnEliminar.textContent = '×';
+                btnEliminar.style.cssText = 'position: absolute; top: 5px; right: 5px; background: red; color: white; border: none; border-radius: 50%; width: 24px; height: 24px; cursor: pointer;';
+                btnEliminar.onclick = () => {
+                    previewDiv.remove();
+                    archivosSeleccionados = archivosSeleccionados.filter(f => f !== file);
+                };
+                previewDiv.appendChild(btnEliminar);
+                
+                archivosPreview.appendChild(previewDiv);
+                archivosSeleccionados.push(file);
+            }
+        });
+        
         document.getElementById('form-publicar-animal').addEventListener('submit', async (e) => {
             e.preventDefault();
+            
+            // Subir archivos primero
+            const fotosSubidas = [];
+            
+            if (archivosSeleccionados.length > 0) {
+                try {
+                    this.mostrarExito('Subiendo archivos...');
+                    
+                    for (const file of archivosSeleccionados) {
+                        // Convertir archivo a base64
+                        const base64 = await this.archivoABase64(file);
+                        
+                        // Subir a Supabase Storage
+                        const response = await fetch('/api/animales-subir-archivo', {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json'
+                            },
+                            body: JSON.stringify({
+                                file: base64,
+                                filename: file.name,
+                                mimetype: file.type
+                            })
+                        });
+                        
+                        if (!response.ok) {
+                            const error = await response.json();
+                            throw new Error(error.message || 'Error al subir archivo');
+                        }
+                        
+                        const resultado = await response.json();
+                        if (resultado.success && resultado.file) {
+                            fotosSubidas.push({
+                                type: resultado.file.type,
+                                url: resultado.file.url,
+                                uploaded_at: resultado.file.uploaded_at
+                            });
+                        }
+                    }
+                    
+                    this.mostrarExito(`✅ ${fotosSubidas.length} archivo(s) subido(s) correctamente`);
+                } catch (error) {
+                    console.error('Error subiendo archivos:', error);
+                    this.mostrarError('Error al subir algunos archivos: ' + error.message);
+                    // Continuar aunque falle la subida de archivos
+                }
+            }
+            
             const datos = {
                 tipo_animal: document.getElementById('animal-tipo').value,
                 nombre: document.getElementById('animal-nombre').value || null,
@@ -657,6 +866,8 @@ class SistemaCresaliaAnimales {
                 provincia: document.getElementById('animal-provincia').value || null,
                 zona: document.getElementById('animal-zona').value || null,
                 urgencia: document.getElementById('animal-urgencia').value,
+                fecha_adopcion_rescate: document.getElementById('animal-fecha-adopcion-rescate').value || null,
+                fotos: fotosSubidas.length > 0 ? fotosSubidas : [],
                 contacto: document.getElementById('animal-contacto').value || null
             };
             

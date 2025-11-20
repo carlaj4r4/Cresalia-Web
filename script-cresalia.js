@@ -4329,9 +4329,11 @@ const MERCADO_PAGO_RUNTIME_CONFIG = (() => {
         return window.MERCADO_PAGO_CONFIG;
     }
 
+    // ⚠️ SEGURIDAD: NUNCA hardcodees credenciales reales aquí
+    // Usá solo variables de entorno o placeholders
     const defaults = {
-        publicKey: 'TEST-12345678-1234-1234-1234-123456789012', // Reemplazar con tu clave pública real
-        accessToken: 'TEST-1234567890123456789012345678901234567890-123456-1234567890123456789012345678901234567890', // Reemplazar con tu token de acceso real
+        publicKey: window.__MERCADOPAGO_PUBLIC_KEY__ || window.MERCADOPAGO_PUBLIC_KEY || 'CONFIGURAR_EN_VERCEL',
+        accessToken: window.__MERCADOPAGO_ACCESS_TOKEN__ || window.MERCADOPAGO_ACCESS_TOKEN || 'CONFIGURAR_EN_VERCEL',
         preferenceId: null
     };
 

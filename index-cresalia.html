@@ -18,10 +18,10 @@
       font-src 'self' data: https: https://fonts.gstatic.com https://cdnjs.cloudflare.com https://cdn.jsdelivr.net;
       style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://cdnjs.cloudflare.com https://cdn.jsdelivr.net;
       style-src-elem 'self' 'unsafe-inline' https://fonts.googleapis.com https://cdnjs.cloudflare.com https://cdn.jsdelivr.net;
-      script-src 'self' 'unsafe-inline' 'unsafe-eval' https://cdnjs.cloudflare.com https://cdn.jsdelivr.net https://sdk.mercadopago.com https://vercel.live;
-      script-src-elem 'self' 'unsafe-inline' https://cdnjs.cloudflare.com https://cdn.jsdelivr.net https://sdk.mercadopago.com https://vercel.live;
-      connect-src 'self' https: https://vercel.live;
-      frame-src 'self' https:;
+      script-src 'self' 'unsafe-inline' 'unsafe-eval' https://cdnjs.cloudflare.com https://cdn.jsdelivr.net https://sdk.mercadopago.com https://vercel.live https://*.vercel.live https://conversations-widget.brevo.com;
+      script-src-elem 'self' 'unsafe-inline' https://cdnjs.cloudflare.com https://cdn.jsdelivr.net https://sdk.mercadopago.com https://vercel.live https://*.vercel.live https://conversations-widget.brevo.com;
+      connect-src 'self' https: https://vercel.live https://conversations-widget.brevo.com https://api.brevo.com;
+      frame-src 'self' https: https://conversations-widget.brevo.com;
       form-action 'self';
       upgrade-insecure-requests;
     ">
@@ -30,11 +30,11 @@
     <meta name="referrer" content="strict-origin-when-cross-origin">
     
     <!-- Favicon -->
-    <link rel="icon" type="image/x-icon" href="favicon.ico">
-    <link rel="icon" type="image/png" sizes="32x32" href="assets/logo/logo-cresalia.png">
-    <link rel="icon" type="image/png" sizes="16x16" href="assets/logo/logo-cresalia.png">
-    <link rel="apple-touch-icon" sizes="180x180" href="assets/logo/logo-cresalia.png">
-    <meta name="msapplication-TileImage" content="assets/logo/logo-cresalia.png">
+    <link rel="icon" type="image/x-icon" href="./favicon.ico">
+    <link rel="icon" type="image/png" sizes="32x32" href="./assets/logo/logo-cresalia.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="./assets/logo/logo-cresalia.png">
+    <link rel="apple-touch-icon" sizes="180x180" href="./assets/logo/logo-cresalia.png">
+    <meta name="msapplication-TileImage" content="./assets/logo/logo-cresalia.png">
     
     <!-- Sistema de Seguridad -->
     <script src="security-system.js?v=2.0"></script>
@@ -3125,7 +3125,10 @@
     <!-- Configuración Mercado Pago -->
     <script src="config-mercado-pago.js"></script>
     
-    <!-- Integración Mercado Pago -->
+    <!-- Integración Mercado Pago (CheckoutAPI) -->
+    <script src="js/mercadopago-checkoutapi.js"></script>
+    
+    <!-- Integración Mercado Pago (legacy, para compatibilidad) -->
     <script src="js/mercado-pago-integration.js"></script>
     
     <!-- Sistema de Alertas de Emergencia Global -->
@@ -3147,5 +3150,8 @@
     </script>
     <!-- Sistema de Feedbacks General -->
     <script src="js/sistema-feedbacks-general.js"></script>
+    
+    <!-- Widget de Chat de Email - Brevo -->
+    <script src="js/widget-brevo-chat.js"></script>
 </body>
 </html>

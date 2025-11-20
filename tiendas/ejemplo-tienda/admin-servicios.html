@@ -638,52 +638,15 @@
             const servicios = JSON.parse(localStorage.getItem(`servicios_${tiendaId}`) || '[]');
             const container = document.getElementById('serviciosContainer');
             
+            // No cargar servicios de ejemplo en producción
             if (servicios.length === 0) {
-                // Agregar servicios de ejemplo reales para emprendedores
-                const serviciosEjemplo = [
-                    {
-                        id: 'servicio_1',
-                        nombre: 'Consultoría de Marketing Digital',
-                        descripcion: 'Estrategia completa de marketing digital para hacer crecer tu negocio online. Incluye análisis de competencia, plan de contenido y estrategia de redes sociales.',
-                        precio: 150.00,
-                        duracion: '2 semanas',
-                        categoria: 'consultoria',
-                        fechaCreacion: new Date().toISOString()
-                    },
-                    {
-                        id: 'servicio_2',
-                        nombre: 'Diseño de Identidad Visual',
-                        descripcion: 'Creación de logo, paleta de colores y manual de marca para tu empresa. Incluye 3 propuestas iniciales y 2 revisiones.',
-                        precio: 89.00,
-                        duracion: '1 semana',
-                        categoria: 'diseno',
-                        fechaCreacion: new Date().toISOString()
-                    },
-                    {
-                        id: 'servicio_3',
-                        nombre: 'Desarrollo de Tienda Online',
-                        descripcion: 'Creación de tienda virtual completa con sistema de pagos, gestión de inventario y diseño responsive. Incluye capacitación.',
-                        precio: 299.00,
-                        duracion: '3 semanas',
-                        categoria: 'desarrollo',
-                        fechaCreacion: new Date().toISOString()
-                    },
-                    {
-                        id: 'servicio_4',
-                        nombre: 'Capacitación en Ventas',
-                        descripcion: 'Taller personalizado para mejorar tus técnicas de venta y cerrar más negocios. Shop online y presencial.',
-                        precio: 120.00,
-                        duracion: '1 día',
-                        categoria: 'capacitacion',
-                        fechaCreacion: new Date().toISOString()
-                    }
-                ];
-                
-                // Guardar servicios de ejemplo
-                localStorage.setItem(`servicios_${tiendaId}`, JSON.stringify(serviciosEjemplo));
-                
-                // Recargar servicios
-                cargarServicios();
+                container.innerHTML = `
+                    <div style="text-align: center; padding: 40px; color: #6B7280;">
+                        <i class="fas fa-concierge-bell" style="font-size: 3rem; margin-bottom: 1rem; opacity: 0.5;"></i>
+                        <h3>No hay servicios configurados</h3>
+                        <p>Agrega tus servicios desde el panel de administración</p>
+                    </div>
+                `;
                 return;
             }
             

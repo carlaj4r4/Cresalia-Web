@@ -6,7 +6,7 @@
     <title>Demo - Interfaz de Compradores</title>
     
     <!-- Meta Security -->
-    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' cdnjs.cloudflare.com cdn.jsdelivr.net; style-src 'self' 'unsafe-inline' fonts.googleapis.com cdnjs.cloudflare.com cdn.jsdelivr.net; style-src-elem 'self' 'unsafe-inline' fonts.googleapis.com cdnjs.cloudflare.com cdn.jsdelivr.net; font-src 'self' fonts.gstatic.com cdnjs.cloudflare.com https:; img-src 'self' data: https:; connect-src 'self' https:; frame-src 'self'; object-src 'none'; base-uri 'self'; form-action 'self';">
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' cdnjs.cloudflare.com cdn.jsdelivr.net https://conversations-widget.brevo.com; script-src-elem 'self' 'unsafe-inline' cdnjs.cloudflare.com cdn.jsdelivr.net https://conversations-widget.brevo.com; style-src 'self' 'unsafe-inline' fonts.googleapis.com cdnjs.cloudflare.com cdn.jsdelivr.net; style-src-elem 'self' 'unsafe-inline' fonts.googleapis.com cdnjs.cloudflare.com cdn.jsdelivr.net; font-src 'self' fonts.gstatic.com cdnjs.cloudflare.com https:; img-src 'self' data: https:; connect-src 'self' https: https://conversations-widget.brevo.com https://api.brevo.com; frame-src 'self' https: https://conversations-widget.brevo.com; object-src 'none'; base-uri 'self'; form-action 'self';">
     <meta http-equiv="X-Content-Type-Options" content="nosniff">
     <meta http-equiv="X-XSS-Protection" content="1; mode=block">
     <meta name="referrer" content="strict-origin-when-cross-origin">
@@ -270,6 +270,227 @@
             box-shadow: 0 5px 15px rgba(124, 58, 237, 0.4);
         }
         
+        .cumple-preferencias-section {
+            background: linear-gradient(135deg, rgba(124, 58, 237, 0.08), rgba(14, 165, 233, 0.06));
+            padding: 50px 0;
+            border-bottom: 1px solid rgba(99, 102, 241, 0.12);
+        }
+
+        .cumple-preferencias-wrapper {
+            max-width: 980px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            padding: 32px;
+            box-shadow: 0 20px 55px rgba(15, 23, 42, 0.12);
+            border: 1px solid rgba(79, 70, 229, 0.12);
+        }
+
+        .cumple-preferencias-header h2 {
+            margin: 0;
+            color: #5B21B6;
+            font-size: 1.9rem;
+        }
+
+        .cumple-preferencias-header p {
+            margin: 8px 0 0 0;
+            color: #4338CA;
+            font-size: 1rem;
+        }
+
+        .cumple-form-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+            gap: 20px;
+            margin: 24px 0;
+        }
+
+        .cumple-form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .cumple-form-group label {
+            font-weight: 600;
+            color: #374151;
+            font-size: 0.95rem;
+        }
+
+        .cumple-form-group input,
+        .cumple-form-group textarea {
+            width: 100%;
+            padding: 12px 14px;
+            border: 2px solid #E5E7EB;
+            border-radius: 10px;
+            font-size: 0.95rem;
+            transition: border-color 0.2s ease, box-shadow 0.2s ease;
+            background: #F9FAFB;
+        }
+
+        .cumple-form-group input:focus,
+        .cumple-form-group textarea:focus {
+            border-color: #7C3AED;
+            box-shadow: 0 0 0 4px rgba(124, 58, 237, 0.15);
+            outline: none;
+            background: white;
+        }
+
+        .cumple-switch-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            background: linear-gradient(135deg, rgba(124, 58, 237, 0.08), rgba(14, 165, 233, 0.08));
+            border-radius: 14px;
+            padding: 16px 20px;
+            border: 1px solid rgba(79, 70, 229, 0.15);
+            gap: 16px;
+        }
+
+        .cumple-switch-info h4 {
+            margin: 0;
+            color: #3730A3;
+            font-size: 1.05rem;
+        }
+
+        .cumple-switch-info p {
+            margin: 4px 0 0 0;
+            color: #4338CA;
+            font-size: 0.9rem;
+        }
+
+        .cumple-toggle {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .cumple-toggle input[type="checkbox"] {
+            width: 50px;
+            height: 26px;
+            border-radius: 999px;
+            appearance: none;
+            background: #CBD5F5;
+            position: relative;
+            cursor: pointer;
+            transition: background 0.2s ease;
+        }
+
+        .cumple-toggle input[type="checkbox"]::after {
+            content: '';
+            position: absolute;
+            top: 3px;
+            left: 3px;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: white;
+            box-shadow: 0 2px 6px rgba(15, 23, 42, 0.2);
+            transition: transform 0.2s ease;
+        }
+
+        .cumple-toggle input[type="checkbox"]:checked {
+            background: linear-gradient(135deg, #7C3AED, #0EA5E9);
+        }
+
+        .cumple-toggle input[type="checkbox"]:checked::after {
+            transform: translateX(24px);
+        }
+
+        .cumple-toggle span {
+            font-weight: 600;
+            color: #312E81;
+            font-size: 0.95rem;
+        }
+
+        .cumple-actions {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+            margin-top: 24px;
+        }
+
+        .cumple-actions button {
+            border: none;
+            border-radius: 12px;
+            padding: 12px 22px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.2s ease, box-shadow 0.2s ease, opacity 0.2s;
+        }
+
+        .btn-guardar-cumple {
+            background: linear-gradient(135deg, #7C3AED, #EC4899);
+            color: white;
+            box-shadow: 0 12px 25px rgba(236, 72, 153, 0.25);
+        }
+
+        .btn-ver-cumple {
+            background: rgba(14, 165, 233, 0.1);
+            color: #0E7490;
+            border: 1px solid rgba(14, 165, 233, 0.25);
+        }
+
+        .btn-reset-cumple {
+            background: rgba(244, 114, 182, 0.12);
+            color: #BE185D;
+            border: 1px solid rgba(236, 72, 153, 0.2);
+        }
+
+        .cumple-actions button:disabled {
+            opacity: 0.6;
+            cursor: default;
+            transform: none !important;
+            box-shadow: none !important;
+        }
+
+        .cumple-actions button:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 14px 28px rgba(79, 70, 229, 0.2);
+        }
+
+        .cumple-status {
+            margin-top: 18px;
+            padding: 14px 18px;
+            border-radius: 12px;
+            font-size: 0.9rem;
+            background: rgba(79, 70, 229, 0.08);
+            color: #312E81;
+            border: 1px solid rgba(79, 70, 229, 0.18);
+            display: none;
+        }
+
+        .cumple-status.visible {
+            display: block;
+        }
+
+        .cumple-status.success {
+            background: rgba(16, 185, 129, 0.12);
+            border-color: rgba(5, 150, 105, 0.25);
+            color: #065F46;
+        }
+
+        .cumple-status.error {
+            background: rgba(239, 68, 68, 0.12);
+            border-color: rgba(239, 68, 68, 0.25);
+            color: #991B1B;
+        }
+
+        .cumple-last-sync {
+            margin-top: 12px;
+            font-size: 0.85rem;
+            color: #6B7280;
+        }
+
+        .cumple-info-extra {
+            margin-top: 16px;
+            padding: 14px 18px;
+            background: rgba(224, 231, 255, 0.5);
+            border-radius: 12px;
+            color: #3730A3;
+            font-size: 0.9rem;
+        }
+
         .demo-nav a {
             color: #6B7280;
             text-decoration: none;
@@ -340,6 +561,24 @@
                 margin: 0 !important;
             }
             
+            .cumple-preferencias-wrapper {
+                padding: 24px 18px;
+            }
+            
+            .cumple-form-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .cumple-switch-row {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+            
+            .cumple-toggle {
+                width: 100%;
+                justify-content: space-between;
+            }
+            
             /* Botones responsive */
             .btn {
                 padding: 8px 15px !important;
@@ -363,6 +602,18 @@
             
             .products-grid, .stores-grid {
                 grid-template-columns: 1fr !important;
+            }
+            
+            .cumple-preferencias-wrapper {
+                padding: 20px 16px;
+            }
+            
+            .cumple-preferencias-header h2 {
+                font-size: 1.35rem;
+            }
+            
+            .cumple-switch-row {
+                padding: 14px 16px;
             }
         }
         
@@ -796,6 +1047,74 @@
             </a></li>
         </ul>
     </nav>
+
+    <section class="cumple-preferencias-section" id="preferencias-cumple">
+        <div class="cumple-preferencias-wrapper">
+            <div class="cumple-preferencias-header">
+                <h2>🎂 Preferencias de cumpleaños</h2>
+                <p>Elegí si querés aparecer en “Cumpleañeros del Mes”, recibir sorpresas y personalizar el mensaje que verá la comunidad.</p>
+            </div>
+            <form id="formCumplePreferencias" class="cumple-form">
+                <div class="cumple-form-grid">
+                    <div class="cumple-form-group">
+                        <label for="preferenciasEmail">Email asociado a tu cuenta</label>
+                        <input type="email" id="preferenciasEmail" name="email" placeholder="tu@email.com" required>
+                        <small style="color:#6B7280;">Usá el mismo correo con el que te registraste como comprador.</small>
+                    </div>
+                    <div class="cumple-form-group">
+                        <label for="preferenciasFecha">Fecha de cumpleaños</label>
+                        <input type="date" id="preferenciasFecha" name="fecha_nacimiento" max="9999-12-31">
+                        <small style="color:#6B7280;">Solo se usa para calcular el día exacto. Nunca se comparte públicamente la fecha completa.</small>
+                    </div>
+                </div>
+
+                <div class="cumple-switch-row">
+                    <div class="cumple-switch-info">
+                        <h4>Mostrar mi celebración en la portada</h4>
+                        <p>Tu nombre o alias aparecerá en la sección pública con tu mensaje personalizado.</p>
+                    </div>
+                    <label class="cumple-toggle">
+                        <input type="checkbox" id="preferenciasPublico" name="acepta_publico">
+                        <span>Quiero participar 💜</span>
+                    </label>
+                </div>
+
+                <div class="cumple-switch-row" style="margin-top: 16px;">
+                    <div class="cumple-switch-info">
+                        <h4>Recibir beneficio especial de cumpleaños</h4>
+                        <p>Activá esta opción para recibir descuentos o regalos sorpresa durante tu mes.</p>
+                    </div>
+                    <label class="cumple-toggle">
+                        <input type="checkbox" id="preferenciasBeneficio" name="acepta_descuento">
+                        <span>Activar beneficio</span>
+                    </label>
+                </div>
+
+                <div class="cumple-form-group" style="margin-top: 24px;">
+                    <label for="preferenciasMensaje">Mensaje para la comunidad (opcional)</label>
+                    <textarea id="preferenciasMensaje" name="mensaje_publico" rows="3" maxlength="220" placeholder="¿Querés dejar un mensaje que acompañe tu saludo? Contale a la comunidad cómo querés celebrar este año 💜"></textarea>
+                </div>
+
+                <div class="cumple-actions">
+                    <button type="button" class="btn-ver-cumple" data-action="load">
+                        <i class="fas fa-sync-alt"></i> Ver mis preferencias
+                    </button>
+                    <button type="submit" class="btn-guardar-cumple">
+                        <i class="fas fa-save"></i> Guardar preferencias
+                    </button>
+                    <button type="button" class="btn-reset-cumple" data-action="reset">
+                        <i class="fas fa-undo"></i> Limpiar formulario
+                    </button>
+                </div>
+
+                <div class="cumple-status" data-status></div>
+                <div class="cumple-last-sync" data-last-sync></div>
+                <div class="cumple-info-extra">
+                    💡 Podés cambiar tu decisión en cualquier momento. Si preferís que no te contactemos, solo desactiva la opción y automáticamente dejamos de mostrarte.
+                </div>
+            </form>
+        </div>
+    </section>
 
     <!-- Productos Section -->
     <section id="productos" class="productos-section">
@@ -2822,6 +3141,7 @@
         });
     </script>
     
+    <script src="js/compradores-cumple-consent.js"></script>
     <!-- Sistema de Alertas de Emergencia Global -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="config-supabase-seguro.js"></script>
@@ -2837,5 +3157,8 @@
             }, 500);
         });
     </script>
+    
+    <!-- Widget de Chat de Email - Brevo -->
+    <script src="js/widget-brevo-chat.js"></script>
 </body>
 </html>

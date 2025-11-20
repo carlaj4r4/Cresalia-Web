@@ -3,18 +3,26 @@
 
 class PaymentSystem {
     constructor() {
+        // ⚠️ SEGURIDAD: NUNCA hardcodees credenciales reales aquí
+        // Usá solo variables de entorno o placeholders
         this.providers = {
             mercadopago: {
                 name: 'Mercado Pago',
-                publicKey: 'TEST-12345678-1234-1234-1234-123456789012', // Reemplazar con tu clave real
-                accessToken: 'TEST-1234567890123456-123456-123456789012345678901234567890-123456789', // Reemplazar con tu token real
-                sandbox: true // Cambiar a false en producción
+                publicKey: (typeof window !== 'undefined' && (window.__MERCADOPAGO_PUBLIC_KEY__ || window.MERCADOPAGO_PUBLIC_KEY)) 
+                    || process.env.MERCADOPAGO_PUBLIC_KEY 
+                    || 'CONFIGURAR_EN_VERCEL',
+                accessToken: (typeof window !== 'undefined' && (window.__MERCADOPAGO_ACCESS_TOKEN__ || window.MERCADOPAGO_ACCESS_TOKEN))
+                    || process.env.MERCADOPAGO_ACCESS_TOKEN
+                    || 'CONFIGURAR_EN_VERCEL',
+                sandbox: false // Configurar según el entorno
             },
             stripe: {
                 name: 'Stripe',
-                publicKey: 'pk_test_123456789012345678901234567890123456789012345678901234567890', // Reemplazar con tu clave real
-                secretKey: 'sk_test_123456789012345678901234567890123456789012345678901234567890', // Solo en backend
-                sandbox: true
+                publicKey: (typeof window !== 'undefined' && window.STRIPE_PUBLIC_KEY) 
+                    || process.env.STRIPE_PUBLIC_KEY 
+                    || 'CONFIGURAR_EN_VERCEL',
+                secretKey: process.env.STRIPE_SECRET_KEY || 'CONFIGURAR_EN_VERCEL', // Solo en backend
+                sandbox: false
             }
         };
         

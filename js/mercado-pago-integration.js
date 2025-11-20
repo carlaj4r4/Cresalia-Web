@@ -94,7 +94,7 @@ const PLANES_SUSCRIPCION = {
 // Configuración de transparencia de precios
 const TRANSPARENCIA_PRECIOS = {
     mercadoPago: {
-        porcentaje: 3.49,
+        porcentaje: 6.17,  // Actualizado: Nueva comisión de Mercado Pago (2024)
         fijo: 0.00,
         descripcion: 'Comisión de Mercado Pago (siempre aplicada)'
     },
@@ -102,28 +102,28 @@ const TRANSPARENCIA_PRECIOS = {
         venta1000: {
             precio: 1000,
             free: {
-                mercadoPago: 34.90,
+                mercadoPago: 61.70,  // 6.17% de $1000
                 cresalia: 29.20,
-                netoVendedor: 935.90,
-                descripcion: 'Plan Free: Mercado Pago $34.90 + Cresalia $29.20 = Neto $935.90'
+                netoVendedor: 909.10,  // $1000 - $61.70 - $29.20
+                descripcion: 'Plan Free: Mercado Pago $61.70 (6.17%) + Cresalia $29.20 = Neto $909.10'
             },
             basic: {
-                mercadoPago: 34.90,
+                mercadoPago: 61.70,  // 6.17% de $1000
                 cresalia: 19.20,
-                netoVendedor: 945.90,
-                descripcion: 'Plan Basic: Mercado Pago $34.90 + Cresalia $19.20 = Neto $945.90'
+                netoVendedor: 919.10,  // $1000 - $61.70 - $19.20
+                descripcion: 'Plan Basic: Mercado Pago $61.70 (6.17%) + Cresalia $19.20 = Neto $919.10'
             },
             pro: {
-                mercadoPago: 34.90,
+                mercadoPago: 61.70,  // 6.17% de $1000
                 cresalia: 12.20,
-                netoVendedor: 952.90,
-                descripcion: 'Plan Pro: Mercado Pago $34.90 + Cresalia $12.20 = Neto $952.90'
+                netoVendedor: 926.10,  // $1000 - $61.70 - $12.20
+                descripcion: 'Plan Pro: Mercado Pago $61.70 (6.17%) + Cresalia $12.20 = Neto $926.10'
             },
             enterprise: {
-                mercadoPago: 34.90,
+                mercadoPago: 61.70,  // 6.17% de $1000
                 cresalia: 5.20,
-                netoVendedor: 959.90,
-                descripcion: 'Plan Enterprise: Mercado Pago $34.90 + Cresalia $5.20 = Neto $959.90'
+                netoVendedor: 933.10,  // $1000 - $61.70 - $5.20
+                descripcion: 'Plan Enterprise: Mercado Pago $61.70 (6.17%) + Cresalia $5.20 = Neto $933.10'
             }
         }
     }
@@ -406,30 +406,30 @@ function mostrarTransparenciaPrecios() {
                     <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
                         <div style="background: white; padding: 15px; border-radius: 8px; border-left: 4px solid #dc3545;">
                             <h5 style="margin: 0 0 10px 0; color: #dc3545;">Plan Free</h5>
-                            <p style="margin: 5px 0; font-size: 14px;"><strong>Mercado Pago:</strong> $34.90 (3.49%)</p>
-                            <p style="margin: 5px 0; font-size: 14px;"><strong>Cresalia:</strong> $59.00 (5.9%)</p>
-                            <p style="margin: 5px 0; font-size: 14px; color: #28a745;"><strong>Neto Vendedor:</strong> $906.10</p>
+                            <p style="margin: 5px 0; font-size: 14px;"><strong>Mercado Pago:</strong> $61.70 (6.17%)</p>
+                            <p style="margin: 5px 0; font-size: 14px;"><strong>Cresalia:</strong> $29.20 (2.9%)</p>
+                            <p style="margin: 5px 0; font-size: 14px; color: #28a745;"><strong>Neto Vendedor:</strong> $909.10</p>
                         </div>
                         
                         <div style="background: white; padding: 15px; border-radius: 8px; border-left: 4px solid #007bff;">
                             <h5 style="margin: 0 0 10px 0; color: #007bff;">Plan Basic ($29/mes)</h5>
-                            <p style="margin: 5px 0; font-size: 14px;"><strong>Mercado Pago:</strong> $34.90 (3.49%)</p>
-                            <p style="margin: 5px 0; font-size: 14px;"><strong>Cresalia:</strong> $29.30 (2.9%)</p>
-                            <p style="margin: 5px 0; font-size: 14px; color: #28a745;"><strong>Neto Vendedor:</strong> $935.80</p>
+                            <p style="margin: 5px 0; font-size: 14px;"><strong>Mercado Pago:</strong> $61.70 (6.17%)</p>
+                            <p style="margin: 5px 0; font-size: 14px;"><strong>Cresalia:</strong> $19.20 (1.9%)</p>
+                            <p style="margin: 5px 0; font-size: 14px; color: #28a745;"><strong>Neto Vendedor:</strong> $919.10</p>
                         </div>
                         
                         <div style="background: white; padding: 15px; border-radius: 8px; border-left: 4px solid #6f42c1;">
                             <h5 style="margin: 0 0 10px 0; color: #6f42c1;">Plan Pro ($79/mes)</h5>
-                            <p style="margin: 5px 0; font-size: 14px;"><strong>Mercado Pago:</strong> $34.90 (3.49%)</p>
-                            <p style="margin: 5px 0; font-size: 14px;"><strong>Cresalia:</strong> $19.30 (1.9%)</p>
-                            <p style="margin: 5px 0; font-size: 14px; color: #28a745;"><strong>Neto Vendedor:</strong> $945.80</p>
+                            <p style="margin: 5px 0; font-size: 14px;"><strong>Mercado Pago:</strong> $61.70 (6.17%)</p>
+                            <p style="margin: 5px 0; font-size: 14px;"><strong>Cresalia:</strong> $12.20 (1.2%)</p>
+                            <p style="margin: 5px 0; font-size: 14px; color: #28a745;"><strong>Neto Vendedor:</strong> $926.10</p>
                         </div>
                         
                         <div style="background: white; padding: 15px; border-radius: 8px; border-left: 4px solid #fd7e14;">
                             <h5 style="margin: 0 0 10px 0; color: #fd7e14;">Plan Enterprise ($199/mes)</h5>
-                            <p style="margin: 5px 0; font-size: 14px;"><strong>Mercado Pago:</strong> $34.90 (3.49%)</p>
-                            <p style="margin: 5px 0; font-size: 14px;"><strong>Cresalia:</strong> $9.30 (0.9%)</p>
-                            <p style="margin: 5px 0; font-size: 14px; color: #28a745;"><strong>Neto Vendedor:</strong> $955.80</p>
+                            <p style="margin: 5px 0; font-size: 14px;"><strong>Mercado Pago:</strong> $61.70 (6.17%)</p>
+                            <p style="margin: 5px 0; font-size: 14px;"><strong>Cresalia:</strong> $5.20 (0.5%)</p>
+                            <p style="margin: 5px 0; font-size: 14px; color: #28a745;"><strong>Neto Vendedor:</strong> $933.10</p>
                         </div>
                     </div>
                 </div>
