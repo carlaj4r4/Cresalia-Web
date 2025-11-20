@@ -572,7 +572,7 @@ class SistemaCresaliaAnimales {
             if (mes) params.append('mes', mes);
             if (año) params.append('año', año);
             
-            const response = await fetch(`/api/animales-cumpleanos?${params.toString()}`);
+            const response = await fetch(`/api/animales?accion=cumpleanos&${params.toString()}`);
             const resultado = await response.json();
             
             if (resultado.success) {
@@ -820,7 +820,7 @@ class SistemaCresaliaAnimales {
                         const base64 = await this.archivoABase64(file);
                         
                         // Subir a Supabase Storage
-                        const response = await fetch('/api/animales-subir-archivo', {
+                        const response = await fetch('/api/animales?accion=subir-archivo', {
                             method: 'POST',
                             headers: {
                                 'Content-Type': 'application/json'

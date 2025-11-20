@@ -74,7 +74,7 @@ class ComunidadMaternidad {
 
         try {
             // Intentar cargar desde API
-            const response = await fetch('/api/maternidad-publicaciones');
+            const response = await fetch('/api/maternidad?tipo=publicaciones');
             if (response.ok) {
                 const publicaciones = await response.json();
                 this.renderizarPublicaciones(publicaciones);
@@ -353,7 +353,7 @@ class ComunidadMaternidad {
 
         try {
             // Intentar guardar en API
-            const response = await fetch('/api/maternidad-diario', {
+            const response = await fetch('/api/maternidad?tipo=diario', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(entrada)
@@ -382,7 +382,7 @@ class ComunidadMaternidad {
         if (!lista) return;
 
         try {
-            const response = await fetch(`/api/maternidad-diario?email=${this.usuarioActual.email}`);
+            const response = await fetch(`/api/maternidad?tipo=diario&email=${this.usuarioActual.email}`);
             if (response.ok) {
                 const entradas = await response.json();
                 this.renderizarDiario(entradas);
