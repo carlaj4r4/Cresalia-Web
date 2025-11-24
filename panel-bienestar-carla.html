@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>💜 Tu Espacio de Bienestar</title>
+    <link rel="icon" type="image/x-icon" href="favicon.ico">
+    <link rel="icon" type="image/png" href="assets/logo/logo-cresalia.png">
+    <link rel="apple-touch-icon" href="assets/logo/logo-cresalia.png">
+    <link rel="stylesheet" href="css/panel-bienestar-carla.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <div class="container-bienestar">
+        <!-- Header -->
+        <header class="header-bienestar">
+            <div class="header-content">
+                <h1><i class="fas fa-heart"></i> <span id="nombreUsuario">Tu</span> Espacio de Bienestar</h1>
+                <p class="subtitle">Un lugar seguro solo para vos, para cuidarte y protegerte</p>
+            </div>
+        </header>
+
+        <!-- Panel Principal -->
+        <main class="main-content">
+            <!-- Estado Actual -->
+            <section class="seccion-estado" id="seccionEstado">
+                <div class="card-estado">
+                    <h2><i class="fas fa-heartbeat"></i> ¿Cómo te sentís ahora?</h2>
+                    <div class="emociones-grid">
+                        <button class="emocion-btn" data-emocion="bien" data-nivel="1">
+                            <i class="fas fa-smile"></i>
+                            <span>Bien</span>
+                        </button>
+                        <button class="emocion-btn" data-emocion="regular" data-nivel="2">
+                            <i class="fas fa-meh"></i>
+                            <span>Regular</span>
+                        </button>
+                        <button class="emocion-btn" data-emocion="ansiosa" data-nivel="3">
+                            <i class="fas fa-exclamation-circle"></i>
+                            <span>Ansiosa</span>
+                        </button>
+                        <button class="emocion-btn" data-emocion="triste" data-nivel="4">
+                            <i class="fas fa-sad-tear"></i>
+                            <span>Triste</span>
+                        </button>
+                        <button class="emocion-btn" data-emocion="sobrepasada" data-nivel="5">
+                            <i class="fas fa-exclamation-triangle"></i>
+                            <span>Sobrepasada</span>
+                        </button>
+                        <button class="emocion-btn" data-emocion="estresada" data-nivel="5">
+                            <i class="fas fa-heartbeat"></i>
+                            <span>Estresada</span>
+                        </button>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Alertas de Estrés (SOP) -->
+            <section class="seccion-alerta-estres" id="seccionAlertaEstres" style="display: none;">
+                <div class="alerta-critica">
+                    <div class="alerta-icono">
+                        <i class="fas fa-heartbeat"></i>
+                    </div>
+                    <div class="alerta-contenido">
+                        <h3>⚠️ Alerta de Estrés</h3>
+                        <p>Recordá que el estrés puede empeorar el SOP y aumentar el riesgo cardiovascular. Es momento de parar y cuidarte.</p>
+                        <div class="alerta-acciones">
+                            <button class="btn-respiracion" onclick="iniciarRespiracion()">
+                                <i class="fas fa-wind"></i> Respiración Guiada
+                            </button>
+                            <button class="btn-pausa" onclick="tomarPausa()">
+                                <i class="fas fa-pause"></i> Tomar Pausa
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Recursos Rápidos -->
+            <section class="seccion-recursos">
+                <h2><i class="fas fa-compass"></i> Recursos Rápidos</h2>
+                <div class="recursos-grid">
+                    <div class="recurso-card" onclick="abrirRespiracion()">
+                        <div class="recurso-icono">
+                            <i class="fas fa-wind"></i>
+                        </div>
+                        <h3>Respiración</h3>
+                        <p>Reduce ansiedad y estrés</p>
+                    </div>
+                    <div class="recurso-card" onclick="abrirLímites()">
+                        <div class="recurso-icono">
+                            <i class="fas fa-shield-alt"></i>
+                        </div>
+                        <h3>Recordatorios de Límites</h3>
+                        <p>No podés ayudar a todos</p>
+                    </div>
+                    <div class="recurso-card" onclick="abrirAutocuidado()">
+                        <div class="recurso-icono">
+                            <i class="fas fa-spa"></i>
+                        </div>
+                        <h3>Autocuidado</h3>
+                        <p>Vos también importás</p>
+                    </div>
+                    <div class="recurso-card" onclick="abrirDiario()">
+                        <div class="recurso-icono">
+                            <i class="fas fa-book"></i>
+                        </div>
+                        <h3>Diario Emocional</h3>
+                        <p>Escribí lo que sentís</p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Historial de Estados -->
+            <section class="seccion-historial">
+                <h2><i class="fas fa-chart-line"></i> Tu Historial</h2>
+                <div class="historial-container" id="historialContainer">
+                    <p class="sin-datos">Aún no hay registros. Empezá registrando cómo te sentís.</p>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <!-- Modales -->
+    <div id="modalRespiracion" class="modal" style="display: none;">
+        <div class="modal-content">
+            <span class="close-modal" onclick="cerrarModal('modalRespiracion')">&times;</span>
+            <h2><i class="fas fa-wind"></i> Respiración Guiada</h2>
+            <div class="respiracion-container">
+                <div class="circulo-respiracion" id="circuloRespiracion">
+                    <div class="circulo-interno"></div>
+                </div>
+                <div class="instrucciones-respiracion" id="instruccionesRespiracion">
+                    <p>Inhalá por la nariz durante 4 segundos</p>
+                </div>
+                <div class="contador-respiracion" id="contadorRespiracion">4</div>
+                <button class="btn-iniciar-respiracion" onclick="iniciarRespiracionCompleta()">
+                    <i class="fas fa-play"></i> Iniciar
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <div id="modalLimites" class="modal" style="display: none;">
+        <div class="modal-content">
+            <span class="close-modal" onclick="cerrarModal('modalLimites')">&times;</span>
+            <h2><i class="fas fa-shield-alt"></i> Recordatorios de Límites</h2>
+            <div class="limites-contenido">
+                <div class="recordatorio-card">
+                    <i class="fas fa-heart"></i>
+                    <h3>No podés ayudar a todos</h3>
+                    <p>Y está bien. Tu empatía es un don, pero también necesitás protegerte. No sos responsable de solucionar todos los problemas del mundo.</p>
+                </div>
+                <div class="recordatorio-card">
+                    <i class="fas fa-book-open"></i>
+                    <h3>Las historias tristes pueden esperar</h3>
+                    <p>Si leés algo que te afecta mucho, podés cerrarlo. No tenés que leer todo. Tu bienestar es más importante.</p>
+                </div>
+                <div class="recordatorio-card">
+                    <i class="fas fa-hand-paper"></i>
+                    <h3>Decir "no" es válido</h3>
+                    <p>Establecer límites no te hace mala persona. Te hace una persona que se cuida y se respeta a sí misma.</p>
+                </div>
+                <div class="recordatorio-card">
+                    <i class="fas fa-clock"></i>
+                    <h3>Tomá pausas</h3>
+                    <p>Cuando te sentís sobrepasada, parar no es rendirse. Es cuidarte. Y eso es lo más importante ahora.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="modalAutocuidado" class="modal" style="display: none;">
+        <div class="modal-content">
+            <span class="close-modal" onclick="cerrarModal('modalAutocuidado')">&times;</span>
+            <h2><i class="fas fa-spa"></i> Autocuidado</h2>
+            <div class="autocuidado-contenido">
+                <div class="sugerencia-card">
+                    <i class="fas fa-heartbeat"></i>
+                    <h3>Recordá: El estrés y el SOP</h3>
+                    <p>El estrés puede empeorar el SOP y aumentar el riesgo cardiovascular. Cada vez que te sentís estresada, es una señal de tu cuerpo para que te cuides.</p>
+                </div>
+                <div class="sugerencia-card">
+                    <i class="fas fa-bed"></i>
+                    <h3>Descanso es medicina</h3>
+                    <p>Tu cuerpo necesita descansar. No es pereza, es necesidad. El descanso ayuda a regular las hormonas y reducir el estrés.</p>
+                </div>
+                <div class="sugerencia-card">
+                    <i class="fas fa-utensils"></i>
+                    <h3>Alimentación consciente</h3>
+                    <p>Con SOP, la alimentación es importante. Intentá comer regularmente, aunque sea algo pequeño. Tu cuerpo lo necesita.</p>
+                </div>
+                <div class="sugerencia-card">
+                    <i class="fas fa-user-md"></i>
+                    <h3>Buscá ayuda médica</h3>
+                    <p>Estás buscando hospitales públicos. Eso está bien. No estás sola en esto. Muchas mujeres con SOP logran tratarse y mejorar.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="modalDiario" class="modal" style="display: none;">
+        <div class="modal-content">
+            <span class="close-modal" onclick="cerrarModal('modalDiario')">&times;</span>
+            <h2><i class="fas fa-book"></i> Diario Emocional</h2>
+            <div class="diario-contenido">
+                <textarea id="entradaDiario" placeholder="Escribí lo que sentís, lo que te preocupa, lo que necesitás... Este es tu espacio seguro."></textarea>
+                <button class="btn-guardar-diario" onclick="guardarEntradaDiario()">
+                    <i class="fas fa-save"></i> Guardar
+                </button>
+                <div class="entradas-previas" id="entradasPrevias"></div>
+            </div>
+        </div>
+    </div>
+
+    <script src="js/panel-bienestar-carla.js"></script>
+</body>
+</html>
+
