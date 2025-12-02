@@ -53,14 +53,8 @@ const FeedbackSystem = {
             const key = `feedbacks_${this.config.tiendaId}`;
             const feedbacksGuardados = JSON.parse(localStorage.getItem(key) || '[]');
             
-            // Generar feedbacks de ejemplo si no hay ninguno
-            if (feedbacksGuardados.length === 0) {
-                this.generarFeedbacksEjemplo();
-                const feedbacksEjemplo = JSON.parse(localStorage.getItem(key) || '[]');
-                this.state.feedbacks = feedbacksEjemplo;
-            } else {
-                this.state.feedbacks = feedbacksGuardados;
-            }
+            // Solo usar feedbacks reales guardados, sin generar ejemplos
+            this.state.feedbacks = feedbacksGuardados;
 
             // Calcular estadísticas
             this.calcularStats();
@@ -76,46 +70,6 @@ const FeedbackSystem = {
             this.mostrarError('Error al cargar feedbacks locales.');
             this.ocultarLoading();
         }
-    },
-
-    // ===== GENERAR FEEDBACKS DE EJEMPLO =====
-    generarFeedbacksEjemplo() {
-        const feedbacksEjemplo = [
-            {
-                id: 1,
-                nombre: 'María González',
-                email: 'maria@email.com',
-                rating: 5,
-                comentario: 'Excelente servicio y productos de muy buena calidad. Los recomiendo totalmente.',
-                fecha: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000).toISOString(),
-                aprobado: true,
-                util: 8
-            },
-            {
-                id: 2,
-                nombre: 'Carlos Rodríguez',
-                email: 'carlos@email.com',
-                rating: 4,
-                comentario: 'Muy buena atención al cliente y entrega rápida. Volveré a comprar.',
-                fecha: new Date(Date.now() - 5 * 24 * 60 * 60 * 1000).toISOString(),
-                aprobado: true,
-                util: 5
-            },
-            {
-                id: 3,
-                nombre: 'Ana Martínez',
-                email: 'ana@email.com',
-                rating: 5,
-                comentario: 'Productos de excelente calidad y precios muy competitivos. ¡Los recomiendo!',
-                fecha: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString(),
-                aprobado: true,
-                util: 12
-            }
-        ];
-
-        const key = `feedbacks_${this.config.tiendaId}`;
-        localStorage.setItem(key, JSON.stringify(feedbacksEjemplo));
-        console.log('✅ Feedbacks de ejemplo generados');
     },
 
     // ===== CALCULAR ESTADÍSTICAS =====
@@ -502,16 +456,26 @@ const FeedbackSystem = {
 
 // ===== INICIALIZACIÓN AUTOMÁTICA =====
 document.addEventListener('DOMContentLoaded', function() {
-    // Detectar tienda actual desde la URL o config
+    // Solo inicializar en páginas de tiendas, NO en index-cresalia.html
     const pathParts = window.location.pathname.split('/');
     const tiendaIndex = pathParts.indexOf('tiendas');
-    const tiendaId = tiendaIndex >= 0 && pathParts[tiendaIndex + 1] 
-        ? pathParts[tiendaIndex + 1] 
-        : 'ejemplo-tienda';
+    const isTiendaPage = tiendaIndex >= 0;
+    const isIndexCresalia = window.location.pathname.includes('index-cresalia.html');
+    
+    // NO inicializar en index-cresalia.html
+    if (isIndexCresalia) {
+        console.log('⚠️ Sistema de feedbacks de tiendas no se inicializa en index-cresalia.html');
+        return;
+    }
 
-    // Inicializar si hay contenedor de feedbacks
-    if (document.getElementById('feedbacksContainer')) {
-        FeedbackSystem.init(tiendaId);
+    // Solo inicializar si estamos en una página de tienda
+    if (isTiendaPage) {
+        const tiendaId = pathParts[tiendaIndex + 1] || 'ejemplo-tienda';
+        
+        // Inicializar si hay contenedor de feedbacks
+        if (document.getElementById('feedbacksContainer')) {
+            FeedbackSystem.init(tiendaId);
+        }
     }
 });
 

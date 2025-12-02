@@ -7,6 +7,8 @@ class SistemaCheckinEmergencias {
         this.supabase = null;
         this.usuarioHash = null;
         this.campanaActiva = null;
+        this.ubicacionUsuario = null;
+        this.estaEnZonaAfectada = false;
         this.init();
     }
     
@@ -78,12 +80,18 @@ class SistemaCheckinEmergencias {
                 if (!yaHizoCheckin) {
                     // Esperar un poco para que la página cargue
                     setTimeout(() => {
-                        this.mostrarModalCheckin();
+                        // Mostrar modal de consentimiento previo para verificar ubicación
+                        this.mostrarModalConsentimiento();
                     }, 3000); // 3 segundos después de cargar la página
                 }
             }
         } catch (error) {
-            console.error('Error verificando campañas:', error);
+            // Solo mostrar error en consola si es crítico, no bloquear la ejecución
+            if (error.message && !error.message.includes('network') && !error.message.includes('timeout')) {
+                console.error('Error verificando campañas:', error);
+            } else {
+                console.warn('⚠️ No se pudo verificar campañas activas (puede ser un problema de conexión):', error.message || error);
+            }
         }
     }
     
@@ -108,6 +116,204 @@ class SistemaCheckinEmergencias {
         }
     }
     
+    // ===== CALCULAR DISTANCIA ENTRE DOS PUNTOS (Fórmula de Haversine) =====
+    calcularDistancia(lat1, lon1, lat2, lon2) {
+        const R = 6371; // Radio de la Tierra en kilómetros
+        const dLat = this.gradosARadianes(lat2 - lat1);
+        const dLon = this.gradosARadianes(lon2 - lon1);
+        const a = 
+            Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+            Math.cos(this.gradosARadianes(lat1)) * Math.cos(this.gradosARadianes(lat2)) *
+            Math.sin(dLon / 2) * Math.sin(dLon / 2);
+        const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+        return R * c; // Distancia en kilómetros
+    }
+    
+    gradosARadianes(grados) {
+        return grados * (Math.PI / 180);
+    }
+    
+    // ===== VERIFICAR SI ESTÁ EN ZONA AFECTADA =====
+    async verificarSiEstaEnZona(ubicacionUsuario, campana) {
+        if (!ubicacionUsuario || !campana) return false;
+        
+        // Si la campaña tiene coordenadas específicas
+        if (campana.latitud && campana.longitud) {
+            const distancia = this.calcularDistancia(
+                ubicacionUsuario.latitud,
+                ubicacionUsuario.longitud,
+                campana.latitud,
+                campana.longitud
+            );
+            
+            // Radio de afectación (por defecto 50km, o el especificado en la campaña)
+            const radioAfectacion = campana.radio_afectacion_km || 50;
+            
+            return distancia <= radioAfectacion;
+        }
+        
+        // Si no hay coordenadas, asumimos que está en zona si aceptó verificar
+        // (mejor mostrar el modal para estar seguros)
+        return true;
+    }
+    
+    // ===== MOSTRAR MODAL DE CONSENTIMIENTO PREVIO =====
+    mostrarModalConsentimiento() {
+        // Evitar mostrar múltiples modales
+        if (document.getElementById('modal-consentimiento-ubicacion')) return;
+        
+        if (!this.campanaActiva) return;
+        
+        const iconosDesastres = {
+            'inundacion': '🌊',
+            'incendio': '🔥',
+            'terremoto': '🌍',
+            'tornado': '🌪️',
+            'tormenta': '⛈️',
+            'otro_desastre': '🚨'
+        };
+        
+        const nombresDesastres = {
+            'inundacion': 'Inundación',
+            'incendio': 'Incendio',
+            'terremoto': 'Terremoto',
+            'tornado': 'Tornado',
+            'tormenta': 'Tormenta',
+            'otro_desastre': 'Desastre Natural'
+        };
+        
+        const icono = iconosDesastres[this.campanaActiva.tipo_desastre] || '🚨';
+        const nombre = nombresDesastres[this.campanaActiva.tipo_desastre] || 'Desastre Natural';
+        
+        const modal = document.createElement('div');
+        modal.id = 'modal-consentimiento-ubicacion';
+        modal.className = 'modal-consentimiento-ubicacion';
+        modal.innerHTML = `
+            <div class="modal-consentimiento-content">
+                <div class="modal-consentimiento-header">
+                    <div>
+                        <h2>${icono} ${this.escapeHtml(this.campanaActiva.titulo)}</h2>
+                        <p class="modal-consentimiento-subtitle">${nombre} en ${this.escapeHtml(this.campanaActiva.ubicacion)}</p>
+                    </div>
+                </div>
+                
+                <div class="modal-consentimiento-body">
+                    <div class="mensaje-consentimiento">
+                        <p>🚨 <strong>Hay una emergencia en ${this.escapeHtml(this.campanaActiva.ubicacion)}.</strong></p>
+                        <p>¿Querés que verifiquemos si estás cerca para ayudarte?</p>
+                        <p style="font-size: 0.9rem; color: #6B7280; margin-top: 15px;">
+                            💜 Solo usaremos tu ubicación para verificar si estás en la zona afectada y poder ayudarte mejor. 
+                            Tu privacidad está protegida.
+                        </p>
+                    </div>
+                    
+                    <div class="consentimiento-options">
+                        <button class="btn-consentimiento aceptar" onclick="window.checkinEmergencias?.aceptarVerificacionUbicacion()">
+                            <i class="fas fa-check-circle"></i>
+                            <strong>Sí, verificar</strong>
+                            <small>Verificaré si estoy en la zona</small>
+                        </button>
+                        
+                        <button class="btn-consentimiento rechazar" onclick="window.checkinEmergencias?.rechazarVerificacionUbicacion()">
+                            <i class="fas fa-times-circle"></i>
+                            <strong>No, gracias</strong>
+                            <small>Prefiero hacer check-in manualmente</small>
+                        </button>
+                        
+                        <button class="btn-consentimiento ya-hice" onclick="window.checkinEmergencias?.yaHiceCheckin()">
+                            <i class="fas fa-check"></i>
+                            <strong>Ya hice check-in</strong>
+                            <small>Ya confirmé que estoy bien</small>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        `;
+        document.body.appendChild(modal);
+        
+        // Agregar estilos si no existen
+        this.agregarEstilosConsentimiento();
+        
+        // Mostrar modal con animación
+        setTimeout(() => {
+            modal.classList.add('active');
+        }, 100);
+    }
+    
+    // ===== ACEPTAR VERIFICACIÓN DE UBICACIÓN =====
+    async aceptarVerificacionUbicacion() {
+        // Cerrar modal de consentimiento
+        this.cerrarModalConsentimiento();
+        
+        // Solicitar ubicación
+        try {
+            this.ubicacionUsuario = await this.solicitarUbicacion();
+            
+            if (this.ubicacionUsuario) {
+                // Verificar si está en zona afectada
+                this.estaEnZonaAfectada = await this.verificarSiEstaEnZona(
+                    this.ubicacionUsuario,
+                    this.campanaActiva
+                );
+                
+                // Guardar ubicación en localStorage y Supabase
+                this.guardarUbicacionUsuario(this.ubicacionUsuario);
+                
+                // Guardar que permitió ubicación
+                localStorage.setItem('cresalia_ubicacion_permitida', 'true');
+                
+                // Mostrar modal de check-in (más urgente si está en zona)
+                setTimeout(() => {
+                    this.mostrarModalCheckin();
+                }, 500);
+            } else {
+                // Si no se pudo obtener ubicación, mostrar modal genérico
+                setTimeout(() => {
+                    this.mostrarModalCheckin();
+                }, 500);
+            }
+        } catch (error) {
+            console.warn('Error obteniendo ubicación:', error);
+            // Continuar con modal genérico
+            setTimeout(() => {
+                this.mostrarModalCheckin();
+            }, 500);
+        }
+    }
+    
+    // ===== RECHAZAR VERIFICACIÓN DE UBICACIÓN =====
+    rechazarVerificacionUbicacion() {
+        // Cerrar modal de consentimiento
+        this.cerrarModalConsentimiento();
+        
+        // Guardar preferencia
+        localStorage.setItem('cresalia_ubicacion_permitida', 'false');
+        
+        // Mostrar modal genérico (menos intrusivo)
+        setTimeout(() => {
+            this.mostrarModalCheckin();
+        }, 500);
+    }
+    
+    // ===== YA HICE CHECK-IN =====
+    yaHiceCheckin() {
+        // Cerrar modal de consentimiento
+        this.cerrarModalConsentimiento();
+        
+        // No mostrar nada más
+    }
+    
+    // ===== CERRAR MODAL DE CONSENTIMIENTO =====
+    cerrarModalConsentimiento() {
+        const modal = document.getElementById('modal-consentimiento-ubicacion');
+        if (modal) {
+            modal.classList.remove('active');
+            setTimeout(() => {
+                modal.remove();
+            }, 300);
+        }
+    }
+    
     // ===== MOSTRAR MODAL DE CHECK-IN =====
     mostrarModalCheckin() {
         // Evitar mostrar múltiples modales
@@ -117,7 +323,7 @@ class SistemaCheckinEmergencias {
         
         const modal = document.createElement('div');
         modal.id = 'modal-checkin-emergencia';
-        modal.className = 'modal-checkin-emergencia';
+        modal.className = `modal-checkin-emergencia ${this.estaEnZonaAfectada ? 'urgente' : ''}`;
         modal.innerHTML = this.renderizarModal();
         document.body.appendChild(modal);
         
@@ -166,9 +372,19 @@ class SistemaCheckinEmergencias {
                 </div>
                 
                 <div class="modal-checkin-body">
-                    <div class="mensaje-crisla">
+                    <div class="mensaje-crisla ${this.estaEnZonaAfectada ? 'zona-afectada' : ''}">
+                        ${this.estaEnZonaAfectada ? `
+                            <div style="background: #FEF2F2; border: 2px solid #EF4444; border-radius: 10px; padding: 15px; margin-bottom: 15px;">
+                                <p style="color: #DC2626; font-weight: 600; margin: 0;">
+                                    ⚠️ <strong>Estás en la zona afectada.</strong> Por favor, confirmá que estás bien.
+                                </p>
+                            </div>
+                        ` : ''}
                         <p>💜 <strong>Hola, querido usuario.</strong> Sé que puede ser difícil, pero necesito saber si estás bien.</p>
                         <p>Si necesitás ayuda, estoy acá. Tu comunidad está acá. No estás solo/a.</p>
+                        <div style="background: #EFF6FF; border-left: 4px solid #3B82F6; padding: 15px; margin-top: 15px; border-radius: 5px; font-size: 0.9rem; color: #1E40AF;">
+                            <p style="margin: 0;"><strong>📌 Importante:</strong> Por ahora, Cresalia no puede ofrecer recursos directamente. Todo depende de la solidaridad de nuestra comunidad. Te redirigiremos a las comunidades correspondientes donde podrás encontrar apoyo y ayuda.</p>
+                        </div>
                         <p style="font-size: 0.85rem; color: #6B7280; margin-top: 10px;">- Crisla 💜</p>
                     </div>
                     
@@ -190,6 +406,12 @@ class SistemaCheckinEmergencias {
                                 <i class="fas fa-exclamation-triangle"></i>
                                 <strong>Necesito ayuda urgente</strong>
                                 <small>Es una emergencia</small>
+                            </button>
+                            
+                            <button class="btn-checkin-option" data-estado="conozco_personas" onclick="window.checkinEmergencias?.seleccionarEstado('conozco_personas')">
+                                <i class="fas fa-users"></i>
+                                <strong>Conozco personas que no están bien</strong>
+                                <small>Necesitan ayuda</small>
                             </button>
                         </div>
                         
@@ -271,12 +493,21 @@ class SistemaCheckinEmergencias {
         const btn = document.querySelector(`[data-estado="${estado}"]`);
         if (btn) btn.classList.add('selected');
         
-        // Mostrar detalles si necesita ayuda
+        // Mostrar detalles si necesita ayuda o conoce personas
         const detallesAyuda = document.getElementById('detallesAyuda');
-        if (estado === 'necesita_ayuda' || estado === 'ayuda_urgente') {
+        if (estado === 'necesita_ayuda' || estado === 'ayuda_urgente' || estado === 'conozco_personas') {
             detallesAyuda.style.display = 'block';
+            // Actualizar label según estado
+            const labelAyuda = detallesAyuda.querySelector('label');
+            if (labelAyuda) {
+                if (estado === 'conozco_personas') {
+                    labelAyuda.textContent = '¿Qué tipo de ayuda necesitan? *';
+                } else {
+                    labelAyuda.textContent = '¿Qué tipo de ayuda necesitás? *';
+                }
+            }
         } else {
-            // Si está bien, enviar directamente
+            // Si está bien, enviar directamente y redirigir
             this.enviarCheckin(estado);
         }
         
@@ -301,7 +532,7 @@ class SistemaCheckinEmergencias {
             estado = btnSelected.dataset.estado;
         }
         
-        // Si está bien, enviar directamente
+        // Si está bien, enviar directamente y redirigir
         if (estado === 'bien') {
             await this.guardarCheckin({
                 estado: 'bien',
@@ -309,6 +540,30 @@ class SistemaCheckinEmergencias {
                 descripcion_situacion: null,
                 quiere_contacto: false
             });
+            // Redirigir a comunidad de emergencias
+            this.redirigirAComunidadEmergencias('bien');
+            return;
+        }
+        
+        // Si conoce personas que no están bien
+        if (estado === 'conozco_personas') {
+            const tiposAyuda = Array.from(document.querySelectorAll('input[name="tipo_ayuda"]:checked'))
+                .map(input => input.value);
+            
+            if (tiposAyuda.length === 0) {
+                alert('Por favor, seleccioná al menos un tipo de ayuda');
+                return;
+            }
+            
+            await this.guardarCheckin({
+                estado: 'conozco_personas',
+                tipo_ayuda_necesaria: tiposAyuda,
+                descripcion_situacion: document.getElementById('descripcionSituacion').value || null,
+                quiere_contacto: false
+            });
+            
+            // Redirigir a comunidad de emergencias
+            this.redirigirAComunidadEmergencias('conozco_personas');
             return;
         }
         
@@ -330,7 +585,15 @@ class SistemaCheckinEmergencias {
             telefono_contacto: document.getElementById('telefonoContacto')?.value || null
         };
         
+        // Si proporcionó email, guardarlo también en la ubicación
+        if (datos.email_contacto && this.ubicacionUsuario) {
+            await this.guardarUbicacionUsuario(this.ubicacionUsuario, datos.email_contacto);
+        }
+        
         await this.guardarCheckin(datos);
+        
+        // Redirigir a comunidad de emergencias
+        this.redirigirAComunidadEmergencias(estado);
     }
     
     // ===== SOLICITAR PERMISO DE UBICACIÓN =====
@@ -371,12 +634,16 @@ class SistemaCheckinEmergencias {
         }
         
         try {
-            // Solicitar ubicación (SOLO para detectar desastres naturales en tu zona)
-            let ubicacionUsuario = null;
-            try {
-                ubicacionUsuario = await this.solicitarUbicacion();
-            } catch (error) {
-                console.warn('No se pudo obtener ubicación:', error);
+            // Usar ubicación ya obtenida (si se obtuvo en el consentimiento previo)
+            let ubicacionUsuario = this.ubicacionUsuario;
+            
+            // Si no se obtuvo antes, intentar obtenerla ahora (fallback)
+            if (!ubicacionUsuario) {
+                try {
+                    ubicacionUsuario = await this.solicitarUbicacion();
+                } catch (error) {
+                    console.warn('No se pudo obtener ubicación:', error);
+                }
             }
             
             const checkinData = {
@@ -417,15 +684,50 @@ class SistemaCheckinEmergencias {
         }
     }
     
+    // ===== REDIRIGIR A COMUNIDAD DE EMERGENCIAS =====
+    redirigirAComunidadEmergencias(estado) {
+        const baseUrl = window.location.origin;
+        let url = `${baseUrl}/cresalia-solidario-emergencias/index.html`;
+        
+        // Agregar parámetros según estado
+        const params = new URLSearchParams();
+        if (estado === 'bien') {
+            params.append('estado', 'bien');
+            params.append('mensaje', 'gracias');
+        } else if (estado === 'conozco_personas') {
+            params.append('estado', 'conozco_personas');
+            params.append('ayuda', 'si');
+        } else if (estado === 'necesita_ayuda' || estado === 'ayuda_urgente') {
+            params.append('estado', estado);
+            params.append('ayuda', 'si');
+        }
+        
+        if (params.toString()) {
+            url += '?' + params.toString();
+        }
+        
+        // Redirigir después de 2 segundos
+        setTimeout(() => {
+            window.location.href = url;
+        }, 2000);
+    }
+    
     mostrarAgradecimiento(estado) {
         const modal = document.getElementById('modal-checkin-emergencia');
         if (!modal) return;
         
         let mensaje = '';
+        let mensajeRedireccion = '';
+        
         if (estado === 'bien') {
             mensaje = '💜 Me alegra saber que estás bien. Cuidate mucho.';
+            mensajeRedireccion = 'Te redirigiremos a la comunidad de emergencias por si querés ayudar a otros.';
         } else if (estado === 'necesita_ayuda' || estado === 'ayuda_urgente') {
-            mensaje = '💜 Tu mensaje fue recibido. Te contactaremos pronto. No estás solo/a.';
+            mensaje = '💜 Tu mensaje fue recibido. Te redirigiremos a la comunidad de emergencias donde podrás encontrar ayuda.';
+            mensajeRedireccion = 'La comunidad está esperando para ayudarte. No estás solo/a.';
+        } else if (estado === 'conozco_personas') {
+            mensaje = '💜 Gracias por tu solidaridad. Te redirigiremos a la comunidad de emergencias.';
+            mensajeRedireccion = 'Allí podrás encontrar recursos y apoyo para ayudar a quienes lo necesitan.';
         }
         
         modal.querySelector('.modal-checkin-body').innerHTML = `
@@ -433,6 +735,7 @@ class SistemaCheckinEmergencias {
                 <div class="icono-grande">💜</div>
                 <h3>Gracias por tu respuesta</h3>
                 <p>${mensaje}</p>
+                ${mensajeRedireccion ? `<p style="margin-top: 15px; color: #6B7280; font-size: 0.9rem;">${mensajeRedireccion}</p>` : ''}
             </div>
         `;
     }
@@ -562,6 +865,14 @@ class SistemaCheckinEmergencias {
             }
             .mensaje-crisla p:last-child {
                 margin-bottom: 0;
+            }
+            .mensaje-crisla.zona-afectada {
+                border-left: 5px solid #EF4444;
+                background: linear-gradient(135deg, #FEF2F2 0%, #FEE2E2 100%);
+            }
+            .modal-checkin-emergencia.urgente .modal-checkin-content {
+                border: 3px solid #EF4444;
+                box-shadow: 0 0 30px rgba(239, 68, 68, 0.5);
             }
             .checkin-options {
                 display: grid;
@@ -700,6 +1011,175 @@ class SistemaCheckinEmergencias {
             }
         `;
         document.head.appendChild(style);
+    }
+    
+    agregarEstilosConsentimiento() {
+        if (document.getElementById('estilos-consentimiento-ubicacion')) return;
+        
+        const style = document.createElement('style');
+        style.id = 'estilos-consentimiento-ubicacion';
+        style.textContent = `
+            .modal-consentimiento-ubicacion {
+                display: none;
+                position: fixed;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                background: rgba(0, 0, 0, 0.7);
+                z-index: 99998;
+                align-items: center;
+                justify-content: center;
+                padding: 20px;
+                backdrop-filter: blur(5px);
+            }
+            .modal-consentimiento-ubicacion.active {
+                display: flex;
+            }
+            .modal-consentimiento-content {
+                background: white;
+                border-radius: 20px;
+                padding: 30px;
+                max-width: 550px;
+                width: 100%;
+                box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+                animation: slideIn 0.3s ease;
+            }
+            .modal-consentimiento-header {
+                margin-bottom: 25px;
+                padding-bottom: 20px;
+                border-bottom: 2px solid #E5E7EB;
+            }
+            .modal-consentimiento-header h2 {
+                color: #EF4444;
+                margin: 0;
+                font-size: 1.5rem;
+            }
+            .modal-consentimiento-subtitle {
+                color: #6B7280;
+                margin: 5px 0 0 0;
+                font-size: 0.9rem;
+            }
+            .mensaje-consentimiento {
+                background: linear-gradient(135deg, #FEF2F2 0%, #FEE2E2 100%);
+                border-left: 4px solid #EF4444;
+                padding: 20px;
+                border-radius: 10px;
+                margin-bottom: 25px;
+            }
+            .mensaje-consentimiento p {
+                margin: 0 0 10px 0;
+                color: #374151;
+                line-height: 1.6;
+            }
+            .mensaje-consentimiento p:last-child {
+                margin-bottom: 0;
+            }
+            .consentimiento-options {
+                display: grid;
+                gap: 15px;
+            }
+            .btn-consentimiento {
+                background: white;
+                border: 3px solid #E5E7EB;
+                border-radius: 15px;
+                padding: 20px;
+                text-align: center;
+                cursor: pointer;
+                transition: all 0.3s;
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                gap: 10px;
+            }
+            .btn-consentimiento i {
+                font-size: 2rem;
+            }
+            .btn-consentimiento strong {
+                font-size: 1.1rem;
+                color: #374151;
+            }
+            .btn-consentimiento small {
+                color: #6B7280;
+                font-size: 0.85rem;
+            }
+            .btn-consentimiento.aceptar {
+                border-color: #10B981;
+            }
+            .btn-consentimiento.aceptar i {
+                color: #10B981;
+            }
+            .btn-consentimiento.aceptar:hover {
+                background: #F0FDF4;
+                border-color: #10B981;
+                transform: translateY(-2px);
+            }
+            .btn-consentimiento.rechazar {
+                border-color: #6B7280;
+            }
+            .btn-consentimiento.rechazar i {
+                color: #6B7280;
+            }
+            .btn-consentimiento.rechazar:hover {
+                background: #F9FAFB;
+                border-color: #6B7280;
+            }
+            .btn-consentimiento.ya-hice {
+                border-color: #3B82F6;
+            }
+            .btn-consentimiento.ya-hice i {
+                color: #3B82F6;
+            }
+            .btn-consentimiento.ya-hice:hover {
+                background: #EFF6FF;
+                border-color: #3B82F6;
+            }
+        `;
+        document.head.appendChild(style);
+    }
+    
+    // ===== GUARDAR UBICACIÓN DEL USUARIO =====
+    async guardarUbicacionUsuario(ubicacion, email = null) {
+        if (!ubicacion || !this.supabase) return;
+        
+        try {
+            // Guardar en localStorage
+            const ubicacionData = {
+                latitud: ubicacion.latitud,
+                longitud: ubicacion.longitud,
+                precision: ubicacion.precision,
+                fecha: new Date().toISOString(),
+                email: email || null
+            };
+            localStorage.setItem('cresalia_ubicacion_usuario', JSON.stringify(ubicacionData));
+            
+            // Intentar guardar en Supabase (si hay tabla)
+            try {
+                const { error } = await this.supabase
+                    .from('ubicaciones_usuarios_emergencias')
+                    .upsert([{
+                        usuario_hash: this.usuarioHash,
+                        latitud: ubicacion.latitud,
+                        longitud: ubicacion.longitud,
+                        precision_metros: ubicacion.precision,
+                        email: email || null,
+                        ultima_actualizacion: new Date().toISOString(),
+                        permite_emails_emergencia: true
+                    }], {
+                        onConflict: 'usuario_hash'
+                    });
+                
+                if (error) {
+                    // Si la tabla no existe, solo guardar en localStorage
+                    console.log('ℹ️ Tabla de ubicaciones no disponible, guardado solo en localStorage');
+                }
+            } catch (error) {
+                // Si falla, no es crítico, ya está guardado en localStorage
+                console.log('ℹ️ No se pudo guardar ubicación en Supabase, guardado en localStorage');
+            }
+        } catch (error) {
+            console.warn('Error guardando ubicación:', error);
+        }
     }
     
     // ===== UTILIDADES =====

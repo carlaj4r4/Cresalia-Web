@@ -628,8 +628,39 @@
         
         <!-- Tab: Acciones de Moderación -->
         <div class="tab-content" id="tab-acciones">
+            <div style="margin-bottom: 20px;">
+                <div class="filters">
+                    <div class="filter-group">
+                        <label>Filtrar por tipo:</label>
+                        <select id="filter-tipo-accion">
+                            <option value="">Todas las acciones</option>
+                            <option value="ocultar_post">Ocultar Post</option>
+                            <option value="eliminar_post">Eliminar Post</option>
+                            <option value="restaurar_post">Restaurar Post</option>
+                            <option value="ocultar_comentario">Ocultar Comentario</option>
+                            <option value="eliminar_comentario">Eliminar Comentario</option>
+                            <option value="restaurar_comentario">Restaurar Comentario</option>
+                            <option value="banear_usuario">Banear Usuario</option>
+                            <option value="desbanear_usuario">Desbanear Usuario</option>
+                        </select>
+                    </div>
+                    <div class="filter-group">
+                        <label>Filtrar por moderador:</label>
+                        <input type="text" id="filter-moderador" placeholder="Email del moderador...">
+                    </div>
+                    <div class="filter-group">
+                        <label>Filtrar por fecha:</label>
+                        <input type="date" id="filter-fecha">
+                    </div>
+                    <div class="filter-group">
+                        <button class="btn btn-primary" onclick="cargarAcciones()">
+                            <i class="fas fa-search"></i> Buscar
+                        </button>
+                    </div>
+                </div>
+            </div>
             <div id="acciones-container" class="posts-list">
-                <div class="loading">💜 Cargando acciones...</div>
+                <div class="loading">💜 Cargando historial de acciones...</div>
             </div>
         </div>
     </div>
@@ -1242,7 +1273,7 @@
             }).join('');
         }
         
-        // Cargar acciones de moderación
+        // Cargar acciones de moderación (historial completo)
         async function cargarAcciones() {
             if (!supabase) {
                 document.getElementById('acciones-container').innerHTML = '<div class="empty"><h3>❌ Supabase no configurado</h3></div>';
@@ -1250,54 +1281,100 @@
             }
             
             const container = document.getElementById('acciones-container');
-            container.innerHTML = '<div class="loading">💜 Cargando acciones...</div>';
+            container.innerHTML = '<div class="loading">💜 Cargando historial completo...</div>';
             
             try {
-                const { data, error } = await supabase
+                const tipoAccion = document.getElementById('filter-tipo-accion')?.value || '';
+                const moderador = document.getElementById('filter-moderador')?.value.trim() || '';
+                const fecha = document.getElementById('filter-fecha')?.value || '';
+                
+                let query = supabase
                     .from('acciones_moderacion')
                     .select('*')
                     .order('fecha_accion', { ascending: false })
-                    .limit(100);
+                    .limit(500); // Aumentar límite para historial completo
+                
+                if (tipoAccion) query = query.eq('tipo_accion', tipoAccion);
+                if (moderador) query = query.ilike('moderador_email', `%${moderador}%`);
+                if (fecha) {
+                    const fechaInicio = new Date(fecha);
+                    fechaInicio.setHours(0, 0, 0, 0);
+                    const fechaFin = new Date(fecha);
+                    fechaFin.setHours(23, 59, 59, 999);
+                    query = query.gte('fecha_accion', fechaInicio.toISOString())
+                                 .lte('fecha_accion', fechaFin.toISOString());
+                }
+                
+                const { data, error } = await query;
                 
                 if (error) throw error;
                 
                 datosActuales.acciones = data || [];
                 renderizarAcciones(datosActuales.acciones);
             } catch (error) {
-                console.error('Error cargando acciones:', error);
+                console.error('Error cargando historial:', error);
                 container.innerHTML = `<div class="empty"><h3>❌ Error</h3><p>${error.message}</p></div>`;
             }
         }
         
-        // Renderizar acciones
+        // Renderizar acciones (historial completo)
         function renderizarAcciones(acciones) {
             const container = document.getElementById('acciones-container');
             
             if (acciones.length === 0) {
-                container.innerHTML = '<div class="empty"><h3>💜 No hay acciones registradas</h3><p>Aún no se han realizado acciones de moderación.</p></div>';
+                container.innerHTML = '<div class="empty"><h3>💜 No hay acciones registradas</h3><p>No se encontraron acciones con los filtros seleccionados.</p></div>';
                 return;
             }
             
-            container.innerHTML = acciones.map(accion => {
+            // Agrupar por fecha
+            const accionesPorFecha = {};
+            acciones.forEach(accion => {
+                const fecha = new Date(accion.fecha_accion).toLocaleDateString('es-AR');
+                if (!accionesPorFecha[fecha]) {
+                    accionesPorFecha[fecha] = [];
+                }
+                accionesPorFecha[fecha].push(accion);
+            });
+            
+            container.innerHTML = Object.keys(accionesPorFecha).sort((a, b) => new Date(b) - new Date(a)).map(fecha => {
+                const accionesDelDia = accionesPorFecha[fecha];
                 return `
-                    <div class="post-card">
-                        <div class="post-header">
-                            <div class="post-info">
-                                <strong>${accion.tipo_accion.replace('_', ' ').toUpperCase()}</strong>
-                                <div class="post-meta">
-                                    <span><i class="fas fa-user"></i> ${accion.moderador_email}</span>
-                                    <span><i class="fas fa-calendar"></i> ${formatearFecha(accion.fecha_accion)}</span>
-                                    <span><i class="fas fa-users"></i> ${accion.comunidad_slug || 'Todas'}</span>
-                                    ${accion.autor_hash ? `<span><i class="fas fa-fingerprint"></i> Hash: ${accion.autor_hash.substring(0, 20)}...</span>` : ''}
+                    <div style="margin-bottom: 30px;">
+                        <h4 style="color: #667eea; margin-bottom: 15px; padding-bottom: 10px; border-bottom: 2px solid #E5E7EB;">
+                            <i class="fas fa-calendar-day"></i> ${fecha} (${accionesDelDia.length} ${accionesDelDia.length === 1 ? 'acción' : 'acciones'})
+                        </h4>
+                        ${accionesDelDia.map(accion => {
+                            const tipoAccion = accion.tipo_accion.replace(/_/g, ' ').toUpperCase();
+                            const iconoAccion = accion.tipo_accion.includes('banear') ? '🚫' :
+                                               accion.tipo_accion.includes('desbanear') ? '✅' :
+                                               accion.tipo_accion.includes('eliminar') ? '🗑️' :
+                                               accion.tipo_accion.includes('ocultar') ? '👁️‍🗨️' :
+                                               accion.tipo_accion.includes('restaurar') ? '↩️' : '📝';
+                            
+                            return `
+                                <div class="post-card" style="margin-bottom: 15px;">
+                                    <div class="post-header">
+                                        <div class="post-info">
+                                            <strong>
+                                                ${iconoAccion} ${tipoAccion}
+                                            </strong>
+                                            <div class="post-meta">
+                                                <span><i class="fas fa-user-shield"></i> Moderador: ${accion.moderador_email || 'Sistema'}</span>
+                                                <span><i class="fas fa-clock"></i> ${formatearFecha(accion.fecha_accion)}</span>
+                                                <span><i class="fas fa-users"></i> ${accion.comunidad_slug || 'Todas las comunidades'}</span>
+                                                ${accion.autor_hash ? `<span><i class="fas fa-fingerprint"></i> Hash: <span class="post-hash" onclick="copiarAlPortapapeles('${accion.autor_hash}')" title="Click para copiar">${accion.autor_hash.substring(0, 30)}...</span></span>` : ''}
+                                            </div>
+                                            ${accion.post_id ? `<div style="margin-top: 8px; font-size: 0.9rem; color: #6B7280;"><strong>Post ID:</strong> <code style="background: #E5E7EB; padding: 2px 6px; border-radius: 4px;">${accion.post_id}</code></div>` : ''}
+                                            ${accion.comentario_id ? `<div style="margin-top: 8px; font-size: 0.9rem; color: #6B7280;"><strong>Comentario ID:</strong> <code style="background: #E5E7EB; padding: 2px 6px; border-radius: 4px;">${accion.comentario_id}</code></div>` : ''}
+                                        </div>
+                                    </div>
+                                    <div class="post-content">
+                                        <strong>Motivo:</strong><br>
+                                        ${escapeHtml(accion.motivo || 'Sin motivo especificado')}
+                                    </div>
                                 </div>
-                                ${accion.post_id ? `<div style="margin-top: 5px;"><strong>Post ID:</strong> ${accion.post_id}</div>` : ''}
-                                ${accion.comentario_id ? `<div style="margin-top: 5px;"><strong>Comentario ID:</strong> ${accion.comentario_id}</div>` : ''}
-                            </div>
-                        </div>
-                        <div class="post-content">
-                            <strong>Motivo:</strong><br>
-                            ${escapeHtml(accion.motivo)}
-                        </div>
+                            `;
+                        }).join('')}
                     </div>
                 `;
             }).join('');

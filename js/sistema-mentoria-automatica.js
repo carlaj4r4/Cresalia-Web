@@ -520,7 +520,7 @@ class SistemaMentoriaAutomatica {
             <div style="background: white; padding: 30px; border-radius: 16px; max-width: 900px; width: 90%; max-height: 80vh; overflow-y: auto;">
                 <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px;">
                     <h3 style="margin: 0; color: #1e293b;">🎯 Sistema de Mentoría Automática</h3>
-                    <button onclick="cerrarModalSeguro(this)" style="background: #6B7280; color: white; border: none; padding: 8px 12px; border-radius: 50%; cursor: pointer; font-size: 18px; width: 40px; height: 40px; display: flex; align-items: center; justify-content: center;">
+                    <button onclick="sistemaMentoria.cerrarModalMentoria()" style="background: #6B7280; color: white; border: none; padding: 8px 12px; border-radius: 50%; cursor: pointer; font-size: 18px; width: 40px; height: 40px; display: flex; align-items: center; justify-content: center;">
                         ×
                     </button>
                 </div>
@@ -635,6 +635,28 @@ class SistemaMentoriaAutomatica {
                 modal.remove();
             }
         });
+        
+        // Guardar referencia del modal para poder cerrarlo
+        modal.id = 'modalMentoria';
+    }
+    
+    /**
+     * Cerrar modal de mentoría
+     */
+    cerrarModalMentoria() {
+        const modal = document.getElementById('modalMentoria');
+        if (modal) {
+            modal.remove();
+            return;
+        }
+        
+        // Buscar por selector si no tiene ID
+        const modales = document.querySelectorAll('div[style*="z-index: 10000"]');
+        modales.forEach(m => {
+            if (m.innerHTML && m.innerHTML.includes('Sistema de Mentoría Automática')) {
+                m.remove();
+            }
+        });
     }
 }
 
@@ -644,6 +666,21 @@ const sistemaMentoria = new SistemaMentoriaAutomatica();
 // Función global para mostrar panel
 function mostrarPanelMentoria() {
     sistemaMentoria.mostrarPanelMentoria();
+}
+
+// Función global para cerrar modal (compatibilidad con onclick)
+function cerrarModalSeguro(button) {
+    if (typeof sistemaMentoria !== 'undefined' && sistemaMentoria.cerrarModalMentoria) {
+        sistemaMentoria.cerrarModalMentoria();
+    } else {
+        // Fallback: cerrar el modal padre del botón
+        if (button && button.closest) {
+            const modal = button.closest('div[style*="position: fixed"]');
+            if (modal) {
+                modal.remove();
+            }
+        }
+    }
 }
 
 // Métodos públicos para los botones

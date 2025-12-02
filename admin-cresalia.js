@@ -1132,48 +1132,10 @@ function cargarProductos() {
     // Cargar productos guardados
     let productos = JSON.parse(localStorage.getItem('productosCRESALIA') || '[]');
     
-    // Si no hay productos guardados, cargar los productos por defecto de la página principal
+    // NO cargar productos por defecto en producción - deben agregarse desde el panel
     if (productos.length === 0) {
-        console.log('📦 Cargando productos por defecto de la página principal...');
-        
-        // Productos por defecto hardcodeados de script-friocas.js
-        productos = [
-            // Limpiadores
-            { id: 1, nombre: 'Bug Remover', categoria: 'limpiadores', precio: 8500, descripcion: 'Removedor profesional de insectos y suciedad del parabrisas', imagen: 'assets/productos/Limpiadores/Bug Remover.jpg', stock: 15, marca: 'Professional Care' },
-            { id: 2, nombre: 'Alcaline Wheels', categoria: 'limpiadores', precio: 12000, descripcion: 'Limpiador alcalino especial para llantas y ruedas', imagen: 'assets/productos/Limpiadores/Alcaline Wheels.jpg', stock: 25, marca: 'Wheel Care' },
-            { id: 3, nombre: 'Iron Warning', categoria: 'limpiadores', precio: 15000, descripcion: 'Removedor de óxido y manchas de hierro en pintura', imagen: 'assets/productos/Limpiadores/Iron Warning.jpg', stock: 12, marca: 'Iron Defense' },
-            { id: 4, nombre: 'CTRL Z', categoria: 'limpiadores', precio: 9500, descripcion: 'Limpiador desengrasante de alto poder para motores', imagen: 'assets/productos/Limpiadores/CTRL Z.jpg', stock: 18, marca: 'Engine Care' },
-            { id: 5, nombre: 'All Clean', categoria: 'limpiadores', precio: 11000, descripcion: 'Limpiador multiuso para interior y exterior del vehículo', imagen: 'assets/productos/Limpiadores/All Clean.jpg', stock: 20, marca: 'Universal Clean' },
-            { id: 6, nombre: 'Inferno Gel', categoria: 'limpiadores', precio: 13500, descripcion: 'Gel limpiador de alta temperatura para motores', imagen: 'assets/productos/Limpiadores/Inferno Gel.jpg', stock: 10, marca: 'Hot Clean' },
-            { id: 7, nombre: 'Clean Vision', categoria: 'limpiadores', precio: 8000, descripcion: 'Limpiador especial para vidrios y espejos', imagen: 'assets/productos/Limpiadores/Clean Vision.jpg', stock: 22, marca: 'Glass Care' },
-            
-            // Shampoo
-            { id: 8, nombre: 'ICE Shampoo', categoria: 'shampoo', precio: 12500, descripcion: 'Shampoo con efecto hielo para acabado brillante', imagen: 'assets/productos/shampoo/ICE.jpg', stock: 15, marca: 'Ice Effect' },
-            { id: 9, nombre: 'Energy Shampoo', categoria: 'shampoo', precio: 13500, descripcion: 'Shampoo energizante con protección UV', imagen: 'assets/productos/shampoo/Energy.jpg', stock: 18, marca: 'Energy Boost' },
-            { id: 10, nombre: 'Pure Foam', categoria: 'shampoo', precio: 14500, descripcion: 'Shampoo de espuma pura para lavado suave', imagen: 'assets/productos/shampoo/Pure Foam.jpg', stock: 12, marca: 'Pure Care' },
-            { id: 11, nombre: 'Banana Shampoo', categoria: 'shampoo', precio: 15500, descripcion: 'Shampoo con extracto de banana para brillo natural', imagen: 'assets/productos/shampoo/Banana.jpg', stock: 14, marca: 'Natural Glow' },
-            { id: 12, nombre: 'Hyper Black', categoria: 'shampoo', precio: 13000, descripcion: 'Shampoo especial para vehículos negros', imagen: 'assets/productos/shampoo/Hyper Black.jpg', stock: 16, marca: 'Black Magic' },
-            { id: 13, nombre: 'Elite Shampoo', categoria: 'shampoo', precio: 14000, descripcion: 'Shampoo premium para acabado profesional', imagen: 'assets/productos/shampoo/Elite.jpg', stock: 10, marca: 'Elite Care' },
-            { id: 14, nombre: 'DIP CLUB', categoria: 'shampoo', precio: 16000, descripcion: 'Shampoo exclusivo para vehículos de alta gama', imagen: 'assets/productos/shampoo/DIP CLUB.jpg', stock: 8, marca: 'VIP Care' },
-            
-            // Ceras Líquidas
-            { id: 15, nombre: 'Extreme Detail', categoria: 'ceras', precio: 18000, descripcion: 'Cera líquida de alta duración para acabado extremo', imagen: 'assets/productos/Ceras líquidas/Extreme Detail.jpg', stock: 12, marca: 'Extreme Care' },
-            { id: 16, nombre: 'Illusion Wax', categoria: 'ceras', precio: 16500, descripcion: 'Cera líquida con efecto espejo para acabado perfecto', imagen: 'assets/productos/Ceras líquidas/Illusion Wax.jpg', stock: 15, marca: 'Illusion Pro' },
-            { id: 17, nombre: 'Lava Crush', categoria: 'ceras', precio: 17500, descripcion: 'Cera líquida de alta temperatura para protección máxima', imagen: 'assets/productos/Ceras líquidas/Lava Crush.jpg', stock: 10, marca: 'Lava Shield' },
-            { id: 18, nombre: 'Seal It All', categoria: 'ceras', precio: 16000, descripcion: 'Sellador líquido de larga duración para protección total', imagen: 'assets/productos/Ceras líquidas/Seal It All.jpg', stock: 18, marca: 'Seal Pro' },
-            { id: 19, nombre: 'The Boss', categoria: 'ceras', precio: 19000, descripcion: 'Cera líquida premium para acabado profesional', imagen: 'assets/productos/Ceras líquidas/The Boss.jpg', stock: 8, marca: 'Boss Premium' },
-            
-            // Iluminación
-            { id: 20, nombre: 'Cree Led Mi2', categoria: 'iluminacion', precio: 25000, descripcion: 'Kit de iluminación LED Cree de alta potencia', imagen: 'assets/productos/iluminacion/Cree Led Mi2.jpg', stock: 6, marca: 'Cree Lighting' },
-            
-            // Revividores de Interiores
-            { id: 21, nombre: 'Illusion Wax Interior', categoria: 'revividores', precio: 14000, descripcion: 'Revividor de interiores con efecto espejo', imagen: 'assets/productos/Revividores de interiores/Illusion Wax.jpg', stock: 12, marca: 'Illusion Interior' },
-            { id: 22, nombre: 'Lava Crush Interior', categoria: 'revividores', precio: 15000, descripcion: 'Revividor de interiores de alta duración', imagen: 'assets/productos/Revividores de interiores/Lava Crush.jpg', stock: 10, marca: 'Lava Interior' }
-        ];
-        
-        // Guardar productos por defecto
-        localStorage.setItem('productosCRESALIA', JSON.stringify(productos));
-        console.log('💾 Productos por defecto cargados:', productos.length);
+        console.log('📭 No hay productos configurados. Agrega tus productos desde el panel de administración.');
+        productos = []; // Array vacío, sin productos de ejemplo
     }
     
     // Mostrar lista de productos

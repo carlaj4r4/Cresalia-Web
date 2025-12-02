@@ -1161,6 +1161,122 @@ class SistemaCresaliaAnimales {
             console.error('Error cargando organizaciones:', error);
         }
     }
+    
+    // ===== REPORTAR MALTRATO ANIMAL =====
+    async reportarMaltrato(datos) {
+        if (!this.supabase) {
+            this.mostrarError('No hay conexión con Supabase');
+            return;
+        }
+        
+        try {
+            // Subir fotos a Supabase Storage si hay
+            const fotosUrls = [];
+            
+            if (datos.fotos && datos.fotos.length > 0) {
+                this.mostrarExito('⏳ Subiendo evidencias fotográficas...');
+                
+                for (let i = 0; i < datos.fotos.length; i++) {
+                    const fotoBase64 = datos.fotos[i];
+                    try {
+                        // Extraer el base64 puro (sin el prefijo data:image/...)
+                        const base64Data = fotoBase64.split(',')[1] || fotoBase64;
+                        const mimeType = fotoBase64.match(/data:(.*?);base64/)?.[1] || 'image/jpeg';
+                        const extension = mimeType.split('/')[1] || 'jpg';
+                        
+                        const nombreArchivo = `maltrato_${Date.now()}_${i}.${extension}`;
+                        const rutaArchivo = `reportes-maltrato/${nombreArchivo}`;
+                        
+                        // Convertir base64 a blob
+                        const byteCharacters = atob(base64Data);
+                        const byteNumbers = new Array(byteCharacters.length);
+                        for (let j = 0; j < byteCharacters.length; j++) {
+                            byteNumbers[j] = byteCharacters.charCodeAt(j);
+                        }
+                        const byteArray = new Uint8Array(byteNumbers);
+                        const blob = new Blob([byteArray], { type: mimeType });
+                        
+                        // Subir a Supabase Storage
+                        const { data: uploadData, error: uploadError } = await this.supabase.storage
+                            .from('animales')
+                            .upload(rutaArchivo, blob, {
+                                contentType: mimeType,
+                                upsert: false
+                            });
+                        
+                        if (uploadError) throw uploadError;
+                        
+                        // Obtener URL pública
+                        const { data: urlData } = this.supabase.storage
+                            .from('animales')
+                            .getPublicUrl(rutaArchivo);
+                        
+                        if (urlData?.publicUrl) {
+                            fotosUrls.push({
+                                url: urlData.publicUrl,
+                                type: mimeType,
+                                uploaded_at: new Date().toISOString()
+                            });
+                        }
+                    } catch (fotoError) {
+                        console.error('Error subiendo foto:', fotoError);
+                        // Continuar aunque falle una foto
+                    }
+                }
+            }
+            
+            // Insertar reporte en la base de datos
+            const { data, error } = await this.supabase
+                .from('reportes_maltrato_animal')
+                .insert([{
+                    tipo_maltrato: datos.tipo_maltrato,
+                    tipo_animal: datos.tipo_animal,
+                    ciudad: datos.ciudad,
+                    provincia: datos.provincia,
+                    direccion: datos.direccion || null,
+                    descripcion: datos.descripcion,
+                    urgencia: datos.urgencia,
+                    fotos: fotosUrls.length > 0 ? fotosUrls : [],
+                    anonimo: datos.anonimo,
+                    email: datos.email || null,
+                    telefono: datos.telefono || null,
+                    reportado_por_hash: this.usuarioHash,
+                    estado: 'pendiente'
+                }])
+                .select();
+            
+            if (error) throw error;
+            
+            this.mostrarExito('✅ Reporte enviado correctamente. Gracias por ayudar a proteger a los animales. El caso será revisado lo antes posible.');
+            
+            // Enviar notificación por email si hay email
+            if (datos.email && !datos.anonimo) {
+                try {
+                    await fetch('/api/mantenimiento/notificar', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({
+                            tipo: 'reporte_maltrato',
+                            email: datos.email,
+                            reporte_id: data[0].id,
+                            urgencia: datos.urgencia
+                        })
+                    });
+                } catch (emailError) {
+                    console.error('Error enviando email:', emailError);
+                    // No fallar si no se puede enviar el email
+                }
+            }
+            
+            return data[0];
+        } catch (error) {
+            console.error('Error reportando maltrato:', error);
+            this.mostrarError('Error al enviar el reporte: ' + error.message);
+            throw error;
+        }
+    }
 }
 
 // Instancia global

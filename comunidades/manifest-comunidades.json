@@ -109,6 +109,90 @@
           "sizes": "96x96"
         }
       ]
+    },
+    {
+      "name": "Desahogo Libre",
+      "short_name": "Desahogo",
+      "description": "Espacio sin etiquetas para expresar el dolor",
+      "url": "/comunidades/desahogo-libre/",
+      "icons": [
+        {
+          "src": "../icons/icon-96x96.png",
+          "sizes": "96x96"
+        }
+      ]
+    },
+    {
+      "name": "Libertad Emocional",
+      "short_name": "Libertad",
+      "description": "Sanando rompimientos y dependencia emocional",
+      "url": "/comunidades/libertad-emocional/",
+      "icons": [
+        {
+          "src": "../icons/icon-96x96.png",
+          "sizes": "96x96"
+        }
+      ]
+    },
+    {
+      "name": "Sanando Abandonos",
+      "short_name": "Abandonos",
+      "description": "Espacio seguro para procesar el abandono y encontrar sanación",
+      "url": "/comunidades/sanando-abandonos/",
+      "icons": [
+        {
+          "src": "../icons/icon-96x96.png",
+          "sizes": "96x96"
+        }
+      ]
+    },
+    {
+      "name": "Libertad Económica",
+      "short_name": "Económica",
+      "description": "Rompiendo cadenas económicas y construyendo independencia",
+      "url": "/comunidades/libertad-economica/",
+      "icons": [
+        {
+          "src": "../icons/icon-96x96.png",
+          "sizes": "96x96"
+        }
+      ]
+    },
+    {
+      "name": "Espiritualidad y Fe",
+      "short_name": "Espiritualidad",
+      "description": "Un espacio de respeto para todas las creencias",
+      "url": "/comunidades/espiritualidad-fe/",
+      "icons": [
+        {
+          "src": "../icons/icon-96x96.png",
+          "sizes": "96x96"
+        }
+      ]
+    },
+    {
+      "name": "Injusticias Vividas",
+      "short_name": "Injusticias",
+      "description": "Espacio seguro y anónimo para compartir injusticias",
+      "url": "/comunidades/injusticias-vividas/",
+      "icons": [
+        {
+          "src": "../icons/icon-96x96.png",
+          "sizes": "96x96"
+        }
+      ]
+    },
+    {
+      "name": "Caminando Juntos",
+      "short_name": "Caminando",
+      "description": "Espacio seguro para la recuperación y el apoyo mutuo",
+      "url": "/comunidades/caminando-juntos/",
+      "icons": [
+        {
+          "src": "../icons/icon-96x96.png",
+          "sizes": "96x96"
+        }
+      ]
     }
   ],
   "related_applications": [],

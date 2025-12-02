@@ -38,6 +38,9 @@
     <!-- Sistema Cresalia Animales -->
     <script src="../js/sistema-cresalia-animales.js"></script>
     
+    <!-- Sistema de Alias/CVU/CBU para Donaciones -->
+    <script src="../js/sistema-alias-donaciones.js"></script>
+    
     <style>
         * {
             margin: 0;
@@ -446,6 +449,9 @@
             <button class="tab active" data-tab="animales">🐾 Animales que Necesitan Ayuda</button>
             <button class="tab" data-tab="refugios">🏠 Necesidades de Refugios</button>
             <button class="tab" data-tab="organizaciones">💜 Refugios y Organizaciones</button>
+            <button class="tab" data-tab="recursos">📚 Recursos de Bienestar Animal</button>
+            <button class="tab" data-tab="reportes-maltrato">🚨 Reportar Maltrato Animal</button>
+            <button class="tab" data-tab="donaciones">💰 Métodos de Pago / Donaciones</button>
             <button class="tab" data-tab="publicar">➕ Publicar Necesidad</button>
         </div>
         
@@ -479,6 +485,352 @@
                     <div class="spinner" style="border: 4px solid #E5E7EB; border-top: 4px solid #059669; border-radius: 50%; width: 50px; height: 50px; animation: spin 1s linear infinite; margin: 0 auto 20px;"></div>
                     <p>Cargando organizaciones...</p>
                 </div>
+            </div>
+        </div>
+        
+        <!-- Tab: Recursos de Bienestar Animal -->
+        <div class="tab-content" id="recursos">
+            <h2 style="margin-bottom: 20px; color: #374151;">📚 Recursos de Bienestar Animal</h2>
+            
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px;">
+                <!-- Recursos sobre Cuidado Básico -->
+                <div class="resource-card" style="background: linear-gradient(135deg, rgba(5, 150, 105, 0.1), rgba(16, 185, 129, 0.1)); padding: 25px; border-radius: 15px; border-left: 4px solid #059669;">
+                    <div style="font-size: 2.5rem; margin-bottom: 15px;">🏥</div>
+                    <h3 style="color: #059669; margin-bottom: 10px;">Cuidado Básico</h3>
+                    <ul style="list-style: none; padding: 0; line-height: 2;">
+                        <li>✅ Alimentación adecuada por especie</li>
+                        <li>✅ Vacunación y desparasitación</li>
+                        <li>✅ Higiene y limpieza</li>
+                        <li>✅ Ejercicio y actividad física</li>
+                        <li>✅ Atención veterinaria preventiva</li>
+                    </ul>
+                </div>
+                
+                <!-- Recursos sobre Primeros Auxilios -->
+                <div class="resource-card" style="background: linear-gradient(135deg, rgba(239, 68, 68, 0.1), rgba(220, 38, 38, 0.1)); padding: 25px; border-radius: 15px; border-left: 4px solid #ef4444;">
+                    <div style="font-size: 2.5rem; margin-bottom: 15px;">🚨</div>
+                    <h3 style="color: #dc2626; margin-bottom: 10px;">Primeros Auxilios</h3>
+                    <ul style="list-style: none; padding: 0; line-height: 2;">
+                        <li>🚑 Cómo actuar en emergencias</li>
+                        <li>🚑 Botiquín básico para animales</li>
+                        <li>🚑 Signos de enfermedad urgente</li>
+                        <li>🚑 Qué hacer antes de llegar al veterinario</li>
+                        <li>🚑 Contactos de emergencia veterinaria</li>
+                    </ul>
+                </div>
+                
+                <!-- Recursos sobre Bienestar Emocional -->
+                <div class="resource-card" style="background: linear-gradient(135deg, rgba(236, 72, 153, 0.1), rgba(219, 39, 119, 0.1)); padding: 25px; border-radius: 15px; border-left: 4px solid #ec4899;">
+                    <div style="font-size: 2.5rem; margin-bottom: 15px;">💜</div>
+                    <h3 style="color: #db2777; margin-bottom: 10px;">Bienestar Emocional</h3>
+                    <ul style="list-style: none; padding: 0; line-height: 2;">
+                        <li>💜 Enriquecimiento ambiental</li>
+                        <li>💜 Socialización y compañía</li>
+                        <li>💜 Reducción del estrés</li>
+                        <li>💜 Manejo del miedo y ansiedad</li>
+                        <li>💜 Actividades recreativas</li>
+                    </ul>
+                </div>
+                
+                <!-- Recursos sobre Adopción Responsable -->
+                <div class="resource-card" style="background: linear-gradient(135deg, rgba(251, 191, 36, 0.1), rgba(245, 158, 11, 0.1)); padding: 25px; border-radius: 15px; border-left: 4px solid #fbbf24;">
+                    <div style="font-size: 2.5rem; margin-bottom: 15px;">🏠</div>
+                    <h3 style="color: #f59e0b; margin-bottom: 10px;">Adopción Responsable</h3>
+                    <ul style="list-style: none; padding: 0; line-height: 2;">
+                        <li>🏠 Criterios para adoptar</li>
+                        <li>🏠 Preparación del hogar</li>
+                        <li>🏠 Adaptación del animal</li>
+                        <li>🏠 Compromisos de la adopción</li>
+                        <li>🏠 Qué hacer si no puedes mantenerlo</li>
+                    </ul>
+                </div>
+                
+                <!-- Recursos sobre Rescate y Rehabilitación -->
+                <div class="resource-card" style="background: linear-gradient(135deg, rgba(59, 130, 246, 0.1), rgba(37, 99, 235, 0.1)); padding: 25px; border-radius: 15px; border-left: 4px solid #3b82f6;">
+                    <div style="font-size: 2.5rem; margin-bottom: 15px;">🤲</div>
+                    <h3 style="color: #2563eb; margin-bottom: 10px;">Rescate y Rehabilitación</h3>
+                    <ul style="list-style: none; padding: 0; line-height: 2;">
+                        <li>🤲 Protocolos de rescate seguro</li>
+                        <li>🤲 Primeros pasos tras un rescate</li>
+                        <li>🤲 Rehabilitación de animales traumatizados</li>
+                        <li>🤲 Socialización de animales salvajes</li>
+                        <li>🤲 Cómo trabajar con refugios</li>
+                    </ul>
+                </div>
+                
+                <!-- Recursos sobre Leyes y Protección -->
+                <div class="resource-card" style="background: linear-gradient(135deg, rgba(139, 92, 246, 0.1), rgba(124, 58, 237, 0.1)); padding: 25px; border-radius: 15px; border-left: 4px solid #8b5cf6;">
+                    <div style="font-size: 2.5rem; margin-bottom: 15px;">⚖️</div>
+                    <h3 style="color: #7c3aed; margin-bottom: 10px;">Leyes y Protección</h3>
+                    <ul style="list-style: none; padding: 0; line-height: 2;">
+                        <li>⚖️ Leyes de protección animal</li>
+                        <li>⚖️ Cómo denunciar maltrato</li>
+                        <li>⚖️ Derechos de los animales</li>
+                        <li>⚖️ Organismos de protección</li>
+                        <li>⚖️ Recursos legales disponibles</li>
+                    </ul>
+                </div>
+            </div>
+            
+            <!-- Sección de Enlaces Útiles -->
+            <div style="margin-top: 40px; background: #f9fafb; padding: 30px; border-radius: 15px;">
+                <h3 style="color: #374151; margin-bottom: 20px;">🔗 Enlaces Útiles y Organizaciones</h3>
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 15px;">
+                    <div style="background: white; padding: 20px; border-radius: 10px; border: 1px solid #e5e7eb;">
+                        <h4 style="color: #059669; margin-bottom: 10px;">📞 Emergencias</h4>
+                        <p style="color: #6b7280; font-size: 14px; margin: 0;">Veterinarias de emergencia 24/7 y líneas de denuncia de maltrato animal</p>
+                    </div>
+                    
+                    <div style="background: white; padding: 20px; border-radius: 10px; border: 1px solid #e5e7eb;">
+                        <h4 style="color: #059669; margin-bottom: 10px;">📚 Guías Educativas</h4>
+                        <p style="color: #6b7280; font-size: 14px; margin: 0;">Materiales educativos sobre cuidado, comportamiento y salud animal</p>
+                    </div>
+                    
+                    <div style="background: white; padding: 20px; border-radius: 10px; border: 1px solid #e5e7eb;">
+                        <h4 style="color: #059669; margin-bottom: 10px;">🤝 Red de Apoyo</h4>
+                        <p style="color: #6b7280; font-size: 14px; margin: 0;">Conéctate con otros rescatistas y refugios para compartir experiencias</p>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Mensaje Final -->
+            <div style="margin-top: 30px; background: linear-gradient(135deg, rgba(5, 150, 105, 0.1), rgba(16, 185, 129, 0.1)); padding: 25px; border-radius: 15px; border-left: 4px solid #059669; text-align: center;">
+                <h3 style="color: #059669; margin-bottom: 15px;">💚 Recuerda</h3>
+                <p style="color: #374151; line-height: 1.8; margin: 0;">
+                    El bienestar animal es responsabilidad de todos. Si tienes dudas o necesitas ayuda, no dudes en contactar a organizaciones especializadas o a otros miembros de nuestra comunidad. Juntos podemos hacer la diferencia 💜
+                </p>
+            </div>
+        </div>
+        
+        <!-- Tab: Reportar Maltrato Animal -->
+        <div class="tab-content" id="reportes-maltrato">
+            <h2 style="margin-bottom: 20px; color: #374151;">🚨 Reportar Maltrato Animal</h2>
+            
+            <div style="background: rgba(239, 68, 68, 0.1); padding: 20px; border-radius: 15px; border-left: 4px solid #ef4444; margin-bottom: 30px;">
+                <h3 style="color: #dc2626; margin-bottom: 10px;">⚠️ Importante</h3>
+                <p style="color: #374151; line-height: 1.8; margin: 0;">
+                    Este formulario es para reportar casos de maltrato animal. Toda la información será tratada con seriedad y confidencialidad. 
+                    En casos graves, podemos ayudar a contactar a las autoridades correspondientes. 
+                    <strong>Si es una emergencia, contacta inmediatamente a las autoridades locales.</strong>
+                </p>
+            </div>
+            
+            <div style="background: #F9FAFB; padding: 30px; border-radius: 15px;">
+                <form id="formReporteMaltrato" style="max-width: 800px; margin: 0 auto;">
+                    <!-- Información del Reporte -->
+                    <div style="background: white; padding: 25px; border-radius: 15px; margin-bottom: 20px; border: 1px solid #E5E7EB;">
+                        <h3 style="color: #374151; margin-bottom: 20px;">📋 Información del Caso</h3>
+                        
+                        <div style="margin-bottom: 20px;">
+                            <label style="display: block; margin-bottom: 8px; font-weight: 600; color: #374151;">
+                                <i class="fas fa-exclamation-triangle"></i> Tipo de Maltrato <span style="color: #ef4444;">*</span>
+                            </label>
+                            <select id="tipoMaltrato" required style="width: 100%; padding: 12px; border: 2px solid #E5E7EB; border-radius: 8px; font-size: 14px; background: white;">
+                                <option value="">Selecciona el tipo de maltrato</option>
+                                <option value="negligencia">Negligencia (falta de cuidados básicos)</option>
+                                <option value="abandono">Abandono</option>
+                                <option value="fisico">Maltrato físico</option>
+                                <option value="desnutricion">Desnutrición</option>
+                                <option value="hacinamiento">Hacinamiento</option>
+                                <option value="explotacion">Explotación laboral (caballos, etc.)</option>
+                                <option value="otro">Otro tipo de maltrato</option>
+                            </select>
+                        </div>
+                        
+                        <div style="margin-bottom: 20px;">
+                            <label style="display: block; margin-bottom: 8px; font-weight: 600; color: #374151;">
+                                <i class="fas fa-paw"></i> Tipo de Animal/es <span style="color: #ef4444;">*</span>
+                            </label>
+                            <input type="text" id="tipoAnimal" required placeholder="Ej: Perro, Gato, Caballo, etc." style="width: 100%; padding: 12px; border: 2px solid #E5E7EB; border-radius: 8px; font-size: 14px;">
+                        </div>
+                        
+                        <div style="margin-bottom: 20px;">
+                            <label style="display: block; margin-bottom: 8px; font-weight: 600; color: #374151;">
+                                <i class="fas fa-map-marker-alt"></i> Ubicación <span style="color: #ef4444;">*</span>
+                            </label>
+                            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 15px;">
+                                <input type="text" id="ciudad" required placeholder="Ciudad" style="padding: 12px; border: 2px solid #E5E7EB; border-radius: 8px; font-size: 14px;">
+                                <input type="text" id="provincia" required placeholder="Provincia" style="padding: 12px; border: 2px solid #E5E7EB; border-radius: 8px; font-size: 14px;">
+                            </div>
+                            <input type="text" id="direccion" placeholder="Dirección específica (opcional, para casos graves)" style="width: 100%; padding: 12px; border: 2px solid #E5E7EB; border-radius: 8px; font-size: 14px;">
+                        </div>
+                        
+                        <div style="margin-bottom: 20px;">
+                            <label style="display: block; margin-bottom: 8px; font-weight: 600; color: #374151;">
+                                <i class="fas fa-file-alt"></i> Descripción del Caso <span style="color: #ef4444;">*</span>
+                            </label>
+                            <textarea id="descripcionMaltrato" required rows="6" placeholder="Describe detalladamente el caso de maltrato que estás reportando. Incluye fechas, horarios si los conoces, y cualquier información relevante." style="width: 100%; padding: 12px; border: 2px solid #E5E7EB; border-radius: 8px; font-size: 14px; font-family: inherit; resize: vertical;"></textarea>
+                        </div>
+                    </div>
+                    
+                    <!-- Fotos/Evidencias -->
+                    <div style="background: white; padding: 25px; border-radius: 15px; margin-bottom: 20px; border: 1px solid #E5E7EB;">
+                        <h3 style="color: #374151; margin-bottom: 20px;">📸 Evidencias (Fotos/Videos)</h3>
+                        <p style="color: #6b7280; font-size: 14px; margin-bottom: 20px;">
+                            Las fotos son muy importantes para poder ayudar. Sube fotos que muestren claramente el maltrato (si es seguro tomarlas).
+                        </p>
+                        
+                        <div style="margin-bottom: 20px;">
+                            <input type="file" id="fotosMaltrato" accept="image/*,video/*" multiple style="display: none;">
+                            <button type="button" onclick="document.getElementById('fotosMaltrato').click()" class="btn-primary" style="width: 100%; margin-bottom: 15px;">
+                                <i class="fas fa-camera"></i> Seleccionar Fotos/Videos
+                            </button>
+                            
+                            <div id="previewFotos" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 15px; margin-top: 20px;">
+                                <!-- Preview de fotos se mostrará aquí -->
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Opciones de Anonimato y Contacto -->
+                    <div style="background: white; padding: 25px; border-radius: 15px; margin-bottom: 20px; border: 1px solid #E5E7EB;">
+                        <h3 style="color: #374151; margin-bottom: 20px;">🔒 Información de Contacto</h3>
+                        
+                        <div style="margin-bottom: 20px;">
+                            <label style="display: flex; align-items: center; gap: 10px; cursor: pointer;">
+                                <input type="checkbox" id="reporteAnonimo" style="width: 20px; height: 20px; cursor: pointer;">
+                                <span style="font-weight: 600; color: #374151;">Quiero hacer un reporte anónimo</span>
+                            </label>
+                            <p style="color: #6b7280; font-size: 13px; margin-top: 5px; margin-left: 30px;">
+                                Tu identidad será protegida. Solo usaremos tu contacto si necesitamos más información urgente.
+                            </p>
+                        </div>
+                        
+                        <div id="camposContacto">
+                            <div style="margin-bottom: 20px;">
+                                <label style="display: block; margin-bottom: 8px; font-weight: 600; color: #374151;">
+                                    <i class="fas fa-envelope"></i> Email (opcional pero recomendado)
+                                </label>
+                                <input type="email" id="emailReporte" placeholder="tu@email.com" style="width: 100%; padding: 12px; border: 2px solid #E5E7EB; border-radius: 8px; font-size: 14px;">
+                            </div>
+                            
+                            <div style="margin-bottom: 20px;">
+                                <label style="display: block; margin-bottom: 8px; font-weight: 600; color: #374151;">
+                                    <i class="fas fa-phone"></i> Teléfono (opcional)
+                                </label>
+                                <input type="tel" id="telefonoReporte" placeholder="+54 9 11 1234-5678" style="width: 100%; padding: 12px; border: 2px solid #E5E7EB; border-radius: 8px; font-size: 14px;">
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Urgencia -->
+                    <div style="background: white; padding: 25px; border-radius: 15px; margin-bottom: 20px; border: 1px solid #E5E7EB;">
+                        <h3 style="color: #374151; margin-bottom: 20px;">⚡ Nivel de Urgencia</h3>
+                        
+                        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px;">
+                            <label style="display: flex; align-items: center; gap: 10px; padding: 15px; border: 2px solid #E5E7EB; border-radius: 10px; cursor: pointer; transition: all 0.3s;">
+                                <input type="radio" name="urgencia" value="emergencia" required style="width: 20px; height: 20px; cursor: pointer;">
+                                <div>
+                                    <strong style="color: #dc2626;">🚨 Emergencia</strong>
+                                    <p style="font-size: 12px; color: #6b7280; margin: 0;">Vida en peligro</p>
+                                </div>
+                            </label>
+                            
+                            <label style="display: flex; align-items: center; gap: 10px; padding: 15px; border: 2px solid #E5E7EB; border-radius: 10px; cursor: pointer; transition: all 0.3s;">
+                                <input type="radio" name="urgencia" value="alta" required style="width: 20px; height: 20px; cursor: pointer;">
+                                <div>
+                                    <strong style="color: #ea580c;">⚠️ Alta</strong>
+                                    <p style="font-size: 12px; color: #6b7280; margin: 0;">Requiere atención pronto</p>
+                                </div>
+                            </label>
+                            
+                            <label style="display: flex; align-items: center; gap: 10px; padding: 15px; border: 2px solid #E5E7EB; border-radius: 10px; cursor: pointer; transition: all 0.3s;">
+                                <input type="radio" name="urgencia" value="media" required style="width: 20px; height: 20px; cursor: pointer;">
+                                <div>
+                                    <strong style="color: #f59e0b;">📋 Media</strong>
+                                    <p style="font-size: 12px; color: #6b7280; margin: 0;">Maltrato continuo</p>
+                                </div>
+                            </label>
+                        </div>
+                    </div>
+                    
+                    <!-- Confirmación -->
+                    <div style="background: rgba(5, 150, 105, 0.1); padding: 20px; border-radius: 15px; margin-bottom: 30px; border-left: 4px solid #059669;">
+                        <label style="display: flex; align-items: flex-start; gap: 10px; cursor: pointer;">
+                            <input type="checkbox" id="confirmarReporte" required style="width: 20px; height: 20px; cursor: pointer; margin-top: 3px;">
+                            <span style="color: #374151;">
+                                <strong>Confirmo que la información proporcionada es veraz y que estoy reportando un caso real de maltrato animal.</strong>
+                                <br>
+                                <span style="font-size: 13px; color: #6b7280;">Entiendo que los reportes falsos pueden tener consecuencias legales.</span>
+                            </span>
+                        </label>
+                    </div>
+                    
+                    <!-- Botones -->
+                    <div style="display: flex; gap: 15px; justify-content: center;">
+                        <button type="submit" class="btn-primary" style="background: linear-gradient(135deg, #ef4444, #dc2626); padding: 15px 40px; font-size: 1.1rem;">
+                            <i class="fas fa-paper-plane"></i> Enviar Reporte
+                        </button>
+                        <button type="reset" class="btn-primary" style="background: #6b7280; padding: 15px 40px; font-size: 1.1rem;">
+                            <i class="fas fa-redo"></i> Limpiar Formulario
+                        </button>
+                    </div>
+                </form>
+            </div>
+            
+            <!-- Información Adicional -->
+            <div style="margin-top: 40px; background: #f9fafb; padding: 30px; border-radius: 15px;">
+                <h3 style="color: #374151; margin-bottom: 20px;">ℹ️ ¿Qué pasa después de enviar el reporte?</h3>
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 20px;">
+                    <div style="background: white; padding: 20px; border-radius: 10px; border: 1px solid #e5e7eb;">
+                        <h4 style="color: #059669; margin-bottom: 10px;">1️⃣ Revisión</h4>
+                        <p style="color: #6b7280; font-size: 14px; margin: 0;">Revisaremos tu reporte y las evidencias proporcionadas</p>
+                    </div>
+                    <div style="background: white; padding: 20px; border-radius: 10px; border: 1px solid #e5e7eb;">
+                        <h4 style="color: #059669; margin-bottom: 10px;">2️⃣ Verificación</h4>
+                        <p style="color: #6b7280; font-size: 14px; margin: 0;">En casos graves, verificaremos la información con organizaciones locales</p>
+                    </div>
+                    <div style="background: white; padding: 20px; border-radius: 10px; border: 1px solid #e5e7eb;">
+                        <h4 style="color: #059669; margin-bottom: 10px;">3️⃣ Acción</h4>
+                        <p style="color: #6b7280; font-size: 14px; margin: 0;">Nos pondremos en contacto con autoridades si es necesario</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Tab: Métodos de Pago / Donaciones -->
+        <div class="tab-content" id="donaciones">
+            <h2 style="margin-bottom: 20px; color: #374151;">💰 Métodos de Pago para Donaciones</h2>
+            
+            <div style="background: linear-gradient(135deg, rgba(16, 185, 129, 0.1), rgba(5, 150, 105, 0.1)); border-left: 4px solid #10b981; padding: 20px; border-radius: 10px; margin-bottom: 30px;">
+                <h3 style="color: #059669; margin-bottom: 10px;">💜 Cómo Funciona</h3>
+                <p style="margin: 0; line-height: 1.8; color: #374151;">
+                    Puedes agregar tu alias, CVU o CBU para recibir donaciones directamente. Los donantes verán tu información 
+                    y podrán transferirte dinero directamente. <strong>Cresalia NO cobra comisiones</strong> y <strong>NO procesa los pagos</strong>. 
+                    Todo va directo a ti. Es completamente transparente.
+                </p>
+            </div>
+            
+            <!-- Sección para agregar método de pago -->
+            <div style="background: white; border: 2px solid #e5e7eb; border-radius: 15px; padding: 30px; margin-bottom: 30px;">
+                <h3 style="color: #374151; margin-bottom: 20px;">
+                    <i class="fas fa-plus-circle"></i> Agregar Método de Pago
+                </h3>
+                <div id="form-agregar-metodo-pago-animales"></div>
+            </div>
+            
+            <!-- Sección para mostrar métodos de pago existentes -->
+            <div style="background: white; border: 2px solid #e5e7eb; border-radius: 15px; padding: 30px;">
+                <h3 style="color: #374151; margin-bottom: 20px;">
+                    <i class="fas fa-list"></i> Tus Métodos de Pago Configurados
+                </h3>
+                <div id="metodos-pago-animales-lista">
+                    <div class="empty-state">
+                        <div class="spinner" style="border: 4px solid #E5E7EB; border-top: 4px solid #059669; border-radius: 50%; width: 50px; height: 50px; animation: spin 1s linear infinite; margin: 0 auto 20px;"></div>
+                        <p>Cargando métodos de pago...</p>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Sección pública para mostrar cómo donar -->
+            <div style="background: linear-gradient(135deg, rgba(236, 72, 153, 0.1), rgba(244, 114, 182, 0.1)); border-left: 4px solid #EC4899; padding: 20px; border-radius: 10px; margin-top: 30px;">
+                <h3 style="color: #EC4899; margin-bottom: 15px;">
+                    <i class="fas fa-info-circle"></i> Para Donantes
+                </h3>
+                <p style="margin: 0; line-height: 1.8; color: #374151;">
+                    Cuando un refugio u organización configure sus métodos de pago, podrás ver su información aquí y transferirles 
+                    dinero directamente. <strong>Toda la ayuda va directo a ellos</strong>, sin intermediarios ni comisiones.
+                </p>
             </div>
         </div>
         
@@ -523,8 +875,110 @@
                 document.querySelectorAll('.tab-content').forEach(tc => tc.classList.remove('active'));
                 
                 tab.classList.add('active');
-                document.getElementById(tabId).classList.add('active');
+                const tabContent = document.getElementById(tabId);
+                if (tabContent) {
+                    tabContent.classList.add('active');
+                }
             });
+        });
+        
+        // Manejar formulario de reporte de maltrato
+        document.addEventListener('DOMContentLoaded', () => {
+            const formReporte = document.getElementById('formReporteMaltrato');
+            const reporteAnonimo = document.getElementById('reporteAnonimo');
+            const camposContacto = document.getElementById('camposContacto');
+            const fotosInput = document.getElementById('fotosMaltrato');
+            const previewFotos = document.getElementById('previewFotos');
+            
+            // Toggle campos de contacto
+            if (reporteAnonimo && camposContacto) {
+                reporteAnonimo.addEventListener('change', (e) => {
+                    if (e.target.checked) {
+                        camposContacto.style.opacity = '0.5';
+                        camposContacto.style.pointerEvents = 'none';
+                    } else {
+                        camposContacto.style.opacity = '1';
+                        camposContacto.style.pointerEvents = 'auto';
+                    }
+                });
+            }
+            
+            // Preview de fotos
+            if (fotosInput && previewFotos) {
+                fotosInput.addEventListener('change', (e) => {
+                    previewFotos.innerHTML = '';
+                    const files = Array.from(e.target.files);
+                    
+                    files.forEach((file) => {
+                        if (file.type.startsWith('image/')) {
+                            const reader = new FileReader();
+                            reader.onload = (event) => {
+                                const div = document.createElement('div');
+                                div.style.position = 'relative';
+                                div.innerHTML = `
+                                    <img src="${event.target.result}" style="width: 100%; height: 150px; object-fit: cover; border-radius: 10px; border: 2px solid #e5e7eb;">
+                                    <button type="button" onclick="this.parentElement.remove();" style="position: absolute; top: 5px; right: 5px; background: #ef4444; color: white; border: none; border-radius: 50%; width: 25px; height: 25px; cursor: pointer; font-size: 12px;">
+                                        <i class="fas fa-times"></i>
+                                    </button>
+                                `;
+                                previewFotos.appendChild(div);
+                            };
+                            reader.readAsDataURL(file);
+                        }
+                    });
+                });
+            }
+            
+            // Submit del formulario
+            if (formReporte) {
+                formReporte.addEventListener('submit', async (e) => {
+                    e.preventDefault();
+                    
+                    if (typeof sistemaAnimales === 'undefined' || !sistemaAnimales) {
+                        alert('❌ Error: El sistema de animales no está cargado. Por favor, recarga la página.');
+                        return;
+                    }
+                    
+                    // Recopilar datos
+                    const fotos = Array.from(fotosInput.files);
+                    const fotosBase64 = [];
+                    
+                    for (const foto of fotos) {
+                        if (foto.type.startsWith('image/')) {
+                            const base64 = await new Promise((resolve) => {
+                                const reader = new FileReader();
+                                reader.onload = () => resolve(reader.result);
+                                reader.onerror = () => resolve(null);
+                                reader.readAsDataURL(foto);
+                            });
+                            if (base64) fotosBase64.push(base64);
+                        }
+                    }
+                    
+                    const datos = {
+                        tipo_maltrato: document.getElementById('tipoMaltrato').value,
+                        tipo_animal: document.getElementById('tipoAnimal').value,
+                        ciudad: document.getElementById('ciudad').value,
+                        provincia: document.getElementById('provincia').value,
+                        direccion: document.getElementById('direccion').value || null,
+                        descripcion: document.getElementById('descripcionMaltrato').value,
+                        urgencia: document.querySelector('input[name="urgencia"]:checked')?.value || 'media',
+                        fotos: fotosBase64,
+                        anonimo: reporteAnonimo.checked,
+                        email: reporteAnonimo.checked ? null : (document.getElementById('emailReporte').value || null),
+                        telefono: reporteAnonimo.checked ? null : (document.getElementById('telefonoReporte').value || null)
+                    };
+                    
+                    try {
+                        await sistemaAnimales.reportarMaltrato(datos);
+                        formReporte.reset();
+                        if (previewFotos) previewFotos.innerHTML = '';
+                    } catch (error) {
+                        console.error('Error enviando reporte:', error);
+                        alert('❌ Error al enviar el reporte. Por favor, intenta nuevamente.');
+                    }
+                });
+            }
         });
         
         // Los modales están implementados en sistema-cresalia-animales.js
@@ -543,8 +997,66 @@
                 if (typeof SistemaInterconexionesGlobal !== 'undefined') {
                     window.interconexionesGlobal = new SistemaInterconexionesGlobal();
                 }
+                
+                // Inicializar Sistema de Alias para Donaciones
+                if (typeof SistemaAliasDonaciones !== 'undefined' && typeof window.supabase !== 'undefined' && window.SUPABASE_CONFIG) {
+                    try {
+                        const supabaseClient = window.supabase.createClient(window.SUPABASE_CONFIG.url, window.SUPABASE_CONFIG.anonKey);
+                        window.sistemaAliasAnimales = new SistemaAliasDonaciones({
+                            tipoEntidad: 'refugio',
+                            entidadNombre: 'Mi Organización',
+                            supabase: supabaseClient
+                        });
+                        
+                        // Cargar y mostrar métodos de pago
+                        cargarMetodosPagoAnimales();
+                        
+                        // Crear formulario para agregar método de pago
+                        window.sistemaAliasAnimales.crearFormularioAgregar('form-agregar-metodo-pago-animales', () => {
+                            cargarMetodosPagoAnimales();
+                        });
+                    } catch (error) {
+                        console.error('Error inicializando sistema de alias:', error);
+                    }
+                }
             }, 500);
         });
+        
+        // Función para cargar y mostrar métodos de pago
+        async function cargarMetodosPagoAnimales() {
+            if (!window.sistemaAliasAnimales) return;
+            
+            try {
+                const metodos = await window.sistemaAliasAnimales.cargarMetodosPago();
+                const container = document.getElementById('metodos-pago-animales-lista');
+                
+                if (!container) return;
+                
+                if (!metodos || metodos.length === 0) {
+                    container.innerHTML = `
+                        <div style="text-align: center; padding: 40px; color: #6b7280;">
+                            <i class="fas fa-wallet" style="font-size: 3rem; margin-bottom: 15px; opacity: 0.5;"></i>
+                            <p>No has agregado ningún método de pago aún.</p>
+                            <p style="font-size: 0.9rem; margin-top: 10px;">Agrega tu alias, CVU o CBU arriba para recibir donaciones.</p>
+                        </div>
+                    `;
+                } else {
+                    const html = window.sistemaAliasAnimales.crearHTMLDonacion(metodos, 'Tu organización');
+                    container.innerHTML = html;
+                }
+            } catch (error) {
+                console.error('Error cargando métodos de pago:', error);
+                const container = document.getElementById('metodos-pago-animales-lista');
+                if (container) {
+                    container.innerHTML = `
+                        <div style="text-align: center; padding: 40px; color: #ef4444;">
+                            <i class="fas fa-exclamation-triangle" style="font-size: 2rem; margin-bottom: 15px;"></i>
+                            <p>Error al cargar métodos de pago. Por favor, recarga la página.</p>
+                        </div>
+                    `;
+                }
+            }
+        }
         
         // Service Worker
         if ('serviceWorker' in navigator) {

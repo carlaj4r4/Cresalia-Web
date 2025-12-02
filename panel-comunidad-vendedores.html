@@ -9,8 +9,10 @@
     <link rel="icon" type="image/x-icon" href="favicon.ico">
     <link rel="icon" type="image/png" href="assets/logo/logo-cresalia.png">
     
-    <!-- Font Awesome -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <!-- Font Awesome (versión actualizada con fallback) -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" integrity="sha512-iecdLmaskl7CVkqkXNQ/ZH/XLlvWZOJyj7Yy7tcenmpD1ypASozpmT/E0iPtmFIB46ZmdtAc9eNBvH0H/ZpiBw==" crossorigin="anonymous" referrerpolicy="no-referrer">
+    <link rel="preconnect" href="https://cdnjs.cloudflare.com">
+    <link rel="dns-prefetch" href="https://cdnjs.cloudflare.com">
     
     <!-- Meta Security -->
     <meta http-equiv="Content-Security-Policy" content="default-src 'self' file: data: blob:; script-src 'self' 'unsafe-inline' 'unsafe-eval' file: cdnjs.cloudflare.com cdn.jsdelivr.net; script-src-elem 'self' 'unsafe-inline' file: cdnjs.cloudflare.com cdn.jsdelivr.net; style-src 'self' 'unsafe-inline' file: fonts.googleapis.com cdnjs.cloudflare.com cdn.jsdelivr.net; style-src-elem 'self' 'unsafe-inline' file: fonts.googleapis.com cdnjs.cloudflare.com cdn.jsdelivr.net; font-src 'self' file: fonts.gstatic.com cdnjs.cloudflare.com data:; img-src 'self' file: data: https: blob:; connect-src 'self' file: https:; frame-src 'self' file:; object-src 'none'; base-uri 'self'; form-action 'self';">
@@ -87,6 +89,223 @@
         .header p {
             color: #666;
             font-size: 1.1rem;
+        }
+        
+        /* Estilos para Historias con Corazón */
+        .historias-comunidad-section {
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            margin-bottom: 20px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        }
+        
+        .historias-comunidad-header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        
+        .historias-comunidad-header h2 {
+            color: #333;
+            margin-bottom: 10px;
+        }
+        
+        .historias-comunidad-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+            gap: 25px;
+        }
+        
+        .historia-comunidad-card {
+            background: #F8FAFC;
+            border-radius: 15px;
+            padding: 25px;
+            border-left: 4px solid #667eea;
+            transition: all 0.3s ease;
+        }
+        
+        .historia-comunidad-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 20px rgba(102, 126, 234, 0.15);
+        }
+        
+        .historia-comunidad-header {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 15px;
+        }
+        
+        .historia-comunidad-avatar {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 2px solid #667eea;
+        }
+        
+        .historia-comunidad-info h4 {
+            margin: 0;
+            color: #1e293b;
+        }
+        
+        .historia-comunidad-info p {
+            margin: 5px 0 0 0;
+            color: #64748b;
+            font-size: 0.9rem;
+        }
+        
+        .historia-comunidad-contenido {
+            color: #475569;
+            line-height: 1.7;
+            margin-bottom: 15px;
+        }
+        
+        .historia-comunidad-consejos {
+            background: #E0F2FE;
+            border-left: 3px solid #0EA5E9;
+            padding: 15px;
+            border-radius: 8px;
+            margin-top: 15px;
+        }
+        
+        .historia-comunidad-consejos h6 {
+            color: #0C4A6E;
+            margin-bottom: 8px;
+            font-size: 0.95rem;
+        }
+        
+        .historia-comunidad-consejos p {
+            color: #075985;
+            font-size: 0.9rem;
+            margin: 0;
+            line-height: 1.6;
+        }
+        
+        @media (max-width: 768px) {
+            .historias-comunidad-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+        
+        /* ===== MEJORAS DE CONTRASTE Y VISIBILIDAD ===== */
+        .comunidad-wrapper,
+        .comunidad-header,
+        .tab-header,
+        .tab-content {
+            color: #1e293b !important;
+        }
+        
+        .comunidad-header h2 {
+            color: #1e293b !important;
+            font-weight: 700 !important;
+        }
+        
+        .comunidad-header p {
+            color: #475569 !important;
+            font-weight: 500 !important;
+        }
+        
+        .comunidad-tabs {
+            background: #f8f9fa !important;
+            padding: 8px !important;
+            border-radius: 12px !important;
+            border: 2px solid #e9ecef !important;
+            display: flex !important;
+            gap: 5px !important;
+        }
+        
+        .tab-btn {
+            background: white !important;
+            color: #1e293b !important;
+            font-weight: 700 !important;
+            border: 2px solid transparent !important;
+            padding: 14px 24px !important;
+            border-radius: 8px !important;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05) !important;
+        }
+        
+        .tab-btn i {
+            color: #667eea !important;
+            font-size: 1.2rem !important;
+        }
+        
+        .tab-btn:hover {
+            color: #667eea !important;
+            background: #f0f4ff !important;
+            border-color: #667eea !important;
+        }
+        
+        .tab-btn.active {
+            color: white !important;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;
+            border-color: #667eea !important;
+            font-weight: 700 !important;
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4) !important;
+        }
+        
+        .tab-btn.active i {
+            color: white !important;
+        }
+        
+        .tab-header h3 {
+            color: #1e293b !important;
+            font-weight: 700 !important;
+        }
+        
+        /* Asegurar que Font Awesome se cargue correctamente */
+        .fas, .far, .fab, .fal, .fad {
+            font-family: "Font Awesome 6 Free", "Font Awesome 6 Pro", "Font Awesome 6 Brands" !important;
+            font-weight: 900 !important;
+            display: inline-block !important;
+        }
+        
+        /* Mejorar visibilidad de íconos */
+        .tab-btn i,
+        .btn-primary i,
+        .btn-secondary i,
+        .comunidad-header i,
+        .tab-header i {
+            font-size: 1.1rem !important;
+            margin-right: 8px !important;
+            display: inline-block !important;
+        }
+        
+        /* Mejorar contraste en mensajes vacíos */
+        .alertas-lista,
+        .conversaciones-lista,
+        .mentorias-lista,
+        .consejos-lista {
+            color: #1e293b !important;
+        }
+        
+        .alertas-lista p,
+        .conversaciones-lista p,
+        .mentorias-lista p,
+        .consejos-lista p {
+            color: #1e293b !important;
+            font-weight: 600 !important;
+            font-size: 1.1rem !important;
+        }
+        
+        .alertas-lista small,
+        .conversaciones-lista small,
+        .mentorias-lista small,
+        .consejos-lista small {
+            color: #475569 !important;
+            font-weight: 500 !important;
+            font-size: 0.95rem !important;
+        }
+        
+        /* Mejorar contraste en cards de reportes */
+        .lista-banear h5 {
+            color: #1e293b !important;
+            font-weight: 700 !important;
+        }
+        
+        .lista-banear h5 i {
+            color: #667eea !important;
+            margin-right: 8px !important;
         }
         
         .banear-section {
@@ -278,6 +497,23 @@
             </div>
         </div>
         
+        <!-- Sección: Historias con Corazón -->
+        <div id="historias-comunidad-section" class="historias-comunidad-section" style="display: none;">
+            <div class="historias-comunidad-header">
+                <h2><i class="fas fa-heart" style="color: #ec4899;"></i> Historias con Corazón Cresalia</h2>
+                <p>Conocé las historias de otros emprendedores que decidieron compartir su camino</p>
+            </div>
+            
+            <div id="historiasComunidadGrid" class="historias-comunidad-grid">
+                <!-- Las historias se cargarán dinámicamente -->
+            </div>
+            
+            <div id="sinHistoriasComunidad" style="display: none; text-align: center; padding: 40px; color: #64748b;">
+                <i class="fas fa-book-open" style="font-size: 3rem; margin-bottom: 15px; opacity: 0.5;"></i>
+                <p>Aún no hay historias compartidas en la comunidad</p>
+            </div>
+        </div>
+        
         <div class="banear-section">
             <h4><i class="fas fa-flag"></i> Sistema de Reportes: Reportar Compradores Problemáticos</h4>
             <p style="color: #666; margin-bottom: 20px;">Reporta compradores que no cumplan con sus compromisos o realicen estafas. Con 3+ reportes de diferentes vendedores, el administrador procederá a banear. También puedes bloquear compradores individualmente.</p>
@@ -331,10 +567,10 @@
                 <div class="lista-banear">
                     <h5><i class="fas fa-flag"></i> Compradores Reportados (Esperando Revisión)</h5>
                     <div id="listaCompradoresReportados">
-                        <div class="no-reportes">
-                            <i class="fas fa-shield-alt" style="font-size: 2rem; color: #10B981; margin-bottom: 10px;"></i>
-                            <p>¡Excelente! No hay reportes pendientes.</p>
-                            <small>Mantengamos esta comunidad limpia y segura para todos.</small>
+                        <div class="no-reportes" style="text-align: center; padding: 40px; background: linear-gradient(135deg, #D1FAE5 0%, #A7F3D0 100%); border-radius: 15px; border: 2px solid #10B981;">
+                            <i class="fas fa-shield-alt" style="font-size: 3rem; color: #10B981; margin-bottom: 15px; display: block;"></i>
+                            <p style="font-size: 1.1rem; color: #065F46; font-weight: 600; margin-bottom: 8px;">¡Excelente! No hay reportes pendientes.</p>
+                            <small style="font-size: 0.95rem; color: #047857; font-weight: 500;">Mantengamos esta comunidad limpia y segura para todos.</small>
                         </div>
                     </div>
                 </div>
@@ -342,10 +578,10 @@
                 <div class="lista-banear">
                     <h5><i class="fas fa-user-slash"></i> Compradores Bloqueados (Solo Tuyos)</h5>
                     <div id="listaCompradoresBloqueados">
-                        <div class="no-reportes">
-                            <i class="fas fa-user-check" style="font-size: 2rem; color: #3B82F6; margin-bottom: 10px;"></i>
-                            <p>No has bloqueado ningún comprador.</p>
-                            <small>Los bloqueos son personales y solo te afectan a ti.</small>
+                        <div class="no-reportes" style="text-align: center; padding: 40px; background: linear-gradient(135deg, #DBEAFE 0%, #BFDBFE 100%); border-radius: 15px; border: 2px solid #3B82F6;">
+                            <i class="fas fa-user-check" style="font-size: 3rem; color: #3B82F6; margin-bottom: 15px; display: block;"></i>
+                            <p style="font-size: 1.1rem; color: #1E40AF; font-weight: 600; margin-bottom: 8px;">No has bloqueado ningún comprador.</p>
+                            <small style="font-size: 0.95rem; color: #1E3A8A; font-weight: 500;">Los bloqueos son personales y solo te afectan a ti.</small>
                         </div>
                     </div>
                 </div>
@@ -676,6 +912,21 @@
             }, 500);
         });
     </script>
+    
+    <!-- Sistema de Historias con Corazón para Comunidad de Vendedores -->
+    <script src="js/historias-corazon-comunidad.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            setTimeout(() => {
+                if (typeof HistoriasCorazonComunidad !== 'undefined') {
+                    HistoriasCorazonComunidad.init();
+                }
+            }, 1000);
+        });
+    </script>
+    
+    <!-- Widget de Chat de Email - Brevo -->
+    <script src="js/widget-brevo-chat.js"></script>
 </body>
 </html>
 

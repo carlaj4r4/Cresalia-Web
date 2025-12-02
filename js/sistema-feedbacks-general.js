@@ -27,6 +27,15 @@ const SistemaFeedbacksGeneral = {
     // ===== INICIALIZACIÓN =====
     async init() {
         try {
+            // NO inicializar en páginas de tiendas - solo en index-cresalia.html y comunidades
+            const isTiendaPage = window.location.pathname.includes('/tiendas/') && 
+                                 !window.location.pathname.includes('/admin');
+            
+            if (isTiendaPage) {
+                console.log('⚠️ Sistema de feedbacks general no se inicializa en páginas de tiendas');
+                return;
+            }
+            
             // Verificar si Supabase está disponible
             let supabaseClient = null;
 
@@ -53,6 +62,12 @@ const SistemaFeedbacksGeneral = {
                 this.state.supabase = null;
             }
 
+            // Verificar si ya existe otro botón de feedback (evitar duplicados)
+            if (document.getElementById('btnFeedbackFlotante') || document.getElementById('btn-feedback-comunidad')) {
+                console.log('⚠️ Ya existe un botón de feedback, no se creará otro');
+                return;
+            }
+
             // Crear botón flotante si no existe
             this.crearBotonFlotante();
             console.log('✅ Sistema de Feedbacks General inicializado');
@@ -75,11 +90,12 @@ const SistemaFeedbacksGeneral = {
         boton.title = 'Dejar Feedback';
         boton.setAttribute('aria-label', 'Abrir formulario de feedback');
         
-        // Estilos del botón (ajustado para no superponerse con soporte)
+        // Estilos del botón (ajustado para no superponerse con Brevo)
+        // Posición: más arriba y a la izquierda para no chocar con Brevo (que está en bottom-right)
         boton.style.cssText = `
             position: fixed;
-            bottom: 20px;
-            right: 100px;
+            bottom: 90px;
+            right: 90px;
             width: 60px;
             height: 60px;
             border-radius: 50%;
@@ -89,12 +105,18 @@ const SistemaFeedbacksGeneral = {
             font-size: 24px;
             cursor: pointer;
             box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
-            z-index: 9997;
+            z-index: 9996;
             transition: all 0.3s ease;
             display: flex;
             align-items: center;
             justify-content: center;
         `;
+        
+        // Ajuste responsive para móviles
+        if (window.innerWidth <= 768) {
+            boton.style.bottom = '85px';
+            boton.style.right = '85px';
+        }
 
         // Hover effect
         boton.addEventListener('mouseenter', () => {

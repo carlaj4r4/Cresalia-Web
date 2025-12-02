@@ -10,7 +10,9 @@
     const BREVO_CHAT_CONFIG = {
         enabled: true,
         // ID del chat de Brevo (se obtiene desde el panel de Brevo)
-        chatId: window.BREVO_CHAT_ID || process.env.BREVO_CHAT_ID || null,
+        // En el navegador solo usamos window.BREVO_CHAT_ID (process.env no existe en el navegador)
+        // CHAT_ID por defecto (del código oficial que compartiste)
+        chatId: (typeof window !== 'undefined' && window.BREVO_CHAT_ID) ? window.BREVO_CHAT_ID : '690dfda549b4965c230fab76',
         // Email de contacto por defecto
         defaultEmail: 'cresalia25@gmail.com',
         // Posición del widget
@@ -26,34 +28,51 @@
     // Verificar si Brevo Chat está configurado
     // Si no hay CHAT_ID, se usará el widget alternativo de contacto
 
-    // Función para inicializar el widget de Brevo
+    // Función para inicializar el widget de Brevo (usando el código oficial)
     function inicializarBrevoChat() {
         if (!BREVO_CHAT_CONFIG.enabled || !BREVO_CHAT_CONFIG.chatId) {
             return;
         }
 
         try {
-            // Cargar el script de Brevo Chat
-            const script = document.createElement('script');
-            script.type = 'text/javascript';
-            script.src = `https://conversations-widget.brevo.com/${BREVO_CHAT_CONFIG.chatId}/script.js`;
-            script.async = true;
-            script.defer = true;
+            // Verificar si ya está cargado
+            if (window.BrevoConversationsID) {
+                console.log('⚠️ Widget de Brevo ya está cargado');
+                return;
+            }
             
-            script.onload = function() {
-                console.log('✅ Widget de Brevo Chat cargado correctamente');
-                
-                // Aplicar estilos personalizados si están disponibles
-                if (window.BrevoConversations) {
-                    aplicarEstilosPersonalizados();
-                }
-            };
-
-            script.onerror = function() {
-                console.warn('⚠️ No se pudo cargar el widget de Brevo Chat. Verificá que el CHAT_ID sea correcto.');
-            };
-
-            document.head.appendChild(script);
+            // Usar el código oficial de Brevo Conversations (formato exacto del panel)
+            const chatId = BREVO_CHAT_CONFIG.chatId;
+            
+            // Usar el código oficial exacto de Brevo (formato del panel)
+            const scriptCode = `
+                (function(d, w, c) {
+                    w.BrevoConversationsID = '${chatId}';
+                    w[c] = w[c] || function() {
+                        (w[c].q = w[c].q || []).push(arguments);
+                    };
+                    var s = d.createElement('script');
+                    s.async = true;
+                    s.src = 'https://conversations-widget.brevo.com/brevo-conversations.js';
+                    if (d.head) d.head.appendChild(s);
+                })(document, window, 'BrevoConversations');
+            `;
+            
+            // Crear y ejecutar el script
+            const script = document.createElement('script');
+            script.textContent = scriptCode;
+            
+            if (document.head) {
+                document.head.appendChild(script);
+                console.log('✅ Script de Brevo Conversations inyectado correctamente');
+            } else {
+                document.addEventListener('DOMContentLoaded', function() {
+                    document.head.appendChild(script);
+                    console.log('✅ Script de Brevo Conversations inyectado después de DOMContentLoaded');
+                });
+            }
+            
+            console.log('📧 Inicializando widget oficial de Brevo Conversations con ID:', chatId);
         } catch (error) {
             console.warn('⚠️ Error al cargar el widget de Brevo Chat:', error.message);
         }
@@ -97,6 +116,14 @@
 
     // Función alternativa: Widget de contacto por email simple
     function crearWidgetContactoSimple() {
+        // Verificar si ya existe
+        if (document.getElementById('brevo-contact-widget')) {
+            console.log('⚠️ Widget de contacto Brevo ya existe');
+            return;
+        }
+        
+        console.log('📧 Creando widget de contacto simple');
+        
         const widget = document.createElement('div');
         widget.id = 'brevo-contact-widget';
         widget.className = 'brevo-contact-widget';
@@ -112,9 +139,12 @@
             .brevo-contact-widget {
                 position: fixed;
                 bottom: 20px;
-                right: 20px;
-                z-index: 9999;
+                right: 100px;
+                z-index: 7999;
             }
+            
+            /* Ajuste para que no se superponga con chatbots (que están en right: 20px) */
+            /* Los chatbots tienen z-index: 10000, así que este estará debajo */
             
             .brevo-contact-button {
                 background: linear-gradient(135deg, #7C3AED, #EC4899);
@@ -141,10 +171,12 @@
                 font-size: 1.2rem;
             }
             
+            /* Ajuste responsive para móviles */
             @media (max-width: 768px) {
                 .brevo-contact-widget {
                     bottom: 15px;
-                    right: 15px;
+                    right: 90px;
+                    z-index: 7998;
                 }
                 
                 .brevo-contact-button {
@@ -156,9 +188,19 @@
                     display: none;
                 }
             }
+            
+            /* Ajuste cuando hay muchos widgets flotantes */
+            @media (min-width: 769px) {
+                /* En desktop, si hay chatbot visible, ajustar posición */
+                body:has(.chatbot-ia-container) .brevo-contact-widget {
+                    right: 110px;
+                }
+            }
         `;
         document.head.appendChild(style);
         document.body.appendChild(widget);
+        
+        console.log('✅ Widget de contacto simple creado correctamente');
     }
 
     // Función para abrir el formulario de contacto
@@ -171,21 +213,105 @@
     };
 
     // Inicializar cuando el DOM esté listo
-    if (document.readyState === 'loading') {
-        document.addEventListener('DOMContentLoaded', function() {
-            if (BREVO_CHAT_CONFIG.chatId) {
-                inicializarBrevoChat();
-            } else {
-                // Si no hay CHAT_ID, usar widget simple de contacto
-                crearWidgetContactoSimple();
-            }
+    function inicializarWidget() {
+        // Esperar a que el body exista
+        if (!document.body) {
+            setTimeout(inicializarWidget, 100);
+            return;
+        }
+        
+        // Verificar si estamos en una página donde NO debe aparecer (paneles admin específicos)
+        const pathname = window.location.pathname;
+        const href = window.location.href;
+        
+        // Páginas de admin que NO deben mostrar el widget (paneles internos de tienda)
+        // PERO permitir en admin-final.html ya que el usuario lo pidió
+        const isAdminPanel = pathname.includes('/admin-arreglado.html') ||
+                            pathname.includes('/admin-bienestar.html') ||
+                            (pathname.includes('/admin') && 
+                             !pathname.includes('panel-comunidad') && 
+                             !pathname.includes('admin-final.html'));
+        
+        // NO mostrar en algunos paneles admin de tiendas (pero SÍ en admin-final.html y paneles de comunidad)
+        if (isAdminPanel) {
+            console.log('⚠️ Panel admin específico, no se muestra widget Brevo:', pathname);
+            return;
+        }
+        
+        // Verificar si estamos en una página de tienda pública (sin /admin)
+        const isTiendaPage = pathname.includes('/tiendas/') && !pathname.includes('/admin');
+        const isIndexCresalia = pathname.includes('index-cresalia.html') || 
+                                pathname === '/' ||
+                                pathname === '/index-cresalia.html' ||
+                                pathname.endsWith('/index-cresalia.html');
+        const isComunidad = pathname.includes('/comunidades/');
+        const isPanelComunidad = pathname.includes('panel-comunidad-vendedores.html') ||
+                                 pathname.includes('panel-comunidad-compradores.html');
+        
+        console.log('🔍 Verificando widget Brevo:', {
+            pathname: pathname,
+            href: href,
+            isTiendaPage,
+            isIndexCresalia,
+            isComunidad,
+            isPanelComunidad,
+            isAdminPanel,
+            chatId: BREVO_CHAT_CONFIG.chatId ? '✅ Configurado' : '❌ No configurado',
+            enabled: BREVO_CHAT_CONFIG.enabled
         });
-    } else {
-        if (BREVO_CHAT_CONFIG.chatId) {
+        
+        // NO mostrar en comunidades específicas (pero SÍ en paneles de comunidad)
+        if (isComunidad && !isPanelComunidad) {
+            console.log('⚠️ Comunidad específica, no se muestra widget Brevo');
+            return;
+        }
+        
+        // Mostrar en TODAS las páginas públicas (index, tiendas, etc.)
+        // excepto en páginas de admin y comunidades
+        console.log('✅ Página válida para mostrar widget Brevo');
+        
+        // SIEMPRE mostrar el widget (simple si no hay CHAT_ID, oficial si hay CHAT_ID)
+        if (BREVO_CHAT_CONFIG.chatId && BREVO_CHAT_CONFIG.enabled) {
+            console.log('📧 Inicializando widget Brevo OFICIAL con CHAT_ID:', BREVO_CHAT_CONFIG.chatId);
+            console.log('ℹ️ El widget oficial de Brevo se configurará según tu panel de Brevo');
+            
+            // Eliminar widget simple si existe (para evitar duplicados)
+            const widgetSimpleExistente = document.getElementById('brevo-contact-widget');
+            if (widgetSimpleExistente) {
+                widgetSimpleExistente.remove();
+                console.log('🗑️ Widget simple eliminado (el oficial está activo)');
+            }
+            
             inicializarBrevoChat();
+            
+            // Verificar después de un tiempo si el widget oficial se cargó
+            setTimeout(() => {
+                // Verificar si el widget oficial se cargó correctamente
+                const widgetOficial = document.querySelector('.brevo-conversations-widget') || 
+                                     document.querySelector('[data-brevo-conversations]') ||
+                                     document.querySelector('iframe[src*="brevo"]') ||
+                                     window.BrevoConversations;
+                
+                if (!widgetOficial && !document.getElementById('brevo-contact-widget')) {
+                    console.log('⚠️ Widget oficial de Brevo no apareció, creando widget simple como respaldo');
+                    crearWidgetContactoSimple();
+                } else if (widgetOficial) {
+                    console.log('✅ Widget oficial de Brevo cargado correctamente');
+                }
+            }, 5000); // Esperar 5 segundos para que el widget oficial se cargue
         } else {
+            console.log('📧 No hay CHAT_ID configurado, usando widget SIMPLE de contacto');
+            // Si no hay CHAT_ID, usar widget simple de contacto (siempre visible)
             crearWidgetContactoSimple();
         }
+    }
+    
+    // Inicializar cuando el DOM esté listo
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', inicializarWidget);
+    } else {
+        // Si ya está cargado, esperar un poco para asegurar que todo esté listo
+        setTimeout(inicializarWidget, 100);
     }
 })();
 

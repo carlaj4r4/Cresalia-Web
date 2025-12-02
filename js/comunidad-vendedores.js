@@ -317,10 +317,10 @@ class ComunidadVendedores {
         
         if (alertas.length === 0) {
             container.innerHTML = `
-                <div style="text-align: center; padding: 40px; color: #666;">
-                    <i class="fas fa-shield-alt" style="font-size: 3rem; margin-bottom: 15px; color: #4CAF50;"></i>
-                    <p style="font-size: 1.1rem;">¡Excelente! No hay alertas activas</p>
-                    <p style="font-size: 0.9rem;">La comunidad está tranquila 🌟</p>
+                <div style="text-align: center; padding: 50px 30px; background: linear-gradient(135deg, #D1FAE5 0%, #A7F3D0 100%); border-radius: 15px; border: 2px solid #10B981;">
+                    <i class="fas fa-shield-alt" style="font-size: 4rem; margin-bottom: 20px; color: #10B981; display: block;"></i>
+                    <p style="font-size: 1.2rem; color: #065F46; font-weight: 600; margin-bottom: 10px;">¡Excelente! No hay alertas activas</p>
+                    <p style="font-size: 1rem; color: #047857; font-weight: 500;">La comunidad está tranquila 🌟</p>
                 </div>
             `;
             return;
@@ -1529,38 +1529,77 @@ const estilosComunidad = `
         box-shadow: 0 10px 30px rgba(0,0,0,0.1);
     }
     
+    .comunidad-header {
+        background: white;
+        padding: 20px;
+        border-radius: 15px;
+        margin-bottom: 20px;
+    }
+    
     .comunidad-header h2 {
-        color: #333;
+        color: #1e293b;
         margin-bottom: 10px;
+        font-size: 1.5rem;
+        font-weight: 700;
+    }
+    
+    .comunidad-header p {
+        color: #475569;
+        font-size: 1rem;
+        font-weight: 500;
     }
     
     .comunidad-tabs {
         display: flex;
-        gap: 10px;
+        gap: 5px;
         margin-bottom: 30px;
-        border-bottom: 2px solid #e9ecef;
-        padding-bottom: 0;
+        background: #f8f9fa;
+        padding: 8px;
+        border-radius: 12px;
+        border: 2px solid #e9ecef;
     }
     
     .tab-btn {
-        background: none;
-        border: none;
-        padding: 12px 20px;
+        background: white;
+        border: 2px solid transparent;
+        padding: 14px 24px;
         font-size: 1rem;
-        font-weight: 500;
-        color: #666;
+        font-weight: 700;
+        color: #1e293b;
         cursor: pointer;
-        border-bottom: 3px solid transparent;
+        border-radius: 8px;
         transition: all 0.3s ease;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        flex: 1;
+        justify-content: center;
+    }
+    
+    .tab-btn i {
+        font-size: 1.2rem;
+        color: #667eea;
     }
     
     .tab-btn:hover {
         color: #667eea;
+        background: #f0f4ff;
+        border-color: #667eea;
+        transform: translateY(-2px);
+        box-shadow: 0 4px 8px rgba(102, 126, 234, 0.2);
     }
     
     .tab-btn.active {
-        color: #667eea;
-        border-bottom-color: #667eea;
+        color: white;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        border-color: #667eea;
+        font-weight: 700;
+        box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+    }
+    
+    .tab-btn.active i {
+        color: white;
     }
     
     .tab-header {
@@ -1570,9 +1609,24 @@ const estilosComunidad = `
         margin-bottom: 25px;
     }
     
+    .tab-header {
+        background: white;
+        padding: 20px;
+        border-radius: 12px;
+        margin-bottom: 20px;
+    }
+    
     .tab-header h3 {
-        color: #333;
+        color: #1e293b;
         margin: 0;
+        font-size: 1.3rem;
+        font-weight: 700;
+    }
+    
+    .tab-header p {
+        color: #475569;
+        font-size: 0.95rem;
+        font-weight: 500;
     }
     
     .btn-sm {
@@ -1656,8 +1710,9 @@ const estilosComunidad = `
     .form-group small {
         display: block;
         margin-top: 5px;
-        font-size: 0.8rem;
-        color: #666;
+        font-size: 0.85rem;
+        color: #475569;
+        font-weight: 500;
     }
     
     /* =============== ESTILOS PARA MENTORÍAS =============== */
@@ -2021,11 +2076,14 @@ const estilosComunidad = `
         
         .comunidad-tabs {
             flex-wrap: wrap;
+            gap: 5px !important;
         }
         
         .tab-btn {
             font-size: 0.9rem;
-            padding: 10px 15px;
+            padding: 12px 16px;
+            flex: 1 1 calc(50% - 5px);
+            min-width: calc(50% - 5px);
         }
         
         .modal-content {

@@ -39,7 +39,8 @@ function diagnosticarResponsive() {
     
     console.log('📊 DIAGNÓSTICO RESPONSIVE:', diagnosticos);
     
-    // Mostrar notificación con el diagnóstico
+    // NO mostrar notificación automáticamente (solo en consola para desarrollo)
+    // Si necesitas ver el diagnóstico, llama manualmente: diagnosticarResponsive()
     const mensaje = `
         📱 RESPONSIVE DIAGNÓSTICO:
         
@@ -52,11 +53,13 @@ function diagnosticarResponsive() {
         ${diagnosticos.viewport.width <= 768 ? '✅ Debería usar layout móvil' : '🖥️ Debería usar layout desktop'}
     `;
     
-    if (typeof mostrarNotificacion === 'function') {
-        mostrarNotificacion(mensaje, 'info');
-    } else {
-        alert(mensaje);
-    }
+    // Solo mostrar en consola, NO como notificación automática
+    console.log(mensaje);
+    
+    // Si se llama manualmente con un parámetro, entonces sí mostrar notificación
+    // if (typeof mostrarNotificacion === 'function' && arguments[0] === true) {
+    //     mostrarNotificacion(mensaje, 'info');
+    // }
     
     return diagnosticos;
 }
@@ -174,14 +177,14 @@ window.forzarRecargaSinCache = forzarRecargaSinCache;
 window.verificarMediaQueries = verificarMediaQueries;
 window.aplicarEstilosEmergencia = aplicarEstilosEmergencia;
 
-// Auto-diagnóstico al cargar
+// Auto-diagnóstico al cargar (solo en consola, sin notificaciones)
 document.addEventListener('DOMContentLoaded', function() {
-    console.log('📱 Diagnóstico responsive cargado');
+    console.log('📱 Diagnóstico responsive cargado (solo consola, sin notificaciones)');
     
-    // Ejecutar diagnóstico después de un pequeño delay
+    // Ejecutar diagnóstico después de un pequeño delay (solo en consola)
     setTimeout(() => {
-        diagnosticarResponsive();
-        verificarMediaQueries();
+        diagnosticarResponsive(); // Solo mostrará en consola
+        verificarMediaQueries(); // Solo mostrará en consola
     }, 1000);
 });
 

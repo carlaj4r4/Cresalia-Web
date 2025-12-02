@@ -5,6 +5,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Super Admin - Cresalia</title>
     
+    <!-- Favicon -->
+    <link rel="icon" type="image/x-icon" href="../favicon.ico">
+    <link rel="icon" type="image/png" href="../assets/logo/logo-cresalia.png">
+    
     <!-- Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     
@@ -548,14 +552,32 @@
         // Cargar datos
         async function loadDashboard() {
             try {
-                const response = await fetch('http://localhost:3001/api/tenants');
+                const response = await fetch('/api/admin-tenants');
                 const data = await response.json();
                 
-                renderTenants(data.tenants);
-                updateStats(data.tenants);
-                createCharts(data.tenants);
+                if (data.success) {
+                    renderTenants(data.tenants || []);
+                    updateStats(data.stats || {});
+                    createCharts(data.tenants || []);
+                } else {
+                    console.error('Error:', data.error);
+                    document.getElementById('tenants-tbody').innerHTML = `
+                        <tr>
+                            <td colspan="8" style="text-align: center; padding: 40px; color: #EF4444;">
+                                ❌ Error: ${data.error || 'No se pudieron cargar los tenants'}
+                            </td>
+                        </tr>
+                    `;
+                }
             } catch (error) {
                 console.error('Error cargando dashboard:', error);
+                document.getElementById('tenants-tbody').innerHTML = `
+                    <tr>
+                        <td colspan="8" style="text-align: center; padding: 40px; color: #EF4444;">
+                            ❌ Error de conexión: ${error.message}
+                        </td>
+                    </tr>
+                `;
             }
         }
 
@@ -566,8 +588,8 @@
             tbody.innerHTML = tenants.map(tenant => `
                 <tr>
                     <td>
-                        <div class="tenant-name">${tenant.nombre_empresa}</div>
-                        <div class="tenant-slug">${tenant.slug}</div>
+                        <div class="tenant-name">${tenant.nombre_empresa || tenant.nombre || 'Sin nombre'}</div>
+                        <div class="tenant-slug">${tenant.slug || tenant.id}</div>
                     </td>
                     <td>
                         <span class="plan-badge plan-${tenant.plan || 'free'}">
@@ -580,41 +602,98 @@
                         </span>
                     </td>
                     <td>
-                        <strong>$${getPlanPrice(tenant.plan)}</strong>
+                        <strong>$${getPlanPrice(tenant.plan || 'free')}</strong>
                     </td>
                     <td>${tenant.total_productos || 0}</td>
                     <td>${tenant.ordenes_mes || 0}</td>
                     <td>${formatDate(tenant.created_at)}</td>
                     <td>
                         <div class="table-actions">
-                            <button class="btn-icon-small btn-view" title="Ver tienda">
+                            <button class="btn-icon-small btn-view" onclick="window.open('tiendas/${tenant.slug || tenant.id}/index.html', '_blank')" title="Ver tienda">
                                 <i class="fas fa-eye"></i>
                             </button>
-                            <button class="btn-icon-small btn-edit" title="Editar">
-                                <i class="fas fa-edit"></i>
+                            <button class="btn-icon-small btn-edit" onclick="window.open('tiendas/${tenant.slug || tenant.id}/admin-final.html', '_blank')" title="Admin">
+                                <i class="fas fa-cog"></i>
                             </button>
-                            <button class="btn-icon-small btn-danger" title="Suspender">
-                                <i class="fas fa-ban"></i>
-                            </button>
+                            ${tenant.estado === 'activo' 
+                                ? `<button class="btn-icon-small btn-danger" onclick="suspenderTenant('${tenant.id}', '${tenant.nombre_empresa || tenant.nombre || 'Tenant'}')" title="Suspender">
+                                    <i class="fas fa-ban"></i>
+                                   </button>`
+                                : `<button class="btn-icon-small btn-success" onclick="activarTenant('${tenant.id}', '${tenant.nombre_empresa || tenant.nombre || 'Tenant'}')" title="Activar">
+                                    <i class="fas fa-check"></i>
+                                   </button>`
+                            }
                         </div>
                     </td>
                 </tr>
             `).join('');
         }
+        
+        // Suspender tenant
+        async function suspenderTenant(tenantId, nombre) {
+            const razon = prompt(`¿Por qué suspendés a "${nombre}"?\n\nRazón de suspensión:`);
+            if (!razon || razon.trim() === '') {
+                alert('⚠️ Debes proporcionar una razón');
+                return;
+            }
+            
+            try {
+                const response = await fetch(`/api/admin-tenants?tenant_id=${tenantId}`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ 
+                        estado: 'suspendido',
+                        motivo: razon.trim()
+                    })
+                });
+                
+                const data = await response.json();
+                
+                if (data.success) {
+                    alert('✅ Tenant suspendido correctamente');
+                    loadDashboard();
+                } else {
+                    alert('❌ Error: ' + (data.error || 'Error desconocido'));
+                }
+            } catch (error) {
+                console.error('Error suspendiendo tenant:', error);
+                alert('❌ Error al suspender: ' + error.message);
+            }
+        }
+        
+        // Activar tenant
+        async function activarTenant(tenantId, nombre) {
+            if (!confirm(`¿Activás a "${nombre}"?`)) return;
+            
+            try {
+                const response = await fetch(`/api/admin-tenants?tenant_id=${tenantId}`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ 
+                        estado: 'activo',
+                        motivo: 'Activado manualmente'
+                    })
+                });
+                
+                const data = await response.json();
+                
+                if (data.success) {
+                    alert('✅ Tenant activado correctamente');
+                    loadDashboard();
+                } else {
+                    alert('❌ Error: ' + (data.error || 'Error desconocido'));
+                }
+            } catch (error) {
+                console.error('Error activando tenant:', error);
+                alert('❌ Error al activar: ' + error.message);
+            }
+        }
 
         // Actualizar stats
-        function updateStats(tenants) {
-            const totalTenants = tenants.length;
-            const activeTenants = tenants.filter(t => t.estado === 'activo').length;
-            
-            let mrr = 0;
-            tenants.forEach(t => {
-                mrr += getPlanPrice(t.plan);
-            });
-
-            document.getElementById('total-tenants').textContent = totalTenants;
-            document.getElementById('active-tenants').textContent = activeTenants;
-            document.getElementById('mrr').textContent = `$${mrr.toLocaleString()}`;
+        function updateStats(stats) {
+            document.getElementById('total-tenants').textContent = stats.total_tenants || 0;
+            document.getElementById('active-tenants').textContent = stats.active_tenants || 0;
+            document.getElementById('mrr').textContent = `$${(stats.total_mrr || 0).toLocaleString('es-AR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
         }
 
         // Crear gráficos

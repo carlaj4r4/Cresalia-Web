@@ -251,16 +251,54 @@
         </div>
         
         <div class="card">
-            <div class="coming-soon">
-                <i class="fas fa-heart"></i>
-                <h2>Próximamente</h2>
-                <p>Estamos trabajando en el sistema de donaciones de dinero con verificación estricta y seguridad máxima. Estará disponible muy pronto.</p>
-                <p style="margin-top: 20px;">
-                    <strong>Mientras tanto, podés:</strong><br>
-                    - Ver solicitudes de emergencias materiales en <a href="../cresalia-solidario-emergencias/index.html" style="color: #10B981; font-weight: 600;">Cresalia Solidario Emergencias</a><br>
-                    - Ayudar a animales en <a href="../cresalia-animales/index.html" style="color: #10B981; font-weight: 600;">Cresalia Animales</a>
+            <h2 style="margin-bottom: 20px; color: #374151;">💰 Métodos de Pago para Donaciones</h2>
+            
+            <div style="background: linear-gradient(135deg, rgba(16, 185, 129, 0.1), rgba(5, 150, 105, 0.1)); border-left: 4px solid #10b981; padding: 20px; border-radius: 10px; margin-bottom: 30px;">
+                <h3 style="color: #059669; margin-bottom: 10px;">💜 Cómo Funciona</h3>
+                <p style="margin: 0; line-height: 1.8; color: #374151;">
+                    Las organizaciones pueden agregar su alias, CVU o CBU para recibir donaciones directamente. 
+                    Los donantes verán la información y podrán transferir dinero directamente. 
+                    <strong>Cresalia NO cobra comisiones</strong> y <strong>NO procesa los pagos</strong>. 
+                    Todo va directo a las organizaciones. Es completamente transparente.
                 </p>
             </div>
+            
+            <!-- Sección para agregar método de pago -->
+            <div style="background: white; border: 2px solid #e5e7eb; border-radius: 15px; padding: 30px; margin-bottom: 30px;">
+                <h3 style="color: #374151; margin-bottom: 20px;">
+                    <i class="fas fa-plus-circle"></i> Agregar Método de Pago para tu Organización
+                </h3>
+                <div id="form-agregar-metodo-pago-solidario"></div>
+            </div>
+            
+            <!-- Sección para mostrar métodos de pago existentes -->
+            <div style="background: white; border: 2px solid #e5e7eb; border-radius: 15px; padding: 30px;">
+                <h3 style="color: #374151; margin-bottom: 20px;">
+                    <i class="fas fa-list"></i> Métodos de Pago Configurados
+                </h3>
+                <div id="metodos-pago-solidario-lista">
+                    <div style="text-align: center; padding: 40px; color: #6b7280;">
+                        <div style="border: 4px solid #E5E7EB; border-top: 4px solid #10b981; border-radius: 50%; width: 50px; height: 50px; animation: spin 1s linear infinite; margin: 0 auto 20px;"></div>
+                        <p>Cargando métodos de pago...</p>
+                    </div>
+                </div>
+            </div>
+            
+            <div style="background: #fef3c7; border-left: 4px solid #f59e0b; padding: 15px; border-radius: 8px; margin-top: 30px;">
+                <p style="margin: 0; color: #374151; font-size: 0.9rem; line-height: 1.6;">
+                    <strong>⚠️ Importante:</strong> Este sistema permite que organizaciones agreguen su información de pago. 
+                    Los donantes pueden ver la información y transferir directamente. Cresalia no procesa ni cobra comisiones por estos pagos.
+                </p>
+            </div>
+        </div>
+        
+        <div class="card">
+            <h2>🔗 Otros Sistemas de Ayuda</h2>
+            <p>Mientras tanto, podés:</p>
+            <ul style="margin-left: 20px; color: #374151; line-height: 2;">
+                <li>✅ Ver solicitudes de emergencias materiales en <a href="../cresalia-solidario-emergencias/index.html" style="color: #10B981; font-weight: 600;">Cresalia Solidario Emergencias</a></li>
+                <li>✅ Ayudar a animales en <a href="../cresalia-animales/index.html" style="color: #10B981; font-weight: 600;">Cresalia Animales</a></li>
+            </ul>
         </div>
         
         <div class="card">
@@ -277,6 +315,9 @@
         </div>
     </div>
     
+    <!-- Sistema de Alias/CVU/CBU para Donaciones -->
+    <script src="../js/sistema-alias-donaciones.js"></script>
+    
     <script>
         // Inicializar sistema de alertas
         document.addEventListener('DOMContentLoaded', () => {
@@ -284,9 +325,74 @@
                 if (typeof SistemaAlertasComunidades !== 'undefined') {
                     window.alertasSolidario = new SistemaAlertasComunidades('cresalia-solidario');
                 }
+                
+                // Inicializar Sistema de Alias para Donaciones
+                if (typeof SistemaAliasDonaciones !== 'undefined' && typeof window.supabase !== 'undefined' && window.SUPABASE_CONFIG) {
+                    try {
+                        const supabaseClient = window.supabase.createClient(window.SUPABASE_CONFIG.url, window.SUPABASE_CONFIG.anonKey);
+                        window.sistemaAliasSolidario = new SistemaAliasDonaciones({
+                            tipoEntidad: 'organizacion',
+                            entidadNombre: 'Mi Organización',
+                            supabase: supabaseClient
+                        });
+                        
+                        // Cargar y mostrar métodos de pago
+                        cargarMetodosPagoSolidario();
+                        
+                        // Crear formulario para agregar método de pago
+                        window.sistemaAliasSolidario.crearFormularioAgregar('form-agregar-metodo-pago-solidario', () => {
+                            cargarMetodosPagoSolidario();
+                        });
+                    } catch (error) {
+                        console.error('Error inicializando sistema de alias:', error);
+                    }
+                }
             }, 500);
         });
+        
+        // Función para cargar y mostrar métodos de pago
+        async function cargarMetodosPagoSolidario() {
+            if (!window.sistemaAliasSolidario) return;
+            
+            try {
+                const metodos = await window.sistemaAliasSolidario.cargarMetodosPago();
+                const container = document.getElementById('metodos-pago-solidario-lista');
+                
+                if (!container) return;
+                
+                if (!metodos || metodos.length === 0) {
+                    container.innerHTML = `
+                        <div style="text-align: center; padding: 40px; color: #6b7280;">
+                            <i class="fas fa-wallet" style="font-size: 3rem; margin-bottom: 15px; opacity: 0.5;"></i>
+                            <p>No has agregado ningún método de pago aún.</p>
+                            <p style="font-size: 0.9rem; margin-top: 10px;">Agrega tu alias, CVU o CBU arriba para recibir donaciones.</p>
+                        </div>
+                    `;
+                } else {
+                    const html = window.sistemaAliasSolidario.crearHTMLDonacion(metodos, 'Tu organización');
+                    container.innerHTML = html;
+                }
+            } catch (error) {
+                console.error('Error cargando métodos de pago:', error);
+                const container = document.getElementById('metodos-pago-solidario-lista');
+                if (container) {
+                    container.innerHTML = `
+                        <div style="text-align: center; padding: 40px; color: #ef4444;">
+                            <i class="fas fa-exclamation-triangle" style="font-size: 2rem; margin-bottom: 15px;"></i>
+                            <p>Error al cargar métodos de pago. Por favor, recarga la página.</p>
+                        </div>
+                    `;
+                }
+            }
+        }
     </script>
+    
+    <style>
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
     <!-- Sistema de Feedbacks General -->
     <script src="../js/sistema-feedbacks-general.js"></script>
 </body>

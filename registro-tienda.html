@@ -5,6 +5,11 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Crear Mi Tienda - CRESALIA</title>
     
+    <!-- Favicon -->
+    <link rel="icon" type="image/x-icon" href="favicon.ico">
+    <link rel="icon" type="image/png" href="assets/logo/logo-cresalia.png">
+    <link rel="apple-touch-icon" href="assets/logo/logo-cresalia.png">
+    
     <!-- Supabase Client Library -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     
@@ -278,24 +283,37 @@
             <img src="assets/logo/logo-cresalia.png" alt="CRESALIA" onerror="this.style.display='none'">
         </div>
         
-        <h1>🚀 Crea Tu Tienda Online</h1>
-        <p class="subtitle">Únete a CRESALIA y comienza a vender hoy</p>
+        <h1>🚀 Crea Tu Tienda o Servicio</h1>
+        <p class="subtitle">Únete a CRESALIA - Para vendedores, emprendedores y profesionales de servicios</p>
         
         <div id="notificacion" class="notification"></div>
         
         <form id="registroForm">
             <div class="form-group">
+                <label for="tipoNegocio">
+                    <i class="fas fa-briefcase"></i> Tipo de Negocio
+                </label>
+                <select id="tipoNegocio" required>
+                    <option value="">Selecciona el tipo</option>
+                    <option value="tienda">🏪 Tienda (Venta de productos)</option>
+                    <option value="servicio">🔧 Servicio Profesional</option>
+                    <option value="emprendedor">💼 Emprendedor/Emprendimiento</option>
+                </select>
+                <small style="color: #666; font-size: 12px;">Elige si vendes productos, ofreces servicios o eres emprendedor</small>
+            </div>
+            
+            <div class="form-group">
                 <label for="nombreTienda">
-                    <i class="fas fa-store"></i> Nombre de tu Tienda
+                    <i class="fas fa-store"></i> Nombre de tu Tienda/Servicio/Emprendimiento
                 </label>
                 <input 
                     type="text" 
                     id="nombreTienda" 
-                    placeholder="Ej: Mi Tienda de Tecnología" 
+                    placeholder="Ej: Mi Tienda, Mi Servicio, Mi Emprendimiento" 
                     required
                     minlength="3"
                 >
-                <small style="color: #666; font-size: 12px;">Este será el nombre visible de tu tienda</small>
+                <small style="color: #666; font-size: 12px;">Este será el nombre visible de tu negocio</small>
             </div>
             
             <div class="form-group">

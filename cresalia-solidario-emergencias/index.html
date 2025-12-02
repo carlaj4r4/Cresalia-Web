@@ -35,6 +35,9 @@
     <!-- Sistema Cresalia Solidario Emergencias -->
     <script src="../js/sistema-cresalia-solidario-emergencias.js"></script>
     
+    <!-- Sistema de Alias/CVU/CBU para Donaciones -->
+    <script src="../js/sistema-alias-donaciones.js"></script>
+    
     <style>
         * {
             margin: 0;
@@ -382,6 +385,40 @@
                 <p>Cargando campañas...</p>
             </div>
         </div>
+        
+        <!-- Sección de Métodos de Pago para Organizaciones -->
+        <div style="background: white; border-radius: 15px; padding: 30px; margin-top: 30px; box-shadow: 0 4px 15px rgba(0,0,0,0.1);">
+            <h2 style="margin-bottom: 20px; color: #EF4444;">💰 Métodos de Pago para Donaciones en Efectivo</h2>
+            
+            <div style="background: linear-gradient(135deg, rgba(239, 68, 68, 0.1), rgba(220, 38, 38, 0.1)); border-left: 4px solid #EF4444; padding: 20px; border-radius: 10px; margin-bottom: 30px;">
+                <h3 style="color: #DC2626; margin-bottom: 10px;">💜 Para Organizaciones</h3>
+                <p style="margin: 0; line-height: 1.8; color: #374151;">
+                    Si tu organización necesita recibir donaciones en efectivo además de materiales, puedes agregar tu alias, CVU o CBU aquí. 
+                    Los donantes podrán transferirte dinero directamente. <strong>Cresalia NO cobra comisiones</strong> y <strong>NO procesa los pagos</strong>.
+                </p>
+            </div>
+            
+            <!-- Sección para agregar método de pago -->
+            <div style="background: #f9fafb; border: 2px solid #e5e7eb; border-radius: 15px; padding: 30px; margin-bottom: 30px;">
+                <h3 style="color: #374151; margin-bottom: 20px;">
+                    <i class="fas fa-plus-circle"></i> Agregar Método de Pago para tu Organización
+                </h3>
+                <div id="form-agregar-metodo-pago-emergencias"></div>
+            </div>
+            
+            <!-- Sección para mostrar métodos de pago existentes -->
+            <div style="background: #f9fafb; border: 2px solid #e5e7eb; border-radius: 15px; padding: 30px;">
+                <h3 style="color: #374151; margin-bottom: 20px;">
+                    <i class="fas fa-list"></i> Métodos de Pago Configurados
+                </h3>
+                <div id="metodos-pago-emergencias-lista">
+                    <div style="text-align: center; padding: 40px; color: #6b7280;">
+                        <div style="border: 4px solid #E5E7EB; border-top: 4px solid #EF4444; border-radius: 50%; width: 50px; height: 50px; animation: spin 1s linear infinite; margin: 0 auto 20px;"></div>
+                        <p>Cargando métodos de pago...</p>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
     
     <script>
@@ -401,8 +438,66 @@
                 if (typeof SistemaAlertasComunidades !== 'undefined') {
                     window.alertasEmergencias = new SistemaAlertasComunidades('cresalia-solidario-emergencias');
                 }
+                
+                // Inicializar Sistema de Alias para Donaciones
+                if (typeof SistemaAliasDonaciones !== 'undefined' && typeof window.supabase !== 'undefined' && window.SUPABASE_CONFIG) {
+                    try {
+                        const supabaseClient = window.supabase.createClient(window.SUPABASE_CONFIG.url, window.SUPABASE_CONFIG.anonKey);
+                        window.sistemaAliasEmergencias = new SistemaAliasDonaciones({
+                            tipoEntidad: 'organizacion',
+                            entidadNombre: 'Mi Organización',
+                            supabase: supabaseClient
+                        });
+                        
+                        // Cargar y mostrar métodos de pago
+                        cargarMetodosPagoEmergencias();
+                        
+                        // Crear formulario para agregar método de pago
+                        window.sistemaAliasEmergencias.crearFormularioAgregar('form-agregar-metodo-pago-emergencias', () => {
+                            cargarMetodosPagoEmergencias();
+                        });
+                    } catch (error) {
+                        console.error('Error inicializando sistema de alias:', error);
+                    }
+                }
             }, 500);
         });
+        
+        // Función para cargar y mostrar métodos de pago
+        async function cargarMetodosPagoEmergencias() {
+            if (!window.sistemaAliasEmergencias) return;
+            
+            try {
+                const metodos = await window.sistemaAliasEmergencias.cargarMetodosPago();
+                const container = document.getElementById('metodos-pago-emergencias-lista');
+                
+                if (!container) return;
+                
+                if (!metodos || metodos.length === 0) {
+                    container.innerHTML = `
+                        <div style="text-align: center; padding: 40px; color: #6b7280;">
+                            <i class="fas fa-wallet" style="font-size: 3rem; margin-bottom: 15px; opacity: 0.5;"></i>
+                            <p>No has agregado ningún método de pago aún.</p>
+                            <p style="font-size: 0.9rem; margin-top: 10px;">Agrega tu alias, CVU o CBU arriba para recibir donaciones.</p>
+                        </div>
+                    `;
+                } else {
+                    const html = window.sistemaAliasEmergencias.crearHTMLDonacion(metodos, 'Tu organización');
+                    container.innerHTML = html;
+                }
+            } catch (error) {
+                console.error('Error cargando métodos de pago:', error);
+                const container = document.getElementById('metodos-pago-emergencias-lista');
+                if (container) {
+                    container.innerHTML = `
+                        <div style="text-align: center; padding: 40px; color: #ef4444;">
+                            <i class="fas fa-exclamation-triangle" style="font-size: 2rem; margin-bottom: 15px;"></i>
+                            <p>Error al cargar métodos de pago. Por favor, recarga la página.</p>
+                        </div>
+                    `;
+                }
+            }
+        }
         
         function donarACampana(campanaId) {
             window.location.href = `donar-materiales.html?campana=${campanaId}`;

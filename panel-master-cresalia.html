@@ -653,6 +653,9 @@
             <button class="nav-btn" onclick="mostrarSeccion('chats')">
                 <i class="fas fa-comments"></i> Chats
             </button>
+            <button class="nav-btn" onclick="mostrarSeccion('mantenimiento')">
+                <i class="fas fa-tools"></i> Mantenimiento
+            </button>
             <button class="nav-btn" onclick="mostrarSeccion('estadisticas')">
                 <i class="fas fa-chart-bar"></i> Estadísticas
             </button>
@@ -896,18 +899,90 @@
                     </p>
                 </div>
             </section>
+            
+            <!-- Mantenimiento -->
+            <section id="mantenimiento" class="section">
+                <div class="content-section">
+                    <div class="section-header">
+                        <h2><i class="fas fa-tools"></i> Gestión de Mantenimiento</h2>
+                        <button class="btn btn-primary" onclick="cargarEstadoMantenimiento()">
+                            <i class="fas fa-sync-alt"></i> Actualizar Estado
+                        </button>
+                    </div>
+                    
+                    <div class="maintenance-card" style="background: white; padding: 30px; border-radius: 15px; margin-bottom: 20px; box-shadow: 0 4px 15px rgba(0,0,0,0.1);">
+                        <div id="estadoMantenimiento" style="text-align: center; padding: 20px;">
+                            <div class="loading"><div class="spinner"></div>Cargando estado...</div>
+                        </div>
+                        
+                        <div id="formularioMantenimiento" style="display: none; margin-top: 30px;">
+                            <h3 style="margin-bottom: 20px; color: #1f2937;">Configurar Mantenimiento</h3>
+                            
+                            <div class="form-group" style="margin-bottom: 20px;">
+                                <label style="display: block; margin-bottom: 8px; font-weight: 600; color: #374151;">
+                                    <i class="fas fa-toggle-on"></i> Estado
+                                </label>
+                                <label style="display: flex; align-items: center; gap: 10px; cursor: pointer;">
+                                    <input type="checkbox" id="mantenimientoActivo" style="width: 40px; height: 20px; cursor: pointer;">
+                                    <span id="estadoTexto">Inactivo</span>
+                                </label>
+                            </div>
+                            
+                            <div class="form-group" style="margin-bottom: 20px;">
+                                <label style="display: block; margin-bottom: 8px; font-weight: 600; color: #374151;">
+                                    <i class="fas fa-calendar"></i> Fecha Fin Estimada (Opcional)
+                                </label>
+                                <input type="datetime-local" id="fechaFinEstimada" style="width: 100%; padding: 10px; border: 1px solid #e5e7eb; border-radius: 8px; font-size: 14px;">
+                            </div>
+                            
+                            <div class="form-group" style="margin-bottom: 20px;">
+                                <label style="display: block; margin-bottom: 8px; font-weight: 600; color: #374151;">
+                                    <i class="fas fa-comment"></i> Mensaje Personalizado (Opcional)
+                                </label>
+                                <textarea id="mensajeMantenimiento" rows="4" placeholder="Mensaje adicional para los usuarios..." style="width: 100%; padding: 10px; border: 1px solid #e5e7eb; border-radius: 8px; font-size: 14px; font-family: inherit;"></textarea>
+                            </div>
+                            
+                            <div style="display: flex; gap: 15px; margin-top: 25px;">
+                                <button onclick="activarMantenimiento()" class="btn btn-danger" id="btnActivar" style="display: none;">
+                                    <i class="fas fa-exclamation-triangle"></i> Activar Mantenimiento
+                                </button>
+                                <button onclick="desactivarMantenimiento()" class="btn btn-success" id="btnDesactivar" style="display: none;">
+                                    <i class="fas fa-check"></i> Desactivar Mantenimiento
+                                </button>
+                                <button onclick="guardarConfiguracionMantenimiento()" class="btn btn-primary">
+                                    <i class="fas fa-save"></i> Guardar Configuración
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="info-box" style="background: #f3f4f6; padding: 20px; border-radius: 15px; border-left: 4px solid #667eea;">
+                        <h4 style="margin-bottom: 10px; color: #1f2937;">
+                            <i class="fas fa-info-circle"></i> Información
+                        </h4>
+                        <ul style="margin: 0; padding-left: 20px; color: #4b5563; line-height: 1.8;">
+                            <li>Cuando actives el mantenimiento, se redirigirá automáticamente a todos los usuarios a la página de mantenimiento</li>
+                            <li>Se enviarán emails automáticamente a todos los usuarios registrados informándoles del mantenimiento</li>
+                            <li>El mensaje será educado, agradecido y disculpándose por los inconvenientes</li>
+                            <li>Los usuarios podrán verificar automáticamente cuando el mantenimiento termine</li>
+                        </ul>
+                    </div>
+                </div>
+            </section>
         </main>
     </div>
     
     <!-- Scripts -->
+    <script src="config-privado.js"></script>
     <script src="auth/supabase-config.js"></script>
+    <script src="js/gestion-mantenimiento.js"></script>
     
     <script>
         // No redeclarar supabase - ya está en supabase-config.js
         // Contraseña maestra - Configurar en variables de entorno o usar configuración privada
         const MASTER_PASSWORD = (window.CONFIG_PRIVADO && window.CONFIG_PRIVADO.adminCresalia) || 
                                  process?.env?.ADMIN_PASSWORD || 
-                                 prompt('Ingrese contraseña de administración:');
+                                 'CRESALIA2025!';
         
         // Toggle password visibility
         function togglePassword() {
@@ -1383,6 +1458,9 @@
             setTimeout(() => notif.remove(), 3000);
         }
     </script>
+    
+    <!-- Sistema de Monitoreo de Errores Propio (Fallback) -->
+    <script src="js/error-reporter.js"></script>
 </body>
 </html>
 
