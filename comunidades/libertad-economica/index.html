@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cresalia - Libertad Económica</title>
+    <link rel="icon" type="image/x-icon" href="../../favicon.ico">
+    <link rel="icon" type="image/png" href="../../assets/logo/logo-cresalia.png">
+    <link rel="apple-touch-icon" href="../../assets/logo/logo-cresalia.png">
+
+    <!-- PWA Manifest -->
+    <link rel="manifest" href="../../comunidades/manifest-comunidades.json">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    <meta name="apple-mobile-web-app-title" content="Cresalia Libertad Económica">
+    <meta name="theme-color" content="#10B981">
+
+    <!-- Protección -->
+    <script src="../../core/proteccion-devtools-avanzada.js?v=2.0"></script>
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="../../css/comunidad-libertad-economica.css">
+</head>
+<body>
+    <div class="page-wrapper">
+        <!-- Header -->
+        <div class="card">
+            <h1>💚 Libertad Económica</h1>
+            <p class="subtitle">Rompiendo cadenas económicas y construyendo independencia</p>
+            <p class="tagline">
+                La violencia económica es real y puede mantenerte atado/a a una relación tóxica. 
+                Este es un espacio seguro y anónimo para encontrar recursos, apoyo y planificar tu salida. 
+                No estás solo/a.
+            </p>
+            <div class="cta-group">
+                <button class="btn-primary" onclick="libertadEconomica.mostrarTab('foro')">
+                    <i class="fas fa-comments"></i> Ver Foro
+                </button>
+                <button class="btn-secondary" onclick="libertadEconomica.crearPublicacion()">
+                    <i class="fas fa-plus"></i> Compartir
+                </button>
+            </div>
+        </div>
+
+        <!-- Advertencia de contenido sensible -->
+        <div id="advertencia-contenido" class="card advertencia-contenido">
+            <h3>⚠️ Contenido Muy Sensible</h3>
+            <p>
+                Esta comunidad contiene contenido sobre violencia económica, dependencia financiera, 
+                planificación de salida y recursos legales. Este contenido puede ser emocionalmente difícil 
+                y puede despertar recuerdos dolorosos.
+            </p>
+            <p>
+                <strong>Tu seguridad es lo más importante.</strong> Si estás en peligro inmediato, 
+                llamá a la línea de emergencias: 144 (Argentina).
+            </p>
+            <p>
+                <strong>¿Cómo te sentís hoy?</strong> Si no te sentís bien, podés evitar este contenido por hoy 
+                y volver cuando te sientas mejor.
+            </p>
+            <div class="advertencia-buttons">
+                <button class="btn-continuar" onclick="libertadEconomica.continuarContenidoSensible()">
+                    Continuar
+                </button>
+                <button class="btn-saltar" onclick="libertadEconomica.saltarContenidoSensible()">
+                    Saltar por Hoy
+                </button>
+            </div>
+        </div>
+
+        <!-- Tabs Container -->
+        <div class="card tabs-container" id="contenido-principal" style="display: none;">
+            <div class="tabs">
+                <button class="tab-btn active" onclick="libertadEconomica.mostrarTab('foro')">
+                    <i class="fas fa-comments"></i> Foro
+                </button>
+                <button class="tab-btn" onclick="libertadEconomica.mostrarTab('identificar')">
+                    <i class="fas fa-search"></i> Identificar Violencia
+                </button>
+                <button class="tab-btn" onclick="libertadEconomica.mostrarTab('planificar')">
+                    <i class="fas fa-calendar-check"></i> Planificar Salida
+                </button>
+                <button class="tab-btn" onclick="libertadEconomica.mostrarTab('mi-historial')">
+                    <i class="fas fa-history"></i> Mi Historial
+                </button>
+                <button class="tab-btn" onclick="libertadEconomica.mostrarTab('recursos')">
+                    <i class="fas fa-book"></i> Recursos
+                </button>
+            </div>
+
+            <!-- Tab: Foro -->
+            <div id="tab-foro" class="tab-content active">
+                <div class="foro-header">
+                    <h2><i class="fas fa-comments"></i> Foro de la Comunidad</h2>
+                    <button class="btn-primary" onclick="libertadEconomica.crearPublicacion()">
+                        <i class="fas fa-plus"></i> Nueva Publicación
+                    </button>
+                </div>
+                <div class="info-box">
+                    <i class="fas fa-shield-alt"></i>
+                    <p>
+                        <strong>Recordá:</strong> Todas las publicaciones son anónimas si así lo deseás. 
+                        Tu seguridad es nuestra prioridad.
+                    </p>
+                </div>
+                <div id="publicaciones-lista" class="publicaciones-lista"></div>
+            </div>
+
+            <!-- Tab: Identificar Violencia -->
+            <div id="tab-identificar" class="tab-content">
+                <h2><i class="fas fa-search"></i> Identificar Violencia Económica</h2>
+                <p>
+                    La violencia económica puede manifestarse de muchas formas. 
+                    Si reconocés alguna de estas señales, podés estar viviendo violencia económica.
+                </p>
+                <div id="identificar-lista" class="publicaciones-lista"></div>
+            </div>
+
+            <!-- Tab: Planificar Salida -->
+            <div id="tab-planificar" class="tab-content">
+                <h2><i class="fas fa-calendar-check"></i> Planificar la Salida</h2>
+                <p>
+                    Planificar tu salida es crucial para tu seguridad. Aquí encontrarás recursos 
+                    y apoyo para planificar de manera segura.
+                </p>
+                <div id="planificar-lista" class="publicaciones-lista"></div>
+            </div>
+
+            <!-- Tab: Mi Historial -->
+            <div id="tab-mi-historial" class="tab-content">
+                <div class="foro-header">
+                    <h2><i class="fas fa-history"></i> Mi Historial de Publicaciones</h2>
+                    <p style="color: #6b7280; margin-top: 10px; margin-bottom: 20px;">
+                        Aquí puedes ver todas tus publicaciones, editarlas, pausarlas o eliminarlas. Tu anonimato está protegido.
+                    </p>
+                </div>
+                <div id="mi-historial-foro-lista" class="publicaciones-lista"></div>
+            </div>
+
+            <!-- Tab: Mi Historial -->
+            <div id="tab-mi-historial" class="tab-content">
+                <div class="foro-header">
+                    <h2><i class="fas fa-history"></i> Mi Historial de Publicaciones</h2>
+                    <p style="color: #6b7280; margin-top: 10px; margin-bottom: 20px;">
+                        Aquí puedes ver todas tus publicaciones, editarlas, pausarlas o eliminarlas. Tu anonimato está protegido.
+                    </p>
+                </div>
+                <div id="mi-historial-foro-lista" class="publicaciones-lista"></div>
+            </div>
+
+            <!-- Tab: Recursos -->
+            <div id="tab-recursos" class="tab-content">
+                <h2><i class="fas fa-book"></i> Recursos de Ayuda</h2>
+                <div class="recursos-grid">
+                    <div class="recurso-card" onclick="libertadEconomica.mostrarRecurso('señales')">
+                        <h3><i class="fas fa-exclamation-triangle"></i> Señales de Violencia</h3>
+                        <p>Reconocé las señales de violencia económica</p>
+                        <button class="btn-recurso">Ver más</button>
+                    </div>
+                    <div class="recurso-card" onclick="libertadEconomica.mostrarRecurso('planificacion')">
+                        <h3><i class="fas fa-clipboard-list"></i> Planificación Financiera</h3>
+                        <p>Cómo planificar tu independencia económica</p>
+                        <button class="btn-recurso">Ver más</button>
+                    </div>
+                    <div class="recurso-card" onclick="libertadEconomica.mostrarRecurso('legal')">
+                        <h3><i class="fas fa-gavel"></i> Recursos Legales</h3>
+                        <p>Información sobre derechos y ayuda legal</p>
+                        <button class="btn-recurso">Ver más</button>
+                    </div>
+                    <div class="recurso-card" onclick="libertadEconomica.mostrarRecurso('emergencia')">
+                        <h3><i class="fas fa-phone-alt"></i> Líneas de Emergencia</h3>
+                        <p>Números de emergencia y ayuda inmediata</p>
+                        <button class="btn-recurso">Ver más</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="../../config-supabase-seguro.js"></script>
+    <script src="../../js/sistema-foro-comunidades.js"></script>
+    <script src="../../js/comunidad-libertad-economica.js"></script>
+    <script src="../../js/sistema-feedbacks-comunidades.js"></script>
+    <script src="../../js/sistema-validacion-identidades.js"></script>
+    <script src="../../js/sistema-alertas-comunidades.js"></script>
+    <script src="../../js/sistema-checkin-emergencias.js"></script>
+    <script>
+        // Inicializar sistema de foro
+        let foroComunidad;
+        let validacionIdentidad;
+        let alertasComunidad;
+        let feedbacksComunidad;
+        document.addEventListener('DOMContentLoaded', () => {
+            foroComunidad = new SistemaForoComunidades('libertad-economica');
+            window.foroComunidad = foroComunidad;
+            
+            // Inicializar sistemas adicionales
+            setTimeout(() => {
+                validacionIdentidad = new SistemaValidacionIdentidades('libertad-economica');
+                window.validacionIdentidad = validacionIdentidad;
+                
+                alertasComunidad = new SistemaAlertasComunidades('libertad-economica');
+                window.alertasComunidad = alertasComunidad;
+                
+                if (typeof SistemaFeedbacksComunidades !== 'undefined') {
+                    feedbacksComunidad = new SistemaFeedbacksComunidades('libertad-economica');
+                    window.feedbacksComunidad = feedbacksComunidad;
+                }
+            }, 500);
+        });
+        
+        // Registrar Service Worker para PWA
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('../../sw.js')
+                    .then(registration => {
+                        console.log('✅ Service Worker registrado:', registration.scope);
+                    })
+                    .catch(error => {
+                        console.log('⚠️ Service Worker no disponible (normal en desarrollo)');
+                    });
+            });
+        }
+    </script>
+    <!-- Sistema de Feedbacks General - NO incluir en comunidades para evitar duplicados -->
+    <!-- <script src="../../js/sistema-feedbacks-general.js"></script> -->
+</body>
+</html>
+

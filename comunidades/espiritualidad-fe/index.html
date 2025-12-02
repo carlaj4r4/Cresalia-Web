@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cresalia - Espiritualidad y Fe</title>
+    <link rel="icon" type="image/x-icon" href="../../favicon.ico">
+    <link rel="icon" type="image/png" href="../../assets/logo/logo-cresalia.png">
+    <link rel="apple-touch-icon" href="../../assets/logo/logo-cresalia.png">
+
+    <!-- PWA Manifest -->
+    <link rel="manifest" href="../../comunidades/manifest-comunidades.json">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    <meta name="apple-mobile-web-app-title" content="Cresalia Espiritualidad y Fe">
+    <meta name="theme-color" content="#F59E0B">
+
+    <!-- Protección -->
+    <script src="../../core/proteccion-devtools-avanzada.js?v=2.0"></script>
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="../../css/comunidad-espiritualidad-fe.css">
+</head>
+<body>
+    <div class="page-wrapper">
+        <!-- Header -->
+        <div class="card">
+            <h1>✨ Espiritualidad y Fe</h1>
+            <p class="subtitle">Un espacio de respeto para todas las creencias y búsquedas espirituales</p>
+            <p class="tagline">
+                Este es un espacio para compartir tu fe, tu búsqueda espiritual y encontrar apoyo. 
+                Todas las religiones y creencias son bienvenidas. El respeto es fundamental.
+            </p>
+            <div class="cta-group">
+                <button class="btn-primary" onclick="espiritualidadFe.mostrarTab('foro')">
+                    <i class="fas fa-comments"></i> Ver Foro
+                </button>
+                <button class="btn-secondary" onclick="espiritualidadFe.crearPublicacion()">
+                    <i class="fas fa-plus"></i> Compartir
+                </button>
+            </div>
+        </div>
+
+        <!-- Advertencia de Respeto -->
+        <div id="advertencia-respeto" class="card advertencia-respeto">
+            <h3>🙏 Reglas de Respeto</h3>
+            <p>
+                <strong>Este espacio es para TODAS las creencias y búsquedas espirituales.</strong>
+            </p>
+            <ul class="reglas-lista">
+                <li>✅ Se permiten debates respetuosos</li>
+                <li>❌ NO se permiten faltas de respeto</li>
+                <li>❌ NO se puede hacer sentir inferior a nadie</li>
+                <li>❌ NO se puede obligar a cambiar religión o forma de pensar</li>
+                <li>✅ Cada uno cree en lo que le hace bien</li>
+                <li>✅ El respeto es OBLIGATORIO</li>
+            </ul>
+            <p style="margin-top: 16px; font-weight: 600; color: #DC2626;">
+                ⚠️ <strong>ADVERTENCIA:</strong> 1 falta de respeto = BAN PERMANENTE. 
+                No hay segunda oportunidad. El respeto es fundamental.
+            </p>
+            <div class="advertencia-buttons">
+                <button class="btn-continuar" onclick="espiritualidadFe.aceptarReglas()">
+                    Acepto y Respeto las Reglas
+                </button>
+                <button class="btn-saltar" onclick="espiritualidadFe.saltarComunidad()">
+                    No Entrar
+                </button>
+            </div>
+        </div>
+
+        <!-- Tabs Container -->
+        <div class="card tabs-container" id="contenido-principal" style="display: none;">
+            <div class="tabs">
+                <button class="tab-btn active" onclick="espiritualidadFe.mostrarTab('foro')">
+                    <i class="fas fa-comments"></i> Foro
+                </button>
+                <button class="tab-btn" onclick="espiritualidadFe.mostrarTab('oracion')">
+                    <i class="fas fa-hands-praying"></i> Oración y Meditación
+                </button>
+                <button class="tab-btn" onclick="espiritualidadFe.mostrarTab('debates')">
+                    <i class="fas fa-balance-scale"></i> Debates Respetuosos
+                </button>
+                <button class="tab-btn" onclick="espiritualidadFe.mostrarTab('mi-historial')">
+                    <i class="fas fa-history"></i> Mi Historial
+                </button>
+                <button class="tab-btn" onclick="espiritualidadFe.mostrarTab('recursos')">
+                    <i class="fas fa-book"></i> Recursos
+                </button>
+            </div>
+
+            <!-- Tab: Foro -->
+            <div id="tab-foro" class="tab-content active">
+                <div class="foro-header">
+                    <h2><i class="fas fa-comments"></i> Foro de la Comunidad</h2>
+                    <button class="btn-primary" onclick="espiritualidadFe.crearPublicacion()">
+                        <i class="fas fa-plus"></i> Nueva Publicación
+                    </button>
+                </div>
+                <div class="info-box">
+                    <i class="fas fa-heart"></i>
+                    <p>
+                        <strong>Recordá:</strong> Este es un espacio de respeto. Todas las creencias son válidas. 
+                        Podés compartir tu fe sin imponerla a otros.
+                    </p>
+                </div>
+                <div id="publicaciones-lista" class="publicaciones-lista"></div>
+            </div>
+
+            <!-- Tab: Oración y Meditación -->
+            <div id="tab-oracion" class="tab-content">
+                <h2><i class="fas fa-hands-praying"></i> Oración y Meditación</h2>
+                <p>
+                    Un espacio para compartir oraciones, meditaciones y prácticas espirituales. 
+                    Todas las tradiciones son bienvenidas.
+                </p>
+                <div id="oracion-lista" class="publicaciones-lista"></div>
+            </div>
+
+            <!-- Tab: Debates Respetuosos -->
+            <div id="tab-debates" class="tab-content">
+                <h2><i class="fas fa-balance-scale"></i> Debates Respetuosos</h2>
+                <p>
+                    Un espacio para debatir ideas espirituales y religiosas con respeto mutuo. 
+                    Recordá: el respeto es obligatorio. 1 falta de respeto = ban permanente.
+                </p>
+                <div id="debates-lista" class="publicaciones-lista"></div>
+            </div>
+
+            <!-- Tab: Mi Historial -->
+            <div id="tab-mi-historial" class="tab-content">
+                <div class="foro-header">
+                    <h2><i class="fas fa-history"></i> Mi Historial de Publicaciones</h2>
+                    <p style="color: #6b7280; margin-top: 10px; margin-bottom: 20px;">
+                        Aquí puedes ver todas tus publicaciones, editarlas, pausarlas o eliminarlas. Tu anonimato está protegido.
+                    </p>
+                </div>
+                <div id="mi-historial-foro-lista" class="publicaciones-lista"></div>
+            </div>
+
+            <!-- Tab: Recursos -->
+            <div id="tab-recursos" class="tab-content">
+                <h2><i class="fas fa-book"></i> Recursos Espirituales</h2>
+                <div class="recursos-grid">
+                    <div class="recurso-card" onclick="espiritualidadFe.mostrarRecurso('diversidad')">
+                        <h3><i class="fas fa-globe"></i> Diversidad Religiosa</h3>
+                        <p>Información sobre diferentes religiones y creencias</p>
+                        <button class="btn-recurso">Ver más</button>
+                    </div>
+                    <div class="recurso-card" onclick="espiritualidadFe.mostrarRecurso('practicas')">
+                        <h3><i class="fas fa-spa"></i> Prácticas Espirituales</h3>
+                        <p>Diferentes formas de practicar la espiritualidad</p>
+                        <button class="btn-recurso">Ver más</button>
+                    </div>
+                    <div class="recurso-card" onclick="espiritualidadFe.mostrarRecurso('respeto')">
+                        <h3><i class="fas fa-handshake"></i> Respeto Interreligioso</h3>
+                        <p>Cómo respetar y convivir con diferentes creencias</p>
+                        <button class="btn-recurso">Ver más</button>
+                    </div>
+                    <div class="recurso-card" onclick="espiritualidadFe.mostrarRecurso('busqueda')">
+                        <h3><i class="fas fa-compass"></i> Búsqueda Espiritual</h3>
+                        <p>Recursos para quienes están en búsqueda espiritual</p>
+                        <button class="btn-recurso">Ver más</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="../../config-supabase-seguro.js"></script>
+    <script src="../../js/sistema-foro-comunidades.js"></script>
+    <script src="../../js/comunidad-espiritualidad-fe.js"></script>
+    <script src="../../js/sistema-feedbacks-comunidades.js"></script>
+    <script src="../../js/sistema-validacion-identidades.js"></script>
+    <script src="../../js/sistema-alertas-comunidades.js"></script>
+    <script src="../../js/sistema-checkin-emergencias.js"></script>
+    <script>
+        // Inicializar sistema de foro
+        let foroComunidad;
+        let validacionIdentidad;
+        let alertasComunidad;
+        let feedbacksComunidad;
+        document.addEventListener('DOMContentLoaded', () => {
+            foroComunidad = new SistemaForoComunidades('espiritualidad-fe');
+            window.foroComunidad = foroComunidad;
+            
+            // Inicializar sistemas adicionales
+            setTimeout(() => {
+                validacionIdentidad = new SistemaValidacionIdentidades('espiritualidad-fe');
+                window.validacionIdentidad = validacionIdentidad;
+                
+                alertasComunidad = new SistemaAlertasComunidades('espiritualidad-fe');
+                window.alertasComunidad = alertasComunidad;
+                
+                if (typeof SistemaFeedbacksComunidades !== 'undefined') {
+                    feedbacksComunidad = new SistemaFeedbacksComunidades('espiritualidad-fe');
+                    window.feedbacksComunidad = feedbacksComunidad;
+                }
+            }, 500);
+        });
+        
+        // Registrar Service Worker para PWA
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('../../sw.js')
+                    .then(registration => {
+                        console.log('✅ Service Worker registrado:', registration.scope);
+                    })
+                    .catch(error => {
+                        console.log('⚠️ Service Worker no disponible (normal en desarrollo)');
+                    });
+            });
+        }
+    </script>
+    <!-- Sistema de Feedbacks General - NO incluir en comunidades para evitar duplicados -->
+    <!-- <script src="../../js/sistema-feedbacks-general.js"></script> -->
+</body>
+</html>
+

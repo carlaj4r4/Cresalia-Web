@@ -725,7 +725,202 @@ class SistemaForoComunidades {
             mensajeEl.style.display = 'none';
         }, 3000);
     }
+    
+    // ===== CARGAR MI HISTORIAL =====
+    async cargarMiHistorial() {
+        if (!this.supabase || !this.autorHash) {
+            const container = document.getElementById('mi-historial-foro-lista');
+            if (container) {
+                container.innerHTML = `
+                    <div class="sin-posts">
+                        <p>No se pudo cargar tu historial. Por favor, recarga la página.</p>
+                    </div>
+                `;
+            }
+            return;
+        }
+        
+        try {
+            // Cargar TODOS los posts del usuario (incluyendo pausados, ocultos, etc.)
+            const { data, error } = await this.supabase
+                .from('posts_comunidades')
+                .select('*')
+                .eq('comunidad_slug', this.comunidadSlug)
+                .eq('autor_hash', this.autorHash)
+                .order('created_at', { ascending: false });
+            
+            if (error) throw error;
+            
+            this.mostrarMiHistorial(data || []);
+        } catch (error) {
+            console.error('Error cargando historial:', error);
+            const container = document.getElementById('mi-historial-foro-lista');
+            if (container) {
+                container.innerHTML = `
+                    <div class="sin-posts">
+                        <p>Error al cargar tu historial. Por favor, intenta nuevamente.</p>
+                    </div>
+                `;
+            }
+        }
+    }
+    
+    // ===== MOSTRAR MI HISTORIAL =====
+    mostrarMiHistorial(posts) {
+        const container = document.getElementById('mi-historial-foro-lista');
+        if (!container) return;
+        
+        if (!posts || posts.length === 0) {
+            container.innerHTML = `
+                <div class="sin-posts">
+                    <h3>💜 No has creado ningún post aún</h3>
+                    <p>Puedes crear tu primer post usando el botón "Crear Post" arriba.</p>
+                </div>
+            `;
+            return;
+        }
+        
+        const estadosBadges = {
+            'publicado': '<span style="background: #10b981; color: white; padding: 4px 8px; border-radius: 5px; font-size: 0.85rem;">✅ Publicado</span>',
+            'pausado': '<span style="background: #f59e0b; color: white; padding: 4px 8px; border-radius: 5px; font-size: 0.85rem;">⏸️ Pausado</span>',
+            'oculto': '<span style="background: #6b7280; color: white; padding: 4px 8px; border-radius: 5px; font-size: 0.85rem;">🔒 Oculto</span>',
+            'eliminado': '<span style="background: #ef4444; color: white; padding: 4px 8px; border-radius: 5px; font-size: 0.85rem;">🗑️ Eliminado</span>',
+            'moderado': '<span style="background: #dc2626; color: white; padding: 4px 8px; border-radius: 5px; font-size: 0.85rem;">⚠️ Moderado</span>'
+        };
+        
+        container.innerHTML = posts.map(post => {
+            const fecha = new Date(post.created_at).toLocaleString('es-AR', {
+                day: '2-digit',
+                month: '2-digit',
+                year: 'numeric',
+                hour: '2-digit',
+                minute: '2-digit'
+            });
+            
+            return `
+                <div class="post-card" style="margin-bottom: 20px; background: white; padding: 20px; border-radius: 15px; box-shadow: 0 4px 15px rgba(0,0,0,0.1);">
+                    <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 15px; flex-wrap: wrap; gap: 10px;">
+                        <div>
+                            ${post.titulo ? `<h3 style="color: #374151; margin: 0 0 5px 0;">${this.escapeHtml(post.titulo)}</h3>` : ''}
+                            ${estadosBadges[post.estado] || estadosBadges['publicado']}
+                        </div>
+                        <span style="color: #6b7280; font-size: 0.9rem;">${fecha}</span>
+                    </div>
+                    
+                    <div style="background: #f9fafb; padding: 15px; border-radius: 10px; margin-bottom: 15px;">
+                        <p style="color: #374151; margin: 0; line-height: 1.6;">${this.escapeHtml(post.contenido.substring(0, 200))}${post.contenido.length > 200 ? '...' : ''}</p>
+                    </div>
+                    
+                    <div style="display: flex; gap: 10px; flex-wrap: wrap; font-size: 0.85rem; color: #6b7280; margin-bottom: 15px;">
+                        <span><i class="fas fa-comments"></i> ${post.num_comentarios || 0} comentarios</span>
+                        <span><i class="fas fa-heart"></i> ${post.num_reacciones || 0} reacciones</span>
+                    </div>
+                    
+                    <div style="display: flex; gap: 10px; flex-wrap: wrap; padding-top: 15px; border-top: 1px solid #e5e7eb;">
+                        <button onclick="editarPostForo('${post.id}')" class="btn-primary" style="background: #8b5cf6; flex: 1; min-width: 100px; padding: 8px 16px; border: none; border-radius: 8px; color: white; cursor: pointer; font-weight: 600;">
+                            <i class="fas fa-edit"></i> Editar
+                        </button>
+                        <button onclick="pausarPostForo('${post.id}')" class="btn-primary" style="background: #f59e0b; flex: 1; min-width: 100px; padding: 8px 16px; border: none; border-radius: 8px; color: white; cursor: pointer; font-weight: 600;">
+                            <i class="fas fa-pause"></i> ${post.estado === 'pausado' ? 'Reactivar' : 'Pausar'}
+                        </button>
+                        <button onclick="eliminarPostForo('${post.id}')" class="btn-primary" style="background: #ef4444; flex: 1; min-width: 100px; padding: 8px 16px; border: none; border-radius: 8px; color: white; cursor: pointer; font-weight: 600;">
+                            <i class="fas fa-trash"></i> Eliminar
+                        </button>
+                    </div>
+                </div>
+            `;
+        }).join('');
+    }
+    
+    // ===== EDITAR POST =====
+    async editarPost(postId) {
+        alert('💡 La funcionalidad de editar posts estará disponible próximamente. Gracias por tu paciencia.');
+    }
+    
+    // ===== PAUSAR/REACTIVAR POST =====
+    async pausarPost(postId) {
+        if (!this.supabase) {
+            this.mostrarMensaje('No hay conexión con la base de datos', 'error');
+            return;
+        }
+        
+        try {
+            // Obtener estado actual
+            const { data: post, error: fetchError } = await this.supabase
+                .from('posts_comunidades')
+                .select('estado')
+                .eq('id', postId)
+                .eq('autor_hash', this.autorHash)
+                .single();
+            
+            if (fetchError) throw fetchError;
+            
+            const nuevoEstado = post.estado === 'pausado' ? 'publicado' : 'pausado';
+            
+            const { error } = await this.supabase
+                .from('posts_comunidades')
+                .update({ estado: nuevoEstado })
+                .eq('id', postId)
+                .eq('autor_hash', this.autorHash);
+            
+            if (error) throw error;
+            
+            this.mostrarMensaje(nuevoEstado === 'pausado' ? '✅ Post pausado correctamente.' : '✅ Post reactivado correctamente.', 'success');
+            await this.cargarMiHistorial();
+        } catch (error) {
+            console.error('Error pausando post:', error);
+            this.mostrarMensaje('Error al pausar/reactivar el post. Por favor, intenta nuevamente.', 'error');
+        }
+    }
+    
+    // ===== ELIMINAR POST =====
+    async eliminarPost(postId) {
+        if (!confirm('¿Estás seguro de que deseas eliminar este post? Esta acción no se puede deshacer.')) {
+            return;
+        }
+        
+        if (!this.supabase) {
+            this.mostrarMensaje('No hay conexión con la base de datos', 'error');
+            return;
+        }
+        
+        try {
+            const { error } = await this.supabase
+                .from('posts_comunidades')
+                .delete()
+                .eq('id', postId)
+                .eq('autor_hash', this.autorHash);
+            
+            if (error) throw error;
+            
+            this.mostrarMensaje('✅ Post eliminado correctamente.', 'success');
+            await this.cargarMiHistorial();
+            await this.cargarPosts(); // Recargar también la lista principal
+        } catch (error) {
+            console.error('Error eliminando post:', error);
+            this.mostrarMensaje('Error al eliminar el post. Por favor, intenta nuevamente.', 'error');
+        }
+    }
 }
+
+// Funciones globales para historial
+window.editarPostForo = function(postId) {
+    if (window.foroComunidad) {
+        window.foroComunidad.editarPost(postId);
+    }
+};
+
+window.pausarPostForo = function(postId) {
+    if (window.foroComunidad) {
+        window.foroComunidad.pausarPost(postId);
+    }
+};
+
+window.eliminarPostForo = function(postId) {
+    if (window.foroComunidad) {
+        window.foroComunidad.eliminarPost(postId);
+    }
+};
 
 // Hacer disponible globalmente
 window.SistemaForoComunidades = SistemaForoComunidades;

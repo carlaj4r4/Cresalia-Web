@@ -730,14 +730,22 @@
     <div class="foro-container">
         <div class="foro-header">
             <h2>🎮 Foro de la Comunidad</h2>
-            <button class="btn-primary" id="btn-crear-post">
-                <i class="fas fa-plus"></i> Crear Post
-            </button>
+            <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+                <button class="btn-primary" onclick="mostrarHistorialGamers()" style="background: #8b5cf6;">
+                    <i class="fas fa-history"></i> Mi Historial
+                </button>
+                <button class="btn-primary" id="btn-crear-post">
+                    <i class="fas fa-plus"></i> Crear Post
+                </button>
+            </div>
         </div>
         
         <div id="posts-container">
             <!-- Los posts se cargarán aquí -->
         </div>
+        
+        <!-- Historial (oculto por defecto) -->
+        <div id="mi-historial-foro-lista" style="display: none; margin-top: 30px;"></div>
     </div>
     
     <!-- Modal crear post -->
@@ -800,6 +808,40 @@
                 foroComunidad.ocultarFormularioPost();
             });
         });
+        
+        // Función para mostrar historial
+        function mostrarHistorialGamers() {
+            const postsContainer = document.getElementById('posts-container');
+            const historialContainer = document.getElementById('mi-historial-foro-lista');
+            
+            if (!historialContainer) return;
+            
+            // Toggle mostrar/ocultar
+            if (historialContainer.style.display === 'none' || historialContainer.style.display === '') {
+                postsContainer.style.display = 'none';
+                historialContainer.style.display = 'block';
+                historialContainer.innerHTML = `
+                    <div class="foro-header">
+                        <h2><i class="fas fa-history"></i> Mi Historial de Publicaciones</h2>
+                        <button class="btn-primary" onclick="mostrarHistorialGamers()" style="background: #6b7280;">
+                            <i class="fas fa-arrow-left"></i> Volver al Foro
+                        </button>
+                    </div>
+                    <p style="color: #6b7280; margin: 20px 0;">
+                        Aquí puedes ver todas tus publicaciones, editarlas, pausarlas o eliminarlas. Tu anonimato está protegido.
+                    </p>
+                    <div class="publicaciones-lista"></div>
+                `;
+                setTimeout(() => {
+                    if (window.foroComunidad) {
+                        window.foroComunidad.cargarMiHistorial();
+                    }
+                }, 100);
+            } else {
+                postsContainer.style.display = 'block';
+                historialContainer.style.display = 'none';
+            }
+        }
         
         if ('serviceWorker' in navigator) {
             window.addEventListener('load', () => {

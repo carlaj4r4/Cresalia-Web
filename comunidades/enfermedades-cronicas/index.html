@@ -432,6 +432,27 @@
             </div>
         </div>
         
+        <!-- Foro -->
+        <section class="foro-container" style="margin-top: 40px; padding: 30px; background: white; border-radius: 20px; box-shadow: 0 4px 20px rgba(0,0,0,0.1);">
+            <div class="foro-header" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px;">
+                <h2 style="color: #EF4444; margin: 0;">🏥 Foro de apoyo mutuo</h2>
+                <button class="btn-primary" id="btn-crear-post" style="background: linear-gradient(135deg, #EF4444, #F87171); color: white; border: none; padding: 12px 24px; border-radius: 10px; cursor: pointer; font-weight: 600;">
+                    <i class="fas fa-pen"></i> Crear Post
+                </button>
+            </div>
+            <div id="posts-container"></div>
+
+            <div class="reglas" style="margin-top: 30px; padding: 20px; background: linear-gradient(135deg, rgba(239, 68, 68, 0.05), rgba(248, 113, 113, 0.05)); border-radius: 12px;">
+                <h3 style="color: #EF4444; margin-bottom: 12px;">Reglas imprescindibles</h3>
+                <ul style="list-style: none; padding: 0;">
+                    <li style="margin-bottom: 8px; color: #374151;">💬 Validamos todos los dolores y enfermedades, visibles o invisibles.</li>
+                    <li style="margin-bottom: 8px; color: #374151;">🛑 No se permiten frases como "es psicológico", "pero te ves bien" o minimizar el dolor.</li>
+                    <li style="margin-bottom: 8px; color: #374151;">🤝 Este es un espacio seguro para compartir sin juicios.</li>
+                    <li style="margin-bottom: 8px; color: #374151;">👩‍⚕️ Para emergencias o pensamientos autolesivos, derivamos a profesionales de inmediato.</li>
+                </ul>
+            </div>
+        </section>
+        
         <p style="margin-top: 40px; font-size: 0.9rem; color: #9CA3AF;">
             🏥❤️ Parte del ecosistema Cresalia - Validación y comprensión para el dolor invisible
         </p>
@@ -492,15 +513,24 @@
     <script src="../../js/sistema-alertas-comunidades.js"></script>
     <!-- Sistema de Check-in Automático de Emergencias -->
     <script src="../../js/sistema-checkin-emergencias.js"></script>
+    <!-- Sistema de Foro -->
+    <script src="../../js/sistema-foro-comunidades.js"></script>
     <script src="../../js/sistema-feedbacks-comunidades.js"></script>
     <script>
         // Inicializar sistema de alertas
         let alertasComunidad;
+        let foroComunidad;
         let feedbacksComunidad;
         document.addEventListener('DOMContentLoaded', () => {
             setTimeout(() => {
                 alertasComunidad = new SistemaAlertasComunidades('enfermedades-cronicas');
                 window.alertasComunidad = alertasComunidad;
+                
+                // Inicializar sistema de foro
+                if (typeof SistemaForoComunidades !== 'undefined') {
+                    foroComunidad = new SistemaForoComunidades('enfermedades-cronicas');
+                    window.foroComunidad = foroComunidad;
+                }
                 
                 // Inicializar sistema de feedbacks
                 if (typeof SistemaFeedbacksComunidades !== 'undefined') {

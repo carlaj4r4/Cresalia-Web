@@ -250,6 +250,281 @@
                 padding-left: 0;
             }
         }
+        
+        .foro-container {
+            background: white;
+            border-radius: 24px;
+            padding: 40px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            position: relative;
+            z-index: 1;
+            text-align: left;
+            margin-top: 30px;
+        }
+        
+        .foro-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 2px solid #E5E7EB;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+        
+        .foro-header h2 {
+            color: #374151;
+            font-size: 2rem;
+            margin: 0;
+        }
+        
+        .btn-primary {
+            background: linear-gradient(135deg, #F59E0B 0%, #FBBF24 100%);
+            color: white;
+            padding: 12px 30px;
+            border-radius: 10px;
+            border: none;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(245, 158, 11, 0.4);
+        }
+        
+        .btn-secondary {
+            background: #E5E7EB;
+            color: #374151;
+            padding: 12px 30px;
+            border-radius: 10px;
+            border: none;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .btn-secondary:hover {
+            background: #D1D5DB;
+        }
+        
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.7);
+            z-index: 10000;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+        
+        .modal-content {
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            max-width: 600px;
+            width: 100%;
+            max-height: 90vh;
+            overflow-y: auto;
+            position: relative;
+        }
+        
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+        }
+        
+        .modal-header h3 {
+            color: #374151;
+            margin: 0;
+        }
+        
+        .cerrar-modal {
+            background: none;
+            border: none;
+            font-size: 28px;
+            cursor: pointer;
+            color: #6B7280;
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            color: #374151;
+            font-weight: 600;
+        }
+        
+        .form-group input,
+        .form-group textarea {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #E5E7EB;
+            border-radius: 10px;
+            font-family: inherit;
+            font-size: 1rem;
+            transition: border-color 0.3s ease;
+            -webkit-user-select: text;
+            -moz-user-select: text;
+            -ms-user-select: text;
+            user-select: text;
+        }
+        
+        .form-group input:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: #F59E0B;
+        }
+        
+        .form-group textarea {
+            min-height: 150px;
+            resize: vertical;
+        }
+        
+        #posts-container {
+            margin-top: 30px;
+        }
+        
+        .post {
+            background: #F9FAFB;
+            border-radius: 15px;
+            padding: 25px;
+            margin-bottom: 25px;
+            border-left: 4px solid #F59E0B;
+        }
+        
+        .post-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 15px;
+        }
+        
+        .post-autor {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+        
+        .post-autor strong {
+            color: #374151;
+            font-size: 1.1rem;
+        }
+        
+        .post-fecha {
+            color: #9CA3AF;
+            font-size: 0.9rem;
+        }
+        
+        .post-titulo {
+            color: #374151;
+            font-size: 1.3rem;
+            margin-bottom: 15px;
+        }
+        
+        .post-contenido {
+            color: #4B5563;
+            line-height: 1.8;
+            margin-bottom: 20px;
+            white-space: pre-wrap;
+        }
+        
+        .post-footer {
+            display: flex;
+            gap: 15px;
+            padding-top: 15px;
+            border-top: 1px solid #E5E7EB;
+        }
+        
+        .btn-comentar, .btn-reaccionar {
+            background: none;
+            border: none;
+            color: #F59E0B;
+            cursor: pointer;
+            padding: 8px 15px;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+        
+        .btn-comentar:hover, .btn-reaccionar:hover {
+            background: rgba(245, 158, 11, 0.1);
+        }
+        
+        .comentarios-container {
+            margin-top: 20px;
+            padding-top: 20px;
+            border-top: 1px solid #E5E7EB;
+        }
+        
+        .comentarios-list {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+        
+        .comentario {
+            background: white;
+            padding: 15px;
+            border-radius: 10px;
+            border-left: 3px solid rgba(245, 158, 11, 0.3);
+        }
+        
+        .comentario-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+        
+        .comentario-autor {
+            font-weight: 600;
+            color: #374151;
+        }
+        
+        .comentario-fecha {
+            color: #9CA3AF;
+            font-size: 0.85rem;
+        }
+        
+        .comentario-texto {
+            color: #4B5563;
+            line-height: 1.6;
+            white-space: pre-wrap;
+        }
+        
+        .publicaciones-lista {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+        
+        @media (max-width: 768px) {
+            .foro-container {
+                padding: 25px;
+            }
+            
+            .foro-header {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+        }
     </style>
 </head>
 <body>
@@ -437,6 +712,58 @@
         </div>
     </div>
     
+    <!-- SISTEMA DE FORO -->
+    <div class="foro-container">
+        <div class="foro-header">
+            <h2>🌍 Foro de la Comunidad</h2>
+            <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+                <button class="btn-primary" onclick="mostrarHistorialInmigrantes()" style="background: #8b5cf6;">
+                    <i class="fas fa-history"></i> Mi Historial
+                </button>
+                <button class="btn-primary" id="btn-crear-post">
+                    <i class="fas fa-plus"></i> Crear Post
+                </button>
+            </div>
+        </div>
+        
+        <div id="posts-container">
+            <!-- Los posts se cargarán aquí -->
+        </div>
+        
+        <!-- Historial (oculto por defecto) -->
+        <div id="mi-historial-foro-lista" style="display: none; margin-top: 30px;"></div>
+    </div>
+    
+    <!-- Modal crear post -->
+    <div class="modal" id="modal-crear-post">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>🌍 Crear Nuevo Post</h3>
+                <button class="cerrar-modal" id="cerrar-form-post">&times;</button>
+            </div>
+            <form id="form-crear-post">
+                <div class="form-group">
+                    <label for="autor-alias">Tu alias (opcional):</label>
+                    <input type="text" id="autor-alias" placeholder="Ej: Anónimo, Luchador/a, Esperanza..." maxlength="50">
+                </div>
+                <div class="form-group">
+                    <label for="post-titulo">Título (opcional):</label>
+                    <input type="text" id="post-titulo" placeholder="Un título para tu post..." maxlength="500">
+                </div>
+                <div class="form-group">
+                    <label for="post-contenido">Tu mensaje: *</label>
+                    <textarea id="post-contenido" placeholder="Compartí tu experiencia, busca apoyo, o simplemente desahógate. Este es un espacio seguro... (mínimo 10 caracteres)" required></textarea>
+                </div>
+                <div style="display: flex; gap: 10px; justify-content: flex-end;">
+                    <button type="button" class="btn-secondary" id="cancelar-form-post">Cancelar</button>
+                    <button type="submit" class="btn-primary">
+                        <i class="fas fa-paper-plane"></i> Publicar
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+    
     <!-- Watermark de protección -->
     <div style="position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%) rotate(-45deg); font-size: 5em; color: rgba(245, 158, 11, 0.03); pointer-events: none; z-index: 1; font-weight: bold;">
         CONFIDENCIAL
@@ -483,36 +810,85 @@
     <!-- Scripts -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="../../config-supabase-seguro.js"></script>
+    <script src="../../js/sistema-foro-comunidades.js"></script>
+    <script src="../../js/sistema-feedbacks-comunidades.js"></script>
+    <script src="../../js/sistema-validacion-identidades.js"></script>
     <script src="../../js/sistema-alertas-comunidades.js"></script>
     <!-- Sistema de Check-in Automático de Emergencias -->
     <script src="../../js/sistema-checkin-emergencias.js"></script>
-    <script src="../../js/sistema-feedbacks-comunidades.js"></script>
     <script>
-        // Inicializar sistema de alertas
+        let foroComunidad;
+        let validacionIdentidad;
         let alertasComunidad;
         let feedbacksComunidad;
-        document.addEventListener('DOMContentLoaded', () => {
+        document.addEventListener('DOMContentLoaded', async () => {
+            foroComunidad = new SistemaForoComunidades('inmigrantes-racializados');
+            window.foroComunidad = foroComunidad;
+            
+            // Inicializar sistemas adicionales
             setTimeout(() => {
+                validacionIdentidad = new SistemaValidacionIdentidades('inmigrantes-racializados');
+                window.validacionIdentidad = validacionIdentidad;
+                
                 alertasComunidad = new SistemaAlertasComunidades('inmigrantes-racializados');
                 window.alertasComunidad = alertasComunidad;
                 
-                // Inicializar sistema de feedbacks
                 if (typeof SistemaFeedbacksComunidades !== 'undefined') {
                     feedbacksComunidad = new SistemaFeedbacksComunidades('inmigrantes-racializados');
                     window.feedbacksComunidad = feedbacksComunidad;
                 }
             }, 500);
+            
+            document.getElementById('cancelar-form-post')?.addEventListener('click', () => {
+                foroComunidad.ocultarFormularioPost();
+            });
         });
         
+        // Función para mostrar historial
+        function mostrarHistorialInmigrantes() {
+            const postsContainer = document.getElementById('posts-container');
+            const historialContainer = document.getElementById('mi-historial-foro-lista');
+            
+            if (!historialContainer) return;
+            
+            // Toggle mostrar/ocultar
+            if (historialContainer.style.display === 'none' || historialContainer.style.display === '') {
+                postsContainer.style.display = 'none';
+                historialContainer.style.display = 'block';
+                historialContainer.innerHTML = `
+                    <div class="foro-header">
+                        <h2><i class="fas fa-history"></i> Mi Historial de Publicaciones</h2>
+                        <button class="btn-primary" onclick="mostrarHistorialInmigrantes()" style="background: #6b7280;">
+                            <i class="fas fa-arrow-left"></i> Volver al Foro
+                        </button>
+                    </div>
+                    <p style="color: #6b7280; margin: 20px 0;">
+                        Aquí puedes ver todas tus publicaciones, editarlas, pausarlas o eliminarlas. Tu anonimato está protegido.
+                    </p>
+                    <div class="publicaciones-lista"></div>
+                `;
+                setTimeout(() => {
+                    if (window.foroComunidad) {
+                        window.foroComunidad.cargarMiHistorial();
+                    }
+                }, 100);
+            } else {
+                postsContainer.style.display = 'block';
+                historialContainer.style.display = 'none';
+            }
+        }
+        
         // Registrar Service Worker para PWA
-        if ('serviceWorker' in navigator) {
+        if ('serviceWorker' in navigator && window.location.protocol !== 'file:') {
             window.addEventListener('load', () => {
                 navigator.serviceWorker.register('../../sw.js')
                     .then(registration => {
                         console.log('✅ Service Worker registrado');
                     })
                     .catch(error => {
-                        console.log('⚠️ Service Worker no disponible');
+                        if (window.location.protocol !== 'file:') {
+                            console.log('⚠️ Service Worker no disponible');
+                        }
                     });
             });
         }

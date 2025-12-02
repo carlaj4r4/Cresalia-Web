@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cresalia - Injusticias Vividas</title>
+    <link rel="icon" type="image/x-icon" href="../../favicon.ico">
+    <link rel="icon" type="image/png" href="../../assets/logo/logo-cresalia.png">
+    <link rel="apple-touch-icon" href="../../assets/logo/logo-cresalia.png">
+
+    <!-- PWA Manifest -->
+    <link rel="manifest" href="../../comunidades/manifest-comunidades.json">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    <meta name="apple-mobile-web-app-title" content="Cresalia Injusticias Vividas">
+    <meta name="theme-color" content="#6366F1">
+
+    <!-- Protección -->
+    <script src="../../core/proteccion-devtools-avanzada.js?v=2.0"></script>
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="../../css/comunidad-injusticias-vividas.css">
+</head>
+<body>
+    <div class="page-wrapper">
+        <!-- Header -->
+        <div class="card">
+            <h1>⚖️ Injusticias Vividas</h1>
+            <p class="subtitle">Un espacio seguro y anónimo para compartir injusticias</p>
+            <p class="tagline">
+                Este es un espacio para compartir injusticias que has vivido, encontrar apoyo 
+                y saber que no estás solo/a. Tu seguridad es nuestra prioridad.
+            </p>
+            <div class="cta-group">
+                <button class="btn-primary" onclick="injusticiasVividas.mostrarTab('foro')">
+                    <i class="fas fa-comments"></i> Ver Foro
+                </button>
+                <button class="btn-secondary" onclick="injusticiasVividas.crearPublicacion()">
+                    <i class="fas fa-plus"></i> Compartir
+                </button>
+            </div>
+        </div>
+
+        <!-- Advertencia de Seguridad -->
+        <div id="advertencia-seguridad" class="card advertencia-seguridad">
+            <h3>🔒 Seguridad y Anonimato</h3>
+            <p>
+                <strong>Tu seguridad es lo más importante.</strong>
+            </p>
+            <ul class="reglas-lista">
+                <li>✅ Todas las publicaciones son anónimas si así lo deseás</li>
+                <li>❌ NO compartas nombres de organizaciones</li>
+                <li>❌ NO compartas nombres de personas específicas</li>
+                <li>❌ NO compartas ubicaciones exactas</li>
+                <li>✅ Podés compartir tu experiencia sin detalles que te identifiquen</li>
+                <li>✅ Este espacio es para apoyo emocional y saber que no estás solo/a</li>
+            </ul>
+            <p style="margin-top: 16px; font-weight: 600; color: #6366F1;">
+                ⚠️ <strong>IMPORTANTE:</strong> Protegé tu identidad y la de otros. 
+                No compartas información que pueda rastrearte o poner en riesgo a otros.
+            </p>
+            <div class="advertencia-buttons">
+                <button class="btn-continuar" onclick="injusticiasVividas.aceptarAdvertencia()">
+                    Entiendo y Acepto
+                </button>
+                <button class="btn-saltar" onclick="injusticiasVividas.saltarComunidad()">
+                    No Entrar
+                </button>
+            </div>
+        </div>
+
+        <!-- Tabs Container -->
+        <div class="card tabs-container" id="contenido-principal" style="display: none;">
+            <div class="tabs">
+                <button class="tab-btn active" onclick="injusticiasVividas.mostrarTab('foro')">
+                    <i class="fas fa-comments"></i> Foro
+                </button>
+                <button class="tab-btn" onclick="injusticiasVividas.mostrarTab('recursos')">
+                    <i class="fas fa-shield-alt"></i> Seguridad y Recursos
+                </button>
+            </div>
+
+            <!-- Tab: Foro -->
+            <div id="tab-foro" class="tab-content active">
+                <div class="foro-header">
+                    <h2><i class="fas fa-comments"></i> Foro de la Comunidad</h2>
+                    <button class="btn-primary" onclick="injusticiasVividas.crearPublicacion()">
+                        <i class="fas fa-plus"></i> Nueva Publicación
+                    </button>
+                </div>
+                <div class="info-box">
+                    <i class="fas fa-user-secret"></i>
+                    <p>
+                        <strong>Recordá:</strong> Tu anonimato es importante. No compartas información que pueda identificarte. 
+                        Este espacio es para apoyo emocional y saber que no estás solo/a.
+                    </p>
+                </div>
+                <div id="publicaciones-lista" class="publicaciones-lista"></div>
+            </div>
+
+            <!-- Tab: Recursos -->
+            <div id="tab-recursos" class="tab-content">
+                <h2><i class="fas fa-shield-alt"></i> Seguridad y Recursos</h2>
+                <div class="recursos-grid">
+                    <div class="recurso-card" onclick="injusticiasVividas.mostrarRecurso('anonimato')">
+                        <h3><i class="fas fa-user-secret"></i> Proteger tu Anonimato</h3>
+                        <p>Cómo mantenerte seguro/a al compartir</p>
+                        <button class="btn-recurso">Ver más</button>
+                    </div>
+                    <div class="recurso-card" onclick="injusticiasVividas.mostrarRecurso('apoyo')">
+                        <h3><i class="fas fa-hands-helping"></i> Buscar Apoyo</h3>
+                        <p>Recursos generales para encontrar ayuda</p>
+                        <button class="btn-recurso">Ver más</button>
+                    </div>
+                    <div class="recurso-card" onclick="injusticiasVividas.mostrarRecurso('procesar')">
+                        <h3><i class="fas fa-heart"></i> Procesar la Injusticia</h3>
+                        <p>Cómo procesar emocionalmente las injusticias</p>
+                        <button class="btn-recurso">Ver más</button>
+                    </div>
+                    <div class="recurso-card" onclick="injusticiasVividas.mostrarRecurso('seguridad')">
+                        <h3><i class="fas fa-shield-alt"></i> Seguridad Digital</h3>
+                        <p>Consejos para mantenerte seguro/a online</p>
+                        <button class="btn-recurso">Ver más</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="../../config-supabase-seguro.js"></script>
+    <script src="../../js/sistema-foro-comunidades.js"></script>
+    <script src="../../js/comunidad-injusticias-vividas.js"></script>
+    <script src="../../js/sistema-feedbacks-comunidades.js"></script>
+    <script src="../../js/sistema-validacion-identidades.js"></script>
+    <script src="../../js/sistema-alertas-comunidades.js"></script>
+    <script src="../../js/sistema-checkin-emergencias.js"></script>
+    <script>
+        // Inicializar sistema de foro
+        let foroComunidad;
+        let validacionIdentidad;
+        let alertasComunidad;
+        let feedbacksComunidad;
+        document.addEventListener('DOMContentLoaded', () => {
+            foroComunidad = new SistemaForoComunidades('injusticias-vividas');
+            window.foroComunidad = foroComunidad;
+            
+            // Inicializar sistemas adicionales
+            setTimeout(() => {
+                validacionIdentidad = new SistemaValidacionIdentidades('injusticias-vividas');
+                window.validacionIdentidad = validacionIdentidad;
+                
+                alertasComunidad = new SistemaAlertasComunidades('injusticias-vividas');
+                window.alertasComunidad = alertasComunidad;
+                
+                if (typeof SistemaFeedbacksComunidades !== 'undefined') {
+                    feedbacksComunidad = new SistemaFeedbacksComunidades('injusticias-vividas');
+                    window.feedbacksComunidad = feedbacksComunidad;
+                }
+            }, 500);
+        });
+        
+        // Registrar Service Worker para PWA
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('../../sw.js')
+                    .then(registration => {
+                        console.log('✅ Service Worker registrado:', registration.scope);
+                    })
+                    .catch(error => {
+                        console.log('⚠️ Service Worker no disponible (normal en desarrollo)');
+                    });
+            });
+        }
+    </script>
+    <!-- Sistema de Feedbacks General - NO incluir en comunidades para evitar duplicados -->
+    <!-- <script src="../../js/sistema-feedbacks-general.js"></script> -->
+</body>
+</html>
+

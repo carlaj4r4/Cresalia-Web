@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cresalia - Libertad Emocional</title>
+    <link rel="icon" type="image/x-icon" href="../../favicon.ico">
+    <link rel="icon" type="image/png" href="../../assets/logo/logo-cresalia.png">
+    <link rel="apple-touch-icon" href="../../assets/logo/logo-cresalia.png">
+
+    <!-- PWA Manifest -->
+    <link rel="manifest" href="../../comunidades/manifest-comunidades.json">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    <meta name="apple-mobile-web-app-title" content="Cresalia Libertad Emocional">
+    <meta name="theme-color" content="#A78BFA">
+
+    <!-- Protección -->
+    <script src="../../core/proteccion-devtools-avanzada.js?v=2.0"></script>
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="../../css/comunidad-libertad-emocional.css">
+</head>
+<body>
+    <div class="page-wrapper">
+        <!-- Header -->
+        <div class="card">
+            <h1>💜 Libertad Emocional</h1>
+            <p class="subtitle">Sanando corazones rotos y construyendo independencia emocional</p>
+            <p class="tagline">
+                Los rompimientos duelen. La dependencia emocional es real y difícil de superar. 
+                Este es un espacio seguro para sanar, aprender y crecer. No estás solo/a.
+            </p>
+            <div class="cta-group">
+                <button class="btn-primary" onclick="libertadEmocional.mostrarTab('foro')">
+                    <i class="fas fa-comments"></i> Ver Foro
+                </button>
+                <button class="btn-secondary" onclick="libertadEmocional.crearPublicacion()">
+                    <i class="fas fa-plus"></i> Compartir
+                </button>
+            </div>
+        </div>
+
+        <!-- Advertencia de contenido sensible -->
+        <div id="advertencia-contenido" class="card advertencia-contenido">
+            <h3>⚠️ Contenido Sensible</h3>
+            <p>
+                Esta comunidad contiene contenido sobre rompimientos, dependencia emocional, 
+                relaciones tóxicas y procesos de sanación. Este contenido puede ser emocionalmente difícil.
+            </p>
+            <p>
+                <strong>¿Cómo te sentís hoy?</strong> Si no te sentís bien, podés evitar este contenido por hoy 
+                y volver cuando te sientas mejor. Tu bienestar es importante.
+            </p>
+            <div class="advertencia-buttons">
+                <button class="btn-continuar" onclick="libertadEmocional.continuarContenidoSensible()">
+                    Continuar
+                </button>
+                <button class="btn-saltar" onclick="libertadEmocional.saltarContenidoSensible()">
+                    Saltar por Hoy
+                </button>
+            </div>
+        </div>
+
+        <!-- Tabs Container -->
+        <div class="card tabs-container" id="contenido-principal" style="display: none;">
+            <div class="tabs">
+                <button class="tab-btn active" onclick="libertadEmocional.mostrarTab('foro')">
+                    <i class="fas fa-comments"></i> Foro
+                </button>
+                <button class="tab-btn" onclick="libertadEmocional.mostrarTab('rompimientos')">
+                    <i class="fas fa-heart-broken"></i> Rompimientos
+                </button>
+                <button class="tab-btn" onclick="libertadEmocional.mostrarTab('dependencia')">
+                    <i class="fas fa-link"></i> Dependencia Emocional
+                </button>
+                <button class="tab-btn" onclick="libertadEmocional.mostrarTab('recursos')">
+                    <i class="fas fa-book"></i> Recursos
+                </button>
+            </div>
+
+            <!-- Tab: Foro -->
+            <div id="tab-foro" class="tab-content active">
+                <div class="foro-header">
+                    <h2><i class="fas fa-comments"></i> Foro de la Comunidad</h2>
+                    <button class="btn-primary" onclick="libertadEmocional.crearPublicacion()">
+                        <i class="fas fa-plus"></i> Nueva Publicación
+                    </button>
+                </div>
+                <div id="publicaciones-lista" class="publicaciones-lista"></div>
+            </div>
+
+            <!-- Tab: Rompimientos -->
+            <div id="tab-rompimientos" class="tab-content">
+                <h2><i class="fas fa-heart-broken"></i> Rompimientos</h2>
+                <p>
+                    Un espacio para compartir sobre el dolor de las rupturas, 
+                    los procesos de duelo y la sanación después de una relación.
+                </p>
+                <div id="rompimientos-lista" class="publicaciones-lista"></div>
+            </div>
+
+            <!-- Tab: Dependencia Emocional -->
+            <div id="tab-dependencia" class="tab-content">
+                <h2><i class="fas fa-link"></i> Dependencia Emocional</h2>
+                <p>
+                    Un espacio para entender y superar la dependencia emocional, 
+                    construir independencia y aprender a amarse a uno mismo.
+                </p>
+                <div id="dependencia-lista" class="publicaciones-lista"></div>
+            </div>
+
+            <!-- Tab: Recursos -->
+            <div id="tab-recursos" class="tab-content">
+                <h2><i class="fas fa-book"></i> Recursos de Ayuda</h2>
+                <div class="recursos-grid">
+                    <div class="recurso-card" onclick="libertadEmocional.mostrarRecurso('sanacion')">
+                        <h3><i class="fas fa-heart"></i> Proceso de Sanación</h3>
+                        <p>Entender el duelo, las etapas de sanación y cómo avanzar</p>
+                        <button class="btn-recurso">Ver más</button>
+                    </div>
+                    <div class="recurso-card" onclick="libertadEmocional.mostrarRecurso('independencia')">
+                        <h3><i class="fas fa-user"></i> Construir Independencia</h3>
+                        <p>Cómo desarrollar autonomía emocional y autoestima</p>
+                        <button class="btn-recurso">Ver más</button>
+                    </div>
+                    <div class="recurso-card" onclick="libertadEmocional.mostrarRecurso('relaciones')">
+                        <h3><i class="fas fa-users"></i> Relaciones Saludables</h3>
+                        <p>Señales de relaciones tóxicas y cómo construir relaciones sanas</p>
+                        <button class="btn-recurso">Ver más</button>
+                    </div>
+                    <div class="recurso-card" onclick="libertadEmocional.mostrarRecurso('autocuidado')">
+                        <h3><i class="fas fa-spa"></i> Autocuidado</h3>
+                        <p>Estrategias para cuidarte durante el proceso de sanación</p>
+                        <button class="btn-recurso">Ver más</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="../../config-supabase-seguro.js"></script>
+    <script src="../../js/sistema-foro-comunidades.js"></script>
+    <script src="../../js/comunidad-libertad-emocional.js"></script>
+    <script src="../../js/sistema-feedbacks-comunidades.js"></script>
+    <script src="../../js/sistema-validacion-identidades.js"></script>
+    <script src="../../js/sistema-alertas-comunidades.js"></script>
+    <script src="../../js/sistema-checkin-emergencias.js"></script>
+    <script>
+        // Inicializar sistema de foro
+        let foroComunidad;
+        let validacionIdentidad;
+        let alertasComunidad;
+        let feedbacksComunidad;
+        document.addEventListener('DOMContentLoaded', () => {
+            foroComunidad = new SistemaForoComunidades('libertad-emocional');
+            window.foroComunidad = foroComunidad;
+            
+            // Inicializar sistemas adicionales
+            setTimeout(() => {
+                validacionIdentidad = new SistemaValidacionIdentidades('libertad-emocional');
+                window.validacionIdentidad = validacionIdentidad;
+                
+                alertasComunidad = new SistemaAlertasComunidades('libertad-emocional');
+                window.alertasComunidad = alertasComunidad;
+                
+                if (typeof SistemaFeedbacksComunidades !== 'undefined') {
+                    feedbacksComunidad = new SistemaFeedbacksComunidades('libertad-emocional');
+                    window.feedbacksComunidad = feedbacksComunidad;
+                }
+            }, 500);
+        });
+        
+        // Registrar Service Worker para PWA
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('../../sw.js')
+                    .then(registration => {
+                        console.log('✅ Service Worker registrado:', registration.scope);
+                    })
+                    .catch(error => {
+                        console.log('⚠️ Service Worker no disponible (normal en desarrollo)');
+                    });
+            });
+        }
+    </script>
+    <!-- Sistema de Feedbacks General - NO incluir en comunidades para evitar duplicados -->
+    <!-- <script src="../../js/sistema-feedbacks-general.js"></script> -->
+</body>
+</html>
+

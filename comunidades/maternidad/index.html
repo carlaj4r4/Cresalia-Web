@@ -282,13 +282,32 @@
 
             <!-- Tab: Foro -->
             <div id="tab-foro" class="tab-content active">
-                <div class="foro-header">
-                    <h2><i class="fas fa-comments"></i> Foro de la Comunidad</h2>
-                    <button class="btn-primary" onclick="comunidadMaternidad.crearPublicacion()">
-                        <i class="fas fa-plus"></i> Nueva Publicación
-                    </button>
+                <div class="info-box" style="margin-bottom: 20px; padding: 15px; background: linear-gradient(135deg, rgba(248, 187, 217, 0.1), rgba(244, 143, 177, 0.1)); border-radius: 12px;">
+                    <h3>💬 Foro de la Comunidad</h3>
+                    <p style="margin: 0; line-height: 1.8;">
+                        Comparte tus experiencias, haz preguntas y conecta con otras madres en nuestro foro de apoyo mutuo.
+                    </p>
                 </div>
-                <div id="publicaciones-lista" class="publicaciones-lista"></div>
+                
+                <section class="foro-container" style="padding: 30px; background: white; border-radius: 20px; box-shadow: 0 4px 20px rgba(0,0,0,0.1);">
+                    <div class="foro-header" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px;">
+                        <h2 style="color: #F48FB1; margin: 0;">🤰 Foro de Maternidad</h2>
+                        <button class="btn-primary" id="btn-crear-post" style="background: linear-gradient(135deg, #F48FB1, #F8BBD9); color: white; border: none; padding: 12px 24px; border-radius: 10px; cursor: pointer; font-weight: 600;">
+                            <i class="fas fa-pen"></i> Crear Post
+                        </button>
+                    </div>
+                    <div id="posts-container"></div>
+
+                    <div class="reglas" style="margin-top: 30px; padding: 20px; background: linear-gradient(135deg, rgba(244, 143, 177, 0.05), rgba(248, 187, 217, 0.05)); border-radius: 12px;">
+                        <h3 style="color: #F48FB1; margin-bottom: 12px;">Reglas imprescindibles</h3>
+                        <ul style="list-style: none; padding: 0;">
+                            <li style="margin-bottom: 8px; color: #374151;">💬 Respeta todas las experiencias de maternidad y embarazo.</li>
+                            <li style="margin-bottom: 8px; color: #374151;">🛑 No se permiten juicios o desvalorizaciones.</li>
+                            <li style="margin-bottom: 8px; color: #374151;">🤝 Este es un espacio seguro para compartir sin juicios.</li>
+                            <li style="margin-bottom: 8px; color: #374151;">👩‍⚕️ Para emergencias o pensamientos autolesivos, derivamos a profesionales de inmediato.</li>
+                        </ul>
+                    </div>
+                </section>
             </div>
 
             <!-- Tab: Por Trimestre -->
@@ -384,7 +403,29 @@
     </div>
 
     <!-- Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="../../config-supabase-seguro.js"></script>
+    <script src="../../js/sistema-foro-comunidades.js"></script>
+    <script src="../../js/sistema-feedbacks-comunidades.js"></script>
     <script src="../../js/comunidad-maternidad.js"></script>
+    <script>
+        let foroComunidad;
+        let feedbacksComunidad;
+        
+        document.addEventListener('DOMContentLoaded', () => {
+            // Inicializar sistema de foro
+            if (typeof SistemaForoComunidades !== 'undefined') {
+                foroComunidad = new SistemaForoComunidades('maternidad');
+                window.foroComunidad = foroComunidad;
+            }
+            
+            // Inicializar sistema de feedbacks
+            if (typeof SistemaFeedbacksComunidades !== 'undefined') {
+                feedbacksComunidad = new SistemaFeedbacksComunidades('maternidad');
+                window.feedbacksComunidad = feedbacksComunidad;
+            }
+        });
+    </script>
 </body>
 </html>
 

@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cresalia - Sanando Abandonos</title>
+    <link rel="icon" type="image/x-icon" href="../../favicon.ico">
+    <link rel="icon" type="image/png" href="../../assets/logo/logo-cresalia.png">
+    <link rel="apple-touch-icon" href="../../assets/logo/logo-cresalia.png">
+
+    <!-- PWA Manifest -->
+    <link rel="manifest" href="../../comunidades/manifest-comunidades.json">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    <meta name="apple-mobile-web-app-title" content="Cresalia Sanando Abandonos">
+    <meta name="theme-color" content="#60A5FA">
+
+    <!-- Protección -->
+    <script src="../../core/proteccion-devtools-avanzada.js?v=2.0"></script>
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="../../css/comunidad-sanando-abandonos.css">
+</head>
+<body>
+    <div class="page-wrapper">
+        <!-- Header -->
+        <div class="card">
+            <h1>💙 Sanando Abandonos</h1>
+            <p class="subtitle">Un espacio seguro para procesar el abandono y encontrar sanación</p>
+            <p class="tagline">
+                El abandono duele profundamente, tanto si fuiste abandonado/a como si abandonaste. 
+                Este es un espacio seguro para procesar, sanar y crecer. No estás solo/a.
+            </p>
+            <div class="cta-group">
+                <button class="btn-primary" onclick="sanandoAbandonos.mostrarTab('foro')">
+                    <i class="fas fa-comments"></i> Ver Foro
+                </button>
+                <button class="btn-secondary" onclick="sanandoAbandonos.crearPublicacion()">
+                    <i class="fas fa-plus"></i> Compartir
+                </button>
+            </div>
+        </div>
+
+        <!-- Advertencia de contenido sensible -->
+        <div id="advertencia-contenido" class="card advertencia-contenido">
+            <h3>⚠️ Contenido Muy Sensible</h3>
+            <p>
+                Esta comunidad contiene contenido sobre abandono, pérdida, culpa y procesos de sanación. 
+                Este contenido puede ser emocionalmente muy difícil y puede despertar recuerdos dolorosos.
+            </p>
+            <p>
+                <strong>¿Cómo te sentís hoy?</strong> Si no te sentís bien, podés evitar este contenido por hoy 
+                y volver cuando te sientas mejor. Tu bienestar es lo más importante.
+            </p>
+            <div class="advertencia-buttons">
+                <button class="btn-continuar" onclick="sanandoAbandonos.continuarContenidoSensible()">
+                    Continuar
+                </button>
+                <button class="btn-saltar" onclick="sanandoAbandonos.saltarContenidoSensible()">
+                    Saltar por Hoy
+                </button>
+            </div>
+        </div>
+
+        <!-- Tabs Container -->
+        <div class="card tabs-container" id="contenido-principal" style="display: none;">
+            <div class="tabs">
+                <button class="tab-btn active" onclick="sanandoAbandonos.mostrarTab('foro')">
+                    <i class="fas fa-comments"></i> Foro
+                </button>
+                <button class="tab-btn" onclick="sanandoAbandonos.mostrarTab('fui-abandonado')">
+                    <i class="fas fa-heart-broken"></i> Fui Abandonado/a
+                </button>
+                <button class="tab-btn" onclick="sanandoAbandonos.mostrarTab('abandone')">
+                    <i class="fas fa-user-times"></i> Abandoné
+                </button>
+                <button class="tab-btn" onclick="sanandoAbandonos.mostrarTab('recursos')">
+                    <i class="fas fa-book"></i> Recursos
+                </button>
+            </div>
+
+            <!-- Tab: Foro -->
+            <div id="tab-foro" class="tab-content active">
+                <div class="foro-header">
+                    <h2><i class="fas fa-comments"></i> Foro de la Comunidad</h2>
+                    <button class="btn-primary" onclick="sanandoAbandonos.crearPublicacion()">
+                        <i class="fas fa-plus"></i> Nueva Publicación
+                    </button>
+                </div>
+                <div id="publicaciones-lista" class="publicaciones-lista"></div>
+            </div>
+
+            <!-- Tab: Fui Abandonado/a -->
+            <div id="tab-fui-abandonado" class="tab-content">
+                <h2><i class="fas fa-heart-broken"></i> Fui Abandonado/a</h2>
+                <p>
+                    Un espacio para quienes fueron abandonados. Aquí podés compartir tu dolor, 
+                    procesar la pérdida y encontrar apoyo de quienes entienden lo que estás viviendo.
+                </p>
+                <div id="fui-abandonado-lista" class="publicaciones-lista"></div>
+            </div>
+
+            <!-- Tab: Abandoné -->
+            <div id="tab-abandone" class="tab-content">
+                <h2><i class="fas fa-user-times"></i> Abandoné</h2>
+                <p>
+                    Un espacio para quienes abandonaron y sienten culpa, arrepentimiento o necesidad de sanar. 
+                    Aquí podés procesar tus emociones sin juicios.
+                </p>
+                <div id="abandone-lista" class="publicaciones-lista"></div>
+            </div>
+
+            <!-- Tab: Recursos -->
+            <div id="tab-recursos" class="tab-content">
+                <h2><i class="fas fa-book"></i> Recursos de Ayuda</h2>
+                <div class="recursos-grid">
+                    <div class="recurso-card" onclick="sanandoAbandonos.mostrarRecurso('procesar')">
+                        <h3><i class="fas fa-heart"></i> Procesar el Abandono</h3>
+                        <p>Entender el duelo, las etapas y cómo avanzar después del abandono</p>
+                        <button class="btn-recurso">Ver más</button>
+                    </div>
+                    <div class="recurso-card" onclick="sanandoAbandonos.mostrarRecurso('culpa')">
+                        <h3><i class="fas fa-balance-scale"></i> Manejar la Culpa</h3>
+                        <p>Si abandonaste y sentís culpa, cómo procesarla y perdonarte</p>
+                        <button class="btn-recurso">Ver más</button>
+                    </div>
+                    <div class="recurso-card" onclick="sanandoAbandonos.mostrarRecurso('autoestima')">
+                        <h3><i class="fas fa-star"></i> Reconstruir Autoestima</h3>
+                        <p>Cómo reconstruir tu autoestima después del abandono</p>
+                        <button class="btn-recurso">Ver más</button>
+                    </div>
+                    <div class="recurso-card" onclick="sanandoAbandonos.mostrarRecurso('perdon')">
+                        <h3><i class="fas fa-dove"></i> Perdón y Cierre</h3>
+                        <p>Proceso de perdón y cierre de ciclos, sin necesidad de reencuentro</p>
+                        <button class="btn-recurso">Ver más</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="../../config-supabase-seguro.js"></script>
+    <script src="../../js/sistema-foro-comunidades.js"></script>
+    <script src="../../js/comunidad-sanando-abandonos.js"></script>
+    <script src="../../js/sistema-feedbacks-comunidades.js"></script>
+    <script src="../../js/sistema-validacion-identidades.js"></script>
+    <script src="../../js/sistema-alertas-comunidades.js"></script>
+    <script src="../../js/sistema-checkin-emergencias.js"></script>
+    <script>
+        // Inicializar sistema de foro
+        let foroComunidad;
+        let validacionIdentidad;
+        let alertasComunidad;
+        let feedbacksComunidad;
+        document.addEventListener('DOMContentLoaded', () => {
+            foroComunidad = new SistemaForoComunidades('sanando-abandonos');
+            window.foroComunidad = foroComunidad;
+            
+            // Inicializar sistemas adicionales
+            setTimeout(() => {
+                validacionIdentidad = new SistemaValidacionIdentidades('sanando-abandonos');
+                window.validacionIdentidad = validacionIdentidad;
+                
+                alertasComunidad = new SistemaAlertasComunidades('sanando-abandonos');
+                window.alertasComunidad = alertasComunidad;
+                
+                if (typeof SistemaFeedbacksComunidades !== 'undefined') {
+                    feedbacksComunidad = new SistemaFeedbacksComunidades('sanando-abandonos');
+                    window.feedbacksComunidad = feedbacksComunidad;
+                }
+            }, 500);
+        });
+        
+        // Registrar Service Worker para PWA
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('../../sw.js')
+                    .then(registration => {
+                        console.log('✅ Service Worker registrado:', registration.scope);
+                    })
+                    .catch(error => {
+                        console.log('⚠️ Service Worker no disponible (normal en desarrollo)');
+                    });
+            });
+        }
+    </script>
+    <!-- Sistema de Feedbacks General - NO incluir en comunidades para evitar duplicados -->
+    <!-- <script src="../../js/sistema-feedbacks-general.js"></script> -->
+</body>
+</html>
+

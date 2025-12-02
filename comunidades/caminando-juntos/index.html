@@ -1,0 +1,290 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cresalia - Caminando Juntos</title>
+    <link rel="icon" type="image/x-icon" href="../../favicon.ico">
+    <link rel="icon" type="image/png" href="../../assets/logo/logo-cresalia.png">
+    <link rel="apple-touch-icon" href="../../assets/logo/logo-cresalia.png">
+
+    <!-- PWA Manifest -->
+    <link rel="manifest" href="../../comunidades/manifest-comunidades.json">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    <meta name="apple-mobile-web-app-title" content="Cresalia Caminando Juntos">
+    <meta name="theme-color" content="#4A90E2">
+
+    <!-- Protección -->
+    <script src="../../core/proteccion-devtools-avanzada.js?v=2.0"></script>
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="../../css/comunidad-caminando-juntos.css">
+</head>
+<body>
+    <div class="page-wrapper">
+        <!-- Banner de Ayuda Inmediata - SIEMPRE VISIBLE -->
+        <div class="ayuda-inmediata-banner" id="ayuda-inmediata">
+            <div class="ayuda-content">
+                <i class="fas fa-phone-alt"></i>
+                <div>
+                    <strong>¿Necesitás ayuda urgente?</strong>
+                    <p>Línea Nacional de Prevención del Suicidio: <a href="tel:135">135</a> | Línea de Adicciones: <a href="tel:141">141</a></p>
+                </div>
+                <button class="btn-ayuda" onclick="caminandoJuntos.mostrarRecursosEmergencia()">
+                    <i class="fas fa-life-ring"></i> Ver Recursos
+                </button>
+            </div>
+        </div>
+
+        <!-- Header -->
+        <div class="card header-card">
+            <h1>🤝 Caminando Juntos</h1>
+            <p class="subtitle">Un espacio seguro para la recuperación y el apoyo mutuo</p>
+            
+            <!-- Advertencia Importante -->
+            <div class="advertencia-profesional">
+                <i class="fas fa-exclamation-triangle"></i>
+                <div>
+                    <strong>Importante:</strong> Esta comunidad es un espacio de apoyo entre pares y <strong>NO reemplaza el tratamiento profesional</strong>. 
+                    Si estás en crisis o necesitás ayuda inmediata, contactá a un profesional de la salud o una línea de ayuda.
+                </div>
+            </div>
+        </div>
+
+        <!-- Tabs -->
+        <div class="tabs-container">
+            <button class="tab-btn active" onclick="caminandoJuntos.mostrarTab('foro')">
+                <i class="fas fa-comments"></i> Foro
+            </button>
+            <button class="tab-btn" onclick="caminandoJuntos.mostrarTab('mi-historial')">
+                <i class="fas fa-history"></i> Mi Historial
+            </button>
+            <button class="tab-btn" onclick="caminandoJuntos.mostrarTab('recursos')">
+                <i class="fas fa-book-medical"></i> Recursos Profesionales
+            </button>
+            <button class="tab-btn" onclick="caminandoJuntos.mostrarTab('dia-dia')">
+                <i class="fas fa-calendar-day"></i> Día a Día
+            </button>
+            <button class="tab-btn" onclick="caminandoJuntos.mostrarTab('educacion')">
+                <i class="fas fa-graduation-cap"></i> Educación
+            </button>
+        </div>
+
+        <!-- Tab: Foro -->
+        <div id="tab-foro" class="tab-content active">
+            <div class="foro-header">
+                <h2><i class="fas fa-comments"></i> Foro de la Comunidad</h2>
+                <button class="btn-primary" onclick="caminandoJuntos.crearPublicacion()">
+                    <i class="fas fa-plus"></i> Nueva Publicación
+                </button>
+            </div>
+            
+            <!-- Filtros de Contenido Sensible -->
+            <div class="filtros-contenido">
+                <label>
+                    <input type="checkbox" id="ocultar-triggers" onchange="caminandoJuntos.actualizarFiltros()">
+                    Ocultar contenido que pueda ser desencadenante
+                </label>
+                <label>
+                    <input type="checkbox" id="solo-recuperacion" onchange="caminandoJuntos.actualizarFiltros()">
+                    Mostrar solo publicaciones de personas en recuperación
+                </label>
+            </div>
+
+            <div id="publicaciones-lista" class="publicaciones-lista"></div>
+        </div>
+
+        <!-- Tab: Mi Historial -->
+        <div id="tab-mi-historial" class="tab-content">
+            <div class="foro-header">
+                <h2><i class="fas fa-history"></i> Mi Historial de Publicaciones</h2>
+                <p style="color: #6b7280; margin-top: 10px; margin-bottom: 20px;">
+                    Aquí puedes ver todas tus publicaciones, editarlas, pausarlas o eliminarlas. Tu anonimato está protegido.
+                </p>
+            </div>
+            <div id="mi-historial-foro-lista" class="publicaciones-lista"></div>
+        </div>
+
+        <!-- Tab: Recursos Profesionales -->
+        <div id="tab-recursos" class="tab-content">
+            <h2><i class="fas fa-book-medical"></i> Recursos Profesionales</h2>
+            <p class="info-text">
+                Estos recursos son verificados y actualizados. Recordá que el apoyo profesional es fundamental en el proceso de recuperación.
+            </p>
+            
+            <div class="recursos-grid">
+                <div class="recurso-card emergencia" onclick="caminandoJuntos.mostrarRecurso('emergencia')">
+                    <h3><i class="fas fa-phone-alt"></i> Ayuda Inmediata</h3>
+                    <p>Líneas de crisis y emergencia disponibles 24/7</p>
+                    <button class="btn-recurso">Ver más</button>
+                </div>
+                <div class="recurso-card" onclick="caminandoJuntos.mostrarRecurso('centros')">
+                    <h3><i class="fas fa-hospital"></i> Centros de Tratamiento</h3>
+                    <p>Centros de rehabilitación y tratamiento verificados</p>
+                    <button class="btn-recurso">Ver más</button>
+                </div>
+                <div class="recurso-card" onclick="caminandoJuntos.mostrarRecurso('profesionales')">
+                    <h3><i class="fas fa-user-md"></i> Profesionales</h3>
+                    <p>Psicólogos, psiquiatras y terapeutas especializados</p>
+                    <button class="btn-recurso">Ver más</button>
+                </div>
+                <div class="recurso-card" onclick="caminandoJuntos.mostrarRecurso('grupos')">
+                    <h3><i class="fas fa-users"></i> Grupos de Apoyo</h3>
+                    <p>Grupos de apoyo presenciales y virtuales</p>
+                    <button class="btn-recurso">Ver más</button>
+                </div>
+                <div class="recurso-card" onclick="caminandoJuntos.mostrarRecurso('familiares')">
+                    <h3><i class="fas fa-heart"></i> Para Familiares</h3>
+                    <p>Recursos específicos para familiares y amigos</p>
+                    <button class="btn-recurso">Ver más</button>
+                </div>
+                <div class="recurso-card" onclick="caminandoJuntos.mostrarRecurso('prevencion')">
+                    <h3><i class="fas fa-shield-alt"></i> Prevención</h3>
+                    <p>Información sobre prevención y detección temprana</p>
+                    <button class="btn-recurso">Ver más</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Tab: Día a Día -->
+        <div id="tab-dia-dia" class="tab-content">
+            <h2><i class="fas fa-calendar-day"></i> Día a Día</h2>
+            <p class="info-text">
+                Un espacio para compartir los pequeños logros, desafíos diarios y estrategias que te ayudan día a día.
+            </p>
+            <button class="btn-primary" onclick="caminandoJuntos.crearEntradaDia()">
+                <i class="fas fa-plus"></i> Nueva Entrada
+            </button>
+            <div id="dia-dia-lista" class="dia-dia-lista"></div>
+        </div>
+
+        <!-- Tab: Educación -->
+        <div id="tab-educacion" class="tab-content">
+            <h2><i class="fas fa-graduation-cap"></i> Educación sobre Adicciones</h2>
+            <p class="info-text">
+                Información educativa y basada en evidencia sobre adicciones, recuperación y salud mental.
+            </p>
+            
+            <div class="educacion-grid">
+                <div class="educacion-card" onclick="caminandoJuntos.mostrarEducacion('que-es')">
+                    <h3><i class="fas fa-question-circle"></i> ¿Qué es una Adicción?</h3>
+                    <p>Información básica sobre adicciones</p>
+                </div>
+                <div class="educacion-card" onclick="caminandoJuntos.mostrarEducacion('señales')">
+                    <h3><i class="fas fa-exclamation-circle"></i> Señales de Alerta</h3>
+                    <p>Cómo reconocer señales de adicción</p>
+                </div>
+                <div class="educacion-card" onclick="caminandoJuntos.mostrarEducacion('recuperacion')">
+                    <h3><i class="fas fa-seedling"></i> Proceso de Recuperación</h3>
+                    <p>Etapas y aspectos del proceso de recuperación</p>
+                </div>
+                <div class="educacion-card" onclick="caminandoJuntos.mostrarEducacion('mitos')">
+                    <h3><i class="fas fa-lightbulb"></i> Mitos y Realidades</h3>
+                    <p>Desmitificando creencias sobre adicciones</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal: Crear Publicación -->
+    <div class="modal" id="modal-publicacion">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Nueva Publicación</h3>
+                <button class="cerrar-modal" onclick="caminandoJuntos.cerrarModal('modal-publicacion')">&times;</button>
+            </div>
+            <form id="form-publicacion" onsubmit="caminandoJuntos.enviarPublicacion(event)">
+                <div class="form-group">
+                    <label>Categoría: *</label>
+                    <select id="pub-categoria" required>
+                        <option value="">Seleccionar...</option>
+                        <option value="en-recuperacion">En Recuperación</option>
+                        <option value="familiares">Familiares y Amigos</option>
+                        <option value="prevencion">Prevención</option>
+                        <option value="dia-dia">Día a Día</option>
+                        <option value="recursos">Recursos y Ayuda</option>
+                        <option value="general">General</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Título:</label>
+                    <input type="text" id="pub-titulo" placeholder="Título de tu publicación (opcional)">
+                </div>
+                <div class="form-group">
+                    <label>Contenido: *</label>
+                    <textarea id="pub-contenido" rows="8" required placeholder="Compartí tu experiencia, pregunta o apoyo..."></textarea>
+                </div>
+                <div class="form-group">
+                    <label>
+                        <input type="checkbox" id="pub-contenido-sensible">
+                        Esta publicación contiene contenido que puede ser desencadenante
+                    </label>
+                </div>
+                <div class="form-group">
+                    <label>
+                        <input type="checkbox" id="pub-no-consejos-medicos" required>
+                        Entiendo que no debo dar consejos médicos o de tratamiento *
+                    </label>
+                </div>
+                <div class="form-actions">
+                    <button type="button" class="btn-secondary" onclick="caminandoJuntos.cerrarModal('modal-publicacion')">Cancelar</button>
+                    <button type="submit" class="btn-primary">Publicar</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="../../config-supabase-seguro.js"></script>
+    <script src="../../js/sistema-foro-comunidades.js"></script>
+    <script src="../../js/comunidad-caminando-juntos.js"></script>
+    <script src="../../js/sistema-feedbacks-comunidades.js"></script>
+    <script src="../../js/sistema-validacion-identidades.js"></script>
+    <script src="../../js/sistema-alertas-comunidades.js"></script>
+    <script src="../../js/sistema-checkin-emergencias.js"></script>
+    <script>
+        // Inicializar sistema de foro
+        let foroComunidad;
+        let validacionIdentidad;
+        let alertasComunidad;
+        let feedbacksComunidad;
+        document.addEventListener('DOMContentLoaded', () => {
+            foroComunidad = new SistemaForoComunidades('caminando-juntos');
+            window.foroComunidad = foroComunidad;
+            
+            // Inicializar sistemas adicionales
+            setTimeout(() => {
+                validacionIdentidad = new SistemaValidacionIdentidades('caminando-juntos');
+                window.validacionIdentidad = validacionIdentidad;
+                
+                alertasComunidad = new SistemaAlertasComunidades('caminando-juntos');
+                window.alertasComunidad = alertasComunidad;
+                
+                if (typeof SistemaFeedbacksComunidades !== 'undefined') {
+                    feedbacksComunidad = new SistemaFeedbacksComunidades('caminando-juntos');
+                    window.feedbacksComunidad = feedbacksComunidad;
+                }
+            }, 500);
+        });
+        
+        // Registrar Service Worker para PWA
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('../../sw.js')
+                    .then(registration => {
+                        console.log('✅ Service Worker registrado:', registration.scope);
+                    })
+                    .catch(error => {
+                        console.log('⚠️ Service Worker no disponible (normal en desarrollo)');
+                    });
+            });
+        }
+    </script>
+    <!-- Sistema de Feedbacks General - NO incluir en comunidades para evitar duplicados -->
+    <!-- <script src="../../js/sistema-feedbacks-general.js"></script> -->
+</body>
+</html>
+

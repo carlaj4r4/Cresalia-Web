@@ -1,0 +1,761 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Alertas de Servicios Públicos - Cresalia</title>
+    <link rel="icon" href="/favicon.ico" type="image/x-icon">
+    <link rel="shortcut icon" href="/favicon.ico" type="image/x-icon">
+    <link rel="apple-touch-icon" href="/favicon.ico">
+    
+    <!-- Protección Anti-DevTools -->
+    <script src="../../core/proteccion-devtools-avanzada.js?v=2.0"></script>
+    
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        :root {
+            --color-primary: #059669;
+            --color-danger: #dc2626;
+            --color-warning: #ea580c;
+            --color-info: #2563eb;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background: linear-gradient(135deg, #f0fdf4 0%, #f9fafb 100%);
+            min-height: 100vh;
+        }
+        
+        .header-section {
+            background: linear-gradient(135deg, #059669, #047857);
+            color: white;
+            padding: 40px 20px;
+            text-align: center;
+            margin-bottom: 30px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+        
+        .header-section h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            font-weight: 700;
+        }
+        
+        .header-section p {
+            font-size: 1.1rem;
+            opacity: 0.95;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        
+        .container-main {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+        
+        .tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 30px;
+            flex-wrap: wrap;
+            border-bottom: 2px solid #E5E7EB;
+        }
+        
+        .tab {
+            background: transparent;
+            border: none;
+            padding: 15px 25px;
+            font-size: 1rem;
+            cursor: pointer;
+            color: #6B7280;
+            font-weight: 600;
+            border-bottom: 3px solid transparent;
+            transition: all 0.3s;
+        }
+        
+        .tab:hover {
+            color: #059669;
+        }
+        
+        .tab.active {
+            color: #059669;
+            border-bottom-color: #059669;
+        }
+        
+        .tab-content {
+            display: none;
+        }
+        
+        .tab-content.active {
+            display: block;
+        }
+        
+        .info-box {
+            background: linear-gradient(135deg, rgba(5, 150, 105, 0.1), rgba(4, 120, 87, 0.1));
+            padding: 20px;
+            border-radius: 15px;
+            margin-bottom: 30px;
+            border-left: 5px solid #059669;
+        }
+        
+        .info-box h3 {
+            color: #047857;
+            margin-bottom: 10px;
+        }
+        
+        .service-card {
+            background: white;
+            border: 2px solid #E5E7EB;
+            border-radius: 15px;
+            padding: 20px;
+            margin-bottom: 20px;
+            transition: all 0.3s;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        }
+        
+        .service-card:hover {
+            border-color: #059669;
+            box-shadow: 0 5px 15px rgba(5, 150, 105, 0.2);
+        }
+        
+        .badge-service {
+            padding: 8px 15px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            display: inline-block;
+            margin-bottom: 10px;
+        }
+        
+        .badge-luz {
+            background: #fbbf24;
+            color: #78350f;
+        }
+        
+        .badge-agua {
+            background: #3b82f6;
+            color: white;
+        }
+        
+        .badge-gas {
+            background: #ef4444;
+            color: white;
+        }
+        
+        .badge-otro {
+            background: #6b7280;
+            color: white;
+        }
+        
+        .badge-urgente {
+            background: #dc2626;
+            color: white;
+        }
+        
+        .badge-moderado {
+            background: #ea580c;
+            color: white;
+        }
+        
+        .badge-leve {
+            background: #f59e0b;
+            color: white;
+        }
+        
+        .btn-primary {
+            background: linear-gradient(135deg, #059669, #047857);
+            color: white;
+            padding: 12px 30px;
+            border: none;
+            border-radius: 10px;
+            font-weight: 600;
+            cursor: pointer;
+            font-size: 1rem;
+            transition: all 0.3s;
+        }
+        
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(5, 150, 105, 0.4);
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #374151;
+        }
+        
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #E5E7EB;
+            border-radius: 8px;
+            font-size: 14px;
+            transition: all 0.3s;
+        }
+        
+        .form-group input:focus,
+        .form-group select:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: #059669;
+            box-shadow: 0 0 0 3px rgba(5, 150, 105, 0.1);
+        }
+        
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+        
+        .stat-card {
+            background: white;
+            padding: 20px;
+            border-radius: 15px;
+            text-align: center;
+            border: 2px solid #E5E7EB;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        }
+        
+        .stat-card .number {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: #059669;
+            margin-bottom: 5px;
+        }
+        
+        .stat-card .label {
+            color: #6b7280;
+            font-size: 0.9rem;
+        }
+        
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            color: #6b7280;
+        }
+        
+        .empty-state i {
+            font-size: 4rem;
+            margin-bottom: 20px;
+            opacity: 0.5;
+        }
+        
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.5);
+            overflow-y: auto;
+        }
+        
+        .modal.active {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+        
+        .modal-content {
+            background: white;
+            border-radius: 15px;
+            max-width: 600px;
+            width: 100%;
+            max-height: 90vh;
+            overflow-y: auto;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+        }
+        
+        .modal-header {
+            padding: 25px;
+            border-bottom: 2px solid #E5E7EB;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .modal-header h3 {
+            margin: 0;
+            color: #374151;
+        }
+        
+        .modal-body {
+            padding: 25px;
+        }
+        
+        .close-modal {
+            background: none;
+            border: none;
+            font-size: 2rem;
+            cursor: pointer;
+            color: #6b7280;
+            line-height: 1;
+        }
+        
+        .close-modal:hover {
+            color: #374151;
+        }
+        
+        @media (max-width: 768px) {
+            .header-section h1 {
+                font-size: 1.8rem;
+            }
+            
+            .tabs {
+                flex-direction: column;
+            }
+            
+            .tab {
+                width: 100%;
+                text-align: left;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <div class="header-section">
+        <h1>⚡ Alertas de Servicios Públicos</h1>
+        <p>Reporta cortes de luz, agua o gas en tu zona. Ve dónde están trabajando los empleados. Si estás cerca y quieres ofrecer apoyo solidario de forma voluntaria, puedes hacerlo. Todo es completamente opcional. Juntos podemos apoyarnos como comunidad.</p>
+    </div>
+    
+    <div class="container-main">
+        <!-- Área de Alertas de Emergencia Global -->
+        <div id="alertas-emergencia-comunidades"></div>
+        
+        <!-- Tabs -->
+        <div class="tabs">
+            <button class="tab active" data-tab="reportes">📋 Reportes Actuales</button>
+            <button class="tab" data-tab="reportar">➕ Reportar Corte</button>
+            <button class="tab" data-tab="trabajadores">👷 Trabajadores en Zona</button>
+            <button class="tab" data-tab="ofrecer-ayuda">🤲 Ofrecer Ayuda</button>
+            <button class="tab" data-tab="mi-historial">📝 Mi Historial</button>
+            <button class="tab" data-tab="buscar-zonas">🔍 Buscar por Zonas</button>
+            <button class="tab" data-tab="estadisticas">📊 Estadísticas</button>
+            <button class="tab" data-tab="info">ℹ️ Información</button>
+        </div>
+        
+        <!-- Tab: Reportes Actuales -->
+        <div class="tab-content active" id="reportes">
+            <div class="info-box">
+                <h3>💡 ¿Cómo funciona?</h3>
+                <p style="margin: 0; line-height: 1.8;">
+                    Los reportes aquí son públicos y visibles para todos. Puedes ver dónde hay cortes de servicios 
+                    y también dónde están trabajando los empleados para solucionarlos. Si estás cerca de algún lugar 
+                    y quieres ofrecer apoyo solidario de forma voluntaria (agua, sombra, etc.), puedes hacerlo. 
+                    Todo es completamente opcional y voluntario. No hay obligación ni presión. 
+                    Juntos podemos apoyarnos como comunidad.
+                </p>
+            </div>
+            
+            <div id="filtros" style="margin-bottom: 20px; display: flex; gap: 15px; flex-wrap: wrap;">
+                <select id="filtro-servicio" class="form-group" style="flex: 1; min-width: 150px;">
+                    <option value="">Todos los servicios</option>
+                    <option value="luz">⚡ Luz</option>
+                    <option value="agua">💧 Agua</option>
+                    <option value="gas">🔥 Gas</option>
+                    <option value="otro">⚙️ Otro</option>
+                </select>
+                
+                <select id="filtro-provincia" class="form-group" style="flex: 1; min-width: 150px;">
+                    <option value="">Todas las provincias</option>
+                    <!-- Se llenará dinámicamente -->
+                </select>
+                
+                <button onclick="cargarReportes()" class="btn-primary">🔍 Filtrar</button>
+            </div>
+            
+            <div id="reportes-lista">
+                <div class="empty-state">
+                    <i class="fas fa-spinner fa-spin"></i>
+                    <p>Cargando reportes...</p>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Tab: Reportar Corte -->
+        <div class="tab-content" id="reportar">
+            <div class="info-box" style="background: linear-gradient(135deg, rgba(239, 68, 68, 0.1), rgba(220, 38, 38, 0.1)); border-left-color: #ef4444;">
+                <h3 style="color: #dc2626;">⚠️ Importante</h3>
+                <p style="margin: 0; line-height: 1.8;">
+                    Si es una <strong>emergencia grave</strong> (fuga de gas, peligro de electrocución, etc.), 
+                    llama inmediatamente a los servicios de emergencia: <strong>911</strong>. 
+                    Este sistema es para reportar cortes de servicios que afectan a la comunidad.
+                </p>
+            </div>
+            
+            <form id="form-reportar-corte" style="background: white; padding: 30px; border-radius: 15px; border: 2px solid #E5E7EB;">
+                <div class="form-group">
+                    <label><i class="fas fa-bolt"></i> Tipo de Servicio <span style="color: #ef4444;">*</span></label>
+                    <select id="tipo-servicio" required>
+                        <option value="">Selecciona el servicio afectado</option>
+                        <option value="luz">⚡ Luz / Electricidad</option>
+                        <option value="agua">💧 Agua</option>
+                        <option value="gas">🔥 Gas</option>
+                        <option value="otro">⚙️ Otro servicio</option>
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label><i class="fas fa-exclamation-triangle"></i> Nivel de Urgencia <span style="color: #ef4444;">*</span></label>
+                    <select id="urgencia" required>
+                        <option value="">Selecciona el nivel de urgencia</option>
+                        <option value="urgente">🚨 Urgente (afecta a muchas personas, hospitales, escuelas)</option>
+                        <option value="moderado">⚠️ Moderado (afecta a varias personas/familias)</option>
+                        <option value="leve">📋 Leve (afecta a pocas personas o una zona pequeña)</option>
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label><i class="fas fa-map-marker-alt"></i> Ubicación <span style="color: #ef4444;">*</span></label>
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 15px;">
+                        <input type="text" id="ciudad" required placeholder="Ciudad" />
+                        <input type="text" id="provincia" required placeholder="Provincia" />
+                    </div>
+                    <input type="text" id="direccion" placeholder="Dirección o zona específica (opcional)" />
+                </div>
+                
+                <div class="form-group">
+                    <label><i class="fas fa-file-alt"></i> Descripción <span style="color: #ef4444;">*</span></label>
+                    <textarea id="descripcion" rows="4" required placeholder="Describe el corte: ¿Desde cuándo? ¿Afecta a muchas personas? ¿Hay más información relevante?"></textarea>
+                </div>
+                
+                <div class="info-box" style="background: linear-gradient(135deg, rgba(5, 150, 105, 0.1), rgba(4, 120, 87, 0.1)); margin-top: 20px;">
+                    <p style="margin: 0; line-height: 1.8; font-size: 0.9rem;">
+                        <strong>💡 Nota:</strong> Este sistema es para que la comunidad se informe y se apoye mutuamente. 
+                        No podemos garantizar que se resuelva el problema, pero juntos podemos ayudar a los trabajadores 
+                        que están solucionando los cortes y apoyarnos como vecinos.
+                    </p>
+                </div>
+                
+                <div style="display: flex; gap: 15px; justify-content: center; margin-top: 30px;">
+                    <button type="submit" class="btn-primary">
+                        <i class="fas fa-paper-plane"></i> Enviar Reporte
+                    </button>
+                    <button type="reset" class="btn-primary" style="background: #6b7280;">
+                        <i class="fas fa-redo"></i> Limpiar
+                    </button>
+                </div>
+            </form>
+        </div>
+        
+        <!-- Tab: Trabajadores en Zona -->
+        <div class="tab-content" id="trabajadores">
+            <div class="info-box" style="background: linear-gradient(135deg, rgba(59, 130, 246, 0.1), rgba(37, 99, 235, 0.1)); border-left-color: #3b82f6;">
+                <h3 style="color: #2563eb;">👷 ¿Ves trabajadores reparando?</h3>
+                <p style="margin: 0; line-height: 1.8;">
+                    Si ves empleados trabajando en tu zona para reparar un corte, repórtalo aquí. 
+                    Así otros vecinos que estén cerca pueden saber dónde se está trabajando. 
+                    Si alguien quiere ayudar de forma voluntaria y solidaria, puede ofrecer apoyo (agua, sombra, etc.). 
+                    Todo es completamente opcional. Los trabajadores también sufren el calor y trabajan duro para solucionar los problemas.
+                </p>
+            </div>
+            
+            <div style="background: linear-gradient(135deg, rgba(5, 150, 105, 0.1), rgba(4, 120, 87, 0.1)); border-left: 4px solid #059669; padding: 20px; border-radius: 10px; margin-bottom: 25px;">
+                <h3 style="color: #059669; margin-bottom: 10px;">💜 Nuestra Comunidad Solidaria</h3>
+                <p style="margin: 0; line-height: 1.8; color: #374151;">
+                    En Cresalia, deseamos crear un ambiente <strong>solidario, transparente, resolutivo y respetuoso</strong> con todos, sin excepciones. 
+                    Este espacio está diseñado para que la comunidad se apoye mutuamente de forma voluntaria y positiva. 
+                    Por la seguridad de todos, te pedimos amablemente que indiques solo la zona general (ej: "cerca de la plaza", "zona norte") 
+                    en lugar de direcciones exactas. Esto nos ayuda a mantener un entorno seguro y respetuoso para trabajadores y vecinos. 
+                    Si encuentras algo que podría mejorar la comunidad, nos encantaría que lo compartas con nosotros.
+                </p>
+            </div>
+            
+            <form id="form-trabajadores-zona" style="background: white; padding: 30px; border-radius: 15px; border: 2px solid #E5E7EB; margin-bottom: 30px;">
+                <div class="form-group">
+                    <label><i class="fas fa-bolt"></i> Tipo de Servicio <span style="color: #ef4444;">*</span></label>
+                    <select id="trabajadores-servicio" required>
+                        <option value="">Selecciona el servicio</option>
+                        <option value="luz">⚡ Luz / Electricidad</option>
+                        <option value="agua">💧 Agua</option>
+                        <option value="gas">🔥 Gas</option>
+                        <option value="otro">⚙️ Otro servicio</option>
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label><i class="fas fa-map-marker-alt"></i> Ubicación <span style="color: #ef4444;">*</span></label>
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 15px;">
+                        <input type="text" id="trabajadores-ciudad" required placeholder="Ciudad" />
+                        <input type="text" id="trabajadores-provincia" required placeholder="Provincia" />
+                    </div>
+                    <input type="text" id="trabajadores-direccion" placeholder="Zona general (ej: 'cerca de la plaza', 'zona norte')" />
+                    <small style="color: #059669; font-size: 0.85rem; display: block; margin-top: 5px; font-style: italic;">
+                        💡 Te sugerimos indicar solo la zona general para mantener un ambiente seguro y respetuoso para todos
+                    </small>
+                </div>
+                
+                <div class="form-group">
+                    <label><i class="fas fa-file-alt"></i> Descripción <span style="color: #ef4444;">*</span></label>
+                    <textarea id="trabajadores-descripcion" rows="4" required placeholder="Describe: ¿Cuántos trabajadores ves? ¿Qué están haciendo? ¿Desde cuándo están trabajando? (Opcional: Si quieres, puedes mencionar si crees que podrían necesitar algo, pero no es obligatorio)"></textarea>
+                </div>
+                
+                <div style="display: flex; gap: 15px; justify-content: center; margin-top: 30px;">
+                    <button type="submit" class="btn-primary">
+                        <i class="fas fa-paper-plane"></i> Reportar Trabajadores en Zona
+                    </button>
+                    <button type="reset" class="btn-primary" style="background: #6b7280;">
+                        <i class="fas fa-redo"></i> Limpiar
+                    </button>
+                </div>
+            </form>
+            
+            <div id="trabajadores-lista">
+                <h3 style="color: #374151; margin-bottom: 20px;">👷 Trabajadores en Zona</h3>
+                <p style="color: #6b7280; font-size: 0.9rem; margin-bottom: 20px; font-style: italic;">
+                    Si estás cerca de alguno de estos lugares y quieres ofrecer apoyo solidario de forma voluntaria, puedes hacerlo. 
+                    Todo es completamente opcional. No hay obligación ni presión.
+                </p>
+                <div class="empty-state">
+                    <i class="fas fa-spinner fa-spin"></i>
+                    <p>Cargando trabajadores en zona...</p>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Tab: Ofrecer Ayuda -->
+        <div class="tab-content" id="ofrecer-ayuda">
+            <div class="info-box" style="background: linear-gradient(135deg, rgba(16, 185, 129, 0.1), rgba(5, 150, 105, 0.1)); border-left-color: #10b981;">
+                <h3 style="color: #059669;">🤲 Apoyo Solidario Voluntario</h3>
+                <p style="margin: 0; line-height: 1.8;">
+                    Si hay trabajadores reparando cerca de tu zona y quieres ofrecerles apoyo solidario de forma voluntaria 
+                    (agua, sombra, etc.), puedes hacerlo aquí. Todo es completamente opcional. No hay obligación ni presión. 
+                    Es simplemente un gesto de solidaridad comunitaria para quienes están trabajando duro para solucionar los cortes.
+                </p>
+            </div>
+            
+            <div id="trabajadores-ayuda-lista" style="margin-bottom: 30px;">
+                <h3 style="color: #374151; margin-bottom: 20px;">👷 Trabajadores en Zona (Apoyo Voluntario)</h3>
+                <p style="color: #6b7280; font-size: 0.9rem; margin-bottom: 20px;">
+                    Si estás cerca de alguno de estos lugares y quieres ofrecer apoyo solidario de forma voluntaria, puedes hacerlo. 
+                    Todo es completamente opcional. No hay obligación ni presión.
+                </p>
+                <div class="empty-state">
+                    <i class="fas fa-spinner fa-spin"></i>
+                    <p>Cargando trabajadores en zona...</p>
+                </div>
+            </div>
+            
+            <div style="background: white; padding: 30px; border-radius: 15px; border: 2px solid #E5E7EB;">
+                <h3 style="color: #374151; margin-bottom: 20px;">💡 Ideas de Apoyo Solidario (Completamente Voluntario)</h3>
+                <p style="color: #6b7280; font-size: 0.9rem; margin-bottom: 20px; font-style: italic;">
+                    Si estás cerca y quieres ayudar de forma voluntaria, estas son algunas ideas. Todo es opcional y sin obligación.
+                </p>
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 20px;">
+                    <div style="background: #f9fafb; padding: 20px; border-radius: 10px; border-left: 4px solid #3b82f6;">
+                        <h4 style="color: #2563eb; margin-bottom: 10px;">💧 Agua</h4>
+                        <p style="color: #6b7280; font-size: 0.9rem; margin: 0;">Si estás cerca y quieres, puedes ofrecer agua fría de forma voluntaria</p>
+                    </div>
+                    <div style="background: #f9fafb; padding: 20px; border-radius: 10px; border-left: 4px solid #f59e0b;">
+                        <h4 style="color: #d97706; margin-bottom: 10px;">🌳 Sombra</h4>
+                        <p style="color: #6b7280; font-size: 0.9rem; margin: 0;">Si estás cerca y quieres, puedes permitir que descansen en la sombra de forma voluntaria</p>
+                    </div>
+                    <div style="background: #f9fafb; padding: 20px; border-radius: 10px; border-left: 4px solid #10b981;">
+                        <h4 style="color: #059669; margin-bottom: 10px;">💬 Agradecimiento</h4>
+                        <p style="color: #6b7280; font-size: 0.9rem; margin: 0;">Simplemente agradecerles y mostrarles que valoramos su trabajo</p>
+                    </div>
+                    <div style="background: #f9fafb; padding: 20px; border-radius: 10px; border-left: 4px solid #8b5cf6;">
+                        <h4 style="color: #7c3aed; margin-bottom: 10px;">🤝 Solidaridad</h4>
+                        <p style="color: #6b7280; font-size: 0.9rem; margin: 0;">Cualquier gesto de apoyo solidario que quieras ofrecer de forma voluntaria</p>
+                    </div>
+                </div>
+                <div style="background: #f0fdf4; padding: 20px; border-radius: 10px; margin-top: 20px; border-left: 4px solid #10b981;">
+                    <p style="margin: 0; color: #374151; font-size: 0.9rem; line-height: 1.6;">
+                        <strong>💜 Importante:</strong> Todo es completamente voluntario y opcional. No hay obligación, presión ni pagos. 
+                        Es simplemente un gesto de solidaridad comunitaria para quienes están trabajando duro. 
+                        Si quieres ayudar, bienvenido. Si no, también está bien. Lo importante es el apoyo mutuo como comunidad.
+                    </p>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Tab: Mi Historial -->
+        <div class="tab-content" id="mi-historial">
+            <div class="info-box" style="background: linear-gradient(135deg, rgba(139, 92, 246, 0.1), rgba(124, 58, 237, 0.1)); border-left-color: #8b5cf6;">
+                <h3 style="color: #7c3aed;">📝 Mis Reportes</h3>
+                <p style="margin: 0; line-height: 1.8;">
+                    Aquí puedes ver todos los reportes que has creado, editarlos, pausarlos o eliminarlos. 
+                    Tus reportes ayudan a mantener informada a la comunidad de manera transparente y colaborativa.
+                </p>
+            </div>
+            
+            <div id="mi-historial-lista" style="margin-top: 30px;">
+                <div class="empty-state">
+                    <i class="fas fa-spinner fa-spin"></i>
+                    <p>Cargando tu historial...</p>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Tab: Buscar por Zonas -->
+        <div class="tab-content" id="buscar-zonas">
+            <div class="info-box" style="background: linear-gradient(135deg, rgba(245, 158, 11, 0.1), rgba(217, 119, 6, 0.1)); border-left-color: #f59e0b;">
+                <h3 style="color: #d97706;">🔍 Buscar por Zonas</h3>
+                <p style="margin: 0; line-height: 1.8;">
+                    Busca zonas específicas para ver la frecuencia de cortes y el estado actual de los reportes. 
+                    Esto te ayuda a entender mejor qué zonas necesitan más atención y seguimiento.
+                </p>
+            </div>
+            
+            <div style="background: white; padding: 30px; border-radius: 15px; border: 2px solid #E5E7EB; margin-top: 30px; margin-bottom: 30px;">
+                <div class="form-group">
+                    <label><i class="fas fa-map-marker-alt"></i> Buscar Zona</label>
+                    <div style="display: grid; grid-template-columns: 1fr 1fr auto; gap: 15px; align-items: end;">
+                        <input type="text" id="buscar-ciudad" placeholder="Ciudad (opcional)" />
+                        <input type="text" id="buscar-provincia" placeholder="Provincia (opcional)" />
+                        <button class="btn-primary" onclick="buscarPorZona()" style="white-space: nowrap;">
+                            <i class="fas fa-search"></i> Buscar
+                        </button>
+                    </div>
+                </div>
+            </div>
+            
+            <div id="resultados-zona">
+                <div style="text-align: center; padding: 40px; color: #6b7280;">
+                    <i class="fas fa-search" style="font-size: 3rem; margin-bottom: 15px; opacity: 0.5;"></i>
+                    <p>Ingresa una ciudad o provincia para buscar reportes en esa zona.</p>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Tab: Estadísticas -->
+        <div class="tab-content" id="estadisticas">
+            <h2 style="margin-bottom: 20px; color: #374151;">📊 Estadísticas de Reportes</h2>
+            
+            <div class="stats-grid" id="estadisticas-container">
+                <div class="stat-card">
+                    <div class="number" id="total-reportes">-</div>
+                    <div class="label">Total de Reportes</div>
+                </div>
+                <div class="stat-card">
+                    <div class="number" id="reportes-hoy">-</div>
+                    <div class="label">Reportes Hoy</div>
+                </div>
+                <div class="stat-card">
+                    <div class="number" id="zona-mas-afectada">-</div>
+                    <div class="label">Zona Más Afectada</div>
+                </div>
+                <div class="stat-card">
+                    <div class="number" id="servicio-mas-reportado">-</div>
+                    <div class="label">Servicio Más Reportado</div>
+                </div>
+            </div>
+            
+            <div style="background: white; padding: 30px; border-radius: 15px; border: 2px solid #E5E7EB; margin-top: 30px;">
+                <h3 style="color: #374151; margin-bottom: 20px;">📈 Gráficos</h3>
+                <p style="color: #6b7280;">Los gráficos detallados estarán disponibles próximamente.</p>
+            </div>
+        </div>
+        
+        <!-- Tab: Información -->
+        <div class="tab-content" id="info">
+            <div class="info-box">
+                <h3>ℹ️ ¿Qué es este sistema?</h3>
+                <p style="line-height: 1.8;">
+                    Este sistema permite a la comunidad reportar cortes de servicios públicos (luz, agua, gas) 
+                    en sus zonas y ver dónde están trabajando los empleados para solucionarlos. 
+                    <strong>No podemos garantizar que se resuelva el problema</strong>, pero podemos apoyarnos como comunidad: 
+                    informarnos sobre los cortes, ver dónde se está trabajando, y ofrecer ayuda a los trabajadores 
+                    que están bajo el sol intentando solucionar los problemas. Juntos podemos hacer la diferencia.
+                </p>
+            </div>
+            
+            <div style="background: white; padding: 25px; border-radius: 15px; border: 2px solid #E5E7EB; margin-bottom: 20px;">
+                <h3 style="color: #374151; margin-bottom: 15px;">📞 Contactos de Emergencia</h3>
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 15px;">
+                    <div>
+                        <strong style="color: #059669;">🚨 Emergencias</strong>
+                        <p style="color: #6b7280; margin: 5px 0 0 0;">911</p>
+                    </div>
+                    <div>
+                        <strong style="color: #059669;">⚡ Electricidad</strong>
+                        <p style="color: #6b7280; margin: 5px 0 0 0;">Contacta a tu empresa distribuidora local</p>
+                    </div>
+                    <div>
+                        <strong style="color: #059669;">💧 Agua</strong>
+                        <p style="color: #6b7280; margin: 5px 0 0 0;">Contacta a tu empresa de servicios local</p>
+                    </div>
+                    <div>
+                        <strong style="color: #059669;">🔥 Gas</strong>
+                        <p style="color: #6b7280; margin: 5px 0 0 0;">En caso de fuga, llama a emergencias: 911</p>
+                    </div>
+                </div>
+            </div>
+            
+            <div style="background: white; padding: 25px; border-radius: 15px; border: 2px solid #E5E7EB;">
+                <h3 style="color: #374151; margin-bottom: 15px;">❓ Preguntas Frecuentes</h3>
+                <div style="line-height: 1.8;">
+                    <p><strong>¿Mis datos son privados?</strong><br>
+                    Sí, no publicamos tu información personal. Solo mostramos la zona reportada.</p>
+                    
+                    <p><strong>¿Pueden garantizar que se resuelva el problema?</strong><br>
+                    No, lamentablemente no podemos garantizar que se resuelva. Este sistema es para que la comunidad 
+                    se informe y se apoye mutuamente. No tenemos control sobre los servicios públicos ni podemos 
+                    asegurar que las autoridades actúen.</p>
+                    
+                    <p><strong>¿Cómo puedo ayudar a los trabajadores?</strong><br>
+                    Si estás cerca de trabajadores reparando y quieres ofrecer apoyo solidario de forma voluntaria, 
+                    puedes hacerlo. Todo es completamente opcional. No hay obligación ni presión. 
+                    Es simplemente un gesto de solidaridad comunitaria.</p>
+                    
+                    <p><strong>¿Puedo reportar múltiples veces?</strong><br>
+                    Sí, pero intenta no duplicar reportes muy similares. Si el problema persiste, puedes actualizar tu reporte anterior.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="/js/supabase-config.js"></script>
+    
+    <!-- Sistema de Alertas de Emergencia -->
+    <script src="../../js/sistema-alertas-comunidades.js"></script>
+    
+    <!-- Sistema de Interconexiones -->
+    <script src="../../js/sistema-interconexiones-global.js"></script>
+    
+    <!-- Sistema de Comunidad -->
+    <script src="/js/comunidad-alertas-servicios-publicos.js"></script>
+    
+    <!-- Sistema de Feedbacks General -->
+    <script src="../../js/sistema-feedbacks-general.js"></script>
+    
+    <script>
+        // Inicializar sistema de alertas
+        document.addEventListener('DOMContentLoaded', () => {
+            setTimeout(() => {
+                if (typeof SistemaAlertasComunidades !== 'undefined') {
+                    window.alertasServiciosPublicos = new SistemaAlertasComunidades('alertas-servicios-publicos');
+                }
+                
+                // Inicializar Sistema de Interconexiones
+                if (typeof SistemaInterconexionesGlobal !== 'undefined') {
+                    window.interconexionesGlobal = new SistemaInterconexionesGlobal();
+                }
+            }, 500);
+        });
+    </script>
+</body>
+</html>
+
