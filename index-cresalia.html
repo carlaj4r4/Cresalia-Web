@@ -9,6 +9,11 @@
     <meta http-equiv="Expires" content="0">
     <title>Cresalia - Plataforma E-commerce Multi-tenant</title>
     
+    <!-- Favicon -->
+    <link rel="icon" type="image/x-icon" href="favicon.ico">
+    <link rel="icon" type="image/png" href="assets/logo/logo-cresalia.png">
+    <link rel="apple-touch-icon" href="assets/logo/logo-cresalia.png">
+    
     <!-- Meta Security -->
     <meta http-equiv="Content-Security-Policy" content="
       default-src 'self';
@@ -84,7 +89,8 @@
     <link rel="stylesheet" href="css/z-index-layers.css">
     <link rel="stylesheet" href="css/elegant-notifications.css">
     <link rel="stylesheet" href="css/filtros-productos.css?v=1.4">
-    <link rel="stylesheet" href="css/sistema-feedbacks.css">
+    <!-- CSS de feedbacks de tiendas - NO necesario en index-cresalia.html (solo en páginas de tiendas) -->
+    <!-- <link rel="stylesheet" href="css/sistema-feedbacks.css"> -->
     <link rel="stylesheet" href="css/sistema-desafios-emocionales.css">
     <link rel="stylesheet" href="css/contacto-directo-crisla.css">
     <link rel="stylesheet" href="css/sistema-anti-fraudes.css">
@@ -348,6 +354,269 @@
             }
 
             .cumpleaneros-dia {
+                text-align: left;
+            }
+        }
+
+        /* ===== ESTILOS DE ANIVERSARIOS (Mismo diseño que cumpleaños) ===== */
+        .aniversarios-section {
+            position: relative;
+            padding: 80px 0;
+            background: linear-gradient(135deg, rgba(14, 165, 233, 0.08), rgba(16, 185, 129, 0.08));
+            overflow: hidden;
+        }
+
+        .aniversarios-section::before,
+        .aniversarios-section::after {
+            content: "";
+            position: absolute;
+            width: 280px;
+            height: 280px;
+            border-radius: 50%;
+            background: rgba(14, 165, 233, 0.12);
+            filter: blur(120px);
+            z-index: 0;
+        }
+
+        .aniversarios-section::before {
+            top: -140px;
+            left: -80px;
+        }
+
+        .aniversarios-section::after {
+            bottom: -160px;
+            right: -60px;
+            background: rgba(16, 185, 129, 0.12);
+        }
+
+        .aniversarios-header {
+            position: relative;
+            z-index: 1;
+            text-align: center;
+        }
+
+        .aniversarios-header .section-subtitle {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            color: #0EA5E9;
+            margin-bottom: 12px;
+        }
+
+        .aniversarios-header .section-title {
+            font-size: 2.4rem;
+            font-weight: 700;
+            color: #111827;
+        }
+
+        .aniversarios-header .section-title span {
+            color: #0EA5E9;
+        }
+
+        .aniversarios-header .section-description {
+            max-width: 640px;
+            margin: 16px auto 0;
+            color: #4B5563;
+            font-size: 1.05rem;
+        }
+
+        .aniversarios-panel {
+            position: relative;
+            z-index: 1;
+            border-radius: 24px;
+            padding: 32px 28px;
+            background: #ffffff;
+            box-shadow: 0 20px 45px rgba(15, 23, 42, 0.08);
+            min-height: 320px;
+            display: flex;
+            flex-direction: column;
+            gap: 18px;
+        }
+
+        .aniversarios-panel.servicios {
+            background: linear-gradient(160deg, rgba(236, 254, 255, 0.95), rgba(191, 219, 254, 0.7));
+        }
+
+        .aniversarios-panel .panel-header {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .aniversarios-panel .panel-icon {
+            width: 56px;
+            height: 56px;
+            border-radius: 18px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            color: #ffffff;
+            background: linear-gradient(135deg, #0EA5E9, #38BDF8);
+            box-shadow: 0 12px 30px rgba(14, 165, 233, 0.25);
+        }
+
+        .aniversarios-panel.servicios .panel-icon {
+            background: linear-gradient(135deg, #10B981, #34D399);
+            box-shadow: 0 12px 30px rgba(16, 185, 129, 0.25);
+        }
+
+        .aniversarios-panel h3 {
+            margin: 0;
+            font-size: 1.6rem;
+            font-weight: 700;
+            color: #111827;
+        }
+
+        .aniversarios-panel p {
+            margin: 0;
+            color: #4B5563;
+        }
+
+        .aniversarios-list {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        .aniversario-card {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            padding: 18px 20px;
+            border-radius: 18px;
+            background: rgba(255, 255, 255, 0.95);
+            border: 1px solid rgba(14, 165, 233, 0.12);
+            backdrop-filter: blur(12px);
+            transition: transform 0.25s ease, box-shadow 0.25s ease;
+        }
+
+        .aniversarios-panel.servicios .aniversario-card {
+            border-color: rgba(16, 185, 129, 0.18);
+        }
+
+        .aniversario-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 18px 35px rgba(14, 165, 233, 0.15);
+        }
+
+        .aniversario-avatar {
+            width: 56px;
+            height: 56px;
+            border-radius: 18px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(135deg, #0EA5E9, #38BDF8);
+            color: #ffffff;
+            font-size: 1.5rem;
+            font-weight: 600;
+            overflow: hidden;
+            flex-shrink: 0;
+        }
+
+        .aniversarios-panel.servicios .aniversario-avatar {
+            background: linear-gradient(135deg, #10B981, #34D399);
+        }
+
+        .aniversario-avatar img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .aniversario-info {
+            flex: 1;
+        }
+
+        .aniversario-info h4 {
+            margin: 0;
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: #111827;
+        }
+
+        .aniversario-info .badge {
+            display: inline-block;
+            padding: 4px 10px;
+            border-radius: 999px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            margin-top: 6px;
+            color: #0EA5E9;
+            background: rgba(14, 165, 233, 0.12);
+        }
+
+        .aniversarios-panel.servicios .aniversario-info .badge {
+            color: #10B981;
+            background: rgba(16, 185, 129, 0.15);
+        }
+
+        .aniversario-info .aniversario-meta {
+            margin-top: 8px;
+            color: #6B7280;
+            font-size: 0.92rem;
+        }
+
+        .aniversario-anos {
+            font-weight: 700;
+            color: #0EA5E9;
+            font-size: 1.2rem;
+            min-width: 52px;
+            text-align: right;
+            flex-shrink: 0;
+        }
+
+        .aniversarios-panel.servicios .aniversario-anos {
+            color: #10B981;
+        }
+
+        .aniversarios-empty {
+            margin: 0;
+            padding: 18px;
+            border-radius: 16px;
+            background: rgba(255, 255, 255, 0.8);
+            border: 1px dashed rgba(14, 165, 233, 0.18);
+            color: #6B7280;
+            font-size: 0.95rem;
+            text-align: center;
+        }
+
+        .aniversarios-panel.servicios .aniversarios-empty {
+            border-color: rgba(16, 185, 129, 0.25);
+        }
+
+        .aniversarios-consent {
+            position: relative;
+            z-index: 1;
+            display: inline-block;
+            margin-top: 28px;
+            padding: 10px 18px;
+            border-radius: 999px;
+            background: rgba(17, 24, 39, 0.75);
+            color: #F9FAFB;
+            font-size: 0.85rem;
+        }
+
+        @media (max-width: 991px) {
+            .aniversarios-section {
+                padding: 60px 0;
+            }
+
+            .aniversarios-panel {
+                padding: 28px 24px;
+            }
+        }
+
+        @media (max-width: 575px) {
+            .aniversario-card {
+                align-items: flex-start;
+            }
+
+            .aniversario-anos {
                 text-align: left;
             }
         }
@@ -838,6 +1107,57 @@
                 <p>Descubre las mejores tiendas creadas con Cresalia</p>
             </div>
             
+            <!-- Filtros de Tiendas -->
+            <div class="filtros-container mb-4" style="background: #F8FAFC; padding: 20px; border-radius: 12px; margin-bottom: 30px;">
+                <div class="row">
+                    <div class="col-md-3">
+                        <div class="filtro-group">
+                            <label for="busquedaTiendas" class="filtro-label">
+                                <i class="fas fa-search"></i> Buscar Tiendas
+                            </label>
+                            <input type="text" id="busquedaTiendas" class="form-control busqueda-input" placeholder="Ej: peluquería, estética..." autocomplete="off">
+                        </div>
+                    </div>
+                    <div class="col-md-2">
+                        <div class="filtro-group">
+                            <label class="filtro-label">
+                                <i class="fas fa-filter"></i> Filtros
+                            </label>
+                            <div class="filtros-especiales">
+                                <div class="form-check form-check-inline">
+                                    <input class="form-check-input" type="checkbox" id="masCercanoTiendas" onchange="aplicarFiltrosTiendas()">
+                                    <label class="form-check-label" for="masCercanoTiendas">
+                                        <i class="fas fa-map-marker-alt"></i> Más cercano
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-7">
+                        <!-- Radio de Búsqueda -->
+                        <div style="padding: 15px; background: #F0F9FF; border-radius: 8px; border: 1px solid #BAE6FD;">
+                            <label style="display: flex; align-items: center; gap: 8px; font-weight: 600; color: #0369A1; margin-bottom: 10px;">
+                                <i class="fas fa-circle-notch"></i> Radio de Búsqueda
+                            </label>
+                            <div style="display: flex; align-items: center; gap: 10px;">
+                                <input type="range" id="radioBusquedaTiendas" min="0" max="50" value="0" step="1" 
+                                       oninput="document.getElementById('radioBusquedaTiendasValue').textContent = this.value; aplicarFiltrosTiendas();"
+                                       style="flex: 1;">
+                                <span id="radioBusquedaTiendasValue" style="min-width: 60px; font-weight: 600; color: #0369A1;">0</span>
+                                <span style="color: #64748B;">km</span>
+                                <button type="button" onclick="document.getElementById('radioBusquedaTiendas').value = 0; document.getElementById('radioBusquedaTiendasValue').textContent = '0'; aplicarFiltrosTiendas();" 
+                                        style="padding: 4px 12px; background: #E0F2FE; border: 1px solid #BAE6FD; border-radius: 6px; color: #0369A1; cursor: pointer; font-size: 0.85rem;">
+                                    Limpiar
+                                </button>
+                            </div>
+                            <small style="color: #64748B; font-size: 0.85rem; display: block; margin-top: 6px;">
+                                <i class="fas fa-info-circle"></i> Mostrar solo tiendas dentro del radio seleccionado
+                            </small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
             <div class="tiendas-grid" id="tiendasGrid">
                 <div class="tienda-card">
                     <div class="tienda-placeholder">
@@ -866,6 +1186,29 @@
                         <p>Las ofertas aparecerán aquí cuando las tiendas las publiquen</p>
                     </div>
                 </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Sección: Historias con Corazón Cresalia -->
+    <section id="historias-corazon" class="historias-corazon-section" style="display: none;">
+        <div class="container">
+            <div class="section-header">
+                <div class="historias-logo-container">
+                    <img src="assets/logo/logo-cresalia.png" alt="Cresalia" class="historias-logo">
+                </div>
+                <h2><i class="fas fa-heart"></i> Historias con Corazón Cresalia</h2>
+                <p>Conocé las historias de nuestros emprendedores que decidieron compartir su camino con nosotros</p>
+            </div>
+            
+            <div id="historiasGrid" class="historias-grid">
+                <!-- Las historias se cargarán dinámicamente -->
+            </div>
+            
+            <div id="sinHistorias" class="sin-historias" style="display: none; text-align: center; padding: 60px 20px; color: #64748b;">
+                <i class="fas fa-book-open" style="font-size: 4rem; margin-bottom: 20px; opacity: 0.5;"></i>
+                <h3 style="color: #475569; margin-bottom: 10px;">Aún no hay historias compartidas</h3>
+                <p style="font-size: 1.1rem;">Las historias de nuestros emprendedores aparecerán aquí cuando decidan compartirlas</p>
             </div>
         </div>
     </section>
@@ -907,7 +1250,7 @@
                 
                 <div class="ayuda-card">
                     <h4><i class="fas fa-phone"></i> Contacto</h4>
-                    <p>Teléfono: +54 11 1234-5678 | WhatsApp: +54 11 1234-5678 | Email: soporte@cresalia.com</p>
+                    <p>Teléfono: +54 11 1234-5678 | WhatsApp: +54 11 1234-5678 | Email: cresalia25@gmail.com</p>
                 </div>
                 
                 <div class="ayuda-card">
@@ -968,7 +1311,7 @@
                                     <i class="fas fa-envelope"></i>
                                 </div>
                                 <h3>Email</h3>
-                                <p class="email-text">contacto@cresalia.com</p>
+                                <p class="email-text">cresalia25@gmail.com</p>
                             </div>
                         </div>
                     </div>
@@ -1197,6 +1540,67 @@
         </div>
     </section>
 
+    <!-- Aniversarios con Cresalia -->
+    <section id="aniversarios-home" class="aniversarios-section">
+        <div class="container">
+            <div class="aniversarios-header">
+                <span class="section-subtitle">
+                    <i class="fas fa-heart"></i> Celebramos juntos nuestro crecimiento
+                </span>
+                <h2 class="section-title">Aniversarios con Cresalia</h2>
+                <p class="section-description">
+                    Tiendas y servicios que cumplen años siendo parte de nuestra comunidad. ¡Gracias por confiar en nosotros y crecer juntos! 💜
+                </p>
+            </div>
+
+            <div class="row g-4 mt-4">
+                <div class="col-lg-6">
+                    <div class="aniversarios-panel">
+                        <div class="panel-header">
+                            <div class="panel-icon">
+                                <i class="fas fa-store"></i>
+                            </div>
+                            <div>
+                                <h3>Tiendas</h3>
+                                <p>Emprendimientos que cumplen años con nosotros.</p>
+                            </div>
+                        </div>
+                        <div class="aniversarios-list" data-list-tiendas-aniversarios></div>
+                        <p class="aniversarios-empty" data-empty-tiendas-aniversarios>
+                            Aún no hay tiendas cumpliendo aniversarios este mes. ¡Sé el primero en aparecer aquí! 🎉
+                        </p>
+                    </div>
+                </div>
+
+                <div class="col-lg-6">
+                    <div class="aniversarios-panel servicios">
+                        <div class="panel-header">
+                            <div class="panel-icon">
+                                <i class="fas fa-hands-helping"></i>
+                            </div>
+                            <div>
+                                <h3>Servicios</h3>
+                                <p>Profesionales que cumplen años siendo parte de Cresalia.</p>
+                            </div>
+                        </div>
+                        <div class="aniversarios-list" data-list-servicios-aniversarios></div>
+                        <p class="aniversarios-empty" data-empty-servicios-aniversarios>
+                            Todavía no hay servicios cumpliendo aniversarios este mes. ¡Tu servicio puede ser el primero! 💜
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row mt-4">
+                <div class="col-12 text-center">
+                    <span class="aniversarios-consent">
+                        Los aniversarios se calculan desde la fecha de creación de tu tienda o servicio en Cresalia
+                    </span>
+                </div>
+            </div>
+        </div>
+    </section>
+
     <!-- Footer -->
     <footer class="footer">
         <div class="container">
@@ -1212,48 +1616,86 @@
                         <div class="footer-info">
                             <p><i class="fas fa-map-marker-alt"></i> Argentina</p>
                             <p><i class="fas fa-phone"></i> +54 11 XXXX-XXXX</p>
-                            <p><i class="fas fa-envelope"></i> contacto@cresalia.com</p>
+                            <p><i class="fas fa-envelope"></i> cresalia25@gmail.com</p>
                         </div>
                     </div>
                 </div>
                 
-                <!-- Enlaces Rápidos -->
-                <div class="col-lg-2 col-md-6 mb-4">
+                <!-- Enlaces Rápidos y Donaciones -->
+                <div class="col-lg-3 col-md-6 mb-4">
                     <div class="footer-section">
                         <h5>Enlaces Rápidos</h5>
                         <ul class="footer-links">
                             <li><a href="#inicio">Inicio</a></li>
                             <li><a href="cresalia-jobs/index.html">💼 Cresalia Jobs</a></li>
-                            <!-- <li><a href="cresalia-chat-seguro/index.html">💬 Cresalia Chat Seguro</a></li> -->
                             <li><a href="cresalia-animales/index.html">🐾 Cresalia Animales</a></li>
+                            <li><a href="comunidades/alertas-servicios-publicos/">⚡ Alertas de Servicios Públicos</a></li>
                             <li><a href="#productos">Productos</a></li>
                             <li><a href="#servicios">Servicios</a></li>
                             <li><a href="#ayuda">Ayuda</a></li>
                             <li><a href="#contacto">Contacto</a></li>
                             <li><a href="legal/terminos-basicos.html">Términos de Servicio</a></li>
                         </ul>
+                        
+                        <h5 style="margin-top: 30px; color: #10B981;">💚 Donaciones</h5>
+                        <ul class="footer-links">
+                            <li><a href="cresalia-solidario-emergencias/index.html" style="color: #10B981;">🚨 Donar en Emergencias</a></li>
+                            <li><a href="cresalia-solidario-emergencias/donar-materiales.html" style="color: #10B981;">📦 Donar Materiales</a></li>
+                            <li><a href="cresalia-animales/index.html#donaciones" style="color: #10B981;">🐾 Donar a Refugios</a></li>
+                        </ul>
                     </div>
                 </div>
                 
                 <!-- Comunidades Cresalia 💜 -->
-                <div class="col-lg-3 col-md-6 mb-4">
+                <div class="col-lg-6 col-md-12 mb-4">
                     <div class="footer-section">
                         <h5>💜 Comunidades Cresalia</h5>
                         <p style="font-size: 0.9rem; color: #9CA3AF; margin-bottom: 15px;">Espacios seguros y anónimos para compartir y encontrar apoyo</p>
-                        <ul class="footer-links" style="max-height: 400px; overflow-y: auto; padding-right: 10px;">
-                            <li><a href="comunidades/estres-laboral/" style="color: #667eea;">💼 Estrés Laboral</a></li>
-                            <li><a href="comunidades/lgbtq-experiencias/" style="color: #FF6B6B;">🏳️‍🌈 Experiencias LGBTQ+</a></li>
-                            <li><a href="comunidades/mujeres-sobrevivientes/" style="color: #C084FC;">💜 Mujeres Sobrevivientes</a></li>
-                            <li><a href="comunidades/hombres-sobrevivientes/" style="color: #3B82F6;">💙 Hombres Sobrevivientes</a></li>
-                            <li><a href="comunidades/anti-bullying/" style="color: #60A5FA;">🛡️ Anti-Bullying</a></li>
-                            <li><a href="comunidades/discapacidad/" style="color: #8B5CF6;">♿ Personas con Discapacidad</a></li>
-                            <li><a href="comunidades/inmigrantes-racializados/" style="color: #F59E0B;">🌍 Inmigrantes y Racializados</a></li>
-                            <li><a href="comunidades/adultos-mayores/" style="color: #F59E0B;">👴👵 Adultos Mayores</a></li>
-                            <li><a href="comunidades/cuidadores/" style="color: #10B981;">🤲 Cuidadores</a></li>
-                            <li><a href="comunidades/enfermedades-cronicas/" style="color: #EF4444;">🏥 Enfermedades Crónicas</a></li>
-                            <li><a href="cresalia-animales/index.html" style="color: #059669;">🐾 Cresalia Animales</a></li>
-                        </ul>
-                        <p style="font-size: 0.85rem; color: #6B7280; margin-top: 10px; font-style: italic;">Parte del ecosistema Cresalia 💜</p>
+                        <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px;">
+                            <!-- Columna 1 (9 comunidades) -->
+                            <div>
+                                <ul class="footer-links" style="list-style: none; padding: 0; margin: 0;">
+                                    <li style="margin-bottom: 8px;"><a href="comunidades/estres-laboral/" style="color: #667eea; text-decoration: none;">💼 Estrés Laboral</a></li>
+                                    <li style="margin-bottom: 8px;"><a href="comunidades/lgbtq-experiencias/" style="color: #FF6B6B; text-decoration: none;">🏳️‍🌈 Experiencias LGBTQ+</a></li>
+                                    <li style="margin-bottom: 8px;"><a href="comunidades/mujeres-sobrevivientes/" style="color: #C084FC; text-decoration: none;">💜 Mujeres Sobrevivientes</a></li>
+                                    <li style="margin-bottom: 8px;"><a href="comunidades/hombres-sobrevivientes/" style="color: #3B82F6; text-decoration: none;">💙 Hombres Sobrevivientes</a></li>
+                                    <li style="margin-bottom: 8px;"><a href="comunidades/anti-bullying/" style="color: #60A5FA; text-decoration: none;">🛡️ Anti-Bullying</a></li>
+                                    <li style="margin-bottom: 8px;"><a href="comunidades/discapacidad/" style="color: #8B5CF6; text-decoration: none;">♿ Personas con Discapacidad</a></li>
+                                    <li style="margin-bottom: 8px;"><a href="comunidades/inmigrantes-racializados/" style="color: #F59E0B; text-decoration: none;">🌍 Inmigrantes y Racializados</a></li>
+                                    <li style="margin-bottom: 8px;"><a href="comunidades/adultos-mayores/" style="color: #F59E0B; text-decoration: none;">👴👵 Adultos Mayores</a></li>
+                                    <li style="margin-bottom: 8px;"><a href="comunidades/cuidadores/" style="color: #10B981; text-decoration: none;">🤲 Cuidadores</a></li>
+                                </ul>
+                            </div>
+                            <!-- Columna 2 (9 comunidades) -->
+                            <div>
+                                <ul class="footer-links" style="list-style: none; padding: 0; margin: 0;">
+                                    <li style="margin-bottom: 8px;"><a href="comunidades/enfermedades-cronicas/" style="color: #EF4444; text-decoration: none;">🏥 Enfermedades Crónicas</a></li>
+                                    <li style="margin-bottom: 8px;"><a href="comunidades/maternidad/" style="color: #EC4899; text-decoration: none;">🤱 Maternidad</a></li>
+                                    <li style="margin-bottom: 8px;"><a href="comunidades/desahogo-libre/" style="color: #6B7280; text-decoration: none;">💭 Desahogo Libre</a></li>
+                                    <li style="margin-bottom: 8px;"><a href="comunidades/libertad-emocional/" style="color: #9333EA; text-decoration: none;">💜 Libertad Emocional</a></li>
+                                    <li style="margin-bottom: 8px;"><a href="comunidades/sanando-abandonos/" style="color: #0EA5E9; text-decoration: none;">🤗 Sanando Abandonos</a></li>
+                                    <li style="margin-bottom: 8px;"><a href="comunidades/libertad-economica/" style="color: #10B981; text-decoration: none;">💰 Libertad Económica</a></li>
+                                    <li style="margin-bottom: 8px;"><a href="comunidades/espiritualidad-fe/" style="color: #FBBF24; text-decoration: none;">✨ Espiritualidad y Fe</a></li>
+                                    <li style="margin-bottom: 8px;"><a href="comunidades/injusticias-vividas/" style="color: #E5E7EB; text-decoration: none;">⚖️ Injusticias Vividas</a></li>
+                                    <li style="margin-bottom: 8px;"><a href="comunidades/caminando-juntos/" style="color: #059669; text-decoration: none;">🚶 Caminando Juntos</a></li>
+                                </ul>
+                            </div>
+                            <!-- Columna 3 (10 comunidades) -->
+                            <div>
+                                <ul class="footer-links" style="list-style: none; padding: 0; margin: 0;">
+                                    <li style="margin-bottom: 8px;"><a href="comunidades/bomberos/" style="color: #DC2626; text-decoration: none;">🚒 Bomberos</a></li>
+                                    <li style="margin-bottom: 8px;"><a href="comunidades/duelo-perinatal/" style="color: #9333EA; text-decoration: none;">💔 Duelo Perinatal</a></li>
+                                    <li style="margin-bottom: 8px;"><a href="comunidades/gamers-videojuegos/" style="color: #7C3AED; text-decoration: none;">🎮 Gamers y Videojuegos</a></li>
+                                    <li style="margin-bottom: 8px;"><a href="comunidades/madres-padres-solteros/" style="color: #EC4899; text-decoration: none;">👨‍👩‍👧 Madres/Padres Solteros</a></li>
+                                    <li style="margin-bottom: 8px;"><a href="comunidades/medicos-enfermeros/" style="color: #EF4444; text-decoration: none;">👨‍⚕️👩‍⚕️ Médicos y Enfermeros</a></li>
+                                    <li style="margin-bottom: 8px;"><a href="comunidades/otakus-anime-manga/" style="color: #EC4899; text-decoration: none;">🎌 Otakus, Anime y Manga</a></li>
+                                    <li style="margin-bottom: 8px;"><a href="comunidades/veterinarios/" style="color: #059669; text-decoration: none;">🐾 Veterinarios</a></li>
+                                    <li style="margin-bottom: 8px;"><a href="comunidades/viajeros/" style="color: #3B82F6; text-decoration: none;">✈️ Comunidad de Viajeros</a></li>
+                                    <li style="margin-bottom: 8px;"><a href="comunidades/experiencias-sobrenaturales/" style="color: #9333EA; text-decoration: none;">✨ Experiencias Sobrenaturales</a></li>
+                                </ul>
+                            </div>
+                        </div>
+                        <p style="font-size: 0.85rem; color: #6B7280; margin-top: 15px; font-style: italic;">Parte del ecosistema Cresalia 💜</p>
                     </div>
                 </div>
                 
@@ -1293,11 +1735,17 @@
                 <div class="col-md-6">
                     <div class="footer-bottom">
                         <p>&copy; 2025 Cresalia. Todos los derechos reservados.</p>
+                        <p style="margin-top: 10px; font-size: 0.9rem; color: #667eea;">
+                            <i class="fas fa-heart" style="color: #EC4899;"></i> Powered by <strong>Cresalia</strong>
+                        </p>
                     </div>
                 </div>
                 <div class="col-md-6">
                     <div class="footer-bottom text-end">
                         <p>Venta por mayor y menor disponible</p>
+                        <p style="margin-top: 10px; font-size: 0.9rem; color: #10B981;">
+                            <i class="fas fa-hand-holding-heart"></i> Apoyando causas importantes
+                        </p>
                     </div>
                 </div>
             </div>
@@ -2043,89 +2491,269 @@
         
         // Funciones del widget rojo eliminadas (redundante)
         
+        // ===== SISTEMA DE ANIVERSARIOS =====
+        
+        // Cargar aniversarios al iniciar
+        document.addEventListener('DOMContentLoaded', function() {
+            cargarAniversarios();
+        });
+        
+        // Cargar aniversarios de tiendas y servicios
+        async function cargarAniversarios() {
+            try {
+                const mesActual = new Date().getMonth() + 1; // 1-12
+                
+                // Cargar aniversarios de tiendas
+                await cargarAniversariosTiendas(mesActual);
+                
+                // Cargar aniversarios de servicios
+                await cargarAniversariosServicios(mesActual);
+            } catch (error) {
+                console.error('❌ Error cargando aniversarios:', error);
+            }
+        }
+        
+        // Cargar aniversarios de tiendas
+        async function cargarAniversariosTiendas(mesActual) {
+            try {
+                let tiendas = [];
+                
+                // Intentar cargar desde Supabase
+                if (window.supabase || window.SUPABASE_CLIENT) {
+                    const supabase = window.supabase || window.SUPABASE_CLIENT;
+                    
+                    try {
+                        const { data, error } = await supabase
+                            .from('tiendas')
+                            .select('*')
+                            .eq('activo', true);
+                        
+                        if (!error && data) {
+                            tiendas = data;
+                        }
+                    } catch (supabaseError) {
+                        console.log('⚠️ Error cargando tiendas desde Supabase:', supabaseError);
+                    }
+                }
+                
+                // Si no hay en Supabase, intentar desde localStorage
+                if (tiendas.length === 0) {
+                    const keys = Object.keys(localStorage);
+                    const tiendasKeys = keys.filter(key => key.startsWith('tienda_') && key !== 'tienda_actual');
+                    
+                    tiendas = tiendasKeys.map(key => {
+                        try {
+                            const tienda = JSON.parse(localStorage.getItem(key));
+                            return {
+                                id: tienda.id || key.replace('tienda_', ''),
+                                slug: tienda.slug || tienda.id || key.replace('tienda_', ''),
+                                nombre: tienda.nombre || tienda.nombreTienda || 'Tienda sin nombre',
+                                imagen: tienda.imagenesVideos?.logo || tienda.logo || './assets/logo/logo-cresalia.png',
+                                fecha_creacion: tienda.fechaCreacion || tienda.fecha_creacion || new Date().toISOString(),
+                                activo: true
+                            };
+                        } catch (e) {
+                            return null;
+                        }
+                    }).filter(t => t !== null);
+                }
+                
+                // Filtrar tiendas que cumplen aniversario este mes
+                const aniversarios = tiendas.filter(tienda => {
+                    if (!tienda.fecha_creacion) return false;
+                    
+                    const fechaCreacion = new Date(tienda.fecha_creacion);
+                    const mesCreacion = fechaCreacion.getMonth() + 1;
+                    
+                    return mesCreacion === mesActual;
+                }).map(tienda => {
+                    const fechaCreacion = new Date(tienda.fecha_creacion);
+                    const ahora = new Date();
+                    const años = ahora.getFullYear() - fechaCreacion.getFullYear();
+                    const mesCreacion = fechaCreacion.getMonth();
+                    const mesActual = ahora.getMonth();
+                    
+                    // Ajustar si aún no llegó el mes este año
+                    const añosCompletos = (mesActual < mesCreacion) ? años - 1 : años;
+                    
+                    return {
+                        ...tienda,
+                        años: añosCompletos,
+                        fechaCreacion: fechaCreacion
+                    };
+                }).sort((a, b) => a.fechaCreacion - b.fechaCreacion); // Ordenar por fecha de creación
+                
+                // Mostrar aniversarios
+                mostrarAniversariosTiendas(aniversarios);
+                
+            } catch (error) {
+                console.error('❌ Error cargando aniversarios de tiendas:', error);
+            }
+        }
+        
+        // Cargar aniversarios de servicios
+        async function cargarAniversariosServicios(mesActual) {
+            try {
+                let servicios = [];
+                
+                // Intentar cargar desde Supabase
+                if (window.supabase || window.SUPABASE_CLIENT) {
+                    const supabase = window.supabase || window.SUPABASE_CLIENT;
+                    
+                    try {
+                        const { data, error } = await supabase
+                            .from('servicios')
+                            .select('*, tiendas(nombre, slug, logo)')
+                            .eq('estado', 'activo')
+                            .eq('visible', true);
+                        
+                        if (!error && data) {
+                            servicios = data;
+                        }
+                    } catch (supabaseError) {
+                        console.log('⚠️ Error cargando servicios desde Supabase:', supabaseError);
+                    }
+                }
+                
+                // Si no hay en Supabase, intentar desde localStorage
+                if (servicios.length === 0) {
+                    const keys = Object.keys(localStorage);
+                    const serviciosKeys = keys.filter(key => key.startsWith('servicios_'));
+                    
+                    servicios = serviciosKeys.flatMap(key => {
+                        try {
+                            const serviciosArray = JSON.parse(localStorage.getItem(key));
+                            return serviciosArray.map(servicio => ({
+                                ...servicio,
+                                fecha_creacion: servicio.fechaCreacion || servicio.fecha_creacion || new Date().toISOString()
+                            }));
+                        } catch (e) {
+                            return [];
+                        }
+                    });
+                }
+                
+                // Filtrar servicios que cumplen aniversario este mes
+                const aniversarios = servicios.filter(servicio => {
+                    if (!servicio.fecha_creacion) return false;
+                    
+                    const fechaCreacion = new Date(servicio.fecha_creacion);
+                    const mesCreacion = fechaCreacion.getMonth() + 1;
+                    
+                    return mesCreacion === mesActual;
+                }).map(servicio => {
+                    const fechaCreacion = new Date(servicio.fecha_creacion);
+                    const ahora = new Date();
+                    const años = ahora.getFullYear() - fechaCreacion.getFullYear();
+                    const mesCreacion = fechaCreacion.getMonth();
+                    const mesActual = ahora.getMonth();
+                    
+                    // Ajustar si aún no llegó el mes este año
+                    const añosCompletos = (mesActual < mesCreacion) ? años - 1 : años;
+                    
+                    return {
+                        ...servicio,
+                        años: añosCompletos,
+                        fechaCreacion: fechaCreacion
+                    };
+                }).sort((a, b) => a.fechaCreacion - b.fechaCreacion); // Ordenar por fecha de creación
+                
+                // Mostrar aniversarios
+                mostrarAniversariosServicios(aniversarios);
+                
+            } catch (error) {
+                console.error('❌ Error cargando aniversarios de servicios:', error);
+            }
+        }
+        
+        // Mostrar aniversarios de tiendas
+        function mostrarAniversariosTiendas(aniversarios) {
+            const container = document.querySelector('[data-list-tiendas-aniversarios]');
+            const empty = document.querySelector('[data-empty-tiendas-aniversarios]');
+            
+            if (!container) return;
+            
+            if (aniversarios.length === 0) {
+                if (empty) empty.style.display = 'block';
+                container.innerHTML = '';
+                return;
+            }
+            
+            if (empty) empty.style.display = 'none';
+            
+            container.innerHTML = aniversarios.map(tienda => {
+                const dia = tienda.fechaCreacion.getDate();
+                const mes = tienda.fechaCreacion.toLocaleDateString('es-AR', { month: 'long', day: 'numeric' });
+                
+                return `
+                    <div class="aniversario-card">
+                        <div class="aniversario-avatar">
+                            <img src="${tienda.imagen || './assets/logo/logo-cresalia.png'}" alt="${tienda.nombre}" 
+                                 onerror="this.src='./assets/logo/logo-cresalia.png'">
+                        </div>
+                        <div class="aniversario-info">
+                            <h4>${tienda.nombre}</h4>
+                            <span class="badge">
+                                <i class="fas fa-calendar-check"></i> ${tienda.años} ${tienda.años === 1 ? 'año' : 'años'} con Cresalia
+                            </span>
+                            <div class="aniversario-meta">
+                                <i class="fas fa-calendar-alt"></i> ${mes}
+                            </div>
+                        </div>
+                        <div class="aniversario-anos">${dia}</div>
+                    </div>
+                `;
+            }).join('');
+        }
+        
+        // Mostrar aniversarios de servicios
+        function mostrarAniversariosServicios(aniversarios) {
+            const container = document.querySelector('[data-list-servicios-aniversarios]');
+            const empty = document.querySelector('[data-empty-servicios-aniversarios]');
+            
+            if (!container) return;
+            
+            if (aniversarios.length === 0) {
+                if (empty) empty.style.display = 'block';
+                container.innerHTML = '';
+                return;
+            }
+            
+            if (empty) empty.style.display = 'none';
+            
+            container.innerHTML = aniversarios.map(servicio => {
+                const nombreTienda = servicio.tiendas?.nombre || servicio.nombre_tienda || servicio.nombre || 'Servicio';
+                const logoTienda = servicio.tiendas?.logo || './assets/logo/logo-cresalia.png';
+                const dia = servicio.fechaCreacion.getDate();
+                const mes = servicio.fechaCreacion.toLocaleDateString('es-AR', { month: 'long', day: 'numeric' });
+                
+                return `
+                    <div class="aniversario-card">
+                        <div class="aniversario-avatar">
+                            <img src="${logoTienda}" alt="${nombreTienda}" 
+                                 onerror="this.src='./assets/logo/logo-cresalia.png'">
+                        </div>
+                        <div class="aniversario-info">
+                            <h4>${servicio.nombre || nombreTienda}</h4>
+                            <span class="badge">
+                                <i class="fas fa-calendar-check"></i> ${servicio.años} ${servicio.años === 1 ? 'año' : 'años'} con Cresalia
+                            </span>
+                            <div class="aniversario-meta">
+                                <i class="fas fa-calendar-alt"></i> ${mes}
+                            </div>
+                        </div>
+                        <div class="aniversario-anos">${dia}</div>
+                    </div>
+                `;
+            }).join('');
+        }
+        
         // ===== SISTEMA DE SERVICIOS =====
         
         // Datos de servicios de ejemplo
-        let servicios = [
-            {
-                id: 1,
-                nombre: "Peluquería María",
-                categoria: "peluqueria",
-                descripcion: "Cortes modernos, tinturas y peinados para toda la familia. Atención personalizada y productos de calidad.",
-                precio: 2500,
-                icono: "fas fa-cut",
-                color: "#ec4899",
-                features: ["Corte y peinado", "Tinturas", "Tratamientos", "A domicilio"],
-                envioDomicilio: true,
-                distancia: "2.5 km",
-                telefono: "+54 11 1234-5678"
-            },
-            {
-                id: 2,
-                nombre: "Estética Bella",
-                categoria: "estetica",
-                descripcion: "Tratamientos faciales, depilación, manicura y pedicura. Técnicas profesionales y productos premium.",
-                precio: 3500,
-                icono: "fas fa-spa",
-                color: "#f59e0b",
-                features: ["Faciales", "Depilación", "Manicura", "Pedicura"],
-                envioDomicilio: false,
-                distancia: "1.8 km",
-                telefono: "+54 11 2345-6789"
-            },
-            {
-                id: 3,
-                nombre: "Transporte Rápido",
-                categoria: "transporte",
-                descripcion: "Servicio de remis y transporte urbano. Vehículos cómodos y conductores profesionales.",
-                precio: 1200,
-                icono: "fas fa-car",
-                color: "#3b82f6",
-                features: ["24/7", "Aeropuerto", "Ciudad", "Seguro"],
-                envioDomicilio: true,
-                distancia: "0.5 km",
-                telefono: "+54 11 3456-7890"
-            },
-            {
-                id: 4,
-                nombre: "Lubricentro Central",
-                categoria: "lubricentro",
-                descripcion: "Cambio de aceite, filtros y mantenimiento automotriz. Marcas reconocidas y garantía.",
-                precio: 4500,
-                icono: "fas fa-oil-can",
-                color: "#10b981",
-                features: ["Aceite premium", "Filtros", "Garantía", "Rápido"],
-                envioDomicilio: false,
-                distancia: "3.2 km",
-                telefono: "+54 11 4567-8901"
-            },
-            {
-                id: 5,
-                nombre: "Detail Auto Pro",
-                categoria: "detail",
-                descripcion: "Lavado premium, encerado y detailing completo. Tu auto como nuevo.",
-                precio: 2800,
-                icono: "fas fa-car-wash",
-                color: "#8b5cf6",
-                features: ["Lavado premium", "Encerado", "Interior", "A domicilio"],
-                envioDomicilio: true,
-                distancia: "1.2 km",
-                telefono: "+54 11 5678-9012"
-            },
-            {
-                id: 6,
-                nombre: "Distribución Express",
-                categoria: "distribucion",
-                descripcion: "Servicio de distribución y logística para empresas. Entrega rápida y confiable.",
-                precio: 1800,
-                icono: "fas fa-truck",
-                color: "#ef4444",
-                features: ["Express", "Empresas", "Seguimiento", "Seguro"],
-                envioDomicilio: true,
-                distancia: "4.1 km",
-                telefono: "+54 11 6789-0123"
-            }
-        ];
+        // Servicios - NO cargar datos de ejemplo en producción
+        // Los servicios deben agregarse desde el panel de administración
+        let servicios = [];
         
         // Cargar servicios al iniciar
         document.addEventListener('DOMContentLoaded', function() {
@@ -2579,8 +3207,8 @@
     
     <!-- ===== SISTEMAS ADICIONALES ===== -->
     
-    <!-- Sistema de Feedbacks -->
-    <script src="js/sistema-feedbacks.js"></script>
+    <!-- Sistema de Feedbacks de Tiendas - NO necesario en index (solo en páginas de tiendas) -->
+    <!-- <script src="js/sistema-feedbacks.js"></script> -->
     
     <!-- Sistema de Desafíos Emocionales -->
     <script src="js/sistema-desafios-emocionales.js"></script>
@@ -3153,5 +3781,136 @@
     
     <!-- Widget de Chat de Email - Brevo -->
     <script src="js/widget-brevo-chat.js"></script>
+    
+    <style>
+        .historias-corazon-section {
+            padding: 80px 0;
+            background: linear-gradient(135deg, rgba(102, 126, 234, 0.05), rgba(236, 72, 153, 0.05));
+        }
+        
+        .historias-logo-container {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        
+        .historias-logo {
+            width: 80px;
+            height: 80px;
+            border-radius: 20px;
+            box-shadow: 0 8px 24px rgba(102, 126, 234, 0.2);
+        }
+        
+        .historias-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+            gap: 30px;
+            margin-top: 40px;
+        }
+        
+        .historia-card {
+            background: white;
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .historia-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, #667eea, #ec4899);
+        }
+        
+        .historia-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 30px rgba(102, 126, 234, 0.15);
+        }
+        
+        .historia-header {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+        
+        .historia-avatar {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 3px solid #667eea;
+        }
+        
+        .historia-info h4 {
+            margin: 0;
+            color: #1e293b;
+            font-size: 1.2rem;
+        }
+        
+        .historia-info p {
+            margin: 5px 0 0 0;
+            color: #64748b;
+            font-size: 0.9rem;
+        }
+        
+        .historia-contenido {
+            color: #475569;
+            line-height: 1.7;
+            margin-bottom: 20px;
+        }
+        
+        .historia-acciones {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+        
+        .btn-historia {
+            padding: 8px 16px;
+            border: none;
+            border-radius: 8px;
+            font-size: 0.9rem;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        
+        .btn-editar-historia {
+            background: rgba(102, 126, 234, 0.1);
+            color: #667eea;
+        }
+        
+        .btn-editar-historia:hover {
+            background: rgba(102, 126, 234, 0.2);
+        }
+        
+        .btn-eliminar-historia {
+            background: rgba(239, 68, 68, 0.1);
+            color: #ef4444;
+        }
+        
+        .btn-eliminar-historia:hover {
+            background: rgba(239, 68, 68, 0.2);
+        }
+        
+        @media (max-width: 768px) {
+            .historias-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+    
+    <script src="js/historias-corazon-cresalia.js">    </script>
+    
+    <!-- Sistema de Monitoreo de Errores Propio (Fallback) -->
+    <script src="js/error-reporter.js"></script>
+    
+    <!-- Sistema de Verificación de Mantenimiento -->
+    <script src="js/sistema-mantenimiento.js"></script>
 </body>
 </html>
