@@ -3774,8 +3774,44 @@
     <!-- Sistema de Feedbacks General -->
     <script src="js/sistema-feedbacks-general.js"></script>
     
+    <!-- Sistema de Notificaciones Push -->
+    <script src="js/sistema-notificaciones-push.js"></script>
+    
     <!-- Widget de Chat de Email - Brevo -->
     <script src="js/widget-brevo-chat.js"></script>
+    
+    <!-- Sistema de Permisos (Notificaciones y Ubicación) -->
+    <script>
+        // Solicitar permisos de notificación y ubicación después de cargar la página
+        document.addEventListener('DOMContentLoaded', function() {
+            // Esperar un poco para que el usuario vea la página
+            setTimeout(() => {
+                // Solicitar permisos de notificación (si el sistema no lo hace automáticamente)
+                if ('Notification' in window && Notification.permission === 'default') {
+                    // Mostrar un mensaje amigable antes de solicitar
+                    const solicitarNotificaciones = confirm('🔔 ¿Te gustaría recibir notificaciones de Cresalia?\n\nTe mantendremos informado sobre ofertas, pedidos y actualizaciones importantes.');
+                    if (solicitarNotificaciones) {
+                        Notification.requestPermission().then(permission => {
+                            if (permission === 'granted') {
+                                console.log('✅ Permisos de notificación concedidos');
+                                // Si hay sistema de notificaciones, inicializarlo
+                                if (window.sistemaNotificaciones) {
+                                    window.sistemaNotificaciones.mostrarNotificacionBienvenida();
+                                }
+                            }
+                        });
+                    }
+                }
+                
+                // Solicitar permisos de ubicación (opcional, con botón)
+                if ('geolocation' in navigator) {
+                    // No solicitar automáticamente, solo cuando el usuario lo necesite
+                    // Se solicitará cuando se use la función de distancias o filtros
+                    console.log('📍 Geolocalización disponible');
+                }
+            }, 3000); // Esperar 3 segundos después de cargar
+        });
+    </script>
     
     <style>
         .historias-corazon-section {

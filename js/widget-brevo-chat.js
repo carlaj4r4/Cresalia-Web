@@ -92,12 +92,16 @@
                 --brevo-text-color: ${styles.textColor} !important;
             }
             
-            /* Botón del widget */
+            /* Botón del widget con logo personalizado */
             .brevo-conversations-widget-button {
                 background: linear-gradient(135deg, ${styles.primaryColor}, #EC4899) !important;
                 border-radius: 50% !important;
                 box-shadow: 0 4px 12px rgba(124, 58, 237, 0.4) !important;
                 transition: all 0.3s ease !important;
+                background-image: url('/assets/logo/logo-cresalia.png') !important;
+                background-size: 60% !important;
+                background-position: center !important;
+                background-repeat: no-repeat !important;
             }
             
             .brevo-conversations-widget-button:hover {
@@ -109,6 +113,20 @@
             .brevo-conversations-widget-panel {
                 border-radius: 12px !important;
                 box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15) !important;
+            }
+            
+            /* Logo en el header del panel de chat */
+            .brevo-conversations-widget-panel header::before {
+                content: '';
+                display: inline-block;
+                width: 32px;
+                height: 32px;
+                background-image: url('/assets/logo/logo-cresalia.png');
+                background-size: contain;
+                background-repeat: no-repeat;
+                background-position: center;
+                margin-right: 10px;
+                vertical-align: middle;
             }
         `;
         document.head.appendChild(style);
@@ -281,6 +299,9 @@
                 widgetSimpleExistente.remove();
                 console.log('🗑️ Widget simple eliminado (el oficial está activo)');
             }
+            
+            // Aplicar estilos personalizados antes de inicializar
+            aplicarEstilosPersonalizados();
             
             inicializarBrevoChat();
             
