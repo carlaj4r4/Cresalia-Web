@@ -784,6 +784,22 @@
         </div>
     </section>
 
+    <!-- Sección: Historias con Corazón Cresalia -->
+    <section id="historias-corazon-tienda" class="historias-corazon-section" style="display: none; padding: 80px 0; background: linear-gradient(135deg, rgba(102, 126, 234, 0.05), rgba(236, 72, 153, 0.05));">
+        <div class="container">
+            <div class="section-header" style="text-align: center; margin-bottom: 40px;">
+                <h2 style="color: #1e293b; margin-bottom: 10px;">
+                    <i class="fas fa-heart" style="color: #ec4899;"></i> Nuestra Historia
+                </h2>
+                <p style="color: #64748b; font-size: 1.1rem;">Conocé nuestra historia de emprendimiento</p>
+            </div>
+            
+            <div id="historiaTiendaContainer" class="historia-tienda-container">
+                <!-- La historia se cargará dinámicamente -->
+            </div>
+        </div>
+    </section>
+
     <!-- Servicios Section -->
     <section id="servicios" class="py-5" style="background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);">
         <div class="container">
@@ -865,6 +881,27 @@
                                         <i class="fas fa-map-marker-alt"></i> Más cercano
                                     </label>
                                 </div>
+                            </div>
+                            
+                            <!-- Radio de Búsqueda -->
+                            <div style="margin-top: 15px; padding: 15px; background: #F0F9FF; border-radius: 8px; border: 1px solid #BAE6FD;">
+                                <label style="display: flex; align-items: center; gap: 8px; font-weight: 600; color: #0369A1; margin-bottom: 10px;">
+                                    <i class="fas fa-circle-notch"></i> Radio de Búsqueda
+                                </label>
+                                <div style="display: flex; align-items: center; gap: 10px;">
+                                    <input type="range" id="radioBusqueda" min="0" max="50" value="0" step="1" 
+                                           oninput="document.getElementById('radioBusquedaValue').textContent = this.value; aplicarFiltrosServicios();"
+                                           style="flex: 1;">
+                                    <span id="radioBusquedaValue" style="min-width: 60px; font-weight: 600; color: #0369A1;">0</span>
+                                    <span style="color: #64748B;">km</span>
+                                    <button type="button" onclick="document.getElementById('radioBusqueda').value = 0; document.getElementById('radioBusquedaValue').textContent = '0'; aplicarFiltrosServicios();" 
+                                            style="padding: 4px 12px; background: #E0F2FE; border: 1px solid #BAE6FD; border-radius: 6px; color: #0369A1; cursor: pointer; font-size: 0.85rem;">
+                                        Limpiar
+                                    </button>
+                                </div>
+                                <small style="color: #64748B; font-size: 0.85rem; display: block; margin-top: 6px;">
+                                    <i class="fas fa-info-circle"></i> Mostrar solo servicios dentro del radio seleccionado
+                                </small>
                             </div>
                         </div>
                     </div>
@@ -1540,10 +1577,13 @@
         // ========================================
         
         // Cargar servicios desde localStorage
-        function cargarServicios() {
+        async function cargarServicios() {
             const servicios = JSON.parse(localStorage.getItem('servicios_' + (JSON.parse(localStorage.getItem('tienda_actual') || '{}').id || 'demo')) || '[]');
             
             console.log('🔧 Servicios cargados:', servicios.length);
+            
+            // Cargar ubicaciones dinámicamente y asociarlas a los servicios
+            await cargarUbicacionesServicios(servicios);
             
             // Guardar servicios en variable global
             window.todosLosServicios = servicios;
@@ -1554,6 +1594,169 @@
             
             // Configurar filtros
             configurarFiltrosServicios();
+        }
+        
+        // ===== SISTEMA DE GEOLOCALIZACIÓN Y DISTANCIAS =====
+        let ubicacionUsuario = null;
+        
+        // Obtener ubicación del usuario
+        async function obtenerUbicacionUsuario() {
+            return new Promise((resolve, reject) => {
+                if (!navigator.geolocation) {
+                    console.log('⚠️ Geolocalización no disponible en este navegador');
+                    resolve(null);
+                    return;
+                }
+                
+                // Verificar si ya tenemos la ubicación guardada
+                const ubicacionGuardada = localStorage.getItem('cresalia_ubicacion_usuario');
+                if (ubicacionGuardada) {
+                    try {
+                        const ubicacion = JSON.parse(ubicacionGuardada);
+                        const fechaGuardada = new Date(ubicacion.fecha);
+                        const ahora = new Date();
+                        const horasTranscurridas = (ahora - fechaGuardada) / (1000 * 60 * 60);
+                        
+                        // Si la ubicación tiene menos de 1 hora, usarla
+                        if (horasTranscurridas < 1) {
+                            ubicacionUsuario = ubicacion;
+                            console.log('✅ Ubicación cargada desde cache:', ubicacion);
+                            resolve(ubicacion);
+                            return;
+                        }
+                    } catch (error) {
+                        console.log('⚠️ Error cargando ubicación guardada:', error);
+                    }
+                }
+                
+                // Solicitar nueva ubicación
+                navigator.geolocation.getCurrentPosition(
+                    (position) => {
+                        const ubicacion = {
+                            latitud: position.coords.latitude,
+                            longitud: position.coords.longitude,
+                            fecha: new Date().toISOString()
+                        };
+                        
+                        ubicacionUsuario = ubicacion;
+                        localStorage.setItem('cresalia_ubicacion_usuario', JSON.stringify(ubicacion));
+                        console.log('✅ Ubicación del usuario obtenida:', ubicacion);
+                        resolve(ubicacion);
+                    },
+                    (error) => {
+                        console.log('⚠️ Error obteniendo ubicación:', error.message);
+                        resolve(null);
+                    },
+                    {
+                        enableHighAccuracy: true,
+                        timeout: 10000,
+                        maximumAge: 3600000 // 1 hora
+                    }
+                );
+            });
+        }
+        
+        // Calcular distancia entre dos puntos (fórmula de Haversine)
+        function calcularDistancia(lat1, lon1, lat2, lon2) {
+            const R = 6371; // Radio de la Tierra en kilómetros
+            const dLat = (lat2 - lat1) * Math.PI / 180;
+            const dLon = (lon2 - lon1) * Math.PI / 180;
+            const a = 
+                Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+                Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) *
+                Math.sin(dLon / 2) * Math.sin(dLon / 2);
+            const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+            const distancia = R * c;
+            return Math.round(distancia * 10) / 10; // Redondear a 1 decimal
+        }
+        
+        // Calcular distancias para servicios
+        async function calcularDistanciasServicios(servicios) {
+            if (!ubicacionUsuario) {
+                await obtenerUbicacionUsuario();
+            }
+            
+            if (!ubicacionUsuario) {
+                console.log('⚠️ No se pudo obtener la ubicación del usuario');
+                return servicios;
+            }
+            
+            servicios.forEach(servicio => {
+                if (servicio.ubicacion && servicio.ubicacion.latitud && servicio.ubicacion.longitud) {
+                    servicio.distancia = calcularDistancia(
+                        ubicacionUsuario.latitud,
+                        ubicacionUsuario.longitud,
+                        parseFloat(servicio.ubicacion.latitud),
+                        parseFloat(servicio.ubicacion.longitud)
+                    );
+                } else {
+                    servicio.distancia = null;
+                }
+            });
+            
+            return servicios;
+        }
+        
+        // Cargar ubicaciones dinámicamente desde Supabase o localStorage
+        async function cargarUbicacionesServicios(servicios) {
+            try {
+                // Obtener tienda_id actual
+                const tiendaActual = JSON.parse(localStorage.getItem('tienda_actual') || '{}');
+                const tiendaId = tiendaActual.id || tiendaActual.slug || 'demo';
+                
+                let ubicaciones = [];
+                
+                // Intentar cargar desde Supabase
+                if (window.supabase || window.SUPABASE_CLIENT) {
+                    const supabase = window.supabase || window.SUPABASE_CLIENT;
+                    
+                    try {
+                        const { data, error } = await supabase
+                            .from('ubicaciones_tiendas')
+                            .select('*')
+                            .eq('tienda_id', tiendaId)
+                            .eq('estado', 'activo');
+                        
+                        if (!error && data && data.length > 0) {
+                            ubicaciones = data;
+                            console.log('✅ Ubicaciones cargadas desde Supabase:', ubicaciones.length);
+                            
+                            // Guardar en localStorage como backup
+                            localStorage.setItem(`ubicaciones_${tiendaId}`, JSON.stringify(ubicaciones));
+                        }
+                    } catch (supabaseError) {
+                        console.log('⚠️ Error cargando ubicaciones desde Supabase:', supabaseError);
+                    }
+                }
+                
+                // Si no hay en Supabase, intentar desde localStorage
+                if (ubicaciones.length === 0) {
+                    const ubicacionesGuardadas = localStorage.getItem(`ubicaciones_${tiendaId}`);
+                    if (ubicacionesGuardadas) {
+                        ubicaciones = JSON.parse(ubicacionesGuardadas);
+                        console.log('✅ Ubicaciones cargadas desde localStorage:', ubicaciones.length);
+                    }
+                }
+                
+                // Asociar ubicaciones a servicios
+                if (ubicaciones.length > 0) {
+                    servicios.forEach(servicio => {
+                        // Si el servicio tiene una ubicación_id específica, buscar esa
+                        if (servicio.ubicacion_id) {
+                            servicio.ubicacion = ubicaciones.find(u => u.id === servicio.ubicacion_id);
+                        } else {
+                            // Si no, usar la primera ubicación activa de la tienda
+                            servicio.ubicacion = ubicaciones[0];
+                        }
+                    });
+                    
+                    // Calcular distancias
+                    await calcularDistanciasServicios(servicios);
+                }
+                
+            } catch (error) {
+                console.error('❌ Error cargando ubicaciones:', error);
+            }
         }
         
         // Mostrar servicios en el grid
@@ -1636,9 +1839,44 @@
                     
                     <div class="servicio-features">
                         ${servicio.envioDomicilio ? '<span class="servicio-feature"><i class="fas fa-truck"></i> Envío a domicilio</span>' : ''}
-                        ${servicio.distancia ? `<span class="servicio-feature"><i class="fas fa-map-marker-alt"></i> ${servicio.distancia} km</span>` : ''}
+                        ${servicio.distancia !== null && servicio.distancia !== undefined ? `<span class="servicio-feature" style="color: #10B981; font-weight: 600;"><i class="fas fa-map-marker-alt"></i> ${servicio.distancia} km</span>` : ''}
                         ${servicio.telefono ? `<span class="servicio-feature"><i class="fas fa-phone"></i> ${servicio.telefono}</span>` : ''}
                     </div>
+                    
+                    ${servicio.ubicacion ? `
+                        <div class="servicio-ubicacion" style="margin-top: 12px; padding: 12px; background: #F9FAFB; border-radius: 8px; border-left: 3px solid ${color};">
+                            <div style="display: flex; align-items: start; gap: 10px;">
+                                <i class="fas fa-map-marker-alt" style="color: ${color}; margin-top: 3px;"></i>
+                                <div style="flex: 1;">
+                                    <div style="font-weight: 600; color: #374151; margin-bottom: 4px;">
+                                        ${servicio.ubicacion.nombre_ubicacion || 'Ubicación'}
+                                    </div>
+                                    <div style="font-size: 0.9rem; color: #6B7280; line-height: 1.4; margin-bottom: 6px;">
+                                        ${servicio.ubicacion.direccion || ''}
+                                    </div>
+                                    ${servicio.ubicacion.horarios ? `
+                                        <div style="font-size: 0.85rem; color: #9CA3AF; margin-bottom: 4px;">
+                                            <i class="fas fa-clock"></i> ${formatearHorarios(servicio.ubicacion.horarios)}
+                                        </div>
+                                    ` : ''}
+                                    ${servicio.ubicacion.contacto ? `
+                                        <div style="font-size: 0.85rem; color: #9CA3AF; margin-bottom: 4px;">
+                                            <i class="fas fa-phone"></i> ${servicio.ubicacion.contacto}
+                                        </div>
+                                    ` : ''}
+                                    ${servicio.ubicacion.direccion ? `
+                                        <a href="https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(servicio.ubicacion.direccion)}" 
+                                           target="_blank" 
+                                           style="display: inline-flex; align-items: center; gap: 6px; font-size: 0.85rem; color: ${color}; text-decoration: none; margin-top: 6px; font-weight: 500;"
+                                           onmouseover="this.style.textDecoration='underline'"
+                                           onmouseout="this.style.textDecoration='none'">
+                                            <i class="fas fa-external-link-alt"></i> Ver en Google Maps
+                                        </a>
+                                    ` : ''}
+                                </div>
+                            </div>
+                        </div>
+                    ` : ''}
                     
                     <div class="servicio-actions">
                         <button class="btn-servicio btn-contactar" onclick="contactarServicio('${servicio.id}')">
@@ -1671,6 +1909,41 @@
             return nombres[categoria] || 'Servicio';
         }
         
+        // Formatear horarios desde JSONB o string
+        function formatearHorarios(horarios) {
+            if (!horarios) return '';
+            
+            // Si es string, devolverlo directamente
+            if (typeof horarios === 'string') {
+                return horarios;
+            }
+            
+            // Si es objeto JSONB, formatearlo
+            if (typeof horarios === 'object') {
+                const dias = ['lunes', 'martes', 'miercoles', 'jueves', 'viernes', 'sabado', 'domingo'];
+                const horariosArray = [];
+                
+                dias.forEach(dia => {
+                    if (horarios[dia]) {
+                        const diaNombre = dia.charAt(0).toUpperCase() + dia.slice(1);
+                        horariosArray.push(`${diaNombre}: ${horarios[dia]}`);
+                    }
+                });
+                
+                if (horariosArray.length > 0) {
+                    return horariosArray.join(' | ');
+                }
+                
+                // Si no tiene estructura de días, intentar mostrar valores
+                const valores = Object.values(horarios);
+                if (valores.length > 0) {
+                    return valores.join(', ');
+                }
+            }
+            
+            return 'Horarios disponibles';
+        }
+        
         // Configurar filtros de servicios
         function configurarFiltrosServicios() {
             const busquedaInput = document.getElementById('busquedaServicios');
@@ -1688,6 +1961,7 @@
             const envíoDomicilio = document.getElementById('envioDomicilio')?.checked || false;
             const masBarato = document.getElementById('masBarato')?.checked || false;
             const masCercano = document.getElementById('masCercano')?.checked || false;
+            const radioBusqueda = parseFloat(document.getElementById('radioBusqueda')?.value) || 0;
             
             let serviciosFiltrados = [...window.todosLosServicios];
             
@@ -1719,11 +1993,26 @@
                 );
             }
             
+            // Filtro por radio de búsqueda (distancia)
+            if (radioBusqueda > 0) {
+                serviciosFiltrados = serviciosFiltrados.filter(servicio => {
+                    if (servicio.distancia === null || servicio.distancia === undefined) {
+                        return false; // Excluir servicios sin ubicación si hay radio activo
+                    }
+                    return parseFloat(servicio.distancia) <= radioBusqueda;
+                });
+            }
+            
             // Ordenamiento
             if (masBarato) {
                 serviciosFiltrados.sort((a, b) => (parseFloat(a.precio) || 0) - (parseFloat(b.precio) || 0));
             } else if (masCercano) {
-                serviciosFiltrados.sort((a, b) => (parseFloat(a.distancia) || 0) - (parseFloat(b.distancia) || 0));
+                // Ordenar por distancia (los que tienen distancia primero, luego los que no)
+                serviciosFiltrados.sort((a, b) => {
+                    const distA = a.distancia !== null && a.distancia !== undefined ? parseFloat(a.distancia) : Infinity;
+                    const distB = b.distancia !== null && b.distancia !== undefined ? parseFloat(b.distancia) : Infinity;
+                    return distA - distB;
+                });
             }
             
             // Actualizar variable global
@@ -2414,5 +2703,102 @@
     
     <!-- Sistema de Celebración para Página Pública de Tienda -->
     <script src="../../js/tienda-celebracion-publica.js"></script>
+    
+    <!-- Widget de Chat de Email - Brevo -->
+    <script src="../../js/widget-brevo-chat.js"></script>
+    
+    <!-- Sistema de Historias con Corazón para Página de Tienda -->
+    <script src="../../js/historias-corazon-tienda.js"></script>
+    <script>
+        // Inicializar historias cuando la página esté lista
+        document.addEventListener('DOMContentLoaded', () => {
+            setTimeout(() => {
+                if (typeof HistoriasCorazonTienda !== 'undefined') {
+                    // Obtener ID de la tienda desde la URL o localStorage
+                    const tiendaId = window.location.pathname.split('/')[2] || 'ejemplo-tienda';
+                    HistoriasCorazonTienda.init(tiendaId);
+                }
+            }, 1000);
+        });
+    </script>
+    
+    <style>
+        .historia-tienda-container {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        
+        .historia-tienda-card {
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .historia-tienda-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, #667eea, #ec4899);
+        }
+        
+        .historia-tienda-header {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+        
+        .historia-tienda-avatar {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 3px solid #667eea;
+        }
+        
+        .historia-tienda-info h3 {
+            margin: 0;
+            color: #1e293b;
+            font-size: 1.5rem;
+        }
+        
+        .historia-tienda-info p {
+            margin: 5px 0 0 0;
+            color: #64748b;
+        }
+        
+        .historia-tienda-contenido {
+            color: #475569;
+            line-height: 1.8;
+            font-size: 1.1rem;
+            margin-bottom: 20px;
+        }
+        
+        .historia-tienda-consejos {
+            background: #F0F9FF;
+            border-left: 4px solid #3B82F6;
+            padding: 20px;
+            border-radius: 8px;
+            margin-top: 25px;
+        }
+        
+        .historia-tienda-consejos h5 {
+            color: #1E40AF;
+            margin-bottom: 10px;
+            font-size: 1.1rem;
+        }
+        
+        .historia-tienda-consejos p {
+            color: #1E3A8A;
+            line-height: 1.7;
+            margin: 0;
+        }
+    </style>
 </body>
 </html>

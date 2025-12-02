@@ -16,6 +16,157 @@ const CONFIG_EMPRESA = {
     horarioComercial: 'Soporte disponible 24/7'
 };
 
+// ===== SISTEMA DE GEOLOCALIZACIÓN Y DISTANCIAS =====
+let ubicacionUsuarioGlobal = null;
+
+// Obtener ubicación del usuario (reutilizable)
+async function obtenerUbicacionUsuarioGlobal() {
+    return new Promise((resolve, reject) => {
+        if (!navigator.geolocation) {
+            console.log('⚠️ Geolocalización no disponible en este navegador');
+            resolve(null);
+            return;
+        }
+        
+        // Verificar si ya tenemos la ubicación guardada
+        const ubicacionGuardada = localStorage.getItem('cresalia_ubicacion_usuario');
+        if (ubicacionGuardada) {
+            try {
+                const ubicacion = JSON.parse(ubicacionGuardada);
+                const fechaGuardada = new Date(ubicacion.fecha);
+                const ahora = new Date();
+                const horasTranscurridas = (ahora - fechaGuardada) / (1000 * 60 * 60);
+                
+                // Si la ubicación tiene menos de 1 hora, usarla
+                if (horasTranscurridas < 1) {
+                    ubicacionUsuarioGlobal = ubicacion;
+                    console.log('✅ Ubicación cargada desde cache:', ubicacion);
+                    resolve(ubicacion);
+                    return;
+                }
+            } catch (error) {
+                console.log('⚠️ Error cargando ubicación guardada:', error);
+            }
+        }
+        
+        // Solicitar nueva ubicación
+        navigator.geolocation.getCurrentPosition(
+            (position) => {
+                const ubicacion = {
+                    latitud: position.coords.latitude,
+                    longitud: position.coords.longitude,
+                    fecha: new Date().toISOString()
+                };
+                
+                ubicacionUsuarioGlobal = ubicacion;
+                localStorage.setItem('cresalia_ubicacion_usuario', JSON.stringify(ubicacion));
+                console.log('✅ Ubicación del usuario obtenida:', ubicacion);
+                resolve(ubicacion);
+            },
+            (error) => {
+                console.log('⚠️ Error obteniendo ubicación:', error.message);
+                resolve(null);
+            },
+            {
+                enableHighAccuracy: true,
+                timeout: 10000,
+                maximumAge: 3600000 // 1 hora
+            }
+        );
+    });
+}
+
+// Calcular distancia entre dos puntos (fórmula de Haversine)
+function calcularDistanciaGlobal(lat1, lon1, lat2, lon2) {
+    const R = 6371; // Radio de la Tierra en kilómetros
+    const dLat = (lat2 - lat1) * Math.PI / 180;
+    const dLon = (lon2 - lon1) * Math.PI / 180;
+    const a = 
+        Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+        Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) *
+        Math.sin(dLon / 2) * Math.sin(dLon / 2);
+    const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+    const distancia = R * c;
+    return Math.round(distancia * 10) / 10; // Redondear a 1 decimal
+}
+
+// Cargar ubicaciones de tiendas desde Supabase o localStorage
+async function cargarUbicacionesTiendas(tiendaId) {
+    let ubicaciones = [];
+    
+    // Intentar cargar desde Supabase
+    if (window.supabase || window.SUPABASE_CLIENT) {
+        const supabase = window.supabase || window.SUPABASE_CLIENT;
+        
+        try {
+            const { data, error } = await supabase
+                .from('ubicaciones_tiendas')
+                .select('*')
+                .eq('tienda_id', tiendaId)
+                .eq('estado', 'activo');
+            
+            if (!error && data && data.length > 0) {
+                ubicaciones = data;
+                console.log('✅ Ubicaciones de tienda cargadas desde Supabase:', ubicaciones.length);
+                
+                // Guardar en localStorage como backup
+                localStorage.setItem(`ubicaciones_${tiendaId}`, JSON.stringify(ubicaciones));
+            }
+        } catch (supabaseError) {
+            console.log('⚠️ Error cargando ubicaciones desde Supabase:', supabaseError);
+        }
+    }
+    
+    // Si no hay en Supabase, intentar desde localStorage
+    if (ubicaciones.length === 0) {
+        const ubicacionesGuardadas = localStorage.getItem(`ubicaciones_${tiendaId}`);
+        if (ubicacionesGuardadas) {
+            ubicaciones = JSON.parse(ubicacionesGuardadas);
+            console.log('✅ Ubicaciones de tienda cargadas desde localStorage:', ubicaciones.length);
+        }
+    }
+    
+    return ubicaciones;
+}
+
+// Calcular distancias para tiendas
+async function calcularDistanciasTiendas(tiendas) {
+    if (!ubicacionUsuarioGlobal) {
+        await obtenerUbicacionUsuarioGlobal();
+    }
+    
+    if (!ubicacionUsuarioGlobal) {
+        console.log('⚠️ No se pudo obtener la ubicación del usuario');
+        return tiendas;
+    }
+    
+    for (let tienda of tiendas) {
+        // Cargar ubicaciones de la tienda
+        const ubicaciones = await cargarUbicacionesTiendas(tienda.id || tienda.slug);
+        
+        if (ubicaciones.length > 0) {
+            // Usar la primera ubicación activa
+            const ubicacion = ubicaciones[0];
+            
+            if (ubicacion.latitud && ubicacion.longitud) {
+                tienda.distancia = calcularDistanciaGlobal(
+                    ubicacionUsuarioGlobal.latitud,
+                    ubicacionUsuarioGlobal.longitud,
+                    parseFloat(ubicacion.latitud),
+                    parseFloat(ubicacion.longitud)
+                );
+                tienda.ubicacion = ubicacion;
+            } else {
+                tienda.distancia = null;
+            }
+        } else {
+            tienda.distancia = null;
+        }
+    }
+    
+    return tiendas;
+}
+
 // ===== DATOS DE PRODUCTOS REALES =====
 const PRODUCTOS_DATA = [
     // Los productos se cargarán dinámicamente desde el panel de administración
@@ -4925,6 +5076,208 @@ function cerrarLanguageModal() {
         modal.remove();
     }
 }
+
+// ===== SISTEMA DE TIENDAS CON DISTANCIAS =====
+let todasLasTiendas = [];
+let tiendasFiltradas = [];
+
+// Cargar tiendas desde localStorage o Supabase
+async function cargarTiendas() {
+    try {
+        let tiendas = [];
+        
+        // Intentar cargar desde Supabase
+        if (window.supabase || window.SUPABASE_CLIENT) {
+            const supabase = window.supabase || window.SUPABASE_CLIENT;
+            
+            try {
+                // Cargar tiendas desde Supabase (ajustar según tu estructura de tabla)
+                const { data, error } = await supabase
+                    .from('tiendas')
+                    .select('*')
+                    .eq('activo', true)
+                    .limit(50);
+                
+                if (!error && data && data.length > 0) {
+                    tiendas = data;
+                    console.log('✅ Tiendas cargadas desde Supabase:', tiendas.length);
+                }
+            } catch (supabaseError) {
+                console.log('⚠️ Error cargando tiendas desde Supabase:', supabaseError);
+            }
+        }
+        
+        // Si no hay en Supabase, intentar desde localStorage
+        if (tiendas.length === 0) {
+            // Buscar todas las tiendas guardadas en localStorage
+            const keys = Object.keys(localStorage);
+            const tiendasKeys = keys.filter(key => key.startsWith('tienda_') && key !== 'tienda_actual');
+            
+            tiendas = tiendasKeys.map(key => {
+                try {
+                    const tienda = JSON.parse(localStorage.getItem(key));
+                    return {
+                        id: tienda.id || key.replace('tienda_', ''),
+                        slug: tienda.slug || tienda.id || key.replace('tienda_', ''),
+                        nombre: tienda.nombre || tienda.nombreTienda || 'Tienda sin nombre',
+                        descripcion: tienda.descripcion || tienda.descripcionTienda || '',
+                        categoria: tienda.categoria || 'general',
+                        imagen: tienda.imagenesVideos?.logo || tienda.logo || './assets/logo/logo-cresalia.png',
+                        activo: true
+                    };
+                } catch (e) {
+                    return null;
+                }
+            }).filter(t => t !== null);
+            
+            console.log('✅ Tiendas cargadas desde localStorage:', tiendas.length);
+        }
+        
+        // Calcular distancias
+        if (tiendas.length > 0) {
+            await calcularDistanciasTiendas(tiendas);
+        }
+        
+        todasLasTiendas = tiendas;
+        tiendasFiltradas = [...tiendas];
+        
+        // Renderizar tiendas
+        renderizarTiendas(tiendas);
+        
+        // Configurar listener para búsqueda
+        const busquedaInput = document.getElementById('busquedaTiendas');
+        if (busquedaInput) {
+            busquedaInput.addEventListener('input', aplicarFiltrosTiendas);
+        }
+        
+    } catch (error) {
+        console.error('❌ Error cargando tiendas:', error);
+    }
+}
+
+// Renderizar tiendas en el grid
+function renderizarTiendas(tiendas) {
+    const tiendasGrid = document.getElementById('tiendasGrid');
+    if (!tiendasGrid) return;
+    
+    if (tiendas.length === 0) {
+        tiendasGrid.innerHTML = `
+            <div class="tienda-card" style="grid-column: 1 / -1;">
+                <div class="tienda-placeholder">
+                    <i class="fas fa-store"></i>
+                    <h3>No hay tiendas disponibles</h3>
+                    <p>Las tiendas aparecerán aquí cuando nuestros usuarios comiencen a usarlas</p>
+                </div>
+            </div>
+        `;
+        return;
+    }
+    
+    tiendasGrid.innerHTML = '';
+    tiendas.forEach(tienda => {
+        const tiendaCard = crearTiendaCard(tienda);
+        tiendasGrid.innerHTML += tiendaCard;
+    });
+}
+
+// Crear tarjeta de tienda
+function crearTiendaCard(tienda) {
+    const distanciaHTML = tienda.distancia !== null && tienda.distancia !== undefined 
+        ? `<div style="display: inline-flex; align-items: center; gap: 6px; background: #D1FAE5; color: #065F46; padding: 6px 12px; border-radius: 20px; font-weight: 600; font-size: 0.9rem; margin-top: 10px;">
+            <i class="fas fa-map-marker-alt"></i> ${tienda.distancia} km
+          </div>`
+        : '';
+    
+    const ubicacionHTML = tienda.ubicacion 
+        ? `<div style="margin-top: 12px; padding: 12px; background: #F9FAFB; border-radius: 8px; border-left: 3px solid #8B5CF6;">
+            <div style="font-size: 0.9rem; color: #6B7280; line-height: 1.4;">
+                <i class="fas fa-map-marker-alt" style="color: #8B5CF6;"></i> ${tienda.ubicacion.direccion || 'Ubicación disponible'}
+            </div>
+            ${tienda.ubicacion.direccion ? `
+                <a href="https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(tienda.ubicacion.direccion)}" 
+                   target="_blank" 
+                   style="display: inline-flex; align-items: center; gap: 6px; font-size: 0.85rem; color: #8B5CF6; text-decoration: none; margin-top: 6px; font-weight: 500;">
+                    <i class="fas fa-external-link-alt"></i> Ver en Google Maps
+                </a>
+            ` : ''}
+          </div>`
+        : '';
+    
+    return `
+        <div class="tienda-card" style="background: white; border-radius: 12px; padding: 20px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); transition: transform 0.3s, box-shadow 0.3s;">
+            <div style="text-align: center; margin-bottom: 15px;">
+                <img src="${tienda.imagen}" alt="${tienda.nombre}" 
+                     style="width: 80px; height: 80px; border-radius: 50%; object-fit: cover; border: 3px solid #E5E7EB;">
+            </div>
+            <h3 style="text-align: center; color: #111827; margin-bottom: 10px; font-size: 1.2rem;">${tienda.nombre}</h3>
+            <p style="text-align: center; color: #6B7280; font-size: 0.9rem; margin-bottom: 15px; line-height: 1.5;">
+                ${tienda.descripcion || 'Tienda creada con Cresalia'}
+            </p>
+            ${distanciaHTML}
+            ${ubicacionHTML}
+            <div style="margin-top: 15px; text-align: center;">
+                <a href="tiendas/${tienda.slug || tienda.id}/index.html" 
+                   style="display: inline-block; background: linear-gradient(135deg, #8B5CF6, #A78BFA); color: white; padding: 10px 20px; border-radius: 8px; text-decoration: none; font-weight: 600; transition: transform 0.2s;"
+                   onmouseover="this.style.transform='scale(1.05)'"
+                   onmouseout="this.style.transform='scale(1)'">
+                    <i class="fas fa-store"></i> Visitar Tienda
+                </a>
+            </div>
+        </div>
+    `;
+}
+
+// Aplicar filtros de tiendas
+function aplicarFiltrosTiendas() {
+    const busqueda = document.getElementById('busquedaTiendas')?.value.toLowerCase() || '';
+    const masCercano = document.getElementById('masCercanoTiendas')?.checked || false;
+    const radioBusqueda = parseFloat(document.getElementById('radioBusquedaTiendas')?.value) || 0;
+    
+    let tiendasFiltradas = [...todasLasTiendas];
+    
+    // Filtro por búsqueda
+    if (busqueda) {
+        tiendasFiltradas = tiendasFiltradas.filter(tienda => 
+            tienda.nombre.toLowerCase().includes(busqueda) ||
+            tienda.descripcion?.toLowerCase().includes(busqueda) ||
+            tienda.categoria?.toLowerCase().includes(busqueda)
+        );
+    }
+    
+    // Filtro por radio de búsqueda (distancia)
+    if (radioBusqueda > 0) {
+        tiendasFiltradas = tiendasFiltradas.filter(tienda => {
+            if (tienda.distancia === null || tienda.distancia === undefined) {
+                return false; // Excluir tiendas sin ubicación si hay radio activo
+            }
+            return parseFloat(tienda.distancia) <= radioBusqueda;
+        });
+    }
+    
+    // Ordenamiento
+    if (masCercano) {
+        // Ordenar por distancia (los que tienen distancia primero, luego los que no)
+        tiendasFiltradas.sort((a, b) => {
+            const distA = a.distancia !== null && a.distancia !== undefined ? parseFloat(a.distancia) : Infinity;
+            const distB = b.distancia !== null && b.distancia !== undefined ? parseFloat(b.distancia) : Infinity;
+            return distA - distB;
+        });
+    }
+    
+    // Actualizar variable global
+    window.tiendasFiltradas = tiendasFiltradas;
+    
+    // Renderizar tiendas filtradas
+    renderizarTiendas(tiendasFiltradas);
+}
+
+// Inicializar sistema de tiendas al cargar la página
+document.addEventListener('DOMContentLoaded', function() {
+    // Cargar tiendas después de un pequeño delay para asegurar que todo esté listo
+    setTimeout(() => {
+        cargarTiendas();
+    }, 1000);
+});
 
 // Cambiar idioma
 function cambiarIdioma(codigoIdioma) {
