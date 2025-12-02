@@ -5,7 +5,9 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "validate-security": "node scripts/security/validate-no-exposed-keys.js",
-    "pre-commit": "node scripts/security/pre-commit-hook.js"
+    "pre-commit": "node scripts/security/pre-commit-hook.js",
+    "pre-deploy": "node scripts/verificar-pre-deploy.js",
+    "deploy-check": "node scripts/verificar-pre-deploy.js"
   },
   "keywords": [
     "saas",
