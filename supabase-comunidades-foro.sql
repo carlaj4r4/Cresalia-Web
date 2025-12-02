@@ -49,7 +49,7 @@ CREATE TABLE IF NOT EXISTS posts_comunidades (
     etiquetas TEXT[],
     
     -- Estado y moderación
-    estado VARCHAR(50) DEFAULT 'publicado' CHECK (estado IN ('publicado', 'oculto', 'eliminado', 'moderado')),
+    estado VARCHAR(50) DEFAULT 'publicado' CHECK (estado IN ('publicado', 'pausado', 'oculto', 'eliminado', 'moderado')),
     motivo_moderacion TEXT,
     
     -- Estadísticas
@@ -78,7 +78,7 @@ CREATE TABLE IF NOT EXISTS comentarios_comunidades (
     comentario_padre_id UUID REFERENCES comentarios_comunidades(id) ON DELETE CASCADE,
     
     -- Estado
-    estado VARCHAR(50) DEFAULT 'publicado' CHECK (estado IN ('publicado', 'oculto', 'eliminado', 'moderado')),
+    estado VARCHAR(50) DEFAULT 'publicado' CHECK (estado IN ('publicado', 'pausado', 'oculto', 'eliminado', 'moderado')),
     
     -- Fechas
     created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
