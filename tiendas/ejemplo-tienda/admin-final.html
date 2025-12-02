@@ -1137,6 +1137,13 @@
                         </a>
                     </li>
                     <li class="nav-item">
+                        <a href="#" class="nav-link" onclick="mostrarSeccion('historias-corazon')">
+                            <i class="fas fa-heart"></i>
+                            <span>Mi Historia</span>
+                            <small style="display: block; font-size: 0.7rem; opacity: 0.8;">💜 Comparte tu historia</small>
+                        </a>
+                    </li>
+                    <li class="nav-item">
                         <a href="#" class="nav-link" onclick="abrirHistorialSesiones()">
                             <i class="fas fa-shield-alt"></i>
                             <span>Sesiones</span>
@@ -1386,6 +1393,13 @@
                         <i class="fas fa-comments"></i> Gestionar Feedbacks
                     </button>
                     <p style="margin-top: 1rem; color: #6B7280;">Haz click para abrir el sistema completo de feedbacks de tu tienda.</p>
+                </div>
+            </div>
+            
+            <!-- Sección: Mi Historia con Corazón -->
+            <div id="historias-corazon" class="content-section">
+                <div id="seccion-historias-corazon">
+                    <!-- El contenido se carga dinámicamente -->
                 </div>
             </div>
             
@@ -4513,10 +4527,60 @@
                                 </div>
                                 <div id="tabContenidoMultimedia" style="display: none;">
                                     <h3 style="margin: 0 0 20px; color: #374151;">📸 Imágenes y Videos</h3>
-                                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px;">
-                                        <div><label style="display: block; margin-bottom: 8px; font-weight: 600; color: #374151;">Banner Principal (URL)</label><input type="url" id="bannerPrincipalConfig" value="${config.imagenesVideos.bannerPrincipal}" style="width: 100%; padding: 10px; border: 1px solid #D1D5DB; border-radius: 8px;"></div>
-                                        <div><label style="display: block; margin-bottom: 8px; font-weight: 600; color: #374151;">Logo (URL)</label><input type="url" id="logoConfig" value="${config.imagenesVideos.logo}" style="width: 100%; padding: 10px; border: 1px solid #D1D5DB; border-radius: 8px;"></div>
-                                        <div style="grid-column: 1 / -1;"><label style="display: block; margin-bottom: 8px; font-weight: 600; color: #374151;">Video de Presentación (YouTube/Vimeo)</label><input type="url" id="videoPresentacionConfig" value="${config.imagenesVideos.videoPresentacion}" style="width: 100%; padding: 10px; border: 1px solid #D1D5DB; border-radius: 8px;"></div>
+                                    <p style="color: #6B7280; margin-bottom: 20px; font-size: 0.9rem;">Puedes usar una URL o subir un archivo desde tu dispositivo</p>
+                                    
+                                    <!-- Banner Principal -->
+                                    <div style="margin-bottom: 30px; padding: 20px; background: #F9FAFB; border-radius: 12px; border: 1px solid #E5E7EB;">
+                                        <label style="display: block; margin-bottom: 12px; font-weight: 600; color: #374151;">Banner Principal</label>
+                                        <div style="display: flex; gap: 10px; margin-bottom: 12px;">
+                                            <button type="button" onclick="cambiarModoMultimedia('banner', 'url')" id="btnBannerURL" class="btn-modo-multimedia active" data-activo="true" style="padding: 8px 16px; border: 2px solid #667eea; background: #667eea; color: white; border-radius: 6px; cursor: pointer; font-weight: 500;">🌐 Usar URL</button>
+                                            <button type="button" onclick="cambiarModoMultimedia('banner', 'archivo')" id="btnBannerArchivo" class="btn-modo-multimedia" data-activo="false" style="padding: 8px 16px; border: 2px solid #D1D5DB; background: white; color: #374151; border-radius: 6px; cursor: pointer; font-weight: 500;">📁 Subir Archivo</button>
+                                        </div>
+                                        <div id="bannerURLContainer" style="display: block;">
+                                            <input type="url" id="bannerPrincipalConfig" value="${config.imagenesVideos.bannerPrincipal || ''}" placeholder="https://ejemplo.com/imagen.jpg" style="width: 100%; padding: 10px; border: 1px solid #D1D5DB; border-radius: 8px;">
+                                        </div>
+                                        <div id="bannerArchivoContainer" style="display: none;">
+                                            <input type="file" id="bannerPrincipalFile" accept="image/*" onchange="previsualizarArchivo('banner', this)" style="width: 100%; padding: 10px; border: 1px solid #D1D5DB; border-radius: 8px;">
+                                            <div id="previewBanner" style="margin-top: 10px; max-width: 300px; max-height: 150px; border-radius: 8px; overflow: hidden; display: none;">
+                                                <img id="imgPreviewBanner" src="" alt="Vista previa" style="width: 100%; height: auto; display: block;">
+                                            </div>
+                                        </div>
+                                    </div>
+                                    
+                                    <!-- Logo -->
+                                    <div style="margin-bottom: 30px; padding: 20px; background: #F9FAFB; border-radius: 12px; border: 1px solid #E5E7EB;">
+                                        <label style="display: block; margin-bottom: 12px; font-weight: 600; color: #374151;">Logo</label>
+                                        <div style="display: flex; gap: 10px; margin-bottom: 12px;">
+                                            <button type="button" onclick="cambiarModoMultimedia('logo', 'url')" id="btnLogoURL" class="btn-modo-multimedia active" data-activo="true" style="padding: 8px 16px; border: 2px solid #667eea; background: #667eea; color: white; border-radius: 6px; cursor: pointer; font-weight: 500;">🌐 Usar URL</button>
+                                            <button type="button" onclick="cambiarModoMultimedia('logo', 'archivo')" id="btnLogoArchivo" class="btn-modo-multimedia" data-activo="false" style="padding: 8px 16px; border: 2px solid #D1D5DB; background: white; color: #374151; border-radius: 6px; cursor: pointer; font-weight: 500;">📁 Subir Archivo</button>
+                                        </div>
+                                        <div id="logoURLContainer" style="display: block;">
+                                            <input type="url" id="logoConfig" value="${config.imagenesVideos.logo || ''}" placeholder="https://ejemplo.com/logo.png" style="width: 100%; padding: 10px; border: 1px solid #D1D5DB; border-radius: 8px;">
+                                        </div>
+                                        <div id="logoArchivoContainer" style="display: none;">
+                                            <input type="file" id="logoFile" accept="image/*" onchange="previsualizarArchivo('logo', this)" style="width: 100%; padding: 10px; border: 1px solid #D1D5DB; border-radius: 8px;">
+                                            <div id="previewLogo" style="margin-top: 10px; max-width: 200px; max-height: 200px; border-radius: 8px; overflow: hidden; display: none;">
+                                                <img id="imgPreviewLogo" src="" alt="Vista previa" style="width: 100%; height: auto; display: block;">
+                                            </div>
+                                        </div>
+                                    </div>
+                                    
+                                    <!-- Video de Presentación -->
+                                    <div style="margin-bottom: 30px; padding: 20px; background: #F9FAFB; border-radius: 12px; border: 1px solid #E5E7EB;">
+                                        <label style="display: block; margin-bottom: 12px; font-weight: 600; color: #374151;">Video de Presentación</label>
+                                        <div style="display: flex; gap: 10px; margin-bottom: 12px;">
+                                            <button type="button" onclick="cambiarModoMultimedia('video', 'url')" id="btnVideoURL" class="btn-modo-multimedia active" data-activo="true" style="padding: 8px 16px; border: 2px solid #667eea; background: #667eea; color: white; border-radius: 6px; cursor: pointer; font-weight: 500;">🌐 Usar URL (YouTube/Vimeo)</button>
+                                            <button type="button" onclick="cambiarModoMultimedia('video', 'archivo')" id="btnVideoArchivo" class="btn-modo-multimedia" data-activo="false" style="padding: 8px 16px; border: 2px solid #D1D5DB; background: white; color: #374151; border-radius: 6px; cursor: pointer; font-weight: 500;">📁 Subir Video</button>
+                                        </div>
+                                        <div id="videoURLContainer" style="display: block;">
+                                            <input type="url" id="videoPresentacionConfig" value="${config.imagenesVideos.videoPresentacion || ''}" placeholder="https://youtube.com/watch?v=..." style="width: 100%; padding: 10px; border: 1px solid #D1D5DB; border-radius: 8px;">
+                                        </div>
+                                        <div id="videoArchivoContainer" style="display: none;">
+                                            <input type="file" id="videoPresentacionFile" accept="video/*" onchange="previsualizarArchivo('video', this)" style="width: 100%; padding: 10px; border: 1px solid #D1D5DB; border-radius: 8px;">
+                                            <div id="previewVideo" style="margin-top: 10px; max-width: 400px; display: none;">
+                                                <video id="videoPreviewVideo" controls style="width: 100%; border-radius: 8px; display: block;"></video>
+                                            </div>
+                                        </div>
                                     </div>
                                 </div>
                                 <div id="tabContenidoBot" style="display: none;">
@@ -4548,6 +4612,100 @@
                 </div>
             `;
             document.body.appendChild(modal);
+        }
+        
+        // Variables para almacenar archivos convertidos a base64
+        const archivosMultimedia = {
+            banner: null,
+            logo: null,
+            video: null
+        };
+        
+        function cambiarModoMultimedia(tipo, modo) {
+            // Actualizar botones
+            const btnURL = document.getElementById(`btn${tipo.charAt(0).toUpperCase() + tipo.slice(1)}URL`);
+            const btnArchivo = document.getElementById(`btn${tipo.charAt(0).toUpperCase() + tipo.slice(1)}Archivo`);
+            
+            if (modo === 'url') {
+                btnURL.style.background = '#667eea';
+                btnURL.style.borderColor = '#667eea';
+                btnURL.style.color = 'white';
+                btnArchivo.style.background = 'white';
+                btnArchivo.style.borderColor = '#D1D5DB';
+                btnArchivo.style.color = '#374151';
+                
+                document.getElementById(`${tipo}URLContainer`).style.display = 'block';
+                document.getElementById(`${tipo}ArchivoContainer`).style.display = 'none';
+                
+                // Limpiar archivo guardado
+                archivosMultimedia[tipo] = null;
+            } else {
+                btnURL.style.background = 'white';
+                btnURL.style.borderColor = '#D1D5DB';
+                btnURL.style.color = '#374151';
+                btnArchivo.style.background = '#667eea';
+                btnArchivo.style.borderColor = '#667eea';
+                btnArchivo.style.color = 'white';
+                
+                document.getElementById(`${tipo}URLContainer`).style.display = 'none';
+                document.getElementById(`${tipo}ArchivoContainer`).style.display = 'block';
+            }
+        }
+        
+        function previsualizarArchivo(tipo, input) {
+            const file = input.files[0];
+            if (!file) return;
+            
+            const reader = new FileReader();
+            
+            reader.onload = function(e) {
+                const previewId = tipo === 'video' ? 'videoPreviewVideo' : `imgPreview${tipo.charAt(0).toUpperCase() + tipo.slice(1)}`;
+                const previewContainer = document.getElementById(`preview${tipo.charAt(0).toUpperCase() + tipo.slice(1)}`);
+                
+                if (tipo === 'video') {
+                    const video = document.getElementById(previewId);
+                    video.src = e.target.result;
+                    previewContainer.style.display = 'block';
+                } else {
+                    const img = document.getElementById(previewId);
+                    img.src = e.target.result;
+                    previewContainer.style.display = 'block';
+                }
+                
+                // Guardar como base64 para localStorage
+                archivosMultimedia[tipo] = e.target.result;
+            };
+            
+            reader.readAsDataURL(file);
+        }
+        
+        async function obtenerValorMultimedia(tipo) {
+            const btnURL = document.getElementById(`btn${tipo.charAt(0).toUpperCase() + tipo.slice(1)}URL`);
+            const estaEnModoURL = btnURL && btnURL.getAttribute('data-activo') === 'true';
+            
+            if (estaEnModoURL) {
+                // Usar URL
+                const inputId = tipo === 'banner' ? 'bannerPrincipalConfig' : 
+                               tipo === 'logo' ? 'logoConfig' : 
+                               'videoPresentacionConfig';
+                const inputURL = document.getElementById(inputId);
+                return inputURL?.value || '';
+            } else {
+                // Usar archivo (base64)
+                if (archivosMultimedia[tipo]) {
+                    return archivosMultimedia[tipo];
+                }
+                // Si no hay archivo nuevo, intentar obtener el guardado anterior
+                const config = sistemaConfiguracionTienda.configuracion;
+                const valorAnterior = tipo === 'banner' ? config.imagenesVideos?.bannerPrincipal : 
+                                     tipo === 'logo' ? config.imagenesVideos?.logo : 
+                                     config.imagenesVideos?.videoPresentacion;
+                // Si es base64 (empieza con data:), devolverlo
+                if (valorAnterior && valorAnterior.startsWith('data:')) {
+                    return valorAnterior;
+                }
+                return '';
+            }
         }
         
         function mostrarTabConfiguracion(tab) {
@@ -4590,29 +4748,40 @@
                 cuit: document.getElementById('cuitConfig')?.value || '',
                 rubro: document.getElementById('rubroConfig')?.value || ''
             };
-            const imagenesVideos = {
-                bannerPrincipal: document.getElementById('bannerPrincipalConfig')?.value || '',
-                logo: document.getElementById('logoConfig')?.value || '',
-                videoPresentacion: document.getElementById('videoPresentacionConfig')?.value || ''
-            };
-            const cresaliaBot = {
-                activo: document.getElementById('botActivoConfig')?.checked || false,
-                horarioAtencion: document.getElementById('horarioAtencionBotConfig')?.value || '',
-                mensajeBienvenida: document.getElementById('mensajeBienvenidaBotConfig')?.value || ''
-            };
-            const servicioAyuda = {
-                activo: document.getElementById('servicioAyudaActivoConfig')?.checked !== false,
-                colorPrimario: document.getElementById('colorPrimarioAyudaConfig')?.value || '#EC4899',
-                colorSecundario: document.getElementById('colorSecundarioAyudaConfig')?.value || '#F9A8D4',
-                mensajePersonalizado: document.getElementById('mensajePersonalizadoAyudaConfig')?.value || ''
-            };
-            sistemaConfiguracionTienda.actualizarInformacionTienda(informacionTienda);
-            sistemaConfiguracionTienda.actualizarUbicacion(ubicacion);
-            sistemaConfiguracionTienda.actualizarInformacionEmpresa(informacionEmpresa);
-            sistemaConfiguracionTienda.actualizarImagenesVideos(imagenesVideos);
-            sistemaConfiguracionTienda.actualizarCresaliaBot(cresaliaBot);
-            sistemaConfiguracionTienda.actualizarServicioAyuda(servicioAyuda);
-            mostrarNotificacion('✅ Configuración guardada', 'success');
+            
+            // Obtener valores de multimedia (URL o archivo)
+            Promise.all([
+                obtenerValorMultimedia('banner'),
+                obtenerValorMultimedia('logo'),
+                obtenerValorMultimedia('video')
+            ]).then(valores => {
+                const imagenesVideos = {
+                    bannerPrincipal: valores[0] || '',
+                    logo: valores[1] || '',
+                    videoPresentacion: valores[2] || ''
+                };
+                const cresaliaBot = {
+                    activo: document.getElementById('botActivoConfig')?.checked || false,
+                    horarioAtencion: document.getElementById('horarioAtencionBotConfig')?.value || '',
+                    mensajeBienvenida: document.getElementById('mensajeBienvenidaBotConfig')?.value || ''
+                };
+                const servicioAyuda = {
+                    activo: document.getElementById('servicioAyudaActivoConfig')?.checked !== false,
+                    colorPrimario: document.getElementById('colorPrimarioAyudaConfig')?.value || '#EC4899',
+                    colorSecundario: document.getElementById('colorSecundarioAyudaConfig')?.value || '#F9A8D4',
+                    mensajePersonalizado: document.getElementById('mensajePersonalizadoAyudaConfig')?.value || ''
+                };
+                sistemaConfiguracionTienda.actualizarInformacionTienda(informacionTienda);
+                sistemaConfiguracionTienda.actualizarUbicacion(ubicacion);
+                sistemaConfiguracionTienda.actualizarInformacionEmpresa(informacionEmpresa);
+                sistemaConfiguracionTienda.actualizarImagenesVideos(imagenesVideos);
+                sistemaConfiguracionTienda.actualizarCresaliaBot(cresaliaBot);
+                sistemaConfiguracionTienda.actualizarServicioAyuda(servicioAyuda);
+                mostrarNotificacion('✅ Configuración guardada', 'success');
+            }).catch(error => {
+                console.error('Error guardando multimedia:', error);
+                mostrarNotificacion('⚠️ Error al guardar multimedia', 'error');
+            });
         }
         
         function exportarConfiguracionTienda() {
@@ -10578,14 +10747,139 @@ Precio: $${precio}/mes
     <script src="../../config-supabase-seguro.js"></script>
     <script src="../../js/sistema-alertas-comunidades.js"></script>
     <script src="../../js/panel-celebracion-tiendas.js"></script>
+    <script src="../../js/panel-historias-corazon.js"></script>
     <script>
         document.addEventListener('DOMContentLoaded', () => {
             setTimeout(() => {
                 if (typeof SistemaAlertasComunidades !== 'undefined') {
                     window.alertasGlobal = new SistemaAlertasComunidades('global');
                 }
+                
+                // Inicializar panel de historias cuando se muestre la sección
+                const originalMostrarSeccion = window.mostrarSeccion;
+                window.mostrarSeccion = function(seccionId) {
+                    originalMostrarSeccion(seccionId);
+                    if (seccionId === 'historias-corazon') {
+                        // Obtener ID del vendedor (ajustar según tu sistema)
+                        const vendedorId = localStorage.getItem('tienda-id') || 'ejemplo-tienda';
+                        const tipoVendedor = 'tienda'; // o 'servicio' según corresponda
+                        panelHistorias.init(vendedorId, tipoVendedor);
+                    }
+                };
             }, 500);
         });
     </script>
+    
+    <style>
+        .historias-panel-container {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+        
+        .historias-header {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+        
+        .historias-header h2 {
+            color: #1e293b;
+            margin-bottom: 0.5rem;
+        }
+        
+        .historias-header p {
+            color: #64748b;
+        }
+        
+        .historias-form .form-group {
+            margin-bottom: 1.5rem;
+        }
+        
+        .historias-form label {
+            display: block;
+            margin-bottom: 0.5rem;
+            color: #374151;
+            font-weight: 500;
+        }
+        
+        .historias-form input,
+        .historias-form textarea,
+        .historias-form select {
+            width: 100%;
+            padding: 0.75rem;
+            border: 1px solid #d1d5db;
+            border-radius: 8px;
+            font-size: 1rem;
+        }
+        
+        .historias-form textarea {
+            resize: vertical;
+            min-height: 120px;
+        }
+        
+        .historias-form small {
+            display: block;
+            margin-top: 0.5rem;
+            color: #6b7280;
+            font-size: 0.875rem;
+        }
+        
+        .preview-foto {
+            margin-top: 1rem;
+        }
+        
+        .preview-foto img {
+            max-width: 200px;
+            border-radius: 8px;
+            border: 2px solid #e5e7eb;
+        }
+        
+        .checkbox-label {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            cursor: pointer;
+        }
+        
+        .form-actions {
+            display: flex;
+            gap: 1rem;
+            margin-top: 2rem;
+        }
+        
+        .btn-guardar-historia {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            border: none;
+            padding: 0.75rem 1.5rem;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        .btn-guardar-historia:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+        }
+        
+        .btn-eliminar-historia {
+            background: #ef4444;
+            color: white;
+            border: none;
+            padding: 0.75rem 1.5rem;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        .btn-eliminar-historia:hover {
+            background: #dc2626;
+        }
+    </style>
+    
+    <!-- Widget de Chat de Email - Brevo -->
+    <script src="../../js/widget-brevo-chat.js"></script>
 </body>
 </html>
