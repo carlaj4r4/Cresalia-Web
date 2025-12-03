@@ -590,12 +590,53 @@
         }
         
         @media (max-width: 768px) {
+            body {
+                padding: 12px;
+                overflow-x: hidden;
+            }
+            .page-wrapper {
+                max-width: 100%;
+                gap: 20px;
+            }
             .container {
-                padding: 40px 25px;
+                padding: 24px 16px;
+                border-radius: 20px;
             }
             
             h1 {
-                font-size: 2rem;
+                font-size: 1.8rem;
+                line-height: 1.3;
+            }
+            .subtitle {
+                font-size: 1.1rem;
+            }
+            .foro-container {
+                padding: 20px 16px;
+                border-radius: 20px;
+            }
+            .foro-header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 12px;
+            }
+            .foro-header > div {
+                width: 100%;
+                flex-direction: column;
+                gap: 8px;
+            }
+            .foro-header button {
+                width: 100%;
+            }
+            .btn {
+                width: 100%;
+                margin: 5px 0;
+            }
+            .community-links {
+                flex-direction: column;
+            }
+            .community-link {
+                width: 100%;
+                text-align: center;
             }
             
             .icon {
@@ -697,25 +738,25 @@
         <div class="other-communities">
             <h3>Otras Comunidades de Apoyo</h3>
             <div class="community-links">
-                <a href="../lgbtq-experiencias/index.html" class="community-link" style="background: linear-gradient(135deg, #FF6B6B, #FF8E53);">
+                <a href="../lgbtq-experiencias/" class="community-link" style="background: linear-gradient(135deg, #FF6B6B, #FF8E53);">
                     🏳️‍🌈 Experiencias LGBTQ+
                 </a>
-                <a href="../mujeres-sobrevivientes/index.html" class="community-link" style="background: linear-gradient(135deg, #C084FC, #E879F9);">
+                <a href="../mujeres-sobrevivientes/" class="community-link" style="background: linear-gradient(135deg, #C084FC, #E879F9);">
                     💜 Mujeres Sobrevivientes
                 </a>
-                <a href="../hombres-sobrevivientes/index.html" class="community-link" style="background: linear-gradient(135deg, #3B82F6, #1E40AF);">
+                <a href="../hombres-sobrevivientes/" class="community-link" style="background: linear-gradient(135deg, #3B82F6, #1E40AF);">
                     💙 Hombres Sobrevivientes
                 </a>
-                <a href="../anti-bullying/index.html" class="community-link" style="background: linear-gradient(135deg, #60A5FA, #34D399);">
+                <a href="../anti-bullying/" class="community-link" style="background: linear-gradient(135deg, #60A5FA, #34D399);">
                     🛡️ Anti-Bullying
                 </a>
-                <a href="../discapacidad/index.html" class="community-link" style="background: linear-gradient(135deg, #8B5CF6, #A78BFA);">
+                <a href="../discapacidad/" class="community-link" style="background: linear-gradient(135deg, #8B5CF6, #A78BFA);">
                     ♿ Personas con Discapacidad
                 </a>
-                <a href="../inmigrantes-racializados/index.html" class="community-link" style="background: linear-gradient(135deg, #D97706, #F59E0B);">
+                <a href="../inmigrantes-racializados/" class="community-link" style="background: linear-gradient(135deg, #D97706, #F59E0B);">
                     🌍 Inmigrantes y Racializados
                 </a>
-                <a href="../adultos-mayores/index.html" class="community-link" style="background: linear-gradient(135deg, #F59E0B, #FBBF24);">
+                <a href="../adultos-mayores/" class="community-link" style="background: linear-gradient(135deg, #F59E0B, #FBBF24);">
                     👴👵 Adultos Mayores
                 </a>
                 <a href="../cuidadores/index.html" class="community-link" style="background: linear-gradient(135deg, #10B981, #34D399);">
