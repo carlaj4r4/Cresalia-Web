@@ -2,9 +2,9 @@
 // SERVICE WORKER PARA CRESALIA PWA
 // ============================================
 
-const CACHE_NAME = 'cresalia-v2.0.0';
-const STATIC_CACHE = 'cresalia-static-v2.0.0';
-const DYNAMIC_CACHE = 'cresalia-dynamic-v2.0.0';
+const CACHE_NAME = 'cresalia-v2.1.0';
+const STATIC_CACHE = 'cresalia-static-v2.1.0';
+const DYNAMIC_CACHE = 'cresalia-dynamic-v2.1.0';
 
 // Archivos estáticos críticos
 const STATIC_FILES = [
@@ -15,7 +15,7 @@ const STATIC_FILES = [
   '/tiendas/ejemplo-tienda/index.html',
   '/tiendas/ejemplo-tienda/admin-final.html',
   '/demo-buyer-interface.html',
-  '/manifest.json',
+  '/manifest.json?v=4.0',
   '/vercel.json',
   // CSS
   'https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css',
