@@ -1,9 +1,95 @@
 // ===== SISTEMA DE AUTENTICACIÓN CRESALIA =====
 // Funciones para login, registro y gestión de sesiones
 
-// ===== REGISTRO DE NUEVOS CLIENTES =====
+// ===== REGISTRO DE NUEVOS COMPRADORES =====
+async function registrarNuevoComprador(datos) {
+    console.log('📝 Registrando nuevo comprador...');
+    
+    const { email, password, nombreCompleto } = datos;
+    
+    try {
+        const supabase = initSupabase();
+        
+        if (!supabase) {
+            throw new Error('No se pudo inicializar Supabase');
+        }
+        
+        // 1. Crear usuario en Supabase Auth
+        console.log('📧 Intentando registrar comprador:', { email, nombreCompleto });
+        
+        const { data: authData, error: authError } = await supabase.auth.signUp({
+            email: email,
+            password: password,
+            options: {
+                data: {
+                    nombre_completo: nombreCompleto,
+                    tipo_usuario: 'comprador'
+                }
+            }
+        });
+        
+        console.log('📊 Respuesta de signUp:', { data: authData, error: authError });
+        
+        if (authError) {
+            console.error('❌ Error en signUp:', authError);
+            throw authError;
+        }
+        
+        // Verificar que el usuario se creó
+        if (!authData.user) {
+            throw new Error('No se pudo crear el usuario. Verifica tu configuración de Supabase.');
+        }
+        
+        console.log('✅ Usuario creado en Auth:', authData.user.id);
+        
+        // 2. Crear registro en tabla de compradores
+        const { data: compradorData, error: compradorError } = await supabase
+            .from('compradores')
+            .insert([
+                {
+                    user_id: authData.user.id,
+                    nombre_completo: nombreCompleto,
+                    email: email,
+                    activo: true,
+                    fecha_registro: new Date().toISOString()
+                }
+            ])
+            .select()
+            .single();
+        
+        if (compradorError) {
+            console.error('❌ Error creando comprador:', compradorError);
+            // Si falla la inserción en compradores, intentar eliminar el usuario de auth
+            await supabase.auth.admin.deleteUser(authData.user.id).catch(() => {});
+            throw compradorError;
+        }
+        
+        console.log('✅ Comprador registrado exitosamente');
+        
+        // Enviar mensaje de bienvenida automático
+        await enviarMensajeBienvenida(email, nombreCompleto, 'comprador');
+        
+        return {
+            success: true,
+            user: authData.user,
+            comprador: compradorData,
+            token: authData.session?.access_token,
+            mensaje: '¡Registro exitoso! Revisa tu email para verificar tu cuenta.'
+        };
+        
+    } catch (error) {
+        console.error('❌ Error en registro de comprador:', error);
+        return {
+            success: false,
+            error: error.message,
+            mensaje: 'Error al registrar. ' + error.message
+        };
+    }
+}
+
+// ===== REGISTRO DE NUEVOS CLIENTES (VENDEDORES) =====
 async function registrarNuevoCliente(datos) {
-    console.log('📝 Registrando nuevo cliente...');
+    console.log('📝 Registrando nuevo cliente (vendedor)...');
     
     const { email, password, nombreTienda, plan } = datos;
     
@@ -491,6 +577,7 @@ function generarMensajeBienvenidaComprador(nombre) {
 }
 
 // Hacer funciones disponibles globalmente
+window.registrarNuevoComprador = registrarNuevoComprador;
 window.registrarNuevoCliente = registrarNuevoCliente;
 window.loginCliente = loginCliente;
 window.logoutCliente = logoutCliente;

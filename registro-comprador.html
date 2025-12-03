@@ -358,7 +358,8 @@
     </div>
     
     <!-- Scripts -->
-    <script src="auth/supabase-config.js"></script>
+    <script src="config-supabase-seguro.js"></script>
+    <script src="auth/auth-system.js"></script>
     
     <script>
         document.addEventListener('DOMContentLoaded', function() {
@@ -390,15 +391,19 @@
                 btnRegistro.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Creando tu cuenta...';
                 
                 try {
-                    console.log('🚀 Llamando a registrarNuevoCliente para comprador...');
-                    console.log('📋 Función disponible:', typeof registrarNuevoCliente);
+                    console.log('🚀 Llamando a registrarNuevoComprador...');
+                    console.log('📋 Función disponible:', typeof registrarNuevoComprador);
                     
-                    // Usar la función centralizada de registro
-                    const resultado = await registrarNuevoCliente({
+                    // Verificar que la función esté disponible
+                    if (typeof registrarNuevoComprador === 'undefined') {
+                        throw new Error('La función de registro no está disponible. Verifica que los scripts se hayan cargado correctamente.');
+                    }
+                    
+                    // Usar la función específica para compradores
+                    const resultado = await registrarNuevoComprador({
                         email: email,
                         password: password,
-                        nombreTienda: nombre, // Para compradores, usamos el nombre como "tienda"
-                        plan: 'free' // Los compradores siempre tienen plan free
+                        nombreCompleto: nombre
                     });
                     
                     console.log('📊 Resultado del registro comprador:', resultado);
