@@ -296,16 +296,6 @@
   ],
   "cleanUrls": false,
   "trailingSlash": false,
-  "routes": [
-    {
-      "src": "/comunidades/(.*)/$",
-      "dest": "/comunidades/$1/index.html"
-    },
-    {
-      "src": "/comunidades/(.*)$",
-      "dest": "/comunidades/$1/index.html"
-    }
-  ],
   "git": {
     "deploymentEnabled": {
       "main": true
