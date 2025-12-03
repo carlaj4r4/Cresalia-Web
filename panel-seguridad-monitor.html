@@ -12,6 +12,29 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <meta http-equiv="Content-Security-Policy" content="default-src 'self' https:; style-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net https://cdnjs.cloudflare.com; script-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net https://cdnjs.cloudflare.com; connect-src 'self' https://api.github.com https:;">
+    
+    <!-- Sistema de Seguridad para Paneles Admin -->
+    <script src="js/seguridad-paneles-admin.js"></script>
+    <script src="js/seguridad-validacion-entrada.js"></script>
+    
+    <script>
+        // Verificar acceso antes de mostrar contenido
+        document.addEventListener('DOMContentLoaded', function() {
+            if (typeof window.seguridadAdmin !== 'undefined') {
+                if (!window.seguridadAdmin.verificarAutenticacion()) {
+                    alert('⚠️ Acceso no autorizado. Redirigiendo...');
+                    window.location.href = 'admin-cresalia.html';
+                }
+            } else {
+                const sessionData = localStorage.getItem('adminSession');
+                if (!sessionData) {
+                    alert('⚠️ Acceso no autorizado. Redirigiendo...');
+                    window.location.href = 'admin-cresalia.html';
+                }
+            }
+        });
+    </script>
+    
     <style>
         body {
             background: linear-gradient(135deg, #0f172a, #1e293b);

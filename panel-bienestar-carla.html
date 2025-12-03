@@ -12,6 +12,30 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Sistema de Seguridad para Paneles Admin -->
+    <script src="js/seguridad-paneles-admin.js"></script>
+    <script src="js/seguridad-validacion-entrada.js"></script>
+    
+    <script>
+        // Verificar acceso antes de mostrar contenido
+        document.addEventListener('DOMContentLoaded', function() {
+            if (typeof window.seguridadAdmin !== 'undefined') {
+                if (!window.seguridadAdmin.verificarAutenticacion()) {
+                    // Redirigir a login si no está autenticado
+                    alert('⚠️ Acceso no autorizado. Redirigiendo...');
+                    window.location.href = 'admin-cresalia.html';
+                }
+            } else {
+                // Si el sistema de seguridad no está disponible, verificar sesión manualmente
+                const sessionData = localStorage.getItem('adminSession');
+                if (!sessionData) {
+                    alert('⚠️ Acceso no autorizado. Redirigiendo...');
+                    window.location.href = 'admin-cresalia.html';
+                }
+            }
+        });
+    </script>
 </head>
 <body>
     <div class="container-bienestar">
