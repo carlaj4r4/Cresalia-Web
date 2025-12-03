@@ -13,46 +13,28 @@
   "categories": ["business", "productivity", "shopping"],
   "icons": [
     {
-      "src": "assets/logo/logo-cresalia.png",
+      "src": "/assets/logo/logo-cresalia.png",
       "sizes": "192x192",
       "type": "image/png",
       "purpose": "any"
     },
     {
-      "src": "assets/logo/logo-cresalia.png",
+      "src": "/assets/logo/logo-cresalia.png",
       "sizes": "512x512",
       "type": "image/png",
       "purpose": "any"
     },
     {
-      "src": "assets/logo/logo-cresalia.png",
+      "src": "/assets/logo/logo-cresalia.png",
       "sizes": "192x192",
       "type": "image/png",
       "purpose": "maskable"
     },
     {
-      "src": "assets/logo/logo-cresalia.png",
+      "src": "/assets/logo/logo-cresalia.png",
       "sizes": "512x512",
       "type": "image/png",
       "purpose": "maskable"
-    },
-    {
-      "src": "assets/logo/logo-cresalia.png",
-      "sizes": "144x144",
-      "type": "image/png",
-      "purpose": "any"
-    },
-    {
-      "src": "assets/logo/logo-cresalia.png",
-      "sizes": "96x96",
-      "type": "image/png",
-      "purpose": "any"
-    },
-    {
-      "src": "assets/logo/logo-cresalia.png",
-      "sizes": "72x72",
-      "type": "image/png",
-      "purpose": "any"
     }
   ],
   "screenshots": [
