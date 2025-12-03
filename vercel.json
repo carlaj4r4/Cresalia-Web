@@ -51,19 +51,107 @@
     },
     {
       "source": "/api/reportes-maltrato",
-      "destination": "/api/reportes-maltrato.js"
+      "destination": "/api/reportes.js?type=maltrato"
     },
     {
       "source": "/api/mantenimiento/estado",
-      "destination": "/api/mantenimiento-estado.js"
+      "destination": "/api/mantenimiento.js?action=estado"
     },
     {
       "source": "/api/mantenimiento/notificar",
-      "destination": "/api/mantenimiento-notificar.js"
+      "destination": "/api/mantenimiento.js?action=notificar"
     },
     {
       "source": "/api/alertas-servicios-enviar",
-      "destination": "/api/alertas-servicios-enviar.js"
+      "destination": "/api/reportes.js?type=alertas"
+    },
+    {
+      "source": "/api/emergencias-enviar-emails",
+      "destination": "/api/reportes.js?type=emergencias"
+    },
+    {
+      "source": "/api/cumpleanos-resumen",
+      "destination": "/api/cumpleanos.js?action=resumen"
+    },
+    {
+      "source": "/api/cumpleanos-interacciones",
+      "destination": "/api/cumpleanos.js?action=interacciones"
+    },
+    {
+      "source": "/api/cumpleaneros-compradores",
+      "destination": "/api/cumpleanos.js?action=compradores"
+    },
+    {
+      "source": "/api/compradores-cumple-consent",
+      "destination": "/api/cumpleanos.js?action=consent"
+    },
+    {
+      "source": "/api/aniversarios-celebracion",
+      "destination": "/api/aniversarios.js?action=celebracion"
+    },
+    {
+      "source": "/api/aniversarios-configuracion",
+      "destination": "/api/aniversarios.js?action=configuracion"
+    },
+    {
+      "source": "/api/comunidades-api",
+      "destination": "/api/comunidades-api.js"
+    },
+    {
+      "source": "/api/caminando-juntos",
+      "destination": "/api/comunidades-api.js?slug=caminando-juntos&tipo=publicaciones"
+    },
+    {
+      "source": "/api/injusticias-vividas",
+      "destination": "/api/comunidades-api.js?slug=injusticias-vividas&tipo=publicaciones"
+    },
+    {
+      "source": "/api/espiritualidad-fe",
+      "destination": "/api/comunidades-api.js?slug=espiritualidad-fe&tipo=publicaciones"
+    },
+    {
+      "source": "/api/libertad-economica",
+      "destination": "/api/comunidades-api.js?slug=libertad-economica&tipo=publicaciones"
+    },
+    {
+      "source": "/api/sanando-abandonos",
+      "destination": "/api/comunidades-api.js?slug=sanando-abandonos&tipo=publicaciones"
+    },
+    {
+      "source": "/api/libertad-emocional",
+      "destination": "/api/comunidades-api.js?slug=libertad-emocional&tipo=publicaciones"
+    },
+    {
+      "source": "/api/desahogo-libre",
+      "destination": "/api/comunidades-api.js?slug=desahogo-libre&tipo=publicaciones"
+    },
+    {
+      "source": "/api/animales",
+      "destination": "/api/comunidades-api.js?slug=animales&tipo=publicaciones"
+    },
+    {
+      "source": "/api/maternidad",
+      "destination": "/api/comunidades-api.js?slug=maternidad&tipo=publicaciones"
+    },
+    {
+      "source": "/api/jobs-calificaciones",
+      "destination": "/api/jobs.js?action=calificaciones"
+    },
+    {
+      "source": "/api/jobs-calificaciones-empleados",
+      "destination": "/api/jobs.js?action=calificaciones-empleados"
+    },
+    {
+      "source": "/api/jobs-verificacion-pago",
+      "destination": "/api/jobs.js?action=verificacion-pago"
+    },
+    {
+      "source": "/api/admin-tenants",
+      "destination": "/api/admin.js?action=tenants"
+    },
+    {
+      "source": "/api/admin-reportes",
+      "destination": "/api/admin.js?action=reportes"
     },
     {
       "source": "/comunidades/alertas-servicios-publicos",
