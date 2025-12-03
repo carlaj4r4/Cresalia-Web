@@ -110,6 +110,48 @@ class SistemaForoComunidades {
         if (cerrarForm) {
             cerrarForm.addEventListener('click', () => this.ocultarFormularioPost());
         }
+        
+        // Conectar tab "Mi Historial" si existe
+        this.conectarTabHistorial();
+    }
+    
+    conectarTabHistorial() {
+        // Buscar todos los tabs con data-tab="mi-historial"
+        document.querySelectorAll('[data-tab="mi-historial"]').forEach(tab => {
+            tab.addEventListener('click', () => {
+                // Esperar un poco para que el tab se active
+                setTimeout(() => {
+                    // Buscar contenedor del historial (puede tener diferentes IDs)
+                    const container = document.getElementById('mi-historial-foro-lista') || 
+                                     document.getElementById('mi-historial-lista');
+                    
+                    if (container) {
+                        // Crear contenedor si no existe
+                        if (!container.querySelector('.historial-foro-container')) {
+                            container.innerHTML = `
+                                <div class="historial-foro-container">
+                                    <div class="info-box" style="background: linear-gradient(135deg, rgba(139, 92, 246, 0.1), rgba(124, 58, 237, 0.1)); border-left-color: #8b5cf6; margin-bottom: 20px;">
+                                        <h3 style="color: #7c3aed;">📝 Mis Posts en el Foro</h3>
+                                        <p style="margin: 0; line-height: 1.8;">
+                                            Aquí podés ver todos tus posts, editarlos, pausarlos o eliminarlos.
+                                        </p>
+                                    </div>
+                                    <div id="mi-historial-foro-lista" style="margin-top: 20px;">
+                                        <div class="empty-state">
+                                            <i class="fas fa-spinner fa-spin"></i>
+                                            <p>Cargando tu historial...</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            `;
+                        }
+                        
+                        // Cargar historial
+                        this.cargarMiHistorial();
+                    }
+                }, 100);
+            });
+        });
     }
     
     mostrarFormularioPost() {
@@ -613,13 +655,222 @@ class SistemaForoComunidades {
     }
     
     async editarPost(postId) {
-        // TODO: Implementar edición
-        alert('La edición de posts estará disponible próximamente.');
+        try {
+            // Obtener el post actual
+            let post = null;
+            
+            if (this.supabase) {
+                const { data, error } = await this.supabase
+                    .from('posts_comunidades')
+                    .select('*')
+                    .eq('id', postId)
+                    .eq('autor_hash', this.autorHash)
+                    .single();
+                
+                if (error) throw error;
+                post = data;
+            } else {
+                // Modo local
+                const posts = JSON.parse(localStorage.getItem(`posts_${this.comunidadSlug}`) || '[]');
+                post = posts.find(p => p.id === postId && p.autor_hash === this.autorHash);
+            }
+            
+            if (!post) {
+                this.mostrarMensaje('No se encontró el post o no tenés permiso para editarlo.', 'error');
+                return;
+            }
+            
+            // Crear modal de edición
+            const modalHTML = `
+                <div id="modal-editar-post" style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); display: flex; align-items: center; justify-content: center; z-index: 10000;">
+                    <div style="background: white; border-radius: 20px; padding: 30px; max-width: 600px; width: 90%; max-height: 90vh; overflow-y: auto;">
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                            <h3 style="margin: 0; color: #374151;">✏️ Editar Post</h3>
+                            <button onclick="document.getElementById('modal-editar-post').remove()" style="background: none; border: none; font-size: 24px; cursor: pointer; color: #6b7280;">&times;</button>
+                        </div>
+                        <form id="form-editar-post">
+                            <div style="margin-bottom: 15px;">
+                                <label style="display: block; margin-bottom: 5px; font-weight: 600; color: #374151;">Título (opcional)</label>
+                                <input type="text" id="edit-post-titulo" value="${this.escapeHtml(post.titulo || '')}" style="width: 100%; padding: 12px; border: 2px solid #e5e7eb; border-radius: 8px; font-size: 1rem;">
+                            </div>
+                            <div style="margin-bottom: 20px;">
+                                <label style="display: block; margin-bottom: 5px; font-weight: 600; color: #374151;">Contenido</label>
+                                <textarea id="edit-post-contenido" rows="8" required style="width: 100%; padding: 12px; border: 2px solid #e5e7eb; border-radius: 8px; font-size: 1rem; resize: vertical;">${this.escapeHtml(post.contenido)}</textarea>
+                            </div>
+                            <div style="display: flex; gap: 10px;">
+                                <button type="submit" style="flex: 1; background: linear-gradient(135deg, #8b5cf6, #7c3aed); color: white; border: none; padding: 12px 24px; border-radius: 8px; cursor: pointer; font-weight: 600;">
+                                    <i class="fas fa-save"></i> Guardar Cambios
+                                </button>
+                                <button type="button" onclick="document.getElementById('modal-editar-post').remove()" style="background: #6b7280; color: white; border: none; padding: 12px 24px; border-radius: 8px; cursor: pointer; font-weight: 600;">
+                                    Cancelar
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            `;
+            
+            document.body.insertAdjacentHTML('beforeend', modalHTML);
+            
+            // Manejar envío del formulario
+            document.getElementById('form-editar-post').addEventListener('submit', async (e) => {
+                e.preventDefault();
+                
+                const titulo = document.getElementById('edit-post-titulo').value.trim();
+                const contenido = document.getElementById('edit-post-contenido').value.trim();
+                
+                if (!contenido || contenido.length < 10) {
+                    alert('Por favor, escribí al menos 10 caracteres en tu mensaje.');
+                    return;
+                }
+                
+                try {
+                    if (this.supabase) {
+                        const { error } = await this.supabase
+                            .from('posts_comunidades')
+                            .update({
+                                titulo: titulo || null,
+                                contenido: contenido,
+                                updated_at: new Date().toISOString()
+                            })
+                            .eq('id', postId)
+                            .eq('autor_hash', this.autorHash);
+                        
+                        if (error) throw error;
+                    } else {
+                        // Modo local
+                        const posts = JSON.parse(localStorage.getItem(`posts_${this.comunidadSlug}`) || '[]');
+                        const index = posts.findIndex(p => p.id === postId && p.autor_hash === this.autorHash);
+                        if (index !== -1) {
+                            posts[index].titulo = titulo || null;
+                            posts[index].contenido = contenido;
+                            posts[index].updated_at = new Date().toISOString();
+                            localStorage.setItem(`posts_${this.comunidadSlug}`, JSON.stringify(posts));
+                        }
+                    }
+                    
+                    this.mostrarMensaje('✅ Post editado correctamente.', 'success');
+                    document.getElementById('modal-editar-post').remove();
+                    this.cargarPosts();
+                    if (document.getElementById('mi-historial-foro-lista')) {
+                        this.cargarMiHistorial();
+                    }
+                } catch (error) {
+                    console.error('Error editando post:', error);
+                    this.mostrarMensaje('Error al editar el post. Por favor, intentá de nuevo.', 'error');
+                }
+            });
+            
+        } catch (error) {
+            console.error('Error al editar post:', error);
+            this.mostrarMensaje('Error al cargar el post para editar.', 'error');
+        }
     }
     
     async editarComentario(comentarioId) {
-        // TODO: Implementar edición
-        alert('La edición de comentarios estará disponible próximamente.');
+        try {
+            // Obtener el comentario actual
+            let comentario = null;
+            
+            if (this.supabase) {
+                const { data, error } = await this.supabase
+                    .from('comentarios_comunidades')
+                    .select('*')
+                    .eq('id', comentarioId)
+                    .eq('autor_hash', this.autorHash)
+                    .single();
+                
+                if (error) throw error;
+                comentario = data;
+            } else {
+                // Modo local
+                const comentarios = JSON.parse(localStorage.getItem(`comentarios_${this.comunidadSlug}`) || '[]');
+                comentario = comentarios.find(c => c.id === comentarioId && c.autor_hash === this.autorHash);
+            }
+            
+            if (!comentario) {
+                this.mostrarMensaje('No se encontró el comentario o no tenés permiso para editarlo.', 'error');
+                return;
+            }
+            
+            // Obtener el post padre para recargar comentarios después
+            const postId = comentario.post_id;
+            
+            // Crear modal de edición
+            const modalHTML = `
+                <div id="modal-editar-comentario" style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); display: flex; align-items: center; justify-content: center; z-index: 10000;">
+                    <div style="background: white; border-radius: 20px; padding: 30px; max-width: 500px; width: 90%;">
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                            <h3 style="margin: 0; color: #374151;">✏️ Editar Comentario</h3>
+                            <button onclick="document.getElementById('modal-editar-comentario').remove()" style="background: none; border: none; font-size: 24px; cursor: pointer; color: #6b7280;">&times;</button>
+                        </div>
+                        <form id="form-editar-comentario">
+                            <div style="margin-bottom: 20px;">
+                                <label style="display: block; margin-bottom: 5px; font-weight: 600; color: #374151;">Contenido</label>
+                                <textarea id="edit-comentario-contenido" rows="6" required style="width: 100%; padding: 12px; border: 2px solid #e5e7eb; border-radius: 8px; font-size: 1rem; resize: vertical;">${this.escapeHtml(comentario.contenido)}</textarea>
+                            </div>
+                            <div style="display: flex; gap: 10px;">
+                                <button type="submit" style="flex: 1; background: linear-gradient(135deg, #8b5cf6, #7c3aed); color: white; border: none; padding: 12px 24px; border-radius: 8px; cursor: pointer; font-weight: 600;">
+                                    <i class="fas fa-save"></i> Guardar Cambios
+                                </button>
+                                <button type="button" onclick="document.getElementById('modal-editar-comentario').remove()" style="background: #6b7280; color: white; border: none; padding: 12px 24px; border-radius: 8px; cursor: pointer; font-weight: 600;">
+                                    Cancelar
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            `;
+            
+            document.body.insertAdjacentHTML('beforeend', modalHTML);
+            
+            // Manejar envío del formulario
+            document.getElementById('form-editar-comentario').addEventListener('submit', async (e) => {
+                e.preventDefault();
+                
+                const contenido = document.getElementById('edit-comentario-contenido').value.trim();
+                
+                if (!contenido || contenido.length < 3) {
+                    alert('Por favor, escribí al menos 3 caracteres.');
+                    return;
+                }
+                
+                try {
+                    if (this.supabase) {
+                        const { error } = await this.supabase
+                            .from('comentarios_comunidades')
+                            .update({
+                                contenido: contenido,
+                                updated_at: new Date().toISOString()
+                            })
+                            .eq('id', comentarioId)
+                            .eq('autor_hash', this.autorHash);
+                        
+                        if (error) throw error;
+                    } else {
+                        // Modo local
+                        const comentarios = JSON.parse(localStorage.getItem(`comentarios_${this.comunidadSlug}`) || '[]');
+                        const index = comentarios.findIndex(c => c.id === comentarioId && c.autor_hash === this.autorHash);
+                        if (index !== -1) {
+                            comentarios[index].contenido = contenido;
+                            comentarios[index].updated_at = new Date().toISOString();
+                            localStorage.setItem(`comentarios_${this.comunidadSlug}`, JSON.stringify(comentarios));
+                        }
+                    }
+                    
+                    this.mostrarMensaje('✅ Comentario editado correctamente.', 'success');
+                    document.getElementById('modal-editar-comentario').remove();
+                    this.cargarComentarios(postId);
+                } catch (error) {
+                    console.error('Error editando comentario:', error);
+                    this.mostrarMensaje('Error al editar el comentario. Por favor, intentá de nuevo.', 'error');
+                }
+            });
+            
+        } catch (error) {
+            console.error('Error al editar comentario:', error);
+            this.mostrarMensaje('Error al cargar el comentario para editar.', 'error');
+        }
     }
     
     async reaccionarPost(postId) {
@@ -767,8 +1018,13 @@ class SistemaForoComunidades {
     
     // ===== MOSTRAR MI HISTORIAL =====
     mostrarMiHistorial(posts) {
-        const container = document.getElementById('mi-historial-foro-lista');
-        if (!container) return;
+        // Buscar contenedor (puede tener diferentes IDs según la comunidad)
+        const container = document.getElementById('mi-historial-foro-lista') || 
+                         document.getElementById('mi-historial-lista');
+        if (!container) {
+            console.warn('⚠️ Contenedor de historial no encontrado');
+            return;
+        }
         
         if (!posts || posts.length === 0) {
             container.innerHTML = `
@@ -832,10 +1088,8 @@ class SistemaForoComunidades {
         }).join('');
     }
     
-    // ===== EDITAR POST =====
-    async editarPost(postId) {
-        alert('💡 La funcionalidad de editar posts estará disponible próximamente. Gracias por tu paciencia.');
-    }
+    // ===== EDITAR POST (desde historial) =====
+    // Esta función ya está implementada arriba, pero se mantiene aquí para compatibilidad
     
     // ===== PAUSAR/REACTIVAR POST =====
     async pausarPost(postId) {
