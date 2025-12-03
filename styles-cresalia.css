@@ -6762,34 +6762,36 @@ body {
     text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
 }
 
-/* Mostrar carrito flotante solo en tablet y móviles */
+/* Mostrar carrito flotante solo en tablet y móviles - LADO IZQUIERDO */
 @media (max-width: 1024px) {
     .floating-cart {
         display: block !important;
         bottom: 20px; /* Más abajo, cerca del borde */
-        right: 20px;
-        min-width: 100px; /* Más compacto */
-        max-width: 140px; /* Limitar ancho máximo */
-        padding: 10px 14px; /* Padding más pequeño */
-        border-radius: 40px; /* Más redondeado */
+        left: 15px !important; /* LADO IZQUIERDO */
+        right: auto !important; /* Remover posición derecha */
+        min-width: 90px; /* Más compacto */
+        max-width: 120px; /* Limitar ancho máximo - más pequeño */
+        padding: 8px 12px; /* Padding más pequeño */
+        border-radius: 35px; /* Más redondeado */
+        transform: none; /* Remover transformaciones que puedan interferir */
     }
     
     .floating-cart-content {
-        gap: 8px; /* Menos espacio entre elementos */
+        gap: 6px; /* Menos espacio entre elementos */
     }
     
     .floating-cart-icon {
-        width: 32px; /* Icono más pequeño */
-        height: 32px;
-        font-size: 1rem;
+        width: 28px; /* Icono más pequeño */
+        height: 28px;
+        font-size: 0.9rem;
     }
     
     .floating-cart-count {
-        width: 18px; /* Badge más pequeño */
-        height: 18px;
-        font-size: 0.65rem;
-        top: -6px;
-        right: -6px;
+        width: 16px; /* Badge más pequeño */
+        height: 16px;
+        font-size: 0.6rem;
+        top: -5px;
+        right: -5px;
     }
     
     .floating-cart-info {
@@ -6797,12 +6799,12 @@ body {
     }
     
     .floating-cart-text {
-        font-size: 0.7rem; /* Texto más pequeño */
-        letter-spacing: 0.3px;
+        font-size: 0.65rem; /* Texto más pequeño */
+        letter-spacing: 0.2px;
     }
     
     .floating-cart-total {
-        font-size: 0.85rem; /* Total más pequeño */
+        font-size: 0.75rem; /* Total más pequeño */
     }
 }
 
@@ -6820,16 +6822,18 @@ body {
         display: none;
     }
     
-    /* Ajustar posiciones de chatbots en móviles - más separados del carrito */
+    /* Ajustar posiciones de chatbots en móviles - ahora están a la derecha, carrito a la izquierda */
     .chatbot-toggle {
         bottom: 80px; /* Más arriba para evitar superposición con carrito */
-        right: 20px;
+        right: 20px; /* Mantener a la derecha */
+        left: auto;
         z-index: 1001;
     }
     
     .ai-chatbot-toggle {
         bottom: 80px; /* Misma altura, pero en diferente posición horizontal */
         right: 80px; /* Más a la izquierda para no superponerse */
+        left: auto;
         z-index: 1001;
     }
     

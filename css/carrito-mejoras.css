@@ -311,36 +311,47 @@
     }
 }
 
-/* MOSTRAR CARRITO FLOTANTE SOLO EN MÓVILES - LAYOUT MEJORADO */
+/* MOSTRAR CARRITO FLOTANTE SOLO EN MÓVILES - LADO IZQUIERDO, MÁS PEQUEÑO */
 @media (max-width: 768px) {
-    /* Mejorar el carrito flotante */
+    /* Mejorar el carrito flotante - LADO IZQUIERDO */
     .floating-cart {
         display: block !important;
-        bottom: 100px !important; /* Más espacio desde abajo */
-        right: 15px !important; /* Un poco más cerca del borde */
-        min-width: 130px !important;
-        padding: 12px 18px !important; /* Padding más compacto */
+        bottom: 20px !important; /* Más cerca del borde inferior */
+        left: 15px !important; /* LADO IZQUIERDO */
+        right: auto !important; /* Remover posición derecha */
+        min-width: 85px !important; /* Más pequeño */
+        max-width: 110px !important; /* Limitar ancho máximo */
+        padding: 8px 12px !important; /* Padding más compacto */
         z-index: 1002 !important;
-        border-radius: 45px !important; /* Más redondeado */
+        border-radius: 30px !important; /* Más redondeado */
         box-shadow: 0 6px 20px rgba(37, 99, 235, 0.25) !important;
+        transform: none !important; /* Remover transformaciones */
     }
     
     .floating-cart-content {
-        gap: 10px !important; /* Menos espacio entre elementos */
+        gap: 6px !important; /* Menos espacio entre elementos */
     }
     
     .floating-cart-icon {
-        width: 35px !important;
-        height: 35px !important;
-        font-size: 1.1rem !important;
+        width: 26px !important; /* Más pequeño */
+        height: 26px !important;
+        font-size: 0.85rem !important;
+    }
+    
+    .floating-cart-count {
+        width: 15px !important; /* Badge más pequeño */
+        height: 15px !important;
+        font-size: 0.55rem !important;
+        top: -4px !important;
+        right: -4px !important;
     }
     
     .floating-cart-text {
-        font-size: 0.75rem !important;
+        font-size: 0.6rem !important; /* Más pequeño */
     }
     
     .floating-cart-total {
-        font-size: 0.9rem !important;
+        font-size: 0.7rem !important; /* Más pequeño */
     }
     
     /* Ocultar carrito en navbar en móviles */
