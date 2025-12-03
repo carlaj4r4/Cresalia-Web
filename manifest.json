@@ -1,7 +1,7 @@
 {
   "name": "Cresalia - Plataforma de Emprendedores",
   "short_name": "Cresalia",
-  "description": "Plataforma inclusiva para emprendedores de todos los géneros. Crea tu tienda online, gestiona productos, servicios y crece con nosotros.",
+  "description": "Plataforma para emprendedores. Crea tu tienda online, gestiona productos, servicios y crece con nosotros.",
   "start_url": "/",
   "display": "standalone",
   "background_color": "#8B5CF6",

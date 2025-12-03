@@ -3818,11 +3818,23 @@
                     }
                 }
                 
-                // Solicitar permisos de ubicación (opcional, con botón)
+                // Solicitar permisos de ubicación para calcular distancias a tiendas
                 if ('geolocation' in navigator) {
-                    // No solicitar automáticamente, solo cuando el usuario lo necesite
-                    // Se solicitará cuando se use la función de distancias o filtros
                     console.log('📍 Geolocalización disponible');
+                    // Solicitar ubicación cuando se carguen las tiendas para mostrar distancias
+                    setTimeout(() => {
+                        if (typeof obtenerUbicacionUsuarioGlobal === 'function') {
+                            obtenerUbicacionUsuarioGlobal().then(ubicacion => {
+                                if (ubicacion) {
+                                    console.log('✅ Ubicación obtenida para calcular distancias');
+                                } else {
+                                    console.log('ℹ️ Ubicación no disponible, las distancias no se mostrarán');
+                                }
+                            }).catch(err => {
+                                console.log('ℹ️ Permiso de ubicación no concedido:', err.message);
+                            });
+                        }
+                    }, 2000); // Esperar 2 segundos después de cargar
                 }
             }, 3000); // Esperar 3 segundos después de cargar
         });
