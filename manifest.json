@@ -13,6 +13,18 @@
   "categories": ["business", "productivity", "shopping"],
   "icons": [
     {
+      "src": "icons/Cresalia.ico",
+      "sizes": "any",
+      "type": "image/x-icon",
+      "purpose": "any"
+    },
+    {
+      "src": "favicon.ico",
+      "sizes": "any",
+      "type": "image/x-icon",
+      "purpose": "any"
+    },
+    {
       "src": "assets/logo/logo-cresalia.png",
       "sizes": "72x72",
       "type": "image/png",
