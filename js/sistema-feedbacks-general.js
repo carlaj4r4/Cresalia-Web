@@ -90,19 +90,19 @@ const SistemaFeedbacksGeneral = {
         boton.title = 'Dejar Feedback';
         boton.setAttribute('aria-label', 'Abrir formulario de feedback');
         
-        // Estilos del botón (ajustado para no superponerse con Brevo)
-        // Posición: más arriba y a la izquierda para no chocar con Brevo (que está en bottom-right)
+        // Estilos del botón (ajustado para no superponerse con carrito que está a la izquierda)
+        // Posición: a la derecha, más arriba para no chocar con carrito (que está en bottom-left)
         boton.style.cssText = `
             position: fixed;
-            bottom: 90px;
-            right: 90px;
-            width: 60px;
-            height: 60px;
+            bottom: 20px;
+            right: 20px;
+            width: 50px;
+            height: 50px;
             border-radius: 50%;
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             color: white;
             border: none;
-            font-size: 24px;
+            font-size: 20px;
             cursor: pointer;
             box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
             z-index: 9996;
@@ -112,10 +112,21 @@ const SistemaFeedbacksGeneral = {
             justify-content: center;
         `;
         
-        // Ajuste responsive para móviles
+        // Ajuste responsive para móviles - más pequeño y bien posicionado
         if (window.innerWidth <= 768) {
-            boton.style.bottom = '85px';
-            boton.style.right = '85px';
+            boton.style.bottom = '20px';
+            boton.style.right = '20px';
+            boton.style.width = '45px';
+            boton.style.height = '45px';
+            boton.style.fontSize = '18px';
+        }
+        
+        // Ajuste para tablets
+        if (window.innerWidth > 768 && window.innerWidth <= 1024) {
+            boton.style.bottom = '20px';
+            boton.style.right = '20px';
+            boton.style.width = '50px';
+            boton.style.height = '50px';
         }
 
         // Hover effect
