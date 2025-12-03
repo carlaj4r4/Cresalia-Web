@@ -6766,9 +6766,43 @@ body {
 @media (max-width: 1024px) {
     .floating-cart {
         display: block !important;
-        bottom: 120px; /* Posicionado más arriba, sin interferir con otros íconos */
+        bottom: 20px; /* Más abajo, cerca del borde */
         right: 20px;
-        min-width: 140px; /* Un poco más ancho para mostrar mejor el total */
+        min-width: 100px; /* Más compacto */
+        max-width: 140px; /* Limitar ancho máximo */
+        padding: 10px 14px; /* Padding más pequeño */
+        border-radius: 40px; /* Más redondeado */
+    }
+    
+    .floating-cart-content {
+        gap: 8px; /* Menos espacio entre elementos */
+    }
+    
+    .floating-cart-icon {
+        width: 32px; /* Icono más pequeño */
+        height: 32px;
+        font-size: 1rem;
+    }
+    
+    .floating-cart-count {
+        width: 18px; /* Badge más pequeño */
+        height: 18px;
+        font-size: 0.65rem;
+        top: -6px;
+        right: -6px;
+    }
+    
+    .floating-cart-info {
+        gap: 1px; /* Menos espacio entre texto y total */
+    }
+    
+    .floating-cart-text {
+        font-size: 0.7rem; /* Texto más pequeño */
+        letter-spacing: 0.3px;
+    }
+    
+    .floating-cart-total {
+        font-size: 0.85rem; /* Total más pequeño */
     }
 }
 
@@ -6786,22 +6820,22 @@ body {
         display: none;
     }
     
-    /* Ajustar posiciones de chatbots en móviles */
+    /* Ajustar posiciones de chatbots en móviles - más separados del carrito */
     .chatbot-toggle {
-        bottom: 100px; /* Más arriba para evitar superposición */
+        bottom: 80px; /* Más arriba para evitar superposición con carrito */
         right: 20px;
         z-index: 1001;
     }
     
     .ai-chatbot-toggle {
-        bottom: 160px; /* Posicionamiento vertical diferente */
-        right: 20px; /* Misma columna vertical */
+        bottom: 80px; /* Misma altura, pero en diferente posición horizontal */
+        right: 80px; /* Más a la izquierda para no superponerse */
         z-index: 1001;
     }
     
     /* Ajustar modales de chatbots en móviles */
     .chatbot-modal {
-        bottom: 155px; /* Ajustado para aparecer sobre su botón */
+        bottom: 140px; /* Ajustado para aparecer sobre su botón */
         right: 10px;
         left: 10px;
         width: calc(100vw - 20px);
@@ -6810,12 +6844,48 @@ body {
     }
     
     .ai-chatbot-modal {
-        bottom: 215px; /* Ajustado para aparecer sobre su botón */
+        bottom: 140px; /* Ajustado para aparecer sobre su botón */
         right: 10px;
         left: 10px;
         width: calc(100vw - 20px);
         height: 55vh;
         max-width: none;
+    }
+}
+
+/* Ajustes específicos para pantallas muy pequeñas */
+@media (max-width: 480px) {
+    .floating-cart {
+        bottom: 15px; /* Aún más cerca del borde */
+        right: 15px;
+        min-width: 90px; /* Más compacto en móviles pequeños */
+        max-width: 120px;
+        padding: 8px 12px;
+    }
+    
+    .floating-cart-icon {
+        width: 28px;
+        height: 28px;
+        font-size: 0.9rem;
+    }
+    
+    .floating-cart-text {
+        font-size: 0.65rem;
+    }
+    
+    .floating-cart-total {
+        font-size: 0.75rem;
+    }
+    
+    .chatbot-toggle,
+    .ai-chatbot-toggle {
+        bottom: 70px;
+        width: 45px;
+        height: 45px;
+    }
+    
+    .ai-chatbot-toggle {
+        right: 70px;
     }
 }
 
@@ -6828,6 +6898,84 @@ body {
     to {
         transform: translateX(0);
         opacity: 1;
+    }
+}
+
+/* ===== MEJORAS DEL MODAL DE CARRITO EN MÓVILES ===== */
+@media (max-width: 768px) {
+    .cart-modal-content {
+        width: 95%;
+        max-width: 100%;
+        max-height: 85vh;
+        margin: 10px;
+        border-radius: 20px 20px 0 0; /* Bordes superiores redondeados */
+    }
+    
+    .cart-modal-header {
+        padding: 1.25rem;
+    }
+    
+    .cart-modal-header h3 {
+        font-size: 1.1rem;
+    }
+    
+    .cart-modal-close {
+        width: 36px;
+        height: 36px;
+        font-size: 1.3rem;
+    }
+    
+    .cart-items-container {
+        padding: 0.75rem;
+    }
+    
+    .cart-modal-footer {
+        padding: 1.25rem;
+    }
+    
+    .cart-total {
+        font-size: 1.1rem;
+    }
+    
+    .cart-actions {
+        flex-direction: column;
+        gap: 0.75rem;
+    }
+    
+    .cart-btn-limpiar,
+    .cart-btn-finalizar {
+        width: 100%;
+        padding: 0.875rem;
+        font-size: 0.95rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .cart-modal-content {
+        width: 100%;
+        max-height: 90vh;
+        margin: 0;
+        border-radius: 20px 20px 0 0;
+    }
+    
+    .cart-modal-header {
+        padding: 1rem;
+    }
+    
+    .cart-modal-header h3 {
+        font-size: 1rem;
+    }
+    
+    .cart-items-container {
+        padding: 0.5rem;
+    }
+    
+    .cart-modal-footer {
+        padding: 1rem;
+    }
+    
+    .cart-total {
+        font-size: 1rem;
     }
 }
 
