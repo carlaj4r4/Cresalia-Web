@@ -606,7 +606,7 @@
     </div>
     
     <!-- Panel Principal -->
-    <div id="panelMaster" class="panel-container">
+    <div id="panelMaster" class="panel-container" style="display: none;">
         <!-- Header -->
         <header class="master-header">
             <div class="header-left">
@@ -1000,12 +1000,53 @@
             }
         }
         
+        // Verificar si ya hay sesión activa al cargar
+        function verificarSesionActiva() {
+            const sessionData = localStorage.getItem('masterPanelSession');
+            if (sessionData) {
+                try {
+                    const session = JSON.parse(sessionData);
+                    const ahora = Date.now();
+                    const tiempoTranscurrido = ahora - session.timestamp;
+                    
+                    // Sesión válida por 2 horas
+                    if (tiempoTranscurrido < 2 * 60 * 60 * 1000) {
+                        document.getElementById('loginScreen').style.display = 'none';
+                        document.getElementById('panelMaster').classList.add('active');
+                        inicializarPanel();
+                        return true;
+                    } else {
+                        // Sesión expirada
+                        localStorage.removeItem('masterPanelSession');
+                    }
+                } catch (error) {
+                    localStorage.removeItem('masterPanelSession');
+                }
+            }
+            return false;
+        }
+        
+        // Verificar sesión al cargar
+        if (!verificarSesionActiva()) {
+            // Mostrar pantalla de login
+            document.getElementById('loginScreen').style.display = 'flex';
+            document.getElementById('panelMaster').classList.remove('active');
+        }
+        
         // Login
         document.getElementById('loginForm').addEventListener('submit', function(e) {
             e.preventDefault();
             const password = document.getElementById('password').value;
             
             if (password === MASTER_PASSWORD) {
+                // Guardar sesión
+                const sessionData = {
+                    authenticated: true,
+                    timestamp: Date.now(),
+                    user: 'master_admin'
+                };
+                localStorage.setItem('masterPanelSession', JSON.stringify(sessionData));
+                
                 document.getElementById('loginScreen').style.display = 'none';
                 document.getElementById('panelMaster').classList.add('active');
                 
@@ -1013,6 +1054,16 @@
                 inicializarPanel();
             } else {
                 mostrarNotificacion('❌ Contraseña incorrecta', 'error');
+                // Registrar intento fallido
+                const intentos = parseInt(localStorage.getItem('masterLoginAttempts') || '0') + 1;
+                localStorage.setItem('masterLoginAttempts', intentos.toString());
+                
+                if (intentos >= 5) {
+                    mostrarNotificacion('⚠️ Demasiados intentos fallidos. Esperá 15 minutos.', 'error');
+                    setTimeout(() => {
+                        localStorage.removeItem('masterLoginAttempts');
+                    }, 15 * 60 * 1000);
+                }
             }
         });
         
@@ -1444,6 +1495,8 @@
         
         function cerrarSesion() {
             if (confirm('¿Cerrar sesión del Panel Master?')) {
+                localStorage.removeItem('masterPanelSession');
+                localStorage.removeItem('adminSession');
                 location.reload();
             }
         }
