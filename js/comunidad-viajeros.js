@@ -67,6 +67,12 @@ class ComunidadViajeros {
                         this.cargarEstadisticas();
                     } else if (tabId === 'mi-historial') {
                         this.cargarMiHistorial();
+                        // También cargar historial del foro si existe
+                        if (window.foroComunidad && typeof window.foroComunidad.cargarMiHistorial === 'function') {
+                            setTimeout(() => {
+                                window.foroComunidad.cargarMiHistorial();
+                            }, 200);
+                        }
                     }
                 }
             });

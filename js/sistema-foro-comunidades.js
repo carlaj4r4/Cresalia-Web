@@ -1005,11 +1005,13 @@ class SistemaForoComunidades {
             this.mostrarMiHistorial(data || []);
         } catch (error) {
             console.error('Error cargando historial:', error);
-            const container = document.getElementById('mi-historial-foro-lista');
+            const container = document.getElementById('mi-historial-foro-lista') || 
+                             document.getElementById('mi-historial-lista');
             if (container) {
                 container.innerHTML = `
-                    <div class="sin-posts">
-                        <p>Error al cargar tu historial. Por favor, intenta nuevamente.</p>
+                    <div class="sin-posts" style="text-align: center; padding: 40px;">
+                        <i class="fas fa-exclamation-triangle" style="font-size: 2rem; color: #ef4444; margin-bottom: 15px;"></i>
+                        <p style="color: #6b7280;">Error al cargar tu historial. Por favor, intenta nuevamente.</p>
                     </div>
                 `;
             }
