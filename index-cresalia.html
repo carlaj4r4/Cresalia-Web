@@ -2227,18 +2227,9 @@
                     console.log('💾 Carrito guardado antes de redirección');
                 }
                 
-                // Redirigir al sistema de atención al cliente exclusivo
-                setTimeout(() => {
-                    try {
-                        // Usar window.open para abrir en nueva pestaña
-                        window.open('panel-master-cresalia.html', '_blank');
-                        console.log('🎯 Sistema de CRISLA abierto en nueva pestaña');
-                    } catch (error) {
-                        console.error('Error en redirección:', error);
-                        // Fallback a redirección normal
-                        window.location.href = 'panel-master-cresalia.html';
-                    }
-                }, 2000);
+                // Acceso secreto deshabilitado por seguridad
+                // Los paneles privados no deben ser accesibles públicamente
+                mostrarNotificacionSecreta('⚠️ Acceso restringido. Este panel es privado.', 'error');
                 
                 // Resetear después de 3 segundos
                 setTimeout(() => {

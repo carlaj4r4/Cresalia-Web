@@ -91,10 +91,10 @@
       ]
     },
     {
-      "name": "Panel Admin",
+      "name": "Panel Admin Tienda",
       "short_name": "Admin",
       "description": "Gestionar mi tienda",
-      "url": "/tiendas/ejemplo-tienda/admin-nuevo.html",
+      "url": "/tiendas/ejemplo-tienda/admin-final.html",
       "icons": [
         {
           "src": "icons/shortcut-admin.png",
@@ -110,30 +110,6 @@
       "icons": [
         {
           "src": "icons/shortcut-compradores.png",
-          "sizes": "96x96"
-        }
-      ]
-    },
-    {
-      "name": "Panel Master",
-      "short_name": "Master",
-      "description": "Panel de administración master",
-      "url": "/panel-master-cresalia.html",
-      "icons": [
-        {
-          "src": "icons/shortcut-master.png",
-          "sizes": "96x96"
-        }
-      ]
-    },
-    {
-      "name": "Bienestar Emocional",
-      "short_name": "Bienestar",
-      "description": "Sistema de apoyo emocional",
-      "url": "/crisla-respaldo-emocional.html",
-      "icons": [
-        {
-          "src": "icons/shortcut-bienestar.png",
           "sizes": "96x96"
         }
       ]
