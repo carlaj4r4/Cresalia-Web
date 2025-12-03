@@ -158,11 +158,11 @@
                 position: fixed;
                 bottom: 20px;
                 right: 100px;
-                z-index: 7999;
+                z-index: 7998;
             }
             
-            /* Ajuste para que no se superponga con chatbots (que están en right: 20px) */
-            /* Los chatbots tienen z-index: 10000, así que este estará debajo */
+            /* Ajuste para que no se superponga con soporte (z-index: 9999) ni chatbots (z-index: 10000) */
+            /* Widget de feedback debe estar debajo del soporte */
             
             .brevo-contact-button {
                 background: linear-gradient(135deg, #7C3AED, #EC4899);
@@ -194,7 +194,7 @@
                 .brevo-contact-widget {
                     bottom: 15px;
                     right: 90px;
-                    z-index: 7998;
+                    z-index: 7997;
                 }
                 
                 .brevo-contact-button {
