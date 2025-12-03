@@ -13,10 +13,8 @@ const STATIC_FILES = [
   '/index-cresalia.html',
   '/landing-cresalia-DEFINITIVO.html',
   '/tiendas/ejemplo-tienda/index.html',
-  '/tiendas/ejemplo-tienda/admin-nuevo.html',
+  '/tiendas/ejemplo-tienda/admin-final.html',
   '/demo-buyer-interface.html',
-  '/panel-master-cresalia.html',
-  '/crisla-respaldo-emocional.html',
   '/manifest.json',
   '/vercel.json',
   // CSS
