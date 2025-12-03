@@ -562,21 +562,56 @@
         }
         
         @media (max-width: 768px) {
+            body {
+                padding: 12px;
+                overflow-x: hidden;
+            }
+            .page-wrapper {
+                max-width: 100%;
+                gap: 20px;
+            }
             .container {
-                padding: 40px 25px;
+                padding: 24px 16px;
+                border-radius: 20px;
             }
             
             h1 {
-                font-size: 2rem;
+                font-size: 1.8rem;
+                line-height: 1.3;
             }
             
             .icon {
-                font-size: 60px;
+                font-size: 50px;
             }
             
             .feature {
                 text-align: center;
                 padding-left: 0;
+                font-size: 0.95rem;
+            }
+            .btn {
+                width: 100%;
+                margin: 5px 0;
+            }
+            .foro-header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 12px;
+            }
+            .foro-header > div {
+                width: 100%;
+                flex-direction: column;
+                gap: 8px;
+            }
+            .foro-header button {
+                width: 100%;
+            }
+            .community-links {
+                flex-direction: column;
+            }
+            .community-link {
+                width: 100%;
+                text-align: center;
             }
         }
     </style>
@@ -663,52 +698,52 @@
         <div class="other-communities">
             <h3>Otras Comunidades de Apoyo</h3>
             <div class="community-links">
-                <a href="../veterinarios/index.html" class="community-link" style="background: linear-gradient(135deg, #059669, #047857);">
+                <a href="../veterinarios/" class="community-link" style="background: linear-gradient(135deg, #059669, #047857);">
                     🐾 Veterinarios
                 </a>
-                <a href="../madres-padres-solteros/index.html" class="community-link" style="background: linear-gradient(135deg, #F472B6, #EC4899);">
+                <a href="../madres-padres-solteros/" class="community-link" style="background: linear-gradient(135deg, #F472B6, #EC4899);">
                     👨‍👩‍👧‍👦 Madres y Padres Solteros
                 </a>
-                <a href="../bomberos/index.html" class="community-link" style="background: linear-gradient(135deg, #EF4444, #DC2626);">
+                <a href="../bomberos/" class="community-link" style="background: linear-gradient(135deg, #EF4444, #DC2626);">
                     🚒 Bomberos
                 </a>
-                <a href="../otakus-anime-manga/index.html" class="community-link" style="background: linear-gradient(135deg, #FF6B9D, #C471ED);">
+                <a href="../otakus-anime-manga/" class="community-link" style="background: linear-gradient(135deg, #FF6B9D, #C471ED);">
                     🌸 Otakus
                 </a>
-                <a href="../gamers-videojuegos/index.html" class="community-link" style="background: linear-gradient(135deg, #6366F1, #8B5CF6);">
+                <a href="../gamers-videojuegos/" class="community-link" style="background: linear-gradient(135deg, #6366F1, #8B5CF6);">
                     🎮 Gamers
                 </a>
-                <a href="../estres-laboral/index.html" class="community-link" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
+                <a href="../estres-laboral/" class="community-link" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
                     💼 Estrés Laboral
                 </a>
-                <a href="../mujeres-sobrevivientes/index.html" class="community-link" style="background: linear-gradient(135deg, #C084FC, #E879F9);">
+                <a href="../mujeres-sobrevivientes/" class="community-link" style="background: linear-gradient(135deg, #C084FC, #E879F9);">
                     💜 Mujeres Sobrevivientes
                 </a>
-                <a href="../hombres-sobrevivientes/index.html" class="community-link" style="background: linear-gradient(135deg, #3B82F6, #1E40AF);">
+                <a href="../hombres-sobrevivientes/" class="community-link" style="background: linear-gradient(135deg, #3B82F6, #1E40AF);">
                     💙 Hombres Sobrevivientes
                 </a>
-                <a href="../lgbtq-experiencias/index.html" class="community-link" style="background: linear-gradient(135deg, #FF6B6B, #FF8E53);">
+                <a href="../lgbtq-experiencias/" class="community-link" style="background: linear-gradient(135deg, #FF6B6B, #FF8E53);">
                     🏳️‍🌈 Experiencias LGBTQ+
                 </a>
-                <a href="../anti-bullying/index.html" class="community-link" style="background: linear-gradient(135deg, #60A5FA, #34D399);">
+                <a href="../anti-bullying/" class="community-link" style="background: linear-gradient(135deg, #60A5FA, #34D399);">
                     🛡️ Anti-Bullying
                 </a>
-                <a href="../discapacidad/index.html" class="community-link" style="background: linear-gradient(135deg, #8B5CF6, #A78BFA);">
+                <a href="../discapacidad/" class="community-link" style="background: linear-gradient(135deg, #8B5CF6, #A78BFA);">
                     ♿ Personas con Discapacidad
                 </a>
-                <a href="../inmigrantes-racializados/index.html" class="community-link" style="background: linear-gradient(135deg, #D97706, #F59E0B);">
+                <a href="../inmigrantes-racializados/" class="community-link" style="background: linear-gradient(135deg, #D97706, #F59E0B);">
                     🌍 Inmigrantes y Racializados
                 </a>
-                <a href="../adultos-mayores/index.html" class="community-link" style="background: linear-gradient(135deg, #F59E0B, #FBBF24);">
+                <a href="../adultos-mayores/" class="community-link" style="background: linear-gradient(135deg, #F59E0B, #FBBF24);">
                     👴👵 Adultos Mayores
                 </a>
-                <a href="../cuidadores/index.html" class="community-link" style="background: linear-gradient(135deg, #10B981, #34D399);">
+                <a href="../cuidadores/" class="community-link" style="background: linear-gradient(135deg, #10B981, #34D399);">
                     🤲 Cuidadores
                 </a>
-                <a href="../enfermedades-cronicas/index.html" class="community-link" style="background: linear-gradient(135deg, #EF4444, #F87171);">
+                <a href="../enfermedades-cronicas/" class="community-link" style="background: linear-gradient(135deg, #EF4444, #F87171);">
                     🏥 Enfermedades Crónicas
                 </a>
-                <a href="../../cresalia-jobs/index.html" class="community-link" style="background: linear-gradient(135deg, #F59E0B, #EAB308);">
+                <a href="../../cresalia-jobs/" class="community-link" style="background: linear-gradient(135deg, #F59E0B, #EAB308);">
                     💼 Cresalia Jobs
                 </a>
             </div>
