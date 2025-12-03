@@ -32,7 +32,14 @@ module.exports = async (req, res) => {
 
     try {
         const supabase = getSupabase();
-        const action = (req.query.action || req.body?.accion || 'calificaciones').toLowerCase();
+        // Detectar acción desde URL o query param
+        let action = req.query.action || req.body?.accion;
+        if (!action && req.url) {
+            if (req.url.includes('/jobs-calificaciones-empleados')) action = 'calificaciones-empleados';
+            else if (req.url.includes('/jobs-verificacion-pago')) action = 'verificacion-pago';
+            else if (req.url.includes('/jobs-calificaciones')) action = 'calificaciones';
+        }
+        action = (action || 'calificaciones').toLowerCase();
 
         switch (action) {
             case 'calificaciones':

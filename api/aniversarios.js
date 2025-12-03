@@ -535,7 +535,13 @@ module.exports = async (req, res) => {
 
     try {
         const supabase = getSupabase();
-        const action = req.query.action || 'celebracion';
+        // Detectar acción desde URL o query param
+        let action = req.query.action;
+        if (!action && req.url) {
+            if (req.url.includes('/aniversarios-celebracion')) action = 'celebracion';
+            else if (req.url.includes('/aniversarios-configuracion')) action = 'configuracion';
+        }
+        action = action || 'celebracion';
 
         switch (action) {
             case 'celebracion':

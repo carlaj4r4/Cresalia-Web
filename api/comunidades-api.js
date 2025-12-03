@@ -59,7 +59,28 @@ module.exports = async (req, res) => {
 
     try {
         const supabase = getSupabase();
-        const slug = (req.query.slug || '').toLowerCase();
+        // Detectar slug desde URL o query param
+        let slug = req.query.slug;
+        if (!slug && req.url) {
+            const urlSlugs = {
+                '/caminando-juntos': 'caminando-juntos',
+                '/injusticias-vividas': 'injusticias-vividas',
+                '/espiritualidad-fe': 'espiritualidad-fe',
+                '/libertad-economica': 'libertad-economica',
+                '/sanando-abandonos': 'sanando-abandonos',
+                '/libertad-emocional': 'libertad-emocional',
+                '/desahogo-libre': 'desahogo-libre',
+                '/animales': 'animales',
+                '/maternidad': 'maternidad'
+            };
+            for (const [path, slugValue] of Object.entries(urlSlugs)) {
+                if (req.url.includes(path)) {
+                    slug = slugValue;
+                    break;
+                }
+            }
+        }
+        slug = (slug || '').toLowerCase();
         const tipo = (req.query.tipo || req.query.accion || 'publicaciones').toLowerCase();
 
         if (!slug) {

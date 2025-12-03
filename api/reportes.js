@@ -36,7 +36,14 @@ module.exports = async (req, res) => {
 
     try {
         const supabase = getSupabase();
-        const type = (req.query.type || req.body?.tipo || 'maltrato').toLowerCase();
+        // Detectar tipo desde URL o query param
+        let type = req.query.type || req.body?.tipo;
+        if (!type && req.url) {
+            if (req.url.includes('/reportes-maltrato')) type = 'maltrato';
+            else if (req.url.includes('/alertas-servicios-enviar')) type = 'alertas';
+            else if (req.url.includes('/emergencias-enviar-emails')) type = 'emergencias';
+        }
+        type = (type || 'maltrato').toLowerCase();
 
         switch (type) {
             case 'maltrato':

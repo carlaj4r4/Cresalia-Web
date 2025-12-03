@@ -51,47 +51,47 @@
     },
     {
       "source": "/api/reportes-maltrato",
-      "destination": "/api/reportes.js?type=maltrato"
+      "destination": "/api/reportes.js"
     },
     {
       "source": "/api/mantenimiento/estado",
-      "destination": "/api/mantenimiento.js?action=estado"
+      "destination": "/api/mantenimiento.js"
     },
     {
       "source": "/api/mantenimiento/notificar",
-      "destination": "/api/mantenimiento.js?action=notificar"
+      "destination": "/api/mantenimiento.js"
     },
     {
       "source": "/api/alertas-servicios-enviar",
-      "destination": "/api/reportes.js?type=alertas"
+      "destination": "/api/reportes.js"
     },
     {
       "source": "/api/emergencias-enviar-emails",
-      "destination": "/api/reportes.js?type=emergencias"
+      "destination": "/api/reportes.js"
     },
     {
       "source": "/api/cumpleanos-resumen",
-      "destination": "/api/cumpleanos.js?action=resumen"
+      "destination": "/api/cumpleanos.js"
     },
     {
       "source": "/api/cumpleanos-interacciones",
-      "destination": "/api/cumpleanos.js?action=interacciones"
+      "destination": "/api/cumpleanos.js"
     },
     {
       "source": "/api/cumpleaneros-compradores",
-      "destination": "/api/cumpleanos.js?action=compradores"
+      "destination": "/api/cumpleanos.js"
     },
     {
       "source": "/api/compradores-cumple-consent",
-      "destination": "/api/cumpleanos.js?action=consent"
+      "destination": "/api/cumpleanos.js"
     },
     {
       "source": "/api/aniversarios-celebracion",
-      "destination": "/api/aniversarios.js?action=celebracion"
+      "destination": "/api/aniversarios.js"
     },
     {
       "source": "/api/aniversarios-configuracion",
-      "destination": "/api/aniversarios.js?action=configuracion"
+      "destination": "/api/aniversarios.js"
     },
     {
       "source": "/api/comunidades-api",
@@ -99,59 +99,59 @@
     },
     {
       "source": "/api/caminando-juntos",
-      "destination": "/api/comunidades-api.js?slug=caminando-juntos&tipo=publicaciones"
+      "destination": "/api/comunidades-api.js"
     },
     {
       "source": "/api/injusticias-vividas",
-      "destination": "/api/comunidades-api.js?slug=injusticias-vividas&tipo=publicaciones"
+      "destination": "/api/comunidades-api.js"
     },
     {
       "source": "/api/espiritualidad-fe",
-      "destination": "/api/comunidades-api.js?slug=espiritualidad-fe&tipo=publicaciones"
+      "destination": "/api/comunidades-api.js"
     },
     {
       "source": "/api/libertad-economica",
-      "destination": "/api/comunidades-api.js?slug=libertad-economica&tipo=publicaciones"
+      "destination": "/api/comunidades-api.js"
     },
     {
       "source": "/api/sanando-abandonos",
-      "destination": "/api/comunidades-api.js?slug=sanando-abandonos&tipo=publicaciones"
+      "destination": "/api/comunidades-api.js"
     },
     {
       "source": "/api/libertad-emocional",
-      "destination": "/api/comunidades-api.js?slug=libertad-emocional&tipo=publicaciones"
+      "destination": "/api/comunidades-api.js"
     },
     {
       "source": "/api/desahogo-libre",
-      "destination": "/api/comunidades-api.js?slug=desahogo-libre&tipo=publicaciones"
+      "destination": "/api/comunidades-api.js"
     },
     {
       "source": "/api/animales",
-      "destination": "/api/comunidades-api.js?slug=animales&tipo=publicaciones"
+      "destination": "/api/comunidades-api.js"
     },
     {
       "source": "/api/maternidad",
-      "destination": "/api/comunidades-api.js?slug=maternidad&tipo=publicaciones"
+      "destination": "/api/comunidades-api.js"
     },
     {
       "source": "/api/jobs-calificaciones",
-      "destination": "/api/jobs.js?action=calificaciones"
+      "destination": "/api/jobs.js"
     },
     {
       "source": "/api/jobs-calificaciones-empleados",
-      "destination": "/api/jobs.js?action=calificaciones-empleados"
+      "destination": "/api/jobs.js"
     },
     {
       "source": "/api/jobs-verificacion-pago",
-      "destination": "/api/jobs.js?action=verificacion-pago"
+      "destination": "/api/jobs.js"
     },
     {
       "source": "/api/admin-tenants",
-      "destination": "/api/admin.js?action=tenants"
+      "destination": "/api/admin.js"
     },
     {
       "source": "/api/admin-reportes",
-      "destination": "/api/admin.js?action=reportes"
+      "destination": "/api/admin.js"
     },
     {
       "source": "/comunidades/alertas-servicios-publicos",
