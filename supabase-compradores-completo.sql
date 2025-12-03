@@ -29,6 +29,12 @@ CREATE INDEX IF NOT EXISTS idx_compradores_fecha_registro ON compradores(fecha_r
 -- Habilitar Row Level Security (RLS)
 ALTER TABLE compradores ENABLE ROW LEVEL SECURITY;
 
+-- Eliminar políticas existentes si existen (para evitar errores)
+DROP POLICY IF EXISTS "compradores_ver_su_perfil" ON compradores;
+DROP POLICY IF EXISTS "compradores_actualizar_su_perfil" ON compradores;
+DROP POLICY IF EXISTS "compradores_crear_su_perfil" ON compradores;
+DROP POLICY IF EXISTS "compradores_no_eliminar_perfil" ON compradores;
+
 -- Políticas de seguridad (RLS)
 -- Los compradores solo pueden ver su propio perfil
 CREATE POLICY "compradores_ver_su_perfil" 
