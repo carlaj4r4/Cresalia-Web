@@ -5087,9 +5087,10 @@ async function cargarTiendas() {
         let tiendas = [];
         
         // Intentar cargar desde Supabase
-        if (window.supabase || window.SUPABASE_CLIENT) {
-            const supabase = window.supabase || window.SUPABASE_CLIENT;
-            
+        // Verificar que Supabase esté disponible y sea un cliente válido
+        const supabase = window.SUPABASE_CLIENT || (window.supabase && typeof window.supabase.createClient === 'function' ? window.initSupabase() : null);
+        
+        if (supabase && typeof supabase.from === 'function') {
             try {
                 // Cargar tiendas desde Supabase (ajustar según tu estructura de tabla)
                 const { data, error } = await supabase

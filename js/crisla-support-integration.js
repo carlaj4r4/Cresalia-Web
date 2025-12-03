@@ -3,9 +3,20 @@
 
 class CrislaSupportIntegration {
     constructor() {
+        // Prevenir múltiples instancias
+        if (window.crislaSupportInstance) {
+            console.log('⚠️ CrislaSupportIntegration ya está inicializado');
+            return window.crislaSupportInstance;
+        }
+        
         this.notifications = [];
         this.isConnected = false;
+        this.monitoringInterval = null;
+        this._notificationsLoaded = false;
         this.init();
+        
+        // Guardar instancia global
+        window.crislaSupportInstance = this;
     }
 
     init() {
@@ -19,7 +30,11 @@ class CrislaSupportIntegration {
         try {
             const stored = localStorage.getItem('crislaNotifications');
             this.notifications = stored ? JSON.parse(stored) : [];
-            console.log('📢 Notificaciones de Crisla cargadas:', this.notifications.length);
+            // Solo mostrar mensaje en la carga inicial, no en cada verificación
+            if (!this._notificationsLoaded) {
+                console.log('📢 Notificaciones de Crisla cargadas:', this.notifications.length);
+                this._notificationsLoaded = true;
+            }
         } catch (error) {
             console.error('Error cargando notificaciones:', error);
             this.notifications = [];
@@ -28,8 +43,13 @@ class CrislaSupportIntegration {
 
     // ===== MONITOREO AUTOMÁTICO =====
     startMonitoring() {
+        // Prevenir múltiples intervalos
+        if (this.monitoringInterval) {
+            clearInterval(this.monitoringInterval);
+        }
+        
         // Monitorear cambios en localStorage
-        setInterval(() => {
+        this.monitoringInterval = setInterval(() => {
             this.checkForNewNotifications();
         }, 5000); // Cada 5 segundos
 
@@ -39,10 +59,12 @@ class CrislaSupportIntegration {
 
     checkForNewNotifications() {
         const currentCount = this.notifications.length;
+        const previousNotifications = [...this.notifications];
         this.loadNotifications();
         
-        if (this.notifications.length > currentCount) {
-            const newNotifications = this.notifications.slice(0, this.notifications.length - currentCount);
+        // Solo mostrar mensaje si hay cambios reales
+        if (this.notifications.length !== currentCount) {
+            const newNotifications = this.notifications.slice(currentCount);
             this.processNewNotifications(newNotifications);
         }
     }
