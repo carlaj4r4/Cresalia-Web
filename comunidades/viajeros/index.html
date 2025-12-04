@@ -328,19 +328,43 @@
         }
         
         @media (max-width: 768px) {
+            body {
+                padding: 12px;
+                overflow-x: hidden;
+            }
+            .header-section {
+                padding: 30px 15px;
+                border-radius: 15px;
+            }
             .header-section h1 {
-                font-size: 2rem;
+                font-size: 1.8rem;
+                line-height: 1.3;
             }
             
             .header-section p {
-                font-size: 1rem;
+                font-size: 0.95rem;
+            }
+            
+            .container-main {
+                border-radius: 15px;
             }
             
             .tabs {
                 flex-direction: column;
+                padding: 15px;
+                gap: 8px;
             }
             
             .tab {
+                width: 100%;
+                padding: 12px;
+            }
+            .foro-header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 12px;
+            }
+            .foro-header button {
                 width: 100%;
             }
         }
