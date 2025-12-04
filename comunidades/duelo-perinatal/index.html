@@ -235,6 +235,44 @@
             justify-content: center;
             padding: 20px;
         }
+        
+        .modal-content {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            animation: slideUp 0.3s ease;
+        }
+        
+        @keyframes slideUp {
+            from {
+                transform: translateY(50px);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+        
+        .cerrar-modal {
+            background: none;
+            border: none;
+            font-size: 2rem;
+            color: #6B7280;
+            cursor: pointer;
+            padding: 0;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s;
+        }
+        
+        .cerrar-modal:hover {
+            color: #374151;
+            transform: rotate(90deg);
+        }
 
         .modal-content {
             background: #fff;
