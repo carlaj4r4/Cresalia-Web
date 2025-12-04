@@ -10,14 +10,19 @@ class SimplePaymentSystem {
             'enterprise': { name: 'Enterprise', price: 199, features: ['Todo Pro', 'Account Manager', 'Desarrollo custom', 'SLA 99%'] }
         };
 
-        // Información de Cresalia (cargar desde variables de entorno o configuración segura)
+        // Información de Cresalia (DEBE cargarse desde variables de entorno - OBLIGATORIO)
         this.cresaliaInfo = {
             name: 'Cresalia',
-            email: (typeof window !== 'undefined' && window.CRESALIA_PAYMENT_EMAIL) || process.env.CRESALIA_PAYMENT_EMAIL || 'suscripciones@cresalia.com',
-            alias: (typeof window !== 'undefined' && window.CRESALIA_MP_ALIAS) || process.env.CRESALIA_MP_ALIAS || 'cresalia.mp',
+            email: (typeof window !== 'undefined' && window.CRESALIA_PAYMENT_EMAIL) || process.env.CRESALIA_PAYMENT_EMAIL || null,
+            alias: (typeof window !== 'undefined' && window.CRESALIA_MP_ALIAS) || process.env.CRESALIA_MP_ALIAS || null,
             phone: (typeof window !== 'undefined' && window.CRESALIA_PAYMENT_PHONE) || process.env.CRESALIA_PAYMENT_PHONE || '',
             description: 'Suscripción Cresalia'
         };
+        
+        // Validar que el email esté configurado
+        if (!this.cresaliaInfo.email) {
+            console.error('❌ CRESALIA_PAYMENT_EMAIL no está configurado. Configurá esta variable de entorno en Vercel.');
+        }
 
         this.init();
     }
