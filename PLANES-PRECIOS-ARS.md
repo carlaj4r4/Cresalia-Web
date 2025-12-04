@@ -2,6 +2,8 @@
 
 ## 📊 Planes Disponibles (Precios en Pesos Argentinos)
 
+**Tasa de cambio utilizada**: $1 USD = $1,000 ARS (aproximada para 2025)
+
 ### 🌱 **Plan FREE**
 - **Precio**: $0 ARS/mes
 - **Características**:
@@ -17,7 +19,7 @@
 ---
 
 ### ⭐ **Plan BASIC**
-- **Precio**: $29 ARS/mes
+- **Precio**: $29,000 ARS/mes (equivalente a $29 USD)
 - **Características**:
   - ✅ 500 productos
   - ✅ 1,000 órdenes/mes
@@ -31,7 +33,7 @@
 ---
 
 ### 🚀 **Plan PRO**
-- **Precio**: $79 ARS/mes
+- **Precio**: $79,000 ARS/mes (equivalente a $79 USD)
 - **Características**:
   - ✅ Productos ilimitados
   - ✅ Órdenes ilimitadas
@@ -45,7 +47,7 @@
 ---
 
 ### 💎 **Plan ENTERPRISE**
-- **Precio**: $199 ARS/mes
+- **Precio**: $199,000 ARS/mes (equivalente a $199 USD)
 - **Características**:
   - ✅ Todo de Pro
   - ✅ White-label (sin branding Cresalia)

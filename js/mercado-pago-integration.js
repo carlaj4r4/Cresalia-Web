@@ -62,8 +62,9 @@ const PLANES_SUSCRIPCION = {
     basic: {
         id: 'plan-basic',
         nombre: 'Basic',
-        precio: 29,
+        precio: 29000, // $29 USD × 1000 ARS/USD = $29,000 ARS
         precio_moneda: 'ARS',
+        precio_original_usd: 29,
         descripcion: 'Plan básico para emprendedores',
         caracteristicas: ['500 productos', '1,000 órdenes/mes', '3 idiomas', 'Dominio personalizado', 'Turnos personalizables', 'Comprobantes con logo'],
         comision_porcentaje: 1.9,
@@ -73,8 +74,9 @@ const PLANES_SUSCRIPCION = {
     pro: {
         id: 'plan-pro',
         nombre: 'Pro',
-        precio: 79,
+        precio: 79000, // $79 USD × 1000 ARS/USD = $79,000 ARS
         precio_moneda: 'ARS',
+        precio_original_usd: 79,
         descripcion: 'Plan profesional con IA',
         caracteristicas: ['Productos ilimitados', 'Órdenes ilimitadas', '6 idiomas', 'Chatbot IA personalizado', 'Turnos avanzados', 'Comprobantes premium'],
         comision_porcentaje: 1.2,
@@ -84,8 +86,9 @@ const PLANES_SUSCRIPCION = {
     enterprise: {
         id: 'plan-enterprise',
         nombre: 'Enterprise',
-        precio: 199,
+        precio: 199000, // $199 USD × 1000 ARS/USD = $199,000 ARS
         precio_moneda: 'ARS',
+        precio_original_usd: 199,
         descripcion: 'Plan empresarial completo',
         caracteristicas: ['Todo de Pro', 'White-label', 'Servidores dedicados', 'Consultoría personalizada'],
         comision_porcentaje: 0.5,

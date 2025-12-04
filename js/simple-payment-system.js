@@ -5,9 +5,9 @@ class SimplePaymentSystem {
     constructor() {
         this.plans = {
             'starter': { name: 'Starter', price: 0, features: ['Tienda básica', 'Soporte email'] },
-            'basico': { name: 'Básico', price: 29, features: ['Tienda completa', 'Soporte prioritario', 'Analytics básicos'] },
-            'pro': { name: 'Pro', price: 79, features: ['Todo Básico', 'Chatbot IA', 'Soporte 24/7', 'Analytics avanzados'] },
-            'enterprise': { name: 'Enterprise', price: 199, features: ['Todo Pro', 'Account Manager', 'Desarrollo custom', 'SLA 99%'] }
+            'basico': { name: 'Básico', price: 29000, features: ['Tienda completa', 'Soporte prioritario', 'Analytics básicos'] }, // $29 USD → $29,000 ARS
+            'pro': { name: 'Pro', price: 79000, features: ['Todo Básico', 'Chatbot IA', 'Soporte 24/7', 'Analytics avanzados'] }, // $79 USD → $79,000 ARS
+            'enterprise': { name: 'Enterprise', price: 199000, features: ['Todo Pro', 'Account Manager', 'Desarrollo custom', 'SLA 99%'] } // $199 USD → $199,000 ARS
         };
 
         // Información de Cresalia (DEBE cargarse desde variables de entorno - OBLIGATORIO)
@@ -79,7 +79,7 @@ class SimplePaymentSystem {
                                     <div class="flow-item">
                                         <h5>💼 Suscripciones a Cresalia</h5>
                                         <p>✅ Te pagan a tu cuenta personal de Mercado Pago</p>
-                                        <p>✅ Planes: Básico ($29 ARS), Pro ($79 ARS), Enterprise ($199 ARS)</p>
+                                        <p>✅ Planes: Básico ($29,000 ARS), Pro ($79,000 ARS), Enterprise ($199,000 ARS)</p>
                                         <p>✅ Links automáticos para que te paguen</p>
                                     </div>
                                     
