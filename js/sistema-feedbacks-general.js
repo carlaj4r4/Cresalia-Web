@@ -112,18 +112,18 @@ const SistemaFeedbacksGeneral = {
             justify-content: center;
         `;
         
-        // Ajuste responsive para móviles - más pequeño y bien posicionado
+        // Ajuste responsive para móviles - más arriba para no encimarse
         if (window.innerWidth <= 768) {
-            boton.style.bottom = '20px';
+            boton.style.bottom = '100px'; // Más arriba para no chocar con carrito y chatbots
             boton.style.right = '20px';
             boton.style.width = '45px';
             boton.style.height = '45px';
             boton.style.fontSize = '18px';
         }
         
-        // Ajuste para tablets
+        // Ajuste para tablets - también más arriba
         if (window.innerWidth > 768 && window.innerWidth <= 1024) {
-            boton.style.bottom = '20px';
+            boton.style.bottom = '120px'; // Más arriba en tablets también
             boton.style.right = '20px';
             boton.style.width = '50px';
             boton.style.height = '50px';
