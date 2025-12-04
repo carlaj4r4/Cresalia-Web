@@ -163,6 +163,10 @@
       "destination": "/api/admin.js"
     },
     {
+      "source": "/api/enviar-email-brevo",
+      "destination": "/api/enviar-email-brevo.js"
+    },
+    {
       "source": "/comunidades/alertas-servicios-publicos",
       "destination": "/comunidades/alertas-servicios-publicos/index.html"
     },

@@ -66,8 +66,18 @@ async function registrarNuevoComprador(datos) {
         
         console.log('✅ Comprador registrado exitosamente');
         
-        // Enviar mensaje de bienvenida automático
-        await enviarMensajeBienvenida(email, nombreCompleto, 'comprador');
+        // Enviar mensaje de bienvenida automático con sistema de emails
+        if (window.sistemaEmailsCresalia) {
+            await window.sistemaEmailsCresalia.procesarEvento('registro', {
+                id: authData.user.id,
+                email: email,
+                nombre: nombreCompleto,
+                tipo: 'comprador'
+            });
+        } else {
+            // Fallback al método anterior
+            await enviarMensajeBienvenida(email, nombreCompleto, 'comprador');
+        }
         
         return {
             success: true,
@@ -153,7 +163,18 @@ async function registrarNuevoCliente(datos) {
         console.log('✅ Cliente registrado exitosamente');
         
         // Enviar mensaje de bienvenida automático
-        await enviarMensajeBienvenida(email, nombreTienda, 'vendedor');
+        // Enviar mensaje de bienvenida automático con sistema de emails
+        if (window.sistemaEmailsCresalia) {
+            await window.sistemaEmailsCresalia.procesarEvento('registro', {
+                id: authData.user.id,
+                email: email,
+                nombre: nombreTienda,
+                tipo: 'vendedor'
+            });
+        } else {
+            // Fallback al método anterior
+            await enviarMensajeBienvenida(email, nombreTienda, 'vendedor');
+        }
         
         return {
             success: true,

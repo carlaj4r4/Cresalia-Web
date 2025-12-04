@@ -2,22 +2,47 @@
 // SISTEMA DE EMAILS AUTOMÁTICOS - CRESALIA
 // ============================================
 // Envía emails de felicitación y bienvenida automáticamente
-// Integrado con EmailJS y sincronizado con panel-master
+// Integrado con Brevo API y sincronizado con panel-master
 
 class SistemaEmailsAutomaticos {
     constructor() {
-        // Configuración de EmailJS (debes configurar tu cuenta)
-        this.emailJSConfig = {
-            serviceID: 'service_cresalia',
-            templateBienvenida: 'template_bienvenida',
-            templatePrimeraCompra: 'template_primera_compra',
-            templatePrimeraVenta: 'template_primera_venta',
-            templatePrimerTurno: 'template_primer_turno',
-            templateSuscripcion: 'template_suscripcion',
-            publicKey: 'TU_PUBLIC_KEY_EMAILJS' // Reemplazar con tu clave real
+        // Configuración de Brevo API
+        this.brevoConfig = {
+            apiUrl: '/api/enviar-email-brevo', // API endpoint en Vercel
+            enabled: true
         };
         
         this.historialEnviados = this.cargarHistorial();
+    }
+    
+    // Función helper para enviar email con Brevo
+    async enviarEmailConBrevo(to, to_name, subject, htmlContent, templateType = null) {
+        try {
+            const response = await fetch(this.brevoConfig.apiUrl, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    to: to,
+                    to_name: to_name,
+                    subject: subject,
+                    html_content: htmlContent,
+                    template_type: templateType
+                })
+            });
+            
+            if (!response.ok) {
+                const errorData = await response.json();
+                throw new Error(errorData.error || 'Error al enviar email');
+            }
+            
+            const result = await response.json();
+            return result;
+        } catch (error) {
+            console.error('❌ Error enviando email con Brevo:', error);
+            throw error;
+        }
     }
     
     // Cargar historial de emails enviados
@@ -66,8 +91,26 @@ class SistemaEmailsAutomaticos {
         try {
             console.log('📧 Enviando email de bienvenida...');
             
-            // Simular envío (en producción, usar EmailJS)
-            // await emailjs.send(this.emailJSConfig.serviceID, this.emailJSConfig.templateBienvenida, params, this.emailJSConfig.publicKey);
+            const htmlContent = `
+                <p>¡Bienvenido a Cresalia! Estamos muy contentos de tenerte con nosotros.</p>
+                <p>Como ${params.user_type === 'vendedor' ? 'vendedor' : 'comprador'}, podrás:</p>
+                <ul>
+                    ${params.user_type === 'vendedor' 
+                        ? '<li>Crear tu tienda online</li><li>Gestionar productos y servicios</li><li>Recibir pagos de forma segura</li>'
+                        : '<li>Explorar productos y servicios</li><li>Realizar compras de forma segura</li><li>Acceder a tu historial de compras</li>'
+                    }
+                </ul>
+                <p>Si tenés alguna pregunta, no dudes en contactarnos.</p>
+                <p>¡Que tengas un excelente día!</p>
+            `;
+            
+            await this.enviarEmailConBrevo(
+                params.to_email,
+                params.to_name,
+                '¡Bienvenido a Cresalia! 💜',
+                htmlContent,
+                'bienvenida'
+            );
             
             this.marcarEnviado(usuario.id, 'bienvenida');
             
@@ -118,8 +161,22 @@ class SistemaEmailsAutomaticos {
         try {
             console.log('🎉 Enviando felicitación por primera compra...');
             
-            // Simular envío (en producción, usar EmailJS)
-            // await emailjs.send(this.emailJSConfig.serviceID, this.emailJSConfig.templatePrimeraCompra, params, this.emailJSConfig.publicKey);
+            const htmlContent = `
+                <p>¡Felicitaciones por tu primera compra en Cresalia!</p>
+                <p><strong>Producto:</strong> ${params.producto}</p>
+                <p><strong>Monto:</strong> $${params.monto}</p>
+                <p><strong>Fecha:</strong> ${params.fecha}</p>
+                <p>Esperamos que disfrutes tu compra. Si necesitás ayuda, estamos acá para vos.</p>
+                <p>¡Gracias por confiar en Cresalia!</p>
+            `;
+            
+            await this.enviarEmailConBrevo(
+                params.to_email,
+                params.to_name,
+                '🎉 ¡Felicitaciones por tu primera compra!',
+                htmlContent,
+                'primera_compra'
+            );
             
             this.marcarEnviado(usuario.id, 'primera_compra');
             
@@ -169,8 +226,22 @@ class SistemaEmailsAutomaticos {
         try {
             console.log('🎉 Enviando felicitación por primera venta...');
             
-            // Simular envío (en producción, usar EmailJS)
-            // await emailjs.send(this.emailJSConfig.serviceID, this.emailJSConfig.templatePrimeraVenta, params, this.emailJSConfig.publicKey);
+            const htmlContent = `
+                <p>¡Felicitaciones por tu primera venta en Cresalia!</p>
+                <p><strong>Producto:</strong> ${params.producto}</p>
+                <p><strong>Monto:</strong> $${params.monto}</p>
+                <p><strong>Cliente:</strong> ${params.cliente}</p>
+                <p><strong>Fecha:</strong> ${params.fecha}</p>
+                <p>¡Seguí así! Estamos orgullosos de acompañarte en tu crecimiento.</p>
+                <p>¡Vamos por más ventas!</p>
+            `;
+            
+            await this.enviarEmailConBrevo(
+                params.to_email,
+                params.to_name,
+                '🎉 ¡Felicitaciones por tu primera venta!',
+                htmlContent
+            );
             
             this.marcarEnviado(usuario.id, 'primera_venta');
             
@@ -220,8 +291,22 @@ class SistemaEmailsAutomaticos {
         try {
             console.log('🎉 Enviando felicitación por primer turno...');
             
-            // Simular envío (en producción, usar EmailJS)
-            // await emailjs.send(this.emailJSConfig.serviceID, this.emailJSConfig.templatePrimerTurno, params, this.emailJSConfig.publicKey);
+            const htmlContent = `
+                <p>¡Felicitaciones por tu primer turno reservado en Cresalia!</p>
+                <p><strong>Servicio:</strong> ${params.servicio}</p>
+                <p><strong>Cliente:</strong> ${params.cliente}</p>
+                <p><strong>Fecha del turno:</strong> ${params.fecha_turno}</p>
+                <p><strong>Fecha de reserva:</strong> ${params.fecha}</p>
+                <p>¡Esperamos que todo salga excelente!</p>
+                <p>¡Gracias por confiar en Cresalia!</p>
+            `;
+            
+            await this.enviarEmailConBrevo(
+                params.to_email,
+                params.to_name,
+                '🎉 ¡Felicitaciones por tu primer turno!',
+                htmlContent
+            );
             
             this.marcarEnviado(usuario.id, 'primer_turno');
             
@@ -266,8 +351,26 @@ class SistemaEmailsAutomaticos {
         try {
             console.log('📧 Enviando confirmación de suscripción...');
             
-            // Simular envío (en producción, usar EmailJS)
-            // await emailjs.send(this.emailJSConfig.serviceID, this.emailJSConfig.templateSuscripcion, params, this.emailJSConfig.publicKey);
+            const caracteristicasHTML = params.caracteristicas && params.caracteristicas.length > 0
+                ? '<ul>' + params.caracteristicas.map(c => `<li>${c}</li>`).join('') + '</ul>'
+                : '<p>Acceso completo a todas las funcionalidades del plan.</p>';
+            
+            const htmlContent = `
+                <p>¡Tu suscripción a Cresalia ha sido confirmada!</p>
+                <p><strong>Plan:</strong> ${params.plan}</p>
+                <p><strong>Precio:</strong> $${params.precio}</p>
+                <p><strong>Fecha:</strong> ${params.fecha}</p>
+                <p><strong>Características incluidas:</strong></p>
+                ${caracteristicasHTML}
+                <p>¡Gracias por confiar en Cresalia!</p>
+            `;
+            
+            await this.enviarEmailConBrevo(
+                params.to_email,
+                params.to_name,
+                '✅ Confirmación de Suscripción - Cresalia',
+                htmlContent
+            );
             
             // Notificar al panel master
             this.notificarPanelMaster({

@@ -1419,6 +1419,26 @@ function procesarCompra() {
         
         addOrderToUserHistory(orderData);
         console.log('✅ Pedido guardado en historial del usuario:', orderData);
+        
+        // Guardar en Supabase (historial_compras)
+        await guardarHistorialCompraSupabase(datosCompra, orderData);
+        
+        // Verificar si es primera compra y enviar email
+        if (window.sistemaEmailsCresalia) {
+            const esPrimeraCompra = await verificarPrimeraCompra(datosCompra.emailCliente);
+            if (esPrimeraCompra) {
+                await window.sistemaEmailsCresalia.procesarEvento('primera_compra', {
+                    id: datosCompra.emailCliente,
+                    email: datosCompra.emailCliente,
+                    nombre: datosCompra.nombreCliente
+                }, {
+                    producto: datosCompra.esCompraCarrito 
+                        ? `${datosCompra.carrito.length} productos` 
+                        : datosCompra.producto?.nombre || 'Producto',
+                    monto: orderData.total
+                });
+            }
+        }
     }
     
     // Limpiar carrito si es compra del carrito
@@ -3165,6 +3185,123 @@ function renderUserServices() {
 }
 
 // Función para agregar pedido al historial del usuario
+// ===== GUARDAR HISTORIAL DE COMPRA EN SUPABASE =====
+async function guardarHistorialCompraSupabase(datosCompra, orderData) {
+    try {
+        // Obtener cliente de Supabase
+        const supabase = window.SUPABASE_CLIENT || (window.supabase && typeof window.supabase.from === 'function' ? window.supabase : null);
+        
+        if (!supabase || typeof supabase.from !== 'function') {
+            console.warn('⚠️ Supabase no disponible, guardando solo en localStorage');
+            return;
+        }
+        
+        // Determinar tienda (por ahora usar 'tienda-general' si no hay tienda específica)
+        const tiendaId = datosCompra.tiendaId || 'tienda-general';
+        const tiendaNombre = datosCompra.tiendaNombre || 'Cresalia';
+        
+        // Preparar productos para guardar
+        const productos = orderData.products || [];
+        
+        // Guardar cada producto como una compra separada en historial_compras
+        for (const producto of productos) {
+            const compraData = {
+                comprador_email: datosCompra.emailCliente,
+                comprador_nombre: datosCompra.nombreCliente,
+                tienda_id: tiendaId,
+                tienda_nombre: tiendaNombre,
+                vendedor_email: datosCompra.vendedorEmail || 'cresalia25@gmail.com',
+                producto_nombre: producto.name,
+                producto_id: producto.id,
+                precio: producto.price,
+                cantidad: producto.quantity,
+                total_pagado: producto.price * producto.quantity,
+                metodo_pago: datosCompra.metodoPago,
+                estado: 'completado',
+                direccion_entrega: datosCompra.direccionCliente,
+                datos_adicionales: {
+                    invoiceNumber: orderData.invoiceNumber,
+                    deliveryMethod: datosCompra.opcionEntrega,
+                    fecha_compra: orderData.date
+                }
+            };
+            
+            const { data, error } = await supabase
+                .from('historial_compras')
+                .insert([compraData])
+                .select();
+            
+            if (error) {
+                console.error('❌ Error guardando compra en Supabase:', error);
+            } else {
+                console.log('✅ Compra guardada en Supabase:', data);
+            }
+        }
+        
+        // También guardar en historial_pagos_completo si existe
+        const pagoData = {
+            tienda_id: tiendaId,
+            comprador_email: datosCompra.emailCliente,
+            monto: orderData.total,
+            moneda: 'ARS',
+            tipo_pago: 'compra',
+            estado_pago: 'aprobado',
+            metodo_pago: datosCompra.metodoPago,
+            referencia_pago: orderData.invoiceNumber,
+            descripcion: `Compra de ${productos.length} producto(s)`,
+            monto_neto: orderData.total,
+            datos_adicionales: {
+                productos: productos,
+                invoiceNumber: orderData.invoiceNumber
+            }
+        };
+        
+        const { data: pagoDataResult, error: pagoError } = await supabase
+            .from('historial_pagos_completo')
+            .insert([pagoData])
+            .select();
+        
+        if (pagoError) {
+            console.warn('⚠️ Error guardando pago en historial_pagos_completo (tabla puede no existir):', pagoError);
+        } else {
+            console.log('✅ Pago guardado en historial_pagos_completo:', pagoDataResult);
+        }
+        
+    } catch (error) {
+        console.error('❌ Error en guardarHistorialCompraSupabase:', error);
+    }
+}
+
+// ===== VERIFICAR SI ES PRIMERA COMPRA =====
+async function verificarPrimeraCompra(emailComprador) {
+    try {
+        const supabase = window.SUPABASE_CLIENT || (window.supabase && typeof window.supabase.from === 'function' ? window.supabase : null);
+        
+        if (!supabase || typeof supabase.from !== 'function') {
+            // Fallback: verificar en localStorage
+            const historial = JSON.parse(localStorage.getItem('historial_compras') || '[]');
+            return historial.filter(c => c.comprador_email === emailComprador).length === 0;
+        }
+        
+        // Verificar en Supabase
+        const { data, error } = await supabase
+            .from('historial_compras')
+            .select('id')
+            .eq('comprador_email', emailComprador)
+            .limit(1);
+        
+        if (error) {
+            console.warn('⚠️ Error verificando primera compra:', error);
+            return true; // Asumir que es primera compra si hay error
+        }
+        
+        return !data || data.length === 0;
+    } catch (error) {
+        console.error('❌ Error en verificarPrimeraCompra:', error);
+        return true; // Asumir que es primera compra si hay error
+    }
+}
+
 function addOrderToUserHistory(orderData) {
     if (!currentUser) return;
     
