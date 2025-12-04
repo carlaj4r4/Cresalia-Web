@@ -79,7 +79,7 @@ class SimplePaymentSystem {
                                     <div class="flow-item">
                                         <h5>💼 Suscripciones a Cresalia</h5>
                                         <p>✅ Te pagan a tu cuenta personal de Mercado Pago</p>
-                                        <p>✅ Planes: Básico ($29), Pro ($79), Enterprise ($199)</p>
+                                        <p>✅ Planes: Básico ($29 ARS), Pro ($79 ARS), Enterprise ($199 ARS)</p>
                                         <p>✅ Links automáticos para que te paguen</p>
                                     </div>
                                     

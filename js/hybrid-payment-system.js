@@ -73,7 +73,7 @@ class HybridPaymentSystem {
                                     <div class="flow-item">
                                         <h5>💼 Suscripciones a Cresalia</h5>
                                         <p>✅ Van directamente a la cuenta de <strong>Cresalia</strong></p>
-                                        <p>✅ Planes: Básico ($29), Pro ($79), Enterprise ($199)</p>
+                                        <p>✅ Planes: Básico ($29 ARS), Pro ($79 ARS), Enterprise ($199 ARS)</p>
                                         <p>✅ Pagos mensuales por usar la plataforma</p>
                                     </div>
                                     
