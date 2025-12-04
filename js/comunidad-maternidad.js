@@ -492,8 +492,258 @@ class ComunidadMaternidad {
      * Mostrar trimestre
      */
     mostrarTrimestre(numero) {
-        this.mostrarNotificacion(`Cargando contenido del ${numero}° trimestre...`, 'info');
-        // Implementar lógica para mostrar contenido del trimestre
+        const trimestres = {
+            1: {
+                titulo: '1️⃣ Primer Trimestre (Semanas 1-12)',
+                icono: '🤰',
+                contenido: `
+                    <div style="line-height: 1.8; color: #374151;">
+                        <h4 style="color: #F48FB1; margin-bottom: 20px;">💜 Primer Trimestre: Los primeros cambios</h4>
+                        
+                        <div style="background: #F3F4F6; padding: 20px; border-radius: 12px; margin-bottom: 20px;">
+                            <h5 style="color: #92400E; margin-bottom: 15px;">📅 Desarrollo del bebé</h5>
+                            <ul style="margin-left: 20px; color: #6B7280;">
+                                <li><strong>Semanas 1-4:</strong> Fertilización e implantación. El embrión comienza a formarse.</li>
+                                <li><strong>Semanas 5-8:</strong> Se forman el corazón, cerebro y órganos principales. El embrión mide aproximadamente 1.5 cm.</li>
+                                <li><strong>Semanas 9-12:</strong> El embrión se convierte en feto. Se forman las extremidades, dedos y características faciales.</li>
+                            </ul>
+                        </div>
+                        
+                        <div style="background: #FEF3C7; padding: 20px; border-radius: 12px; margin-bottom: 20px; border-left: 4px solid #F59E0B;">
+                            <h5 style="color: #92400E; margin-bottom: 15px;">💡 Síntomas comunes</h5>
+                            <ul style="margin-left: 20px; color: #6B7280;">
+                                <li><strong>Náuseas y vómitos:</strong> Muy comunes, especialmente por la mañana. Comé pequeñas porciones varias veces al día.</li>
+                                <li><strong>Cansancio extremo:</strong> Es normal sentirse muy cansada. Descansá cuando lo necesites.</li>
+                                <li><strong>Senos sensibles:</strong> Pueden estar hinchados y doloridos.</li>
+                                <li><strong>Cambios de humor:</strong> Los cambios hormonales pueden causar altibajos emocionales.</li>
+                                <li><strong>Ganas frecuentes de orinar:</strong> El útero en crecimiento presiona la vejiga.</li>
+                                <li><strong>Antojos o aversiones alimentarias:</strong> Es normal tener antojos o rechazar ciertos alimentos.</li>
+                            </ul>
+                        </div>
+                        
+                        <div style="background: #ECFDF5; padding: 20px; border-radius: 12px; margin-bottom: 20px; border-left: 4px solid #10B981;">
+                            <h5 style="color: #047857; margin-bottom: 15px;">✅ Cuidados importantes</h5>
+                            <ul style="margin-left: 20px; color: #6B7280;">
+                                <li>Tomá ácido fólico diariamente (400-800 mcg según indicación médica).</li>
+                                <li>Asistí a tu primera cita prenatal.</li>
+                                <li>Evitá alcohol, tabaco y drogas completamente.</li>
+                                <li>Limitá la cafeína (máximo 200mg por día).</li>
+                                <li>Comé alimentos nutritivos, aunque tengas náuseas.</li>
+                                <li>Descansá lo suficiente.</li>
+                                <li>Mantenete hidratada.</li>
+                            </ul>
+                        </div>
+                        
+                        <div style="background: #FDF2F8; padding: 20px; border-radius: 12px; border-left: 4px solid #EC4899;">
+                            <h5 style="color: #BE185D; margin-bottom: 15px;">⚠️ Cuándo consultar al médico</h5>
+                            <ul style="margin-left: 20px; color: #6B7280;">
+                                <li>Sangrado vaginal (cualquier cantidad).</li>
+                                <li>Dolor abdominal intenso o cólicos fuertes.</li>
+                                <li>Vómitos persistentes que no te permiten retener líquidos.</li>
+                                <li>Fiebre superior a 38°C.</li>
+                                <li>Dolor al orinar o necesidad urgente de orinar.</li>
+                            </ul>
+                        </div>
+                        
+                        <div style="background: #EFF6FF; padding: 20px; border-radius: 12px; margin-top: 20px; border-left: 4px solid #3B82F6;">
+                            <p style="color: #6B7280; margin: 0;"><strong>💜 Recordá:</strong> Cada embarazo es único. Si algo te preocupa, siempre es mejor consultar con tu médico. No hay preguntas tontas cuando se trata de tu salud y la de tu bebé.</p>
+                        </div>
+                    </div>
+                `
+            },
+            2: {
+                titulo: '2️⃣ Segundo Trimestre (Semanas 13-27)',
+                icono: '🤰',
+                contenido: `
+                    <div style="line-height: 1.8; color: #374151;">
+                        <h4 style="color: #F48FB1; margin-bottom: 20px;">💜 Segundo Trimestre: La "luna de miel" del embarazo</h4>
+                        
+                        <div style="background: #F3F4F6; padding: 20px; border-radius: 12px; margin-bottom: 20px;">
+                            <h5 style="color: #92400E; margin-bottom: 15px;">📅 Desarrollo del bebé</h5>
+                            <ul style="margin-left: 20px; color: #6B7280;">
+                                <li><strong>Semanas 13-16:</strong> El bebé puede chuparse el pulgar. Los órganos están funcionando. Mide aproximadamente 10-12 cm.</li>
+                                <li><strong>Semanas 17-20:</strong> Podés empezar a sentir los movimientos del bebé. Se desarrollan las uñas y el cabello. Mide aproximadamente 20-25 cm.</li>
+                                <li><strong>Semanas 21-27:</strong> El bebé puede oír sonidos. Se desarrollan los sentidos. Mide aproximadamente 30-35 cm y pesa alrededor de 1 kg.</li>
+                            </ul>
+                        </div>
+                        
+                        <div style="background: #FEF3C7; padding: 20px; border-radius: 12px; margin-bottom: 20px; border-left: 4px solid #F59E0B;">
+                            <h5 style="color: #92400E; margin-bottom: 15px;">💡 Síntomas comunes</h5>
+                            <ul style="margin-left: 20px; color: #6B7280;">
+                                <li><strong>Movimientos del bebé:</strong> Empezarás a sentir pataditas y movimientos (generalmente entre las semanas 18-22).</li>
+                                <li><strong>Barriga visible:</strong> Tu barriga comenzará a notarse claramente.</li>
+                                <li><strong>Mayor energía:</strong> Muchas mujeres se sienten con más energía que en el primer trimestre.</li>
+                                <li><strong>Dolor de espalda:</strong> El peso adicional puede causar molestias en la espalda.</li>
+                                <li><strong>Congestión nasal:</strong> Los cambios hormonales pueden causar congestión.</li>
+                                <li><strong>Calambres en las piernas:</strong> Pueden ocurrir, especialmente por la noche.</li>
+                                <li><strong>Acidez estomacal:</strong> El útero en crecimiento presiona el estómago.</li>
+                                <li><strong>Estrías:</strong> Pueden aparecer en el abdomen, senos y muslos.</li>
+                            </ul>
+                        </div>
+                        
+                        <div style="background: #ECFDF5; padding: 20px; border-radius: 12px; margin-bottom: 20px; border-left: 4px solid #10B981;">
+                            <h5 style="color: #047857; margin-bottom: 15px;">✅ Cuidados importantes</h5>
+                            <ul style="margin-left: 20px; color: #6B7280;">
+                                <li>Continuá tomando vitaminas prenatales.</li>
+                                <li>Asistí a todas tus citas prenatales (generalmente cada 4 semanas).</li>
+                                <li>Realizá ejercicio moderado (caminar, natación, yoga prenatal).</li>
+                                <li>Mantené una alimentación balanceada y nutritiva.</li>
+                                <li>Hidratate bien (al menos 8-10 vasos de agua al día).</li>
+                                <li>Usá crema hidratante para prevenir o reducir estrías.</li>
+                                <li>Dormí de lado (preferiblemente del lado izquierdo) para mejorar la circulación.</li>
+                                <li>Usá ropa cómoda y zapatos con buen soporte.</li>
+                            </ul>
+                        </div>
+                        
+                        <div style="background: #FDF2F8; padding: 20px; border-radius: 12px; margin-bottom: 20px; border-left: 4px solid #EC4899;">
+                            <h5 style="color: #BE185D; margin-bottom: 15px;">📋 Pruebas y exámenes comunes</h5>
+                            <ul style="margin-left: 20px; color: #6B7280;">
+                                <li><strong>Ecografía morfológica:</strong> Generalmente entre las semanas 18-22, para verificar el desarrollo del bebé.</li>
+                                <li><strong>Análisis de sangre:</strong> Para detectar posibles problemas.</li>
+                                <li><strong>Prueba de glucosa:</strong> Para detectar diabetes gestacional (generalmente entre las semanas 24-28).</li>
+                                <li><strong>Medición del útero:</strong> En cada cita para verificar el crecimiento.</li>
+                            </ul>
+                        </div>
+                        
+                        <div style="background: #EFF6FF; padding: 20px; border-radius: 12px; border-left: 4px solid #3B82F6;">
+                            <h5 style="color: #1E40AF; margin-bottom: 15px;">⚠️ Cuándo consultar al médico</h5>
+                            <ul style="margin-left: 20px; color: #6B7280;">
+                                <li>Si no sentís movimientos del bebé después de la semana 24.</li>
+                                <li>Sangrado vaginal.</li>
+                                <li>Dolor abdominal intenso.</li>
+                                <li>Contracciones regulares antes de la semana 37.</li>
+                                <li>Pérdida de líquido amniótico.</li>
+                                <li>Dolor de cabeza intenso o visión borrosa.</li>
+                                <li>Hinchazón excesiva en manos, pies o cara.</li>
+                            </ul>
+                        </div>
+                        
+                        <div style="background: #FDF2F8; padding: 20px; border-radius: 12px; margin-top: 20px; border-left: 4px solid #EC4899;">
+                            <p style="color: #6B7280; margin: 0;"><strong>💜 Recordá:</strong> Este trimestre suele ser el más cómodo. Aprovechá para preparar cosas para el bebé, descansar y disfrutar de sentir los movimientos de tu bebé.</p>
+                        </div>
+                    </div>
+                `
+            },
+            3: {
+                titulo: '3️⃣ Tercer Trimestre (Semanas 28-40+)',
+                icono: '🤰',
+                contenido: `
+                    <div style="line-height: 1.8; color: #374151;">
+                        <h4 style="color: #F48FB1; margin-bottom: 20px;">💜 Tercer Trimestre: La recta final</h4>
+                        
+                        <div style="background: #F3F4F6; padding: 20px; border-radius: 12px; margin-bottom: 20px;">
+                            <h5 style="color: #92400E; margin-bottom: 15px;">📅 Desarrollo del bebé</h5>
+                            <ul style="margin-left: 20px; color: #6B7280;">
+                                <li><strong>Semanas 28-32:</strong> El bebé abre y cierra los ojos. Los pulmones están casi desarrollados. Mide aproximadamente 40 cm y pesa alrededor de 1.5-2 kg.</li>
+                                <li><strong>Semanas 33-36:</strong> El bebé aumenta de peso rápidamente. Se desarrolla el sistema inmunológico. Mide aproximadamente 45-50 cm y pesa alrededor de 2.5-3 kg.</li>
+                                <li><strong>Semanas 37-40+:</strong> El bebé está listo para nacer. Se considera a término a partir de la semana 37. Mide aproximadamente 50 cm y pesa alrededor de 3-3.5 kg.</li>
+                            </ul>
+                        </div>
+                        
+                        <div style="background: #FEF3C7; padding: 20px; border-radius: 12px; margin-bottom: 20px; border-left: 4px solid #F59E0B;">
+                            <h5 style="color: #92400E; margin-bottom: 15px;">💡 Síntomas comunes</h5>
+                            <ul style="margin-left: 20px; color: #6B7280;">
+                                <li><strong>Movimientos más fuertes:</strong> Los movimientos del bebé serán más notorios y a veces incómodos.</li>
+                                <li><strong>Falta de aire:</strong> El útero presiona el diafragma, dificultando la respiración.</li>
+                                <li><strong>Dificultad para dormir:</strong> Encontrar una posición cómoda puede ser difícil.</li>
+                                <li><strong>Micción frecuente:</strong> El bebé presiona la vejiga.</li>
+                                <li><strong>Dolor de espalda y cadera:</strong> El peso adicional y los cambios posturales causan molestias.</li>
+                                <li><strong>Hinchazón:</strong> En pies, tobillos y manos (normal, pero consultá si es excesiva).</li>
+                                <li><strong>Contracciones de Braxton Hicks:</strong> Contracciones de práctica, irregulares e indoloras.</li>
+                                <li><strong>Acidez y digestión lenta:</strong> El útero presiona el estómago.</li>
+                                <li><strong>Ansiedad y emoción:</strong> Sentimientos mezclados sobre el parto y la maternidad.</li>
+                            </ul>
+                        </div>
+                        
+                        <div style="background: #ECFDF5; padding: 20px; border-radius: 12px; margin-bottom: 20px; border-left: 4px solid #10B981;">
+                            <h5 style="color: #047857; margin-bottom: 15px;">✅ Cuidados importantes</h5>
+                            <ul style="margin-left: 20px; color: #6B7280;">
+                                <li>Continuá tomando vitaminas prenatales.</li>
+                                <li>Asistí a citas prenatales más frecuentes (cada 2 semanas desde la semana 28, semanal desde la semana 36).</li>
+                                <li>Contá los movimientos del bebé diariamente (método de conteo de patadas).</li>
+                                <li>Prepará tu bolsa para el hospital.</li>
+                                <li>Dormí de lado (preferiblemente izquierdo) con una almohada entre las piernas.</li>
+                                <li>Hacé ejercicios de Kegel para fortalecer el suelo pélvico.</li>
+                                <li>Mantené una alimentación nutritiva, pero en porciones más pequeñas y frecuentes.</li>
+                                <li>Descansá cuando lo necesites, no te exijas demasiado.</li>
+                                <li>Prepará tu plan de parto (si lo deseas) y hablalo con tu médico.</li>
+                            </ul>
+                        </div>
+                        
+                        <div style="background: #FDF2F8; padding: 20px; border-radius: 12px; margin-bottom: 20px; border-left: 4px solid #EC4899;">
+                            <h5 style="color: #BE185D; margin-bottom: 15px;">📋 Pruebas y preparación</h5>
+                            <ul style="margin-left: 20px; color: #6B7280;">
+                                <li><strong>Ecografía del tercer trimestre:</strong> Para verificar posición del bebé y crecimiento.</li>
+                                <li><strong>Cultivo vaginal:</strong> Para detectar estreptococo del grupo B (generalmente entre semanas 35-37).</li>
+                                <li><strong>Monitoreo de movimientos:</strong> Contar patadas diariamente.</li>
+                                <li><strong>Preparación para el parto:</strong> Clases de preparación al parto (si las deseas).</li>
+                                <li><strong>Preparación del hogar:</strong> Organizar la habitación del bebé, comprar artículos necesarios.</li>
+                            </ul>
+                        </div>
+                        
+                        <div style="background: #EFF6FF; padding: 20px; border-radius: 12px; margin-bottom: 20px; border-left: 4px solid #3B82F6;">
+                            <h5 style="color: #1E40AF; margin-bottom: 15px;">⚠️ Señales de parto</h5>
+                            <p style="color: #6B7280; margin-bottom: 10px;"><strong>Señales de que el parto puede estar cerca:</strong></p>
+                            <ul style="margin-left: 20px; color: #6B7280;">
+                                <li><strong>Contracciones regulares:</strong> Que se vuelven más frecuentes, largas e intensas.</li>
+                                <li><strong>Ruptura de membranas:</strong> Pérdida de líquido amniótico (puede ser un goteo o un chorro).</li>
+                                <li><strong>Tapón mucoso:</strong> Secreción espesa con sangre (puede ocurrir días antes del parto).</li>
+                                <li><strong>Encajamiento:</strong> El bebé "baja" y se siente menos presión en el diafragma.</li>
+                            </ul>
+                            <p style="color: #6B7280; margin-top: 15px;"><strong>Cuándo ir al hospital:</strong></p>
+                            <ul style="margin-left: 20px; color: #6B7280;">
+                                <li>Contracciones cada 5 minutos durante 1 hora (si es tu primer bebé).</li>
+                                <li>Ruptura de membranas (aunque no tengas contracciones).</li>
+                                <li>Sangrado rojo brillante (no solo manchado).</li>
+                                <li>No sentís movimientos del bebé.</li>
+                            </ul>
+                        </div>
+                        
+                        <div style="background: #FDF2F8; padding: 20px; border-radius: 12px; margin-top: 20px; border-left: 4px solid #EC4899;">
+                            <p style="color: #6B7280; margin: 0;"><strong>💜 Recordá:</strong> Estás en la recta final. Es normal sentirse ansiosa, emocionada y cansada. Confiá en tu cuerpo y en tu capacidad. Estás haciendo algo increíble. ¡Pronto conocerás a tu bebé!</p>
+                        </div>
+                    </div>
+                `
+            }
+        };
+
+        const trimestre = trimestres[numero];
+        if (!trimestre) {
+            this.mostrarNotificacion('Trimestre no encontrado', 'error');
+            return;
+        }
+
+        const modal = document.createElement('div');
+        modal.className = 'modal';
+        modal.style.cssText = 'position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); z-index: 10000; display: flex; align-items: center; justify-content: center; padding: 20px;';
+        modal.innerHTML = `
+            <div class="modal-content" style="background: white; border-radius: 20px; max-width: 800px; width: 100%; max-height: 90vh; overflow-y: auto; box-shadow: 0 20px 60px rgba(0,0,0,0.3); animation: slideUp 0.3s ease;">
+                <div class="modal-header" style="display: flex; justify-content: space-between; align-items: center; padding: 24px 32px; border-bottom: 2px solid #E5E7EB;">
+                    <h3 style="margin: 0; color: #F48FB1; font-size: 1.5rem;">${trimestre.icono} ${trimestre.titulo}</h3>
+                    <button class="close-btn" onclick="this.closest('.modal').remove()" style="background: none; border: none; font-size: 2rem; color: #6B7280; cursor: pointer; padding: 0; width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; transition: all 0.3s;">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+                <div class="modal-body" style="padding: 30px;">
+                    <style>
+                        @keyframes slideUp {
+                            from { transform: translateY(50px); opacity: 0; }
+                            to { transform: translateY(0); opacity: 1; }
+                        }
+                        .close-btn:hover { color: #374151; transform: rotate(90deg); }
+                    </style>
+                    ${trimestre.contenido}
+                </div>
+            </div>
+        `;
+        document.body.appendChild(modal);
+        
+        // Cerrar modal al hacer click fuera
+        modal.addEventListener('click', function(e) {
+            if (e.target === modal) {
+                modal.remove();
+            }
+        });
     }
 
     /**
