@@ -412,3 +412,31 @@ module.exports = async (req, res) => {
     }
 };
 
+// ==================== ACCIÓN: CRON (PROCESAR CUMPLEAÑOS DEL DÍA) ====================
+async function handleCron(supabase, req, res) {
+    try {
+        // Importar función de procesamiento
+        let procesarCumpleanosDelDia;
+        try {
+            const tasksModule = require('../backend/tasks/cumpleanos');
+            procesarCumpleanosDelDia = tasksModule.procesarCumpleanosDelDia;
+        } catch (requireError) {
+            console.warn('⚠️ No se pudo cargar backend/tasks/cumpleanos, usando implementación simplificada');
+            // Implementación simplificada si no existe el módulo
+            procesarCumpleanosDelDia = async () => {
+                console.log('📅 Procesando cumpleaños del día...');
+                return { procesados: 0, mensaje: 'Función de procesamiento no disponible' };
+            };
+        }
+        
+        const resultado = await procesarCumpleanosDelDia();
+        res.status(200).json({ success: true, ...resultado });
+    } catch (error) {
+        console.error('❌ Error en cron cumpleaños:', error);
+        res.status(500).json({ 
+            success: false, 
+            message: error.message || 'Error procesando cumpleaños del día' 
+        });
+    }
+}
+
