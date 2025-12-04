@@ -396,8 +396,12 @@ module.exports = async (req, res) => {
             case 'consent':
                 await handleConsent(supabase, req, res);
                 break;
+            case 'cron':
+            case 'procesar':
+                await handleCron(supabase, req, res);
+                break;
             default:
-                res.status(400).json({ success: false, message: `Acción "${action}" no válida. Use: resumen, interacciones, compradores, consent` });
+                res.status(400).json({ success: false, message: `Acción "${action}" no válida. Use: resumen, interacciones, compradores, consent, cron` });
         }
     } catch (error) {
         console.error('❌ Error en API cumpleanos:', error.message);

@@ -404,7 +404,7 @@
   },
   "crons": [
     {
-      "path": "/api/tasks/cumpleanos",
+      "path": "/api/cumpleanos?action=cron",
       "schedule": "0 11 * * *"
     }
   ]
