@@ -91,10 +91,11 @@ const SistemaFeedbacksGeneral = {
         boton.setAttribute('aria-label', 'Abrir formulario de feedback');
         
         // Estilos del botón (ajustado para no superponerse con carrito y widget de soporte)
-        // Posición: a la derecha, más arriba para no chocar con widgets
+        // Posición: a la derecha, entre widget de soporte (abajo) y chatbot IA (arriba)
+        // Aproximadamente 1 cm (37px) más arriba que los demás widgets
         boton.style.cssText = `
             position: fixed;
-            bottom: 100px; /* Más arriba para no chocar con widget de soporte (Brevo) */
+            bottom: 140px; /* Entre soporte (20px) y chatbot IA (220px), ~1 cm más arriba */
             right: 20px;
             width: 50px;
             height: 50px;
@@ -112,18 +113,18 @@ const SistemaFeedbacksGeneral = {
             justify-content: center;
         `;
         
-        // Ajuste responsive para móviles - más arriba para no encimarse
+        // Ajuste responsive para móviles - entre soporte y chatbot IA
         if (window.innerWidth <= 768) {
-            boton.style.bottom = '100px'; // Más arriba para no chocar con carrito y chatbots
+            boton.style.bottom = '140px'; // Entre soporte y chatbot IA en móvil
             boton.style.right = '20px';
             boton.style.width = '45px';
             boton.style.height = '45px';
             boton.style.fontSize = '18px';
         }
         
-        // Ajuste para tablets - también más arriba
+        // Ajuste para tablets - también entre soporte y chatbot IA
         if (window.innerWidth > 768 && window.innerWidth <= 1024) {
-            boton.style.bottom = '120px'; // Más arriba en tablets también
+            boton.style.bottom = '160px'; // Entre soporte y chatbot IA en tablet
             boton.style.right = '20px';
             boton.style.width = '50px';
             boton.style.height = '50px';

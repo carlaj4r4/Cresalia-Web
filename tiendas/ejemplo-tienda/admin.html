@@ -14925,7 +14925,9 @@ Los reportes detallados están disponibles en:
             const nombre = document.getElementById('nombreTitular')?.value || '';
             const email = document.getElementById('emailPago')?.value || '';
             
-            console.log('💳 Datos del pago:', { moneda, tarjeta, cvv, vencimiento, nombre, email });
+            // 🔒 SEGURIDAD: No loguear datos sensibles de tarjeta
+            const tarjetaEnmascarada = tarjeta ? '**** **** **** ' + tarjeta.slice(-4) : '';
+            console.log('💳 Datos del pago:', { moneda, tarjeta: tarjetaEnmascarada, cvv: '***', vencimiento: '**/**', nombre, email });
             
             // Validar todos los campos
             if (!tarjeta) {
@@ -14968,7 +14970,9 @@ Los reportes detallados están disponibles en:
                 return;
             }
             
-            console.log('💳 Procesando pago real:', { planId, moneda, tarjeta, cvv, vencimiento, nombre, email });
+            // 🔒 SEGURIDAD: No loguear datos sensibles de tarjeta
+            const tarjetaEnmascarada2 = tarjeta ? '**** **** **** ' + tarjeta.slice(-4) : '';
+            console.log('💳 Procesando pago real:', { planId, moneda, tarjeta: tarjetaEnmascarada2, cvv: '***', vencimiento: '**/**', nombre, email });
             
             // Simular procesamiento con Mercado Pago
             alert('⏳ Procesando pago con Mercado Pago...\n\n🔒 Datos encriptados y seguros');
