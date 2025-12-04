@@ -533,10 +533,214 @@
         </div>
     </div>
 
+    <!-- Modal de Recursos -->
+    <div id="modal-recurso" class="modal" style="display: none;">
+        <div class="modal-content" style="max-width: 800px; max-height: 90vh; overflow-y: auto;">
+            <div class="modal-header" style="display: flex; justify-content: space-between; align-items: center; padding: 20px; border-bottom: 2px solid #E5E7EB;">
+                <h3 id="modal-recurso-titulo" style="margin: 0; color: #7c3aed;">🤍 Recurso</h3>
+                <button class="cerrar-modal" onclick="cerrarModalRecurso()" style="background: none; border: none; font-size: 2rem; color: #6B7280; cursor: pointer;">&times;</button>
+            </div>
+            <div class="modal-body" id="modal-recurso-contenido" style="padding: 30px;">
+                <!-- Contenido dinámico -->
+            </div>
+        </div>
+    </div>
+
     <script>
         function descargarRecurso(nombre) {
-            alert('💡 Este recurso estará disponible pronto en Cresalia. Estamos cargando la biblioteca inicial.');
+            const modal = document.getElementById('modal-recurso');
+            const titulo = document.getElementById('modal-recurso-titulo');
+            const contenido = document.getElementById('modal-recurso-contenido');
+            
+            let contenidoHTML = '';
+            
+            switch(nombre) {
+                case 'guia-fechas-dificiles.pdf':
+                    titulo.textContent = '📅 Guía para Fechas Sensibles';
+                    contenidoHTML = `
+                        <div style="line-height: 1.8; color: #374151;">
+                            <h4 style="color: #7c3aed; margin-bottom: 20px;">💜 Cómo atravesar fechas difíciles</h4>
+                            
+                            <div style="background: #F3F4F6; padding: 20px; border-radius: 12px; margin-bottom: 20px;">
+                                <h5 style="color: #92400E; margin-bottom: 15px;">📆 Aniversarios y fechas importantes</h5>
+                                <ul style="margin-left: 20px; color: #6B7280;">
+                                    <li><strong>Fecha de la pérdida:</strong> Permitite sentir. No hay una forma "correcta" de recordar.</li>
+                                    <li><strong>Fecha esperada de nacimiento:</strong> Podés hacer algo simbólico o simplemente descansar.</li>
+                                    <li><strong>Día de la madre/padre:</strong> Tu duelo es válido, incluso en días de celebración.</li>
+                                    <li><strong>Navidad y festejos:</strong> No estás obligada a participar si no querés.</li>
+                                </ul>
+                            </div>
+                            
+                            <div style="background: #FEF3C7; padding: 20px; border-radius: 12px; margin-bottom: 20px; border-left: 4px solid #F59E0B;">
+                                <h5 style="color: #92400E; margin-bottom: 15px;">💡 Ideas para recordar (opcionales)</h5>
+                                <ul style="margin-left: 20px; color: #6B7280;">
+                                    <li>Encender una vela especial</li>
+                                    <li>Escribir una carta a tu bebé estrella</li>
+                                    <li>Plantar un árbol o flor en su memoria</li>
+                                    <li>Hacer una donación a una causa relacionada</li>
+                                    <li>Compartir con alguien de confianza</li>
+                                    <li>Simplemente descansar y permitirte sentir</li>
+                                </ul>
+                            </div>
+                            
+                            <div style="background: #ECFDF5; padding: 20px; border-radius: 12px; margin-bottom: 20px; border-left: 4px solid #10B981;">
+                                <h5 style="color: #047857; margin-bottom: 15px;">🤝 Cómo manejar comentarios difíciles</h5>
+                                <p style="color: #6B7280; margin-bottom: 10px;"><strong>Si alguien dice:</strong> "Ya pasó tiempo, deberías superarlo"</p>
+                                <p style="color: #6B7280; margin-bottom: 10px;"><strong>Podés responder:</strong> "Cada persona procesa el duelo diferente. Yo necesito mi tiempo."</p>
+                                <p style="color: #6B7280; margin-bottom: 10px;"><strong>O simplemente:</strong> "Gracias por tu preocupación, pero prefiero no hablar de eso ahora."</p>
+                            </div>
+                            
+                            <div style="background: #FDF2F8; padding: 20px; border-radius: 12px; border-left: 4px solid #EC4899;">
+                                <h5 style="color: #BE185D; margin-bottom: 15px;">💜 Recordá:</h5>
+                                <p style="color: #6B7280; margin: 0;">No hay fechas "prohibidas" para sentir. Tu dolor es válido siempre. No estás obligada a explicar nada a nadie. Tu bienestar es lo más importante.</p>
+                            </div>
+                        </div>
+                    `;
+                    break;
+                    
+                case 'directorio-profesionales.xlsx':
+                    titulo.textContent = '👩‍⚕️ Directorio de Profesionales';
+                    contenidoHTML = `
+                        <div style="line-height: 1.8; color: #374151;">
+                            <h4 style="color: #7c3aed; margin-bottom: 20px;">💜 Profesionales especializados en duelo perinatal</h4>
+                            
+                            <div style="background: #F3F4F6; padding: 20px; border-radius: 12px; margin-bottom: 20px;">
+                                <h5 style="color: #92400E; margin-bottom: 15px;">🧠 Psicología Perinatal</h5>
+                                <p style="color: #6B7280; margin-bottom: 10px;">Profesionales especializados en duelo gestacional, pérdidas y fertilidad:</p>
+                                <ul style="margin-left: 20px; color: #6B7280;">
+                                    <li><strong>Buscar en:</strong> Colegio de Psicólogos de tu provincia</li>
+                                    <li><strong>Palabras clave:</strong> "duelo perinatal", "pérdida gestacional", "psicología reproductiva"</li>
+                                    <li><strong>Preguntar:</strong> Si tienen experiencia específica en duelo gestacional</li>
+                                </ul>
+                            </div>
+                            
+                            <div style="background: #FEF3C7; padding: 20px; border-radius: 12px; margin-bottom: 20px; border-left: 4px solid #F59E0B;">
+                                <h5 style="color: #92400E; margin-bottom: 15px;">🤱 Doulas y Parteras</h5>
+                                <p style="color: #6B7280; margin-bottom: 10px;">Profesionales que acompañan procesos de pérdida con respeto:</p>
+                                <ul style="margin-left: 20px; color: #6B7280;">
+                                    <li><strong>Buscar en:</strong> Redes de doulas de tu zona</li>
+                                    <li><strong>Preguntar:</strong> Si tienen formación en acompañamiento de pérdidas</li>
+                                    <li><strong>Importante:</strong> Que respeten tus tiempos y decisiones</li>
+                                </ul>
+                            </div>
+                            
+                            <div style="background: #ECFDF5; padding: 20px; border-radius: 12px; margin-bottom: 20px; border-left: 4px solid #10B981;">
+                                <h5 style="color: #047857; margin-bottom: 15px;">👨‍⚕️ Obstetras y Ginecólogos</h5>
+                                <p style="color: #6B7280; margin-bottom: 10px;">Médicos con enfoque respetuoso y humanizado:</p>
+                                <ul style="margin-left: 20px; color: #6B7280;">
+                                    <li><strong>Buscar:</strong> Profesionales con enfoque en "parto respetado"</li>
+                                    <li><strong>Preguntar:</strong> Cómo manejan situaciones de pérdida</li>
+                                    <li><strong>Recomendación:</strong> Pedir referencias de otras mujeres</li>
+                                </ul>
+                            </div>
+                            
+                            <div style="background: #FDF2F8; padding: 20px; border-radius: 12px; margin-bottom: 20px; border-left: 4px solid #EC4899;">
+                                <h5 style="color: #BE185D; margin-bottom: 15px;">🤝 Grupos de Apoyo</h5>
+                                <p style="color: #6B7280; margin-bottom: 10px;">Espacios grupales moderados:</p>
+                                <ul style="margin-left: 20px; color: #6B7280;">
+                                    <li><strong>Comunidad Cresalia:</strong> Este espacio seguro y anónimo</li>
+                                    <li><strong>Grupos locales:</strong> Buscar en redes sociales o centros de salud</li>
+                                    <li><strong>Online:</strong> Grupos virtuales moderados por profesionales</li>
+                                </ul>
+                            </div>
+                            
+                            <div style="background: #EFF6FF; padding: 20px; border-radius: 12px; border-left: 4px solid #3B82F6;">
+                                <h5 style="color: #1E40AF; margin-bottom: 15px;">📞 Líneas de Ayuda</h5>
+                                <ul style="margin-left: 20px; color: #6B7280;">
+                                    <li><strong>Línea de Prevención del Suicidio:</strong> 135 (Argentina)</li>
+                                    <li><strong>Emergencias:</strong> 911</li>
+                                    <li><strong>Centros de Salud Mental:</strong> Consultar en tu municipio</li>
+                                </ul>
+                            </div>
+                            
+                            <div style="background: #FDF2F8; padding: 20px; border-radius: 12px; margin-top: 20px; border-left: 4px solid #EC4899;">
+                                <p style="color: #6B7280; margin: 0;"><strong>💜 Recordá:</strong> No estás sola. Buscar ayuda profesional es un acto de valentía y autocuidado. Tu bienestar importa.</p>
+                            </div>
+                        </div>
+                    `;
+                    break;
+                    
+                case 'rituales-memoria.docx':
+                    titulo.textContent = '🕯️ Rituales de Memoria';
+                    contenidoHTML = `
+                        <div style="line-height: 1.8; color: #374151;">
+                            <h4 style="color: #7c3aed; margin-bottom: 20px;">💜 Rituales simbólicos (opcionales)</h4>
+                            <p style="color: #6B7280; margin-bottom: 20px; font-style: italic;">Estos son solo ideas. No estás obligada a hacer nada. Solo si te hace bien.</p>
+                            
+                            <div style="background: #F3F4F6; padding: 20px; border-radius: 12px; margin-bottom: 20px;">
+                                <h5 style="color: #92400E; margin-bottom: 15px;">✉️ Carta a tu bebé estrella</h5>
+                                <p style="color: #6B7280; margin-bottom: 10px;"><strong>Qué escribir:</strong></p>
+                                <ul style="margin-left: 20px; color: #6B7280;">
+                                    <li>Lo que sentís</li>
+                                    <li>Lo que hubieras querido decirle</li>
+                                    <li>Lo que significó para vos</li>
+                                    <li>Lo que querés que sepa</li>
+                                </ul>
+                                <p style="color: #6B7280; margin-top: 10px; font-style: italic;">Podés guardarla, quemarla, enterrarla, o dejarla en un lugar especial. Vos decidís.</p>
+                            </div>
+                            
+                            <div style="background: #FEF3C7; padding: 20px; border-radius: 12px; margin-bottom: 20px; border-left: 4px solid #F59E0B;">
+                                <h5 style="color: #92400E; margin-bottom: 15px;">📦 Caja de recuerdos</h5>
+                                <p style="color: #6B7280; margin-bottom: 10px;">Podés guardar:</p>
+                                <ul style="margin-left: 20px; color: #6B7280;">
+                                    <li>Ecografías o fotos</li>
+                                    <li>La carta que escribiste</li>
+                                    <li>Un objeto simbólico</li>
+                                    <li>Un juguete pequeño</li>
+                                    <li>Lo que tenga significado para vos</li>
+                                </ul>
+                                <p style="color: #6B7280; margin-top: 10px; font-style: italic;">No hay reglas. Solo lo que te haga sentir cerca.</p>
+                            </div>
+                            
+                            <div style="background: #ECFDF5; padding: 20px; border-radius: 12px; margin-bottom: 20px; border-left: 4px solid #10B981;">
+                                <h5 style="color: #047857; margin-bottom: 15px;">🕯️ Ritual de luz</h5>
+                                <p style="color: #6B7280; margin-bottom: 10px;">En fechas especiales o cuando lo necesites:</p>
+                                <ol style="margin-left: 20px; color: #6B7280;">
+                                    <li>Encendé una vela especial</li>
+                                    <li>Tomate un momento para recordar</li>
+                                    <li>Decí lo que necesites decir (en voz alta o en silencio)</li>
+                                    <li>Permitite sentir lo que venga</li>
+                                    <li>Dejá que la vela se consuma o apagala cuando quieras</li>
+                                </ol>
+                            </div>
+                            
+                            <div style="background: #FDF2F8; padding: 20px; border-radius: 12px; margin-bottom: 20px; border-left: 4px solid #EC4899;">
+                                <h5 style="color: #BE185D; margin-bottom: 15px;">🌱 Plantar en su memoria</h5>
+                                <p style="color: #6B7280; margin-bottom: 10px;">Plantar un árbol, una flor, o una planta especial:</p>
+                                <ul style="margin-left: 20px; color: #6B7280;">
+                                    <li>Elegí algo que tenga significado para vos</li>
+                                    <li>Podés hacerlo sola o con alguien de confianza</li>
+                                    <li>Verla crecer puede ser reconfortante</li>
+                                    <li>Es un recordatorio vivo de su existencia</li>
+                                </ul>
+                            </div>
+                            
+                            <div style="background: #EFF6FF; padding: 20px; border-radius: 12px; border-left: 4px solid #3B82F6;">
+                                <h5 style="color: #1E40AF; margin-bottom: 15px;">💜 Lo más importante</h5>
+                                <p style="color: #6B7280; margin: 0;"><strong>No hay una forma "correcta" de recordar.</strong> No estás obligada a hacer nada. Si estos rituales te hacen bien, usalos. Si no, está perfecto también. Tu duelo es tuyo y es válido de cualquier forma.</p>
+                            </div>
+                        </div>
+                    `;
+                    break;
+                    
+                default:
+                    contenidoHTML = '<p>Recurso no encontrado.</p>';
+            }
+            
+            contenido.innerHTML = contenidoHTML;
+            modal.style.display = 'flex';
         }
+        
+        function cerrarModalRecurso() {
+            document.getElementById('modal-recurso').style.display = 'none';
+        }
+        
+        // Cerrar modal al hacer click fuera
+        document.getElementById('modal-recurso').addEventListener('click', function(e) {
+            if (e.target === this) {
+                cerrarModalRecurso();
+            }
+        });
     </script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="../../config-supabase-seguro.js"></script>
