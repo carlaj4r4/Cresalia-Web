@@ -351,7 +351,7 @@ const SistemaCredenciales = {
         }
 
         // Simular envío de email (en producción usar EmailJS o similar)
-        console.log(`📧 Enviando email de recuperación a: ${email}`);
+        console.log('📧 Enviando email de recuperación');
         
         // Generar token de recuperación
         const tokenRecuperacion = this.generarToken();

@@ -79,7 +79,7 @@ class SistemaEmailsAutomaticos {
                 estado: 'enviado'
             });
             
-            console.log('✅ Email de bienvenida enviado a', usuario.email);
+            console.log('✅ Email de bienvenida enviado');
             return { success: true, mensaje: 'Email de bienvenida enviado' };
             
         } catch (error) {

@@ -10,12 +10,12 @@ class SimplePaymentSystem {
             'enterprise': { name: 'Enterprise', price: 199, features: ['Todo Pro', 'Account Manager', 'Desarrollo custom', 'SLA 99%'] }
         };
 
-        // Tu información para recibir suscripciones
+        // Información de Cresalia (cargar desde variables de entorno o configuración segura)
         this.cresaliaInfo = {
             name: 'Cresalia',
-            email: 'carla.crimi.95@gmail.com',
-            alias: 'cresalia.07.mp', // Cambia por tu alias de Mercado Pago (opcional)
-            phone: '+543794735061', // Cambia por tu teléfono real
+            email: (typeof window !== 'undefined' && window.CRESALIA_PAYMENT_EMAIL) || process.env.CRESALIA_PAYMENT_EMAIL || 'suscripciones@cresalia.com',
+            alias: (typeof window !== 'undefined' && window.CRESALIA_MP_ALIAS) || process.env.CRESALIA_MP_ALIAS || 'cresalia.mp',
+            phone: (typeof window !== 'undefined' && window.CRESALIA_PAYMENT_PHONE) || process.env.CRESALIA_PAYMENT_PHONE || '',
             description: 'Suscripción Cresalia'
         };
 
@@ -199,7 +199,7 @@ class SimplePaymentSystem {
     async processSimpleSubscription(tenant, plan, amount) {
         try {
             console.log(`💳 Procesando suscripción simple para ${tenant.nombre}: $${amount} (${plan})`);
-            console.log(`💰 Pago va a Cresalia: ${this.cresaliaInfo.email}`);
+            console.log('💰 Pago procesado para suscripción Cresalia');
 
             // Mostrar modal con link de pago
             const paymentLink = await this.showSimpleSubscriptionModal(tenant, plan, amount);

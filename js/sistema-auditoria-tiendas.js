@@ -540,7 +540,7 @@ class SistemaAuditoriaTiendas {
         this.mostrarNotificacionUI(reporte);
         
         // TODO: Enviar email real con EmailJS
-        console.log('📧 Notificación enviada a:', userData.email);
+        console.log('📧 Notificación enviada');
         
         // Guardar notificación para mostrar en panel
         const notificacion = {

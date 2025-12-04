@@ -411,7 +411,7 @@ class SistemaRenovacionAutomatica {
 
     async notificarRenovacionPendiente(tienda, suscripcion, preferencia) {
         // Aquí iría la lógica de notificación por email
-        console.log(`📧 Notificando renovación pendiente a: ${tienda.email_contacto}`);
+        console.log('📧 Notificando renovación pendiente');
         // TODO: Implementar notificación por email
     }
 

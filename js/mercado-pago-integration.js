@@ -227,7 +227,7 @@ async function crearPreferenciaPago(planId, datosUsuario) {
 
 // Función para procesar suscripción
 async function procesarSuscripcion(planId, datosUsuario) {
-    console.log('🚀 Procesando suscripción para:', datosUsuario.email, 'Plan:', planId);
+    console.log('🚀 Procesando suscripción para plan:', planId);
     
     try {
         // Crear preferencia de pago

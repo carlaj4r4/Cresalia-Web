@@ -144,7 +144,7 @@ class UserStatusSystem {
 
     sendEmailWarning(user, daysLeft) {
         // Aquí se implementaría el envío de email
-        console.log(`📧 Enviando advertencia a ${user.email}: ${daysLeft} días hasta suspensión`);
+        console.log(`📧 Enviando advertencia: ${daysLeft} días hasta suspensión`);
     }
 
     // ===== NOTIFICACIÓN A CRISLA =====

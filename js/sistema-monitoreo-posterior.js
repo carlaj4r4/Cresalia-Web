@@ -224,7 +224,7 @@ const MonitoreoPostRegistro = {
                        'Hola, hemos notado algunos aspectos en tu cuenta que nos gustaría que revises...';
         
         // Simular envío de email
-        console.log(`📧 Enviando advertencia a ${email}:`, mensaje);
+        console.log('📧 Enviando advertencia:', mensaje.tipo || 'notificación');
         
         // Marcar como advertida
         localStorage.setItem(`cuenta_advertida_${email}`, JSON.stringify({

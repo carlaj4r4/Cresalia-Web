@@ -342,7 +342,7 @@ class SubscriptionSystem {
 
     sendExpiryEmail(tenant, daysLeft) {
         // Implementar envío de email
-        console.log(`📧 Enviando email de expiración a ${tenant.email}: ${daysLeft} días restantes`);
+        console.log(`📧 Enviando email de expiración: ${daysLeft} días restantes`);
     }
 
     // ===== SISTEMA EMPÁTICO DE RENOVACIÓN =====
@@ -416,7 +416,7 @@ class SubscriptionSystem {
             P.D.: Si no respondes en 24 horas, procederemos con la renovación automática.
         `;
         
-        console.log(`📧 Email empático enviado a ${tenant.email}:`, emailContent);
+        console.log('📧 Email empático enviado');
     }
 
     showRenewalWarningInStore(tenant, amount) {

@@ -238,7 +238,7 @@ class HybridPaymentSystem {
     async processSubscriptionPayment(tenant, plan, amount) {
         try {
             console.log(`💳 Procesando suscripción para ${tenant.nombre}: $${amount} (${plan})`);
-            console.log(`💰 Pago va a Cresalia: ${this.cresaliaConfig.email}`);
+            console.log('💰 Pago procesado para suscripción Cresalia');
 
             // Crear preferencia con la cuenta de Cresalia
             const preference = await this.createCresaliaSubscriptionPreference(tenant, plan, amount);
@@ -323,7 +323,7 @@ class HybridPaymentSystem {
                 };
             }
 
-            console.log(`💰 Pago va a la tienda: ${salesConfig.email}`);
+            console.log('💰 Pago procesado para venta de tienda');
 
             // Crear preferencia con la cuenta de la tienda
             const preference = await this.createStoreSalePreference(tenant, salesConfig, product, amount);

@@ -9,7 +9,7 @@ class TenantGenerator {
     // ===== CREAR NUEVA TIENDA =====
     async crearTienda(datosCliente) {
         try {
-            console.log('🏪 Creando nueva tienda para cliente:', datosCliente.email);
+            console.log('🏪 Creando nueva tienda para cliente');
             
             // 1. Registrar en el backend
             const response = await fetch(`${this.baseURL}/api/tenants/register`, {
