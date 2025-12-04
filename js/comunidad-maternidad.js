@@ -689,20 +689,41 @@ class ComunidadMaternidad {
 
         const modal = document.createElement('div');
         modal.className = 'modal';
+        modal.style.cssText = 'position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); z-index: 10000; display: flex; align-items: center; justify-content: center; padding: 20px;';
         modal.innerHTML = `
-            <div class="modal-content" style="max-width: 800px; max-height: 90vh; overflow-y: auto;">
-                <div class="modal-header">
-                    <h3><i class="${recurso.icono}"></i> ${recurso.titulo}</h3>
-                    <button class="close-btn" onclick="this.closest('.modal').remove()">
+            <div class="modal-content" style="background: white; border-radius: 20px; max-width: 800px; width: 100%; max-height: 90vh; overflow-y: auto; box-shadow: 0 20px 60px rgba(0,0,0,0.3); animation: slideUp 0.3s ease;">
+                <div class="modal-header" style="display: flex; justify-content: space-between; align-items: center; padding: 24px 32px; border-bottom: 2px solid #E5E7EB;">
+                    <h3 style="margin: 0; color: #F48FB1; font-size: 1.5rem;"><i class="${recurso.icono}"></i> ${recurso.titulo}</h3>
+                    <button class="close-btn" onclick="this.closest('.modal').remove()" style="background: none; border: none; font-size: 2rem; color: #6B7280; cursor: pointer; padding: 0; width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; transition: all 0.3s;">
                         <i class="fas fa-times"></i>
                     </button>
                 </div>
-                <div class="modal-body">
+                <div class="modal-body" style="padding: 30px;">
+                    <style>
+                        @keyframes slideUp {
+                            from { transform: translateY(50px); opacity: 0; }
+                            to { transform: translateY(0); opacity: 1; }
+                        }
+                        .recurso-contenido h3 { color: #F48FB1; margin-bottom: 20px; font-size: 1.3rem; }
+                        .recurso-contenido h4 { color: #374151; margin-top: 24px; margin-bottom: 12px; font-size: 1.1rem; border-left: 4px solid #F48FB1; padding-left: 12px; }
+                        .recurso-contenido ul { margin-left: 20px; margin-bottom: 16px; }
+                        .recurso-contenido li { color: #6B7280; line-height: 1.8; margin-bottom: 8px; }
+                        .recurso-contenido strong { color: #374151; }
+                        .recurso-contenido p { color: #6B7280; line-height: 1.8; margin-top: 16px; }
+                        .close-btn:hover { color: #374151; transform: rotate(90deg); }
+                    </style>
                     ${recurso.contenido}
                 </div>
             </div>
         `;
         document.body.appendChild(modal);
+        
+        // Cerrar modal al hacer click fuera
+        modal.addEventListener('click', function(e) {
+            if (e.target === modal) {
+                modal.remove();
+            }
+        });
     }
 
     /**
