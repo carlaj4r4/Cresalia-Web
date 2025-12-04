@@ -4311,6 +4311,15 @@
                         telefono: config.informacionTienda?.telefono || '',
                         sitioWeb: config.informacionTienda?.sitioWeb || ''
                     },
+                    redesSociales: {
+                        instagram: config.redesSociales?.instagram || '',
+                        facebook: config.redesSociales?.facebook || '',
+                        twitter: config.redesSociales?.twitter || '',
+                        tiktok: config.redesSociales?.tiktok || '',
+                        youtube: config.redesSociales?.youtube || '',
+                        linkedin: config.redesSociales?.linkedin || '',
+                        whatsapp: config.redesSociales?.whatsapp || ''
+                    },
                     ubicacion: {
                         direccion: config.ubicacion?.direccion || '',
                         ciudad: config.ubicacion?.ciudad || '',
@@ -4410,6 +4419,11 @@
                 this.guardarConfiguracion();
             }
             
+            actualizarRedesSociales(datos) {
+                this.configuracion.redesSociales = { ...this.configuracion.redesSociales, ...datos };
+                this.guardarConfiguracion();
+            }
+            
             actualizarUbicacion(datos) {
                 this.configuracion.ubicacion = { ...this.configuracion.ubicacion, ...datos };
                 this.guardarConfiguracion();
@@ -4504,6 +4518,57 @@
                                         <div><label style="display: block; margin-bottom: 8px; font-weight: 600; color: #374151;">Teléfono</label><input type="tel" id="telefonoTiendaConfig" value="${config.informacionTienda.telefono}" style="width: 100%; padding: 10px; border: 1px solid #D1D5DB; border-radius: 8px;"></div>
                                         <div><label style="display: block; margin-bottom: 8px; font-weight: 600; color: #374151;">Sitio Web</label><input type="url" id="sitioWebTiendaConfig" value="${config.informacionTienda.sitioWeb}" style="width: 100%; padding: 10px; border: 1px solid #D1D5DB; border-radius: 8px;"></div>
                                         <div style="grid-column: 1 / -1;"><label style="display: block; margin-bottom: 8px; font-weight: 600; color: #374151;">Descripción de la Tienda</label><textarea id="descripcionTiendaConfig" style="width: 100%; padding: 10px; border: 1px solid #D1D5DB; border-radius: 8px; resize: vertical; min-height: 100px;">${config.informacionTienda.descripcion}</textarea></div>
+                                    </div>
+                                    
+                                    <!-- Redes Sociales -->
+                                    <div style="margin-top: 30px; padding: 24px; background: #F8FAFC; border-radius: 16px; border: 1px solid #E5E7EB;">
+                                        <h4 style="margin: 0 0 20px; color: #374151; display: flex; align-items: center; gap: 10px;">
+                                            <i class="fas fa-share-alt"></i> Redes Sociales
+                                        </h4>
+                                        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 15px;">
+                                            <div>
+                                                <label style="display: block; margin-bottom: 8px; font-weight: 600; color: #333;">
+                                                    <i class="fab fa-instagram" style="color: #E4405F;"></i> Instagram:
+                                                </label>
+                                                <input type="url" id="instagramConfig" value="${config.redesSociales?.instagram || ''}" placeholder="https://instagram.com/tu_tienda" style="width: 100%; padding: 12px; border: 2px solid #E5E7EB; border-radius: 10px; font-size: 1rem;">
+                                            </div>
+                                            <div>
+                                                <label style="display: block; margin-bottom: 8px; font-weight: 600; color: #333;">
+                                                    <i class="fab fa-facebook" style="color: #1877F2;"></i> Facebook:
+                                                </label>
+                                                <input type="url" id="facebookConfig" value="${config.redesSociales?.facebook || ''}" placeholder="https://facebook.com/tu_tienda" style="width: 100%; padding: 12px; border: 2px solid #E5E7EB; border-radius: 10px; font-size: 1rem;">
+                                            </div>
+                                            <div>
+                                                <label style="display: block; margin-bottom: 8px; font-weight: 600; color: #333;">
+                                                    <i class="fab fa-twitter" style="color: #1DA1F2;"></i> X (Twitter):
+                                                </label>
+                                                <input type="url" id="twitterConfig" value="${config.redesSociales?.twitter || ''}" placeholder="https://x.com/tu_tienda" style="width: 100%; padding: 12px; border: 2px solid #E5E7EB; border-radius: 10px; font-size: 1rem;">
+                                            </div>
+                                            <div>
+                                                <label style="display: block; margin-bottom: 8px; font-weight: 600; color: #333;">
+                                                    <i class="fab fa-tiktok" style="color: #000000;"></i> TikTok:
+                                                </label>
+                                                <input type="url" id="tiktokConfig" value="${config.redesSociales?.tiktok || ''}" placeholder="https://tiktok.com/@tu_tienda" style="width: 100%; padding: 12px; border: 2px solid #E5E7EB; border-radius: 10px; font-size: 1rem;">
+                                            </div>
+                                            <div>
+                                                <label style="display: block; margin-bottom: 8px; font-weight: 600; color: #333;">
+                                                    <i class="fab fa-youtube" style="color: #FF0000;"></i> YouTube:
+                                                </label>
+                                                <input type="url" id="youtubeConfig" value="${config.redesSociales?.youtube || ''}" placeholder="https://youtube.com/@tu_tienda" style="width: 100%; padding: 12px; border: 2px solid #E5E7EB; border-radius: 10px; font-size: 1rem;">
+                                            </div>
+                                            <div>
+                                                <label style="display: block; margin-bottom: 8px; font-weight: 600; color: #333;">
+                                                    <i class="fab fa-linkedin" style="color: #0077B5;"></i> LinkedIn:
+                                                </label>
+                                                <input type="url" id="linkedinConfig" value="${config.redesSociales?.linkedin || ''}" placeholder="https://linkedin.com/company/tu_tienda" style="width: 100%; padding: 12px; border: 2px solid #E5E7EB; border-radius: 10px; font-size: 1rem;">
+                                            </div>
+                                            <div>
+                                                <label style="display: block; margin-bottom: 8px; font-weight: 600; color: #333;">
+                                                    <i class="fab fa-whatsapp" style="color: #25D366;"></i> WhatsApp:
+                                                </label>
+                                                <input type="tel" id="whatsappConfig" value="${config.redesSociales?.whatsapp || ''}" placeholder="+54 9 11 1234-5678" style="width: 100%; padding: 12px; border: 2px solid #E5E7EB; border-radius: 10px; font-size: 1rem;">
+                                            </div>
+                                        </div>
                                     </div>
                                 </div>
                                 <div id="tabContenidoUbicacion" style="display: none;">
@@ -4772,6 +4837,7 @@
                     mensajePersonalizado: document.getElementById('mensajePersonalizadoAyudaConfig')?.value || ''
                 };
                 sistemaConfiguracionTienda.actualizarInformacionTienda(informacionTienda);
+                sistemaConfiguracionTienda.actualizarRedesSociales(redesSociales);
                 sistemaConfiguracionTienda.actualizarUbicacion(ubicacion);
                 sistemaConfiguracionTienda.actualizarInformacionEmpresa(informacionEmpresa);
                 sistemaConfiguracionTienda.actualizarImagenesVideos(imagenesVideos);
