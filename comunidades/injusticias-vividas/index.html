@@ -88,9 +88,17 @@
             <div id="tab-foro" class="tab-content active">
                 <div class="foro-header">
                     <h2><i class="fas fa-comments"></i> Foro de la Comunidad</h2>
-                    <button class="btn-primary" onclick="injusticiasVividas.crearPublicacion()">
-                        <i class="fas fa-plus"></i> Nueva Publicación
-                    </button>
+                    <div style="display: flex; gap: 10px; align-items: center; flex-wrap: wrap;">
+                        <button class="btn-primary" onclick="if(window.foroComunidad) window.foroComunidad.cargarMiHistorial(); document.getElementById('mi-historial-foro').style.display = 'block'; document.getElementById('publicaciones-lista').style.display = 'none';" style="background: linear-gradient(135deg, #8b5cf6, #a78bfa);">
+                            <i class="fas fa-history"></i> Mi Historial
+                        </button>
+                        <button class="btn-primary" onclick="document.getElementById('mi-historial-foro').style.display = 'none'; document.getElementById('publicaciones-lista').style.display = 'block';" style="background: linear-gradient(135deg, #C4B5FD, #A78BFA);">
+                            <i class="fas fa-comments"></i> Ver Foro
+                        </button>
+                        <button class="btn-primary" onclick="injusticiasVividas.crearPublicacion()">
+                            <i class="fas fa-plus"></i> Nueva Publicación
+                        </button>
+                    </div>
                 </div>
                 <div class="info-box">
                     <i class="fas fa-user-secret"></i>
@@ -100,6 +108,15 @@
                     </p>
                 </div>
                 <div id="publicaciones-lista" class="publicaciones-lista"></div>
+                <div id="mi-historial-foro" style="display: none;">
+                    <div class="info-box" style="background: linear-gradient(135deg, rgba(196, 181, 253, 0.1), rgba(167, 139, 250, 0.1)); border-left-color: #C4B5FD; margin-bottom: 20px; padding: 20px; border-radius: 12px;">
+                        <h3 style="color: #7c3aed; margin-bottom: 10px;">📝 Mis Posts en el Foro</h3>
+                        <p style="margin: 0; line-height: 1.8; color: #374151;">
+                            Aquí podés ver todos tus posts, editarlos, pausarlos o eliminarlos.
+                        </p>
+                    </div>
+                    <div id="mi-historial-foro-lista" class="publicaciones-lista"></div>
+                </div>
             </div>
 
             <!-- Tab: Recursos -->
