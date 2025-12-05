@@ -680,34 +680,85 @@ class SistemaForoComunidades {
                 return;
             }
             
-            // Crear modal de edición
+            // Crear modal de edición con estilos mejorados
             const modalHTML = `
-                <div id="modal-editar-post" style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); display: flex; align-items: center; justify-content: center; z-index: 10000;">
-                    <div style="background: white; border-radius: 20px; padding: 30px; max-width: 600px; width: 90%; max-height: 90vh; overflow-y: auto;">
-                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
-                            <h3 style="margin: 0; color: #374151;">✏️ Editar Post</h3>
-                            <button onclick="document.getElementById('modal-editar-post').remove()" style="background: none; border: none; font-size: 24px; cursor: pointer; color: #6b7280;">&times;</button>
+                <div id="modal-editar-post" style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); display: flex; align-items: center; justify-content: center; z-index: 10000; animation: fadeIn 0.3s ease;">
+                    <div style="background: white; border-radius: 20px; padding: 0; max-width: 700px; width: 90%; max-height: 90vh; overflow: hidden; box-shadow: 0 20px 60px rgba(0,0,0,0.3); animation: slideUp 0.3s ease; display: flex; flex-direction: column;">
+                        <div style="background: linear-gradient(135deg, #8b5cf6, #7c3aed); color: white; padding: 25px 30px; display: flex; justify-content: space-between; align-items: center;">
+                            <h3 style="margin: 0; font-size: 1.5rem; font-weight: 700; display: flex; align-items: center; gap: 10px;">
+                                <i class="fas fa-edit"></i> Editar Post
+                            </h3>
+                            <button onclick="document.getElementById('modal-editar-post').remove()" style="background: rgba(255,255,255,0.2); border: none; width: 35px; height: 35px; border-radius: 50%; color: white; font-size: 20px; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: all 0.3s;" onmouseover="this.style.background='rgba(255,255,255,0.3)'" onmouseout="this.style.background='rgba(255,255,255,0.2)'">
+                                <i class="fas fa-times"></i>
+                            </button>
                         </div>
-                        <form id="form-editar-post">
-                            <div style="margin-bottom: 15px;">
-                                <label style="display: block; margin-bottom: 5px; font-weight: 600; color: #374151;">Título (opcional)</label>
-                                <input type="text" id="edit-post-titulo" value="${this.escapeHtml(post.titulo || '')}" style="width: 100%; padding: 12px; border: 2px solid #e5e7eb; border-radius: 8px; font-size: 1rem;">
-                            </div>
+                        <form id="form-editar-post" style="padding: 30px; flex: 1; overflow-y: auto;">
                             <div style="margin-bottom: 20px;">
-                                <label style="display: block; margin-bottom: 5px; font-weight: 600; color: #374151;">Contenido</label>
-                                <textarea id="edit-post-contenido" rows="8" required style="width: 100%; padding: 12px; border: 2px solid #e5e7eb; border-radius: 8px; font-size: 1rem; resize: vertical;">${this.escapeHtml(post.contenido)}</textarea>
+                                <label style="display: block; margin-bottom: 10px; font-weight: 600; color: #374151; font-size: 1rem;">
+                                    <i class="fas fa-heading" style="color: #8b5cf6; margin-right: 8px;"></i>
+                                    Título (opcional)
+                                </label>
+                                <input type="text" id="edit-post-titulo" value="${this.escapeHtml(post.titulo || '')}" style="width: 100%; padding: 15px; border: 2px solid #e5e7eb; border-radius: 12px; font-size: 1rem; font-family: inherit; transition: all 0.3s;" onfocus="this.style.borderColor='#8b5cf6'; this.style.boxShadow='0 0 0 3px rgba(139,92,246,0.1)'" onblur="this.style.borderColor='#e5e7eb'; this.style.boxShadow='none'">
+                                <small style="display: block; margin-top: 8px; color: #6b7280; font-size: 0.875rem;">
+                                    <i class="fas fa-info-circle"></i> Un título ayuda a que otros encuentren tu post más fácilmente.
+                                </small>
                             </div>
-                            <div style="display: flex; gap: 10px;">
-                                <button type="submit" style="flex: 1; background: linear-gradient(135deg, #8b5cf6, #7c3aed); color: white; border: none; padding: 12px 24px; border-radius: 8px; cursor: pointer; font-weight: 600;">
+                            <div style="margin-bottom: 25px;">
+                                <label style="display: block; margin-bottom: 10px; font-weight: 600; color: #374151; font-size: 1rem;">
+                                    <i class="fas fa-align-left" style="color: #8b5cf6; margin-right: 8px;"></i>
+                                    Contenido
+                                </label>
+                                <textarea id="edit-post-contenido" rows="10" required style="width: 100%; padding: 15px; border: 2px solid #e5e7eb; border-radius: 12px; font-size: 1rem; resize: vertical; font-family: inherit; transition: all 0.3s; line-height: 1.6;" onfocus="this.style.borderColor='#8b5cf6'; this.style.boxShadow='0 0 0 3px rgba(139,92,246,0.1)'" onblur="this.style.borderColor='#e5e7eb'; this.style.boxShadow='none'">${this.escapeHtml(post.contenido)}</textarea>
+                                <small style="display: block; margin-top: 8px; color: #6b7280; font-size: 0.875rem;">
+                                    <i class="fas fa-info-circle"></i> Mínimo 10 caracteres. Podés editar tu post las veces que necesites.
+                                </small>
+                            </div>
+                            <div style="display: flex; gap: 12px; margin-top: 30px; padding-top: 20px; border-top: 2px solid #f3f4f6;">
+                                <button type="submit" style="flex: 1; background: linear-gradient(135deg, #8b5cf6, #7c3aed); color: white; border: none; padding: 14px 28px; border-radius: 12px; cursor: pointer; font-weight: 600; font-size: 1rem; display: flex; align-items: center; justify-content: center; gap: 8px; transition: all 0.3s; box-shadow: 0 4px 15px rgba(139,92,246,0.3);" onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 6px 20px rgba(139,92,246,0.4)'" onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 4px 15px rgba(139,92,246,0.3)'">
                                     <i class="fas fa-save"></i> Guardar Cambios
                                 </button>
-                                <button type="button" onclick="document.getElementById('modal-editar-post').remove()" style="background: #6b7280; color: white; border: none; padding: 12px 24px; border-radius: 8px; cursor: pointer; font-weight: 600;">
-                                    Cancelar
+                                <button type="button" onclick="document.getElementById('modal-editar-post').remove()" style="background: #f3f4f6; color: #374151; border: none; padding: 14px 28px; border-radius: 12px; cursor: pointer; font-weight: 600; font-size: 1rem; transition: all 0.3s;" onmouseover="this.style.background='#e5e7eb'" onmouseout="this.style.background='#f3f4f6'">
+                                    <i class="fas fa-times"></i> Cancelar
                                 </button>
                             </div>
                         </form>
                     </div>
                 </div>
+                <style>
+                    @keyframes fadeIn {
+                        from { opacity: 0; }
+                        to { opacity: 1; }
+                    }
+                    @keyframes slideUp {
+                        from { 
+                            opacity: 0;
+                            transform: translateY(30px);
+                        }
+                        to { 
+                            opacity: 1;
+                            transform: translateY(0);
+                        }
+                    }
+                    #modal-editar-post input:focus,
+                    #modal-editar-post textarea:focus {
+                        outline: none;
+                    }
+                    @media (max-width: 768px) {
+                        #modal-editar-post > div {
+                            width: 95% !important;
+                            max-height: 95vh !important;
+                        }
+                        #modal-editar-post form {
+                            padding: 20px !important;
+                        }
+                        #modal-editar-post .form-actions {
+                            flex-direction: column !important;
+                        }
+                        #modal-editar-post button {
+                            width: 100% !important;
+                        }
+                    }
+                </style>
             `;
             
             document.body.insertAdjacentHTML('beforeend', modalHTML);
@@ -796,30 +847,74 @@ class SistemaForoComunidades {
             // Obtener el post padre para recargar comentarios después
             const postId = comentario.post_id;
             
-            // Crear modal de edición
+            // Crear modal de edición con estilos mejorados
             const modalHTML = `
-                <div id="modal-editar-comentario" style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); display: flex; align-items: center; justify-content: center; z-index: 10000;">
-                    <div style="background: white; border-radius: 20px; padding: 30px; max-width: 500px; width: 90%;">
-                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
-                            <h3 style="margin: 0; color: #374151;">✏️ Editar Comentario</h3>
-                            <button onclick="document.getElementById('modal-editar-comentario').remove()" style="background: none; border: none; font-size: 24px; cursor: pointer; color: #6b7280;">&times;</button>
+                <div id="modal-editar-comentario" style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); display: flex; align-items: center; justify-content: center; z-index: 10000; animation: fadeIn 0.3s ease;">
+                    <div style="background: white; border-radius: 20px; padding: 0; max-width: 600px; width: 90%; max-height: 90vh; overflow: hidden; box-shadow: 0 20px 60px rgba(0,0,0,0.3); animation: slideUp 0.3s ease; display: flex; flex-direction: column;">
+                        <div style="background: linear-gradient(135deg, #8b5cf6, #7c3aed); color: white; padding: 25px 30px; display: flex; justify-content: space-between; align-items: center;">
+                            <h3 style="margin: 0; font-size: 1.5rem; font-weight: 700; display: flex; align-items: center; gap: 10px;">
+                                <i class="fas fa-edit"></i> Editar Comentario
+                            </h3>
+                            <button onclick="document.getElementById('modal-editar-comentario').remove()" style="background: rgba(255,255,255,0.2); border: none; width: 35px; height: 35px; border-radius: 50%; color: white; font-size: 20px; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: all 0.3s;" onmouseover="this.style.background='rgba(255,255,255,0.3)'" onmouseout="this.style.background='rgba(255,255,255,0.2)'">
+                                <i class="fas fa-times"></i>
+                            </button>
                         </div>
-                        <form id="form-editar-comentario">
-                            <div style="margin-bottom: 20px;">
-                                <label style="display: block; margin-bottom: 5px; font-weight: 600; color: #374151;">Contenido</label>
-                                <textarea id="edit-comentario-contenido" rows="6" required style="width: 100%; padding: 12px; border: 2px solid #e5e7eb; border-radius: 8px; font-size: 1rem; resize: vertical;">${this.escapeHtml(comentario.contenido)}</textarea>
+                        <form id="form-editar-comentario" style="padding: 30px; flex: 1; overflow-y: auto;">
+                            <div style="margin-bottom: 25px;">
+                                <label style="display: block; margin-bottom: 10px; font-weight: 600; color: #374151; font-size: 1rem;">
+                                    <i class="fas fa-comment-dots" style="color: #8b5cf6; margin-right: 8px;"></i>
+                                    Contenido del Comentario
+                                </label>
+                                <textarea id="edit-comentario-contenido" rows="8" required style="width: 100%; padding: 15px; border: 2px solid #e5e7eb; border-radius: 12px; font-size: 1rem; resize: vertical; font-family: inherit; transition: all 0.3s; line-height: 1.6;" onfocus="this.style.borderColor='#8b5cf6'; this.style.boxShadow='0 0 0 3px rgba(139,92,246,0.1)'" onblur="this.style.borderColor='#e5e7eb'; this.style.boxShadow='none'">${this.escapeHtml(comentario.contenido)}</textarea>
+                                <small style="display: block; margin-top: 8px; color: #6b7280; font-size: 0.875rem;">
+                                    <i class="fas fa-info-circle"></i> Podés editar tu comentario las veces que necesites.
+                                </small>
                             </div>
-                            <div style="display: flex; gap: 10px;">
-                                <button type="submit" style="flex: 1; background: linear-gradient(135deg, #8b5cf6, #7c3aed); color: white; border: none; padding: 12px 24px; border-radius: 8px; cursor: pointer; font-weight: 600;">
+                            <div style="display: flex; gap: 12px; margin-top: 30px; padding-top: 20px; border-top: 2px solid #f3f4f6;">
+                                <button type="submit" style="flex: 1; background: linear-gradient(135deg, #8b5cf6, #7c3aed); color: white; border: none; padding: 14px 28px; border-radius: 12px; cursor: pointer; font-weight: 600; font-size: 1rem; display: flex; align-items: center; justify-content: center; gap: 8px; transition: all 0.3s; box-shadow: 0 4px 15px rgba(139,92,246,0.3);" onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 6px 20px rgba(139,92,246,0.4)'" onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 4px 15px rgba(139,92,246,0.3)'">
                                     <i class="fas fa-save"></i> Guardar Cambios
                                 </button>
-                                <button type="button" onclick="document.getElementById('modal-editar-comentario').remove()" style="background: #6b7280; color: white; border: none; padding: 12px 24px; border-radius: 8px; cursor: pointer; font-weight: 600;">
-                                    Cancelar
+                                <button type="button" onclick="document.getElementById('modal-editar-comentario').remove()" style="background: #f3f4f6; color: #374151; border: none; padding: 14px 28px; border-radius: 12px; cursor: pointer; font-weight: 600; font-size: 1rem; transition: all 0.3s;" onmouseover="this.style.background='#e5e7eb'" onmouseout="this.style.background='#f3f4f6'">
+                                    <i class="fas fa-times"></i> Cancelar
                                 </button>
                             </div>
                         </form>
                     </div>
                 </div>
+                <style>
+                    @keyframes fadeIn {
+                        from { opacity: 0; }
+                        to { opacity: 1; }
+                    }
+                    @keyframes slideUp {
+                        from { 
+                            opacity: 0;
+                            transform: translateY(30px);
+                        }
+                        to { 
+                            opacity: 1;
+                            transform: translateY(0);
+                        }
+                    }
+                    #modal-editar-comentario textarea:focus {
+                        outline: none;
+                    }
+                    @media (max-width: 768px) {
+                        #modal-editar-comentario > div {
+                            width: 95% !important;
+                            max-height: 95vh !important;
+                        }
+                        #modal-editar-comentario form {
+                            padding: 20px !important;
+                        }
+                        #modal-editar-comentario .form-actions {
+                            flex-direction: column !important;
+                        }
+                        #modal-editar-comentario button {
+                            width: 100% !important;
+                        }
+                    }
+                </style>
             `;
             
             document.body.insertAdjacentHTML('beforeend', modalHTML);
