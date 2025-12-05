@@ -318,6 +318,8 @@
                     crearWidgetContactoSimple();
                 } else if (widgetOficial) {
                     console.log('✅ Widget oficial de Brevo cargado correctamente');
+                    // Configurar notificaciones push para nuevos mensajes
+                    configurarNotificacionesChatBrevo();
                 }
             }, 5000); // Esperar 5 segundos para que el widget oficial se cargue
         } else {
@@ -327,6 +329,120 @@
         }
     }
     
+    // ===== CONFIGURAR NOTIFICACIONES PUSH PARA CHAT =====
+    function configurarNotificacionesChatBrevo() {
+        // Verificar permisos de notificación
+        if (!('Notification' in window) || Notification.permission !== 'granted') {
+            console.log('ℹ️ Notificaciones push no disponibles para el chat');
+            return;
+        }
+
+        // Escuchar eventos del widget de Brevo (si está disponible)
+        if (window.BrevoConversations) {
+            // El widget de Brevo puede emitir eventos personalizados
+            // Escuchar cambios en el widget
+            const observer = new MutationObserver((mutations) => {
+                mutations.forEach((mutation) => {
+                    mutation.addedNodes.forEach((node) => {
+                        if (node.nodeType === 1) {
+                            // Buscar indicadores de nuevo mensaje
+                            const nuevoMensaje = node.querySelector && (
+                                node.querySelector('.brevo-conversations-message') ||
+                                node.querySelector('[data-message-new]') ||
+                                node.textContent.includes('nuevo mensaje')
+                            );
+                            
+                            if (nuevoMensaje) {
+                                enviarNotificacionChat();
+                            }
+                        }
+                    });
+                });
+            });
+
+            // Observar el widget de Brevo
+            const widgetContainer = document.querySelector('.brevo-conversations-widget') ||
+                                  document.querySelector('[data-brevo-conversations]');
+            
+            if (widgetContainer) {
+                observer.observe(widgetContainer, {
+                    childList: true,
+                    subtree: true
+                });
+                console.log('✅ Observador de notificaciones de chat configurado');
+            }
+        }
+
+        // También escuchar eventos personalizados si el widget los emite
+        window.addEventListener('brevo-message-received', (event) => {
+            enviarNotificacionChat(event.detail);
+        });
+
+        // Verificar periódicamente si hay nuevos mensajes (solo si la ventana no está activa)
+        let ultimoCheck = Date.now();
+        setInterval(() => {
+            if (document.hidden) { // Solo si la ventana está en segundo plano
+                const widgetButton = document.querySelector('.brevo-conversations-widget-button');
+                if (widgetButton) {
+                    // Verificar si hay un badge o indicador de mensajes nuevos
+                    const badge = widgetButton.querySelector('.badge') || 
+                                 widgetButton.querySelector('[data-unread]');
+                    if (badge && parseInt(badge.textContent || '0') > 0) {
+                        enviarNotificacionChat();
+                    }
+                }
+            }
+        }, 30000); // Cada 30 segundos
+    }
+
+    // Enviar notificación push para nuevo mensaje en el chat
+    function enviarNotificacionChat(detalle = {}) {
+        if (!('Notification' in window) || Notification.permission !== 'granted') {
+            return;
+        }
+
+        // Verificar si el usuario tiene notificaciones de chat habilitadas
+        const notificacionesChat = localStorage.getItem('notificaciones_chat_brevo') !== 'false';
+        if (!notificacionesChat) {
+            return;
+        }
+
+        // Verificar si la ventana está activa (no enviar si el usuario está viendo la página)
+        if (!document.hidden) {
+            return;
+        }
+
+        try {
+            const notificacion = new Notification('💬 Nuevo mensaje en Cresalia', {
+                body: detalle.mensaje || 'Tienes un nuevo mensaje en el chat de soporte',
+                icon: '/assets/logo/logo-cresalia.png',
+                badge: '/assets/logo/logo-cresalia.png',
+                tag: 'brevo-chat-mensaje',
+                requireInteraction: false,
+                silent: false
+            });
+
+            notificacion.onclick = () => {
+                window.focus();
+                // Intentar abrir el widget de chat
+                const widgetButton = document.querySelector('.brevo-conversations-widget-button');
+                if (widgetButton) {
+                    widgetButton.click();
+                }
+                notificacion.close();
+            };
+
+            // Auto-cerrar después de 5 segundos
+            setTimeout(() => {
+                notificacion.close();
+            }, 5000);
+
+            console.log('✅ Notificación push enviada para nuevo mensaje de chat');
+        } catch (error) {
+            console.warn('⚠️ Error enviando notificación de chat:', error);
+        }
+    }
+
     // Inicializar cuando el DOM esté listo
     if (document.readyState === 'loading') {
         document.addEventListener('DOMContentLoaded', inicializarWidget);

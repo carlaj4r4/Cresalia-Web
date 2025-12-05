@@ -31,14 +31,37 @@ class SistemaNotificacionesPush {
         console.log('✅ Sistema de Notificaciones Push inicializado');
     }
 
-    // Solicitar permisos de notificación
+    // Solicitar permisos de notificación (solo una vez, centralizado)
     async solicitarPermisos() {
-        if (Notification.permission === 'default') {
+        // Verificar si ya se solicitó en esta sesión
+        const yaSolicitado = sessionStorage.getItem('notificaciones_permiso_solicitado');
+        if (yaSolicitado === 'true') {
+            console.log('ℹ️ Permisos de notificación ya fueron solicitados en esta sesión');
+            return;
+        }
+
+        // Verificar si el permiso ya está concedido o denegado
+        if (Notification.permission !== 'default') {
+            console.log(`ℹ️ Permiso de notificaciones: ${Notification.permission}`);
+            return;
+        }
+
+        // Marcar como solicitado antes de pedir (para evitar múltiples solicitudes)
+        sessionStorage.setItem('notificaciones_permiso_solicitado', 'true');
+
+        // Esperar un poco antes de solicitar (mejor UX)
+        await new Promise(resolve => setTimeout(resolve, 2000));
+
+        try {
             const permission = await Notification.requestPermission();
             if (permission === 'granted') {
                 console.log('✅ Permisos de notificación concedidos');
                 this.mostrarNotificacionBienvenida();
+            } else {
+                console.log(`ℹ️ Permiso de notificaciones: ${permission}`);
             }
+        } catch (error) {
+            console.warn('⚠️ Error al solicitar permisos de notificación:', error);
         }
     }
 

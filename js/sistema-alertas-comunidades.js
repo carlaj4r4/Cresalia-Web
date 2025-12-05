@@ -47,12 +47,12 @@ class SistemaAlertasComunidades {
     }
     
     solicitarPermisosNotificacion() {
-        if ('Notification' in window && Notification.permission === 'default') {
-            Notification.requestPermission().then(permission => {
-                if (permission === 'granted') {
-                    console.log('✅ Permisos de notificación concedidos');
-                }
-            });
+        // NO solicitar permisos aquí - usar el sistema centralizado
+        // Solo verificar si ya están concedidos para enviar notificaciones
+        if ('Notification' in window && Notification.permission === 'granted') {
+            console.log('✅ Permisos de notificación ya concedidos');
+        } else {
+            console.log('ℹ️ Usar sistema centralizado de notificaciones para solicitar permisos');
         }
     }
     

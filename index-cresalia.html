@@ -3777,24 +3777,11 @@
     <script>
         // Solicitar permisos de notificación y ubicación después de cargar la página
         document.addEventListener('DOMContentLoaded', function() {
-            // Esperar un poco para que el usuario vea la página
-            setTimeout(() => {
-                // Solicitar permisos de notificación (si el sistema no lo hace automáticamente)
-                if ('Notification' in window && Notification.permission === 'default') {
-                    // Mostrar un mensaje amigable antes de solicitar
-                    const solicitarNotificaciones = confirm('🔔 ¿Te gustaría recibir notificaciones de Cresalia?\n\nTe mantendremos informado sobre ofertas, pedidos y actualizaciones importantes.');
-                    if (solicitarNotificaciones) {
-                        Notification.requestPermission().then(permission => {
-                            if (permission === 'granted') {
-                                console.log('✅ Permisos de notificación concedidos');
-                                // Si hay sistema de notificaciones, inicializarlo
-                                if (window.sistemaNotificaciones) {
-                                    window.sistemaNotificaciones.mostrarNotificacionBienvenida();
-                                }
-                            }
-                        });
-                    }
-                }
+            // NO solicitar permisos aquí - el sistema centralizado lo hace
+            // Solo verificar si el sistema de notificaciones está cargado
+            if (window.sistemaNotificaciones) {
+                console.log('✅ Sistema de notificaciones push cargado');
+            }
                 
                 // Solicitar permisos de ubicación para calcular distancias a tiendas
                 if ('geolocation' in navigator) {
