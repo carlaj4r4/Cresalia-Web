@@ -3188,6 +3188,26 @@ body {
     background: linear-gradient(135deg, #e4405f, #f77737);
 }
 
+.social-link.threads {
+    background: linear-gradient(135deg, #000000, #1a1a1a);
+}
+
+.social-link.x-twitter {
+    background: linear-gradient(135deg, #000000, #1a1a1a);
+}
+
+.social-link.tiktok {
+    background: linear-gradient(135deg, #000000, #ff0050);
+}
+
+.social-link.youtube {
+    background: linear-gradient(135deg, #ff0000, #cc0000);
+}
+
+.social-link.linkedin {
+    background: linear-gradient(135deg, #0077b5, #005885);
+}
+
 .social-link.whatsapp {
     background: linear-gradient(135deg, #25d366, #128c7e);
 }
