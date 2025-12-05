@@ -382,7 +382,7 @@
     }
     
     .ai-chatbot-toggle {
-        bottom: 170px !important;
+        bottom: 128px !important; /* 20px (soporte) + 70px (altura soporte) + 38px (1 cm de espacio) */
         right: 75px !important; /* Más separación entre chatbots */
         z-index: 1001 !important;
         width: 50px !important;
@@ -631,6 +631,7 @@
     
     .ai-chatbot-toggle {
         right: 65px !important;
+        bottom: 118px !important; /* 10px (soporte) + 70px (altura soporte) + 38px (1 cm de espacio) */
     }
     
     .chatbot-modal,

@@ -11,6 +11,7 @@
 /* Posicionamiento adaptativo para evitar superposición */
 .ai-chatbot-container {
     right: 20px;
+    bottom: 58px; /* 20px (soporte) + 38px (1 cm de espacio) */
 }
 
 .chatbot-container {
@@ -21,7 +22,7 @@
 @media (max-width: 768px) {
     .ai-chatbot-container {
         right: 20px;
-        bottom: 20px;
+        bottom: 58px; /* 20px (soporte) + 38px (1 cm de espacio) */
     }
     
     .chatbot-container {
@@ -39,7 +40,7 @@
 @media (max-width: 480px) {
     .ai-chatbot-container {
         right: 10px;
-        bottom: 10px;
+        bottom: 48px; /* 10px (soporte) + 38px (1 cm de espacio) */
     }
     
     .chatbot-container {

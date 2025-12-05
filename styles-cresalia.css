@@ -4145,6 +4145,7 @@ body {
 
 .ai-chatbot-container {
     right: 160px;
+    bottom: 58px; /* 20px (soporte) + 38px (1 cm de espacio) */
 }
 
 .chatbot-container.active, .ai-chatbot-container.active {
