@@ -15,6 +15,7 @@ const STATIC_FILES = [
   '/tiendas/ejemplo-tienda/index.html',
   '/tiendas/ejemplo-tienda/admin-final.html',
   '/demo-buyer-interface.html',
+  '/offline.html',
   '/manifest.json?v=6.0',
   '/vercel.json',
   // CSS
@@ -168,6 +169,13 @@ async function networkFirst(request) {
   } catch (error) {
     console.log('📦 Service Worker: Red no disponible, sirviendo desde cache:', request.url);
     const cachedResponse = await caches.match(request);
+    // Si es una navegación (página HTML) y no hay cache, mostrar página offline
+    if (request.mode === 'navigate' && !cachedResponse) {
+      const offlinePage = await caches.match('/offline.html');
+      if (offlinePage) {
+        return offlinePage;
+      }
+    }
     // Si no hay cache, devolver respuesta vacía en lugar de error 503
     return cachedResponse || new Response('', { status: 200 });
   }
