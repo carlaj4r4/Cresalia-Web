@@ -32,13 +32,65 @@ class SistemaAlertasEmergenciaGlobal {
         window.addEventListener('emergencia:donar', (e) => this.manejarDonacionEmergencia(e));
         window.addEventListener('emergencia:verificar', (e) => this.verificarAlerta(e));
         
-        // Eventos de geolocalización
-        if (navigator.geolocation) {
+        // Solicitar ubicación para alertas de emergencia (con mensaje amigable)
+        this.solicitarUbicacionParaEmergencias();
+    }
+    
+    solicitarUbicacionParaEmergencias() {
+        if (!navigator.geolocation) {
+            console.warn('⚠️ Geolocalización no disponible en este dispositivo');
+            return;
+        }
+        
+        // Verificar si ya se concedió permiso anteriormente
+        const consentimiento = localStorage.getItem('cresalia_geolocalizacion_consentimiento');
+        
+        if (consentimiento === 'denegado' || consentimiento === 'denied') {
+            console.log('ℹ️ Usuario denegó permiso de ubicación anteriormente');
+            return;
+        }
+        
+        // Si ya se concedió, obtener ubicación directamente
+        if (consentimiento === 'concedido' || consentimiento === 'granted') {
             navigator.geolocation.getCurrentPosition(
                 (pos) => this.obtenerUbicacionActual(pos),
-                (err) => this.manejarErrorGeolocalizacion(err)
+                (err) => this.manejarErrorGeolocalizacion(err),
+                {
+                    enableHighAccuracy: true,
+                    timeout: 20000,
+                    maximumAge: 600000 // 10 minutos
+                }
             );
+            return;
         }
+        
+        // Si no se ha pedido antes, mostrar mensaje amigable y solicitar
+        setTimeout(() => {
+            const mensaje = '🚨 Para protegerte mejor, Cresalia necesita tu ubicación para enviarte alertas de emergencia personalizadas en tu zona. ¿Nos permites acceder a tu ubicación?';
+            const acepta = window.confirm(mensaje);
+            
+            if (acepta) {
+                localStorage.setItem('cresalia_geolocalizacion_consentimiento', 'concedido');
+                navigator.geolocation.getCurrentPosition(
+                    (pos) => {
+                        this.obtenerUbicacionActual(pos);
+                        console.log('✅ Ubicación obtenida para alertas de emergencia');
+                    },
+                    (err) => {
+                        this.manejarErrorGeolocalizacion(err);
+                        localStorage.setItem('cresalia_geolocalizacion_consentimiento', 'denegado');
+                    },
+                    {
+                        enableHighAccuracy: true,
+                        timeout: 20000,
+                        maximumAge: 600000
+                    }
+                );
+            } else {
+                localStorage.setItem('cresalia_geolocalizacion_consentimiento', 'denegado');
+                console.log('ℹ️ Usuario denegó permiso de ubicación para alertas de emergencia');
+            }
+        }, 2000); // Esperar 2 segundos después de cargar la página
     }
     
     configurarNotificaciones() {

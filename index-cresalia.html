@@ -3749,6 +3749,8 @@
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="config-supabase-seguro.js"></script>
     <script src="js/sistema-alertas-comunidades.js"></script>
+    <!-- Sistema de Alertas de Emergencia Global -->
+    <script src="js/sistema-alertas-emergencia-global.js"></script>
     <!-- Sistema de Check-in Automático de Emergencias -->
     <script src="js/sistema-checkin-emergencias.js"></script>
     <script>
@@ -3757,6 +3759,11 @@
             setTimeout(() => {
                 if (typeof SistemaAlertasComunidades !== 'undefined') {
                     window.alertasGlobalCresalia = new SistemaAlertasComunidades('global');
+                }
+                // Inicializar sistema de alertas de emergencia global
+                if (typeof SistemaAlertasEmergenciaGlobal !== 'undefined') {
+                    window.sistemaAlertasEmergenciaGlobal = new SistemaAlertasEmergenciaGlobal();
+                    window.sistemaAlertasEmergenciaGlobal.inicializar();
                 }
                 // Sistema de check-in se inicializa automáticamente
             }, 500);
