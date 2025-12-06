@@ -465,13 +465,30 @@
         
         <!-- Foro -->
         <section class="foro-container" style="margin-top: 40px; padding: 30px; background: white; border-radius: 20px; box-shadow: 0 4px 20px rgba(0,0,0,0.1);">
-            <div class="foro-header" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px;">
+            <div class="foro-header" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px; flex-wrap: wrap; gap: 10px;">
                 <h2 style="color: #EF4444; margin: 0;">🏥 Foro de apoyo mutuo</h2>
-                <button class="btn-primary" id="btn-crear-post" style="background: linear-gradient(135deg, #EF4444, #F87171); color: white; border: none; padding: 12px 24px; border-radius: 10px; cursor: pointer; font-weight: 600;">
-                    <i class="fas fa-pen"></i> Crear Post
-                </button>
+                <div style="display: flex; gap: 10px; align-items: center;">
+                    <button class="btn-primary" onclick="if(window.foroComunidad) window.foroComunidad.cargarMiHistorial(); document.getElementById('mi-historial-foro').style.display = 'block'; document.getElementById('posts-container').style.display = 'none';" style="background: linear-gradient(135deg, #8b5cf6, #a78bfa); color: white; border: none; padding: 12px 24px; border-radius: 10px; cursor: pointer; font-weight: 600;">
+                        <i class="fas fa-history"></i> Mi Historial
+                    </button>
+                    <button class="btn-primary" onclick="document.getElementById('mi-historial-foro').style.display = 'none'; document.getElementById('posts-container').style.display = 'block';" style="background: linear-gradient(135deg, #EF4444, #F87171); color: white; border: none; padding: 12px 24px; border-radius: 10px; cursor: pointer; font-weight: 600;">
+                        <i class="fas fa-comments"></i> Ver Foro
+                    </button>
+                    <button class="btn-primary" id="btn-crear-post" style="background: linear-gradient(135deg, #EF4444, #F87171); color: white; border: none; padding: 12px 24px; border-radius: 10px; cursor: pointer; font-weight: 600;">
+                        <i class="fas fa-pen"></i> Crear Post
+                    </button>
+                </div>
             </div>
             <div id="posts-container"></div>
+            <div id="mi-historial-foro" style="display: none;">
+                <div class="info-box" style="background: linear-gradient(135deg, rgba(139, 92, 246, 0.1), rgba(167, 139, 250, 0.1)); border-left-color: #8b5cf6; margin-bottom: 20px; padding: 20px; border-radius: 12px;">
+                    <h3 style="color: #7c3aed; margin-bottom: 10px;">📝 Mis Posts en el Foro</h3>
+                    <p style="margin: 0; line-height: 1.8; color: #374151;">
+                        Aquí podés ver todos tus posts, editarlos, pausarlos o eliminarlos.
+                    </p>
+                </div>
+                <div id="mi-historial-foro-lista" class="publicaciones-lista"></div>
+            </div>
 
             <div class="reglas" style="margin-top: 30px; padding: 20px; background: linear-gradient(135deg, rgba(239, 68, 68, 0.05), rgba(248, 113, 113, 0.05)); border-radius: 12px;">
                 <h3 style="color: #EF4444; margin-bottom: 12px;">Reglas imprescindibles</h3>
@@ -587,8 +604,8 @@
             });
         }
     </script>
-    <!-- Sistema de Feedbacks General -->
-    <script src="../../js/sistema-feedbacks-general.js"></script>
+    <!-- Sistema de Feedbacks General - NO incluir en comunidades para evitar duplicados -->
+    <!-- <script src="../../js/sistema-feedbacks-general.js"></script> -->
 </body>
 </html>
 
