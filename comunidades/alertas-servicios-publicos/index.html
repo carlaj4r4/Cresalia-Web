@@ -746,18 +746,27 @@
     <!-- Sistema de Comunidad -->
     <script src="../../js/comunidad-alertas-servicios-publicos.js"></script>
     
-    <!-- Sistema de Feedbacks General -->
-    <script src="../../js/sistema-feedbacks-general.js"></script>
+    <!-- Sistema de Feedbacks de Comunidad (específico para comunidades) -->
+    <script src="../../js/sistema-feedbacks-comunidades.js"></script>
+    <!-- Sistema de Feedbacks General - NO incluir en comunidades para evitar duplicados -->
+    <!-- <script src="../../js/sistema-feedbacks-general.js"></script> -->
     
     <!-- Sistema de Alertas de Emergencia Global -->
     <script src="../../js/sistema-alertas-emergencia-global.js"></script>
     
     <script>
         // Inicializar sistema de alertas
+        let feedbacksComunidad;
         document.addEventListener('DOMContentLoaded', () => {
             setTimeout(() => {
                 if (typeof SistemaAlertasComunidades !== 'undefined') {
                     window.alertasServiciosPublicos = new SistemaAlertasComunidades('alertas-servicios-publicos');
+                }
+                
+                // Inicializar sistema de feedbacks de comunidad
+                if (typeof SistemaFeedbacksComunidades !== 'undefined') {
+                    feedbacksComunidad = new SistemaFeedbacksComunidades('alertas-servicios-publicos');
+                    window.feedbacksComunidad = feedbacksComunidad;
                 }
                 
                 // Inicializar sistema de alertas de emergencia global
