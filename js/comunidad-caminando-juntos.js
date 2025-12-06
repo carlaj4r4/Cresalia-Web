@@ -256,6 +256,11 @@ class CaminandoJuntos {
      * Crear publicación
      */
     crearPublicacion() {
+        // Usar el sistema de foro unificado
+        if (window.foroComunidad && typeof window.foroComunidad.mostrarFormularioPost === 'function') {
+            window.foroComunidad.mostrarFormularioPost();
+            return;
+        }
         document.getElementById('modal-publicacion').classList.add('active');
     }
 

@@ -243,6 +243,11 @@ class DesahogoLibre {
      * Crear nueva publicación
      */
     crearPublicacion() {
+        // Usar el sistema de foro unificado
+        if (window.foroComunidad && typeof window.foroComunidad.mostrarFormularioPost === 'function') {
+            window.foroComunidad.mostrarFormularioPost();
+            return;
+        }
         const modal = document.createElement('div');
         modal.className = 'modal';
         modal.innerHTML = `

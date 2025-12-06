@@ -329,6 +329,11 @@ class InjusticiasVividas {
      * Crear nueva publicación
      */
     crearPublicacion() {
+        // Usar el sistema de foro unificado
+        if (window.foroComunidad && typeof window.foroComunidad.mostrarFormularioPost === 'function') {
+            window.foroComunidad.mostrarFormularioPost();
+            return;
+        }
         if (!this.advertenciaAceptada) {
             this.mostrarNotificacion('⚠️ Por favor aceptá la advertencia de seguridad primero', 'warning');
             return;

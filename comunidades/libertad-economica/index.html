@@ -93,7 +93,7 @@
             <div id="tab-foro" class="tab-content active">
                 <div class="foro-header">
                     <h2><i class="fas fa-comments"></i> Foro de la Comunidad</h2>
-                    <button class="btn-primary" onclick="libertadEconomica.crearPublicacion()">
+                    <button class="btn-primary" id="btn-crear-post" onclick="if(window.foroComunidad) { window.foroComunidad.mostrarFormularioPost(); } else { libertadEconomica.crearPublicacion(); }">
                         <i class="fas fa-plus"></i> Nueva Publicación
                     </button>
                 </div>
