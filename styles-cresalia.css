@@ -4164,7 +4164,7 @@ body {
 }
 
 .ai-chatbot-container {
-    right: 160px;
+    right: 198px; /* 160px original + 38px (1 cm) para evitar superposición */
     bottom: 58px; /* 20px (soporte) + 38px (1 cm de espacio) */
 }
 
@@ -7507,5 +7507,110 @@ body {
     
     .mt-4, .mt-5 {
         margin-top: 20px !important;
+    }
+}
+
+/* ===== BOTONES DE CIERRE MÁS GRANDES EN MÓVIL/TABLET ===== */
+/* Aumentar tamaño de botones de cierre para mejor usabilidad táctil */
+
+/* Tablet (hasta 1024px) */
+@media (max-width: 1024px) {
+    .cart-modal-close {
+        width: 44px !important;
+        height: 44px !important;
+        font-size: 1.7rem !important;
+    }
+    
+    .chatbot-close {
+        width: 38px !important;
+        height: 38px !important;
+        font-size: 1.3rem !important;
+    }
+    
+    .ai-chatbot-close {
+        width: 38px !important;
+        height: 38px !important;
+        font-size: 1.3rem !important;
+    }
+    
+    .close-chatbot, 
+    .close-ai-chatbot {
+        width: 32px !important;
+        height: 32px !important;
+        font-size: 1.4rem !important;
+    }
+    
+    .cerrar-modal {
+        width: 36px !important;
+        height: 36px !important;
+        font-size: 1.7rem !important;
+    }
+}
+
+/* Móvil (hasta 768px) */
+@media (max-width: 768px) {
+    .cart-modal-close {
+        width: 48px !important;
+        height: 48px !important;
+        font-size: 1.8rem !important;
+    }
+    
+    .chatbot-close {
+        width: 42px !important;
+        height: 42px !important;
+        font-size: 1.4rem !important;
+    }
+    
+    .ai-chatbot-close {
+        width: 42px !important;
+        height: 42px !important;
+        font-size: 1.4rem !important;
+    }
+    
+    .close-chatbot, 
+    .close-ai-chatbot {
+        width: 36px !important;
+        height: 36px !important;
+        font-size: 1.5rem !important;
+    }
+    
+    .cerrar-modal {
+        width: 40px !important;
+        height: 40px !important;
+        font-size: 1.8rem !important;
+    }
+}
+
+/* Móvil pequeño (hasta 480px) */
+@media (max-width: 480px) {
+    .cart-modal-close {
+        width: 50px !important;
+        height: 50px !important;
+        font-size: 2rem !important;
+    }
+    
+    .chatbot-close {
+        width: 44px !important;
+        height: 44px !important;
+        font-size: 1.5rem !important;
+    }
+    
+    .ai-chatbot-close {
+        width: 44px !important;
+        height: 44px !important;
+        font-size: 1.5rem !important;
+    }
+    
+    .close-chatbot, 
+    .close-ai-chatbot {
+        width: 38px !important;
+        height: 38px !important;
+        font-size: 1.6rem !important;
+    }
+    
+    .cerrar-modal {
+        width: 42px !important;
+        height: 42px !important;
+        font-size: 2rem !important;
     }
 }

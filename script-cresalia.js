@@ -686,13 +686,37 @@ function calcularPrecio(productoId) {
     }
 }
 
-function agregarAlCarrito(productoId) {
+async function agregarAlCarrito(productoId) {
     const input = document.getElementById(`cantidad-${productoId}`);
     const producto = PRODUCTOS_DATA.find(p => p.id === productoId);
     
-    if (producto && input) {
-        const cantidad = parseInt(input.value) || 1;
-        
+    if (!producto) return;
+    
+    const cantidad = parseInt(input?.value) || 1;
+    
+    // Si existe el sistema de carrito por tienda, usarlo
+    if (window.carritoPorTienda) {
+        const resultado = await window.carritoPorTienda.agregarProducto(producto, cantidad);
+        if (resultado) {
+            // Actualizar carrito global para compatibilidad
+            carrito = window.carritoPorTienda.obtenerCarritoActual();
+            actualizarCarrito();
+            
+            // Actualizar badge del carrito
+            if (typeof actualizarBadgeDespuesDeAgregar === 'function') {
+                actualizarBadgeDespuesDeAgregar();
+            }
+            
+            // Actualizar carrito flotante
+            if (typeof actualizarCarritoFlotante === 'function') {
+                actualizarCarritoFlotante();
+            }
+        }
+        return;
+    }
+    
+    // Sistema de carrito tradicional (compatibilidad)
+    if (input) {
         // Verificar si el producto ya está en el carrito
         const itemExistente = carrito.find(item => item.id === productoId);
         
@@ -731,6 +755,19 @@ function agregarAlCarrito(productoId) {
 
 // ===== FUNCIONES DEL CARRITO =====
 function actualizarCarrito() {
+    // Si existe el sistema de carrito por tienda, usarlo
+    if (window.carritoPorTienda) {
+        const totalItems = window.carritoPorTienda.contarItems();
+        const cartCount = document.getElementById('cartCount');
+        if (cartCount) {
+            cartCount.textContent = totalItems;
+        }
+        // Sincronizar carrito global para compatibilidad
+        carrito = window.carritoPorTienda.obtenerCarritoActual();
+        return;
+    }
+    
+    // Sistema tradicional
     const cartCount = document.getElementById('cartCount');
     if (cartCount) {
         const totalItems = carrito.reduce((total, item) => total + item.cantidad, 0);
@@ -2322,16 +2359,62 @@ function sendMessage(tipo) {
 }
 
 function toggleChatbot() {
-    const container = document.getElementById('chatbotContainer');
-    if (container) {
+    // Buscar el modal principal de chatbot (chatbot-modal)
+    const modal = document.getElementById('chatbotModal');
+    // Si no existe, buscar otros contenedores
+    const container = modal || 
+                      document.getElementById('chatbotContainer') || 
+                      document.getElementById('chatbot');
+    
+    if (modal) {
+        // Para el modal principal, usar display y clase active
+        if (modal.style.display === 'none' || !modal.style.display || !modal.classList.contains('active')) {
+            modal.style.display = 'flex';
+            modal.classList.add('active');
+        } else {
+            modal.style.display = 'none';
+            modal.classList.remove('active');
+        }
+    } else if (container) {
+        // Para otros contenedores, usar clase active
         container.classList.toggle('active');
+        if (container.style.display === 'none' || !container.style.display) {
+            container.style.display = 'flex';
+        } else {
+            container.style.display = 'none';
+        }
+    } else {
+        console.warn('No se encontró el contenedor del chatbot');
     }
 }
 
 function toggleAIChatbot() {
-    const container = document.getElementById('aiChatbotContainer');
-    if (container) {
+    // Buscar el modal principal de chatbot IA (ai-chatbot-modal)
+    const modal = document.getElementById('aiChatbotModal');
+    // Si no existe, buscar otros contenedores
+    const container = modal || 
+                      document.getElementById('aiChatbotContainer') || 
+                      document.getElementById('aiChatbot');
+    
+    if (modal) {
+        // Para el modal principal, usar display y clase active
+        if (modal.style.display === 'none' || !modal.style.display || !modal.classList.contains('active')) {
+            modal.style.display = 'flex';
+            modal.classList.add('active');
+        } else {
+            modal.style.display = 'none';
+            modal.classList.remove('active');
+        }
+    } else if (container) {
+        // Para otros contenedores, usar clase active
         container.classList.toggle('active');
+        if (container.style.display === 'none' || !container.style.display) {
+            container.style.display = 'flex';
+        } else {
+            container.style.display = 'none';
+        }
+    } else {
+        console.warn('No se encontró el contenedor del chatbot IA');
     }
 }
 
@@ -2996,19 +3079,54 @@ function logoutUser() {
 
 // Función para actualizar la interfaz según el estado del usuario
 function updateUserInterface() {
-    const userButton = document.getElementById('userButton');
+    const userButton = document.getElementById('userButton') || document.getElementById('userAccountBtn');
     const userButtonText = document.getElementById('userButtonText');
     
+    // Obtener los botones de login y signup del navbar (buscar por contenido del onclick)
+    const allNavItems = document.querySelectorAll('.navbar-nav .nav-item');
+    const loginButtonItem = Array.from(allNavItems).find(item => {
+        const btn = item.querySelector('button[onclick*="showLoginForm"]');
+        return btn !== null;
+    });
+    const signupButtonItem = Array.from(allNavItems).find(item => {
+        const btn = item.querySelector('button[onclick*="showRegisterForm"]');
+        return btn !== null;
+    });
+    
     if (currentUser) {
-        // Usuario logueado
-        userButtonText.textContent = currentUser.name.split(' ')[0];
-        userButton.classList.add('user-logged-in');
-        userButton.onclick = showUserProfile;
+        // Usuario logueado - ocultar botones de login/signup, mostrar botón Mi Cuenta
+        if (userButtonText) {
+            userButtonText.textContent = currentUser.name.split(' ')[0];
+        }
+        if (userButton) {
+            userButton.classList.add('user-logged-in');
+            userButton.style.display = 'block';
+            userButton.onclick = function() {
+                showUserProfile();
+                return false;
+            };
+        }
+        
+        // Ocultar botones de login/signup
+        if (loginButtonItem) loginButtonItem.style.display = 'none';
+        if (signupButtonItem) signupButtonItem.style.display = 'none';
     } else {
-        // Usuario no logueado
-        userButtonText.textContent = 'Mi Cuenta';
-        userButton.classList.remove('user-logged-in');
-        userButton.onclick = toggleUserSystem;
+        // Usuario no logueado - mostrar botones de login/signup, ocultar botón Mi Cuenta
+        if (userButtonText) {
+            userButtonText.textContent = 'Mi Cuenta';
+        }
+        if (userButton) {
+            userButton.classList.remove('user-logged-in');
+            userButton.style.display = 'none';
+            userButton.onclick = function() {
+                toggleUserSystem();
+                return false;
+            };
+        }
+        
+        // Mostrar botones de login/signup
+        if (loginButtonItem) loginButtonItem.style.display = 'list-item';
+        if (signupButtonItem) signupButtonItem.style.display = 'list-item';
     }
 }
 
@@ -3374,14 +3492,20 @@ document.addEventListener('DOMContentLoaded', function() {
                     startUserSession(user);
                 } else {
                     localStorage.removeItem('userSession');
+                    updateUserInterface(); // Actualizar interfaz si no hay usuario
                 }
             } else {
                 localStorage.removeItem('userSession');
+                updateUserInterface(); // Actualizar interfaz si la sesión expiró
             }
         } catch (error) {
             console.error('Error al cargar sesión:', error);
             localStorage.removeItem('userSession');
+            updateUserInterface(); // Actualizar interfaz si hay error
         }
+    } else {
+        // No hay sesión, actualizar interfaz para mostrar botones de login/signup
+        updateUserInterface();
     }
     
     // Configurar eventos de formularios

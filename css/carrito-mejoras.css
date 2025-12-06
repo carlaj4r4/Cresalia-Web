@@ -312,6 +312,15 @@
 }
 
 /* MOSTRAR CARRITO FLOTANTE SOLO EN MÓVILES - LADO IZQUIERDO, MÁS PEQUEÑO */
+@media (max-width: 1024px) {
+    /* Botones de cierre más grandes en tablet */
+    .close-cart {
+        width: 44px !important;
+        height: 44px !important;
+        font-size: 1.7rem !important;
+    }
+}
+
 @media (max-width: 768px) {
     /* Mejorar el carrito flotante - LADO IZQUIERDO */
     .floating-cart {
@@ -326,6 +335,13 @@
         border-radius: 30px !important; /* Más redondeado */
         box-shadow: 0 6px 20px rgba(37, 99, 235, 0.25) !important;
         transform: none !important; /* Remover transformaciones */
+    }
+    
+    /* Botones de cierre más grandes en móvil */
+    .close-cart {
+        width: 48px !important;
+        height: 48px !important;
+        font-size: 1.8rem !important;
     }
     
     .floating-cart-content {
@@ -620,6 +636,13 @@
         right: 10px !important;
         min-width: 120px !important;
         padding: 10px 15px !important;
+    }
+    
+    /* Botones de cierre aún más grandes en móviles pequeños */
+    .close-cart {
+        width: 50px !important;
+        height: 50px !important;
+        font-size: 2rem !important;
     }
     
     .chatbot-toggle,

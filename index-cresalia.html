@@ -66,7 +66,17 @@
     <meta name="application-name" content="Cresalia">
     <meta name="msapplication-tap-highlight" content="no">
     
-    <!-- PWA Iconos ya están arriba, no duplicar -->
+    <!-- Iconos adicionales para escritorio (Windows, macOS, Linux) -->
+    <link rel="icon" type="image/png" sizes="192x192" href="/assets/logo/logo-cresalia.png?v=6.0">
+    <link rel="icon" type="image/png" sizes="512x512" href="/assets/logo/logo-cresalia.png?v=6.0">
+    <link rel="apple-touch-icon" sizes="192x192" href="/assets/logo/logo-cresalia.png?v=6.0">
+    <link rel="apple-touch-icon" sizes="512x512" href="/assets/logo/logo-cresalia.png?v=6.0">
+    
+    <!-- Meta tags adicionales para mejor soporte en escritorio -->
+    <meta name="msapplication-square70x70logo" content="/assets/logo/logo-cresalia.png">
+    <meta name="msapplication-square150x150logo" content="/assets/logo/logo-cresalia.png">
+    <meta name="msapplication-wide310x150logo" content="/assets/logo/logo-cresalia.png">
+    <meta name="msapplication-square310x310logo" content="/assets/logo/logo-cresalia.png">
     
     <!-- Bootstrap CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
@@ -660,7 +670,17 @@
                         </a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link user-nav-btn" href="#" onclick="toggleUserSystem()">
+                        <button class="btn btn-outline-primary btn-sm me-2" onclick="toggleUserSystem(); showLoginForm(); return false;" style="margin-top: 0.25rem;">
+                            <i class="fas fa-sign-in-alt"></i> Iniciar Sesión
+                        </button>
+                    </li>
+                    <li class="nav-item">
+                        <button class="btn btn-primary btn-sm me-2" onclick="toggleUserSystem(); showRegisterForm(); return false;" style="margin-top: 0.25rem;">
+                            <i class="fas fa-user-plus"></i> Comenzar Gratis
+                        </button>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link user-nav-btn" href="#" onclick="toggleUserSystem()" style="display: none;" id="userAccountBtn">
                             <i class="fas fa-user-circle"></i>
                             <span id="userButtonText" data-i18n="nav.mi_cuenta">Mi Cuenta</span>
                         </a>
@@ -2024,6 +2044,7 @@
     <!-- Bootstrap JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script src="i18n-cresalia.js"></script>
+    <script src="js/carrito-por-tienda.js"></script>
     <script src="script-cresalia.js?v=9.8"></script>
     <script src="facturacion.js?v=2.7"></script>
     <!-- script duplicado eliminado para evitar redefinir SECURITY_CONFIG -->

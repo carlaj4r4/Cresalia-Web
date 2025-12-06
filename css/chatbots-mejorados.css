@@ -10,7 +10,7 @@
 
 /* Posicionamiento adaptativo para evitar superposición */
 .ai-chatbot-container {
-    right: 20px;
+    right: 58px; /* 20px original + 38px (1 cm) para evitar superposición */
     bottom: 58px; /* 20px (soporte) + 38px (1 cm de espacio) */
 }
 
@@ -358,6 +358,16 @@
 }
 
 /* Responsive para modales */
+@media (max-width: 1024px) {
+    /* Botones de cierre más grandes en tablet */
+    .ai-chatbot-close, .chatbot-close {
+        font-size: 22px !important;
+        padding: 10px !important;
+        min-width: 38px !important;
+        min-height: 38px !important;
+    }
+}
+
 @media (max-width: 768px) {
     .ai-chatbot-modal, .chatbot-modal {
         width: calc(100vw - 40px);
@@ -365,6 +375,14 @@
         right: 20px;
         left: 20px;
         bottom: 100px;
+    }
+    
+    /* Botones de cierre más grandes en móvil */
+    .ai-chatbot-close, .chatbot-close {
+        font-size: 24px !important;
+        padding: 12px !important;
+        min-width: 42px !important;
+        min-height: 42px !important;
     }
 }
 
@@ -382,6 +400,14 @@
     
     .ai-toggle-text, .chatbot-toggle-text {
         font-size: 12px;
+    }
+    
+    /* Botones de cierre aún más grandes en móviles pequeños */
+    .ai-chatbot-close, .chatbot-close {
+        font-size: 26px !important;
+        padding: 14px !important;
+        min-width: 44px !important;
+        min-height: 44px !important;
     }
 }
 

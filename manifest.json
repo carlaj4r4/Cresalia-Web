@@ -14,7 +14,43 @@
   "icons": [
     {
       "src": "/assets/logo/logo-cresalia.png?v=6.0",
+      "sizes": "72x72",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/assets/logo/logo-cresalia.png?v=6.0",
+      "sizes": "96x96",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/assets/logo/logo-cresalia.png?v=6.0",
+      "sizes": "128x128",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/assets/logo/logo-cresalia.png?v=6.0",
+      "sizes": "144x144",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/assets/logo/logo-cresalia.png?v=6.0",
+      "sizes": "152x152",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/assets/logo/logo-cresalia.png?v=6.0",
       "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/assets/logo/logo-cresalia.png?v=6.0",
+      "sizes": "384x384",
       "type": "image/png",
       "purpose": "any"
     },
@@ -55,50 +91,15 @@
   ],
   "shortcuts": [
     {
-      "name": "Mi Tienda",
-      "short_name": "Tienda",
-      "description": "Acceder a mi tienda online",
-      "url": "/tiendas/ejemplo-tienda/index.html",
-      "icons": [
-        {
-          "src": "icons/shortcut-tienda.png",
-          "sizes": "96x96"
-        }
-      ]
-    },
-    {
-      "name": "Panel Admin Tienda",
-      "short_name": "Admin",
-      "description": "Gestionar mi tienda",
-      "url": "/tiendas/ejemplo-tienda/admin-final.html",
-      "icons": [
-        {
-          "src": "icons/shortcut-admin.png",
-          "sizes": "96x96"
-        }
-      ]
-    },
-    {
-      "name": "Interfaz Compradores",
-      "short_name": "Compradores",
-      "description": "Explorar productos y servicios",
-      "url": "/demo-buyer-interface.html",
-      "icons": [
-        {
-          "src": "icons/shortcut-compradores.png",
-          "sizes": "96x96"
-        }
-      ]
-    },
-    {
-      "name": "Mi Cuenta",
-      "short_name": "Cuenta",
-      "description": "Crear cuenta o iniciar sesión",
+      "name": "Mi Perfil",
+      "short_name": "Perfil",
+      "description": "Acceder a mi perfil y cuenta",
       "url": "/index-cresalia.html#cuenta",
       "icons": [
         {
           "src": "/assets/logo/logo-cresalia.png",
-          "sizes": "96x96"
+          "sizes": "96x96",
+          "type": "image/png"
         }
       ]
     }

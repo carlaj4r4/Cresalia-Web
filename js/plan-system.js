@@ -56,6 +56,7 @@ const PLANES_CONFIG = {
         limite_productos: 200,
         limite_ordenes_mes: 500,
         limite_usuarios: 50,
+        carrito_por_tienda: true, // Carrito por tienda habilitado
         caracteristicas: [
             'Hasta 200 productos',
             'Hasta 500 órdenes por mes',
@@ -64,7 +65,8 @@ const PLANES_CONFIG = {
             'Temas premium',
             'Analytics básicos',
             'Subdominio gratuito',
-            'Integración con redes sociales'
+            'Integración con redes sociales',
+            'Carrito por tienda (activar/desactivar)'
         ],
         no_incluye: [
             'Chatbot IA',
@@ -80,6 +82,7 @@ const PLANES_CONFIG = {
         limite_productos: 500,
         limite_ordenes_mes: 1000,
         limite_usuarios: 100,
+        carrito_por_tienda: true, // Carrito por tienda habilitado
         caracteristicas: [
             'Hasta 500 productos',
             'Hasta 1000 órdenes por mes',
@@ -90,7 +93,8 @@ const PLANES_CONFIG = {
             'Temas premium',
             'Analytics básicos',
             'Subdominio gratuito',
-            'Redes sociales avanzadas'
+            'Redes sociales avanzadas',
+            'Carrito por tienda (activar/desactivar)'
         ],
         no_incluye: [
             'Chatbot IA personalizado',
@@ -125,6 +129,7 @@ const PLANES_CONFIG = {
         limite_productos: 1000,
         limite_ordenes_mes: 2000,
         limite_usuarios: 200,
+        carrito_por_tienda: true, // Carrito por tienda habilitado
         caracteristicas: [
             'Hasta 1000 productos',
             'Hasta 2000 órdenes por mes',
@@ -138,7 +143,8 @@ const PLANES_CONFIG = {
             'Temas premium ilimitados',
             'API personalizada',
             'Integraciones avanzadas',
-            'Redes sociales ilimitadas'
+            'Redes sociales ilimitadas',
+            'Carrito por tienda (activar/desactivar)'
         ],
         no_incluye: [
             'White label',
@@ -172,6 +178,7 @@ const PLANES_CONFIG = {
         limite_productos: -1, // Ilimitado
         limite_ordenes_mes: -1, // Ilimitado
         limite_usuarios: -1, // Ilimitado
+        carrito_por_tienda: true, // Carrito por tienda habilitado
         caracteristicas: [
             'Productos ilimitados',
             'Órdenes ilimitadas',
@@ -187,7 +194,8 @@ const PLANES_CONFIG = {
             'Customizaciones avanzadas',
             'SLA garantizado',
             'Migración asistida',
-            'Redes sociales ilimitadas y personalizables'
+            'Redes sociales ilimitadas y personalizables',
+            'Carrito por tienda (activar/desactivar)'
         ],
         no_incluye: [],
         chatbot_config: {
