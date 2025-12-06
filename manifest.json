@@ -89,6 +89,18 @@
           "sizes": "96x96"
         }
       ]
+    },
+    {
+      "name": "Mi Cuenta",
+      "short_name": "Cuenta",
+      "description": "Crear cuenta o iniciar sesión",
+      "url": "/index-cresalia.html#cuenta",
+      "icons": [
+        {
+          "src": "/assets/logo/logo-cresalia.png",
+          "sizes": "96x96"
+        }
+      ]
     }
   ],
   "related_applications": [],

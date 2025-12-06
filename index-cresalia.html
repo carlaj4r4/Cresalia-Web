@@ -3674,7 +3674,44 @@
             if (isStandalone || (isIOS && isInStandaloneMode)) {
                 document.body.classList.add('pwa-mode');
                 console.log('📱 Ejecutándose como PWA');
+                // Mostrar botón flotante de perfil en modo PWA
+                mostrarBotonPerfilPWA();
             }
+        }
+
+        // 👤 Botón flotante de perfil para PWA
+        function mostrarBotonPerfilPWA() {
+            // Verificar si ya existe el botón
+            if (document.getElementById('pwa-profile-btn')) {
+                return;
+            }
+
+            const profileButton = document.createElement('div');
+            profileButton.id = 'pwa-profile-btn';
+            profileButton.innerHTML = `
+                <button onclick="toggleUserSystem()" style="
+                    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+                    color: white;
+                    border: none;
+                    width: 56px;
+                    height: 56px;
+                    border-radius: 50%;
+                    cursor: pointer;
+                    font-size: 24px;
+                    box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+                    transition: all 0.3s ease;
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    position: fixed;
+                    bottom: 100px;
+                    right: 20px;
+                    z-index: 9998;
+                " onmouseover="this.style.transform='scale(1.1)'; this.style.boxShadow='0 6px 20px rgba(102, 126, 234, 0.5)';" onmouseout="this.style.transform='scale(1)'; this.style.boxShadow='0 4px 15px rgba(102, 126, 234, 0.4)';" title="Mi Cuenta - Crear cuenta o iniciar sesión">
+                    <i class="fas fa-user-circle"></i>
+                </button>
+            `;
+            document.body.appendChild(profileButton);
         }
 
         // 🚀 PWA Initialization
@@ -3725,6 +3762,26 @@
                 .pwa-mode .web-only { display: none !important; }
                 .pwa-mode body { padding-top: env(safe-area-inset-top); }
                 .pwa-mode .navbar { padding-top: env(safe-area-inset-top); }
+                
+                /* Botón de perfil PWA - Responsive */
+                #pwa-profile-btn {
+                    position: fixed;
+                    bottom: 100px;
+                    right: 20px;
+                    z-index: 9998;
+                }
+                
+                @media (max-width: 768px) {
+                    #pwa-profile-btn {
+                        bottom: 80px;
+                        right: 15px;
+                    }
+                    #pwa-profile-btn button {
+                        width: 50px !important;
+                        height: 50px !important;
+                        font-size: 20px !important;
+                    }
+                }
                 
                 @keyframes slideDown {
                     from { transform: translateX(-50%) translateY(-50px); opacity: 0; }
