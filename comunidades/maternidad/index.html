@@ -481,6 +481,19 @@
                 window.feedbacksComunidad = feedbacksComunidad;
             }
         });
+        
+        // Registrar Service Worker para PWA
+        if ('serviceWorker' in navigator && window.location.protocol !== 'file:') {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('../../sw.js')
+                    .then(registration => {
+                        console.log('✅ Service Worker registrado:', registration.scope);
+                    })
+                    .catch(error => {
+                        console.log('⚠️ Service Worker no disponible (normal en desarrollo)');
+                    });
+            });
+        }
     </script>
 </body>
 </html>
