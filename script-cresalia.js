@@ -37,10 +37,10 @@ async function obtenerUbicacionUsuarioGlobal() {
                 const ahora = new Date();
                 const horasTranscurridas = (ahora - fechaGuardada) / (1000 * 60 * 60);
                 
-                // Si la ubicación tiene menos de 1 hora, usarla
+                // Si la ubicación tiene menos de 1 hora, usarla (evita solicitar permiso de nuevo)
                 if (horasTranscurridas < 1) {
                     ubicacionUsuarioGlobal = ubicacion;
-                    console.log('✅ Ubicación cargada desde cache:', ubicacion);
+                    console.log('✅ Ubicación cargada desde cache (evita solicitar permiso de nuevo):', ubicacion);
                     resolve(ubicacion);
                     return;
                 }
@@ -49,7 +49,15 @@ async function obtenerUbicacionUsuarioGlobal() {
             }
         }
         
-        // Solicitar nueva ubicación
+        // Verificar si ya se concedió permiso anteriormente (evita pedir múltiples veces)
+        const consentimiento = localStorage.getItem('cresalia_geolocalizacion_consentimiento');
+        if (consentimiento === 'denegado' || consentimiento === 'denied') {
+            console.log('ℹ️ Usuario denegó permiso de ubicación anteriormente, usando ubicación guardada si existe');
+            resolve(null);
+            return;
+        }
+        
+        // Solicitar nueva ubicación solo si no hay una guardada reciente
         navigator.geolocation.getCurrentPosition(
             (position) => {
                 const ubicacion = {
@@ -856,6 +864,10 @@ function removerDelCarrito(productoId) {
 }
 
 function toggleCart() {
+    // Asegurar disponibilidad global
+    if (typeof window !== 'undefined' && !window.toggleCart) {
+        window.toggleCart = toggleCart;
+    }
     const cartModal = document.getElementById('cartModal');
     if (cartModal) {
         cartModal.classList.toggle('active');
@@ -1457,24 +1469,31 @@ function procesarCompra() {
         addOrderToUserHistory(orderData);
         console.log('✅ Pedido guardado en historial del usuario:', orderData);
         
-        // Guardar en Supabase (historial_compras)
-        await guardarHistorialCompraSupabase(datosCompra, orderData);
+        // Guardar en Supabase (historial_compras) - async
+        guardarHistorialCompraSupabase(datosCompra, orderData).catch(err => {
+            console.error('Error guardando en Supabase:', err);
+        });
         
-        // Verificar si es primera compra y enviar email
+        // Verificar si es primera compra y enviar email - async
         if (window.sistemaEmailsCresalia) {
-            const esPrimeraCompra = await verificarPrimeraCompra(datosCompra.emailCliente);
-            if (esPrimeraCompra) {
-                await window.sistemaEmailsCresalia.procesarEvento('primera_compra', {
-                    id: datosCompra.emailCliente,
-                    email: datosCompra.emailCliente,
-                    nombre: datosCompra.nombreCliente
-                }, {
-                    producto: datosCompra.esCompraCarrito 
-                        ? `${datosCompra.carrito.length} productos` 
-                        : datosCompra.producto?.nombre || 'Producto',
-                    monto: orderData.total
-                });
-            }
+            verificarPrimeraCompra(datosCompra.emailCliente).then(esPrimeraCompra => {
+                if (esPrimeraCompra) {
+                    window.sistemaEmailsCresalia.procesarEvento('primera_compra', {
+                        id: datosCompra.emailCliente,
+                        email: datosCompra.emailCliente,
+                        nombre: datosCompra.nombreCliente
+                    }, {
+                        producto: datosCompra.esCompraCarrito 
+                            ? `${datosCompra.carrito.length} productos` 
+                            : datosCompra.producto?.nombre || 'Producto',
+                        monto: orderData.total
+                    }).catch(err => {
+                        console.error('Error enviando email:', err);
+                    });
+                }
+            }).catch(err => {
+                console.error('Error verificando primera compra:', err);
+            });
         }
     }
     
@@ -1919,7 +1938,7 @@ window.debugChatbotMessage = function(element) {
 
 // ===== FUNCIÓN PARA VERIFICAR Y RESTAURAR MENSAJES =====
 function verificarMensajesChatbot(tipo) {
-    const container = tipo === 'ai' ? document.getElementById('chatAIMessages') : document.getElementById('chatHelpMessages');
+    const container = tipo === 'ai' ? document.getElementById('aiChatbotMessages') : document.getElementById('chatbotMessages');
     if (!container) return;
     
     const userMessages = container.querySelectorAll('.user-message');
@@ -1963,7 +1982,7 @@ window.verificarChatbots = function() {
 
 // ===== FUNCIÓN PARA MONITOREAR CAMBIOS EN EL DOM =====
 function monitorearCambiosChatbot(tipo) {
-    const container = tipo === 'ai' ? document.getElementById('chatAIMessages') : document.getElementById('chatHelpMessages');
+    const container = tipo === 'ai' ? document.getElementById('aiChatbotMessages') : document.getElementById('chatbotMessages');
     if (!container) return;
     
     // Crear un observador de mutaciones
@@ -2098,13 +2117,13 @@ document.addEventListener('DOMContentLoaded', function() {
     // Agregar mensajes de bienvenida a los chatbots después de un delay
     setTimeout(() => {
         // Mensaje de bienvenida para el chatbot de ayuda
-        const chatbotMessages = document.getElementById('chatHelpMessages');
+        const chatbotMessages = document.getElementById('chatbotMessages');
         if (chatbotMessages) {
             addMessage('help', '¡Hola! Soy el asistente de ayuda de Cresalia 🛠️. ¿En qué puedo ayudarte?', 'bot');
         }
         
         // Mensaje de bienvenida para el chatbot IA
-        const aiChatbotMessages = document.getElementById('chatAIMessages');
+        const aiChatbotMessages = document.getElementById('aiChatbotMessages');
         if (aiChatbotMessages) {
             addMessage('ai', '¡Hola! Soy el asistente virtual de Cresalia 💜. Estoy aquí para ayudarte con todo sobre nuestra plataforma. ¿En qué puedo asistirte hoy?', 'bot');
         }
@@ -2179,11 +2198,11 @@ function addMessage(tipo, mensaje, sender) {
     let container, input;
     
     if (tipo === 'ai') {
-        container = document.getElementById('chatAIMessages');
-        input = document.getElementById('chatAIInput');
+        container = document.getElementById('aiChatbotMessages');
+        input = document.getElementById('aiChatInput');
     } else {
-        container = document.getElementById('chatHelpMessages');
-        input = document.getElementById('chatHelpInput');
+        container = document.getElementById('chatbotMessages');
+        input = document.getElementById('chatInput');
     }
     
     if (!container) {
@@ -2296,7 +2315,7 @@ function addMessage(tipo, mensaje, sender) {
 }
 
 function sendMessage(tipo) {
-    const inputId = tipo === 'ai' ? 'chatAIInput' : 'chatHelpInput';
+    const inputId = tipo === 'ai' ? 'aiChatInput' : 'chatInput';
     const input = document.getElementById(inputId);
     const message = input.value.trim();
     
@@ -2309,7 +2328,7 @@ function sendMessage(tipo) {
         
         // Verificar inmediatamente después de agregar
         setTimeout(() => {
-            const container = tipo === 'ai' ? document.getElementById('chatAIMessages') : document.getElementById('chatHelpMessages');
+            const container = tipo === 'ai' ? document.getElementById('aiChatbotMessages') : document.getElementById('chatbotMessages');
             const userMessages = container.querySelectorAll('.user-message');
             console.log('🔍 Verificación inmediata - Mensajes del usuario:', userMessages.length);
             
@@ -2323,7 +2342,7 @@ function sendMessage(tipo) {
         
         // Esperar antes de agregar la respuesta del bot
         setTimeout(() => {
-            const container = tipo === 'ai' ? document.getElementById('chatAIMessages') : document.getElementById('chatHelpMessages');
+            const container = tipo === 'ai' ? document.getElementById('aiChatbotMessages') : document.getElementById('chatbotMessages');
             console.log('🤖 Preparando respuesta del bot...');
             
             // Verificar estado antes de la respuesta
@@ -2359,62 +2378,82 @@ function sendMessage(tipo) {
 }
 
 function toggleChatbot() {
+    // Asegurar disponibilidad global
+    if (typeof window !== 'undefined' && !window.toggleChatbot) {
+        window.toggleChatbot = toggleChatbot;
+    }
+    
     // Buscar el modal principal de chatbot (chatbot-modal)
     const modal = document.getElementById('chatbotModal');
-    // Si no existe, buscar otros contenedores
-    const container = modal || 
-                      document.getElementById('chatbotContainer') || 
-                      document.getElementById('chatbot');
     
-    if (modal) {
-        // Para el modal principal, usar display y clase active
-        if (modal.style.display === 'none' || !modal.style.display || !modal.classList.contains('active')) {
-            modal.style.display = 'flex';
-            modal.classList.add('active');
-        } else {
-            modal.style.display = 'none';
-            modal.classList.remove('active');
-        }
-    } else if (container) {
-        // Para otros contenedores, usar clase active
-        container.classList.toggle('active');
-        if (container.style.display === 'none' || !container.style.display) {
-            container.style.display = 'flex';
-        } else {
-            container.style.display = 'none';
-        }
+    if (!modal) {
+        console.error('❌ No se encontró el modal del chatbot (id: chatbotModal)');
+        return;
+    }
+    
+    // Verificar estado actual
+    const computedStyle = window.getComputedStyle(modal);
+    const isCurrentlyVisible = computedStyle.display !== 'none' && 
+                               modal.classList.contains('active');
+    
+    if (isCurrentlyVisible) {
+        // Cerrar modal
+        modal.style.display = 'none';
+        modal.classList.remove('active');
+        console.log('✅ Chatbot cerrado');
     } else {
-        console.warn('No se encontró el contenedor del chatbot');
+        // Abrir modal
+        modal.style.display = 'flex';
+        modal.classList.add('active');
+        console.log('✅ Chatbot abierto');
+        
+        // Enfocar el input si existe
+        setTimeout(() => {
+            const input = document.getElementById('chatInput');
+            if (input) {
+                input.focus();
+            }
+        }, 100);
     }
 }
 
 function toggleAIChatbot() {
+    // Asegurar disponibilidad global
+    if (typeof window !== 'undefined' && !window.toggleAIChatbot) {
+        window.toggleAIChatbot = toggleAIChatbot;
+    }
+    
     // Buscar el modal principal de chatbot IA (ai-chatbot-modal)
     const modal = document.getElementById('aiChatbotModal');
-    // Si no existe, buscar otros contenedores
-    const container = modal || 
-                      document.getElementById('aiChatbotContainer') || 
-                      document.getElementById('aiChatbot');
     
-    if (modal) {
-        // Para el modal principal, usar display y clase active
-        if (modal.style.display === 'none' || !modal.style.display || !modal.classList.contains('active')) {
-            modal.style.display = 'flex';
-            modal.classList.add('active');
-        } else {
-            modal.style.display = 'none';
-            modal.classList.remove('active');
-        }
-    } else if (container) {
-        // Para otros contenedores, usar clase active
-        container.classList.toggle('active');
-        if (container.style.display === 'none' || !container.style.display) {
-            container.style.display = 'flex';
-        } else {
-            container.style.display = 'none';
-        }
+    if (!modal) {
+        console.error('❌ No se encontró el modal del AI chatbot (id: aiChatbotModal)');
+        return;
+    }
+    
+    // Verificar estado actual
+    const computedStyle = window.getComputedStyle(modal);
+    const isCurrentlyVisible = computedStyle.display !== 'none' && 
+                               modal.classList.contains('active');
+    
+    if (isCurrentlyVisible) {
+        // Cerrar modal
+        modal.style.display = 'none';
+        modal.classList.remove('active');
+        console.log('✅ AI Chatbot cerrado');
     } else {
-        console.warn('No se encontró el contenedor del chatbot IA');
+        // Abrir modal
+        modal.style.display = 'flex';
+        modal.classList.add('active');
+        console.log('✅ AI Chatbot abierto');
+        
+        // Enfocar el input si existe
+        setTimeout(() => {
+            const input = document.getElementById('aiChatInput');
+            if (input) {
+                input.focus();
+            }
+        }, 100);
     }
 }
 
@@ -2927,8 +2966,22 @@ let userLoginAttempts = 0;
 
 // Función para mostrar/ocultar el sistema de usuarios
 function toggleUserSystem() {
+    // Asegurar disponibilidad global
+    if (typeof window !== 'undefined' && !window.toggleUserSystem) {
+        window.toggleUserSystem = toggleUserSystem;
+    }
     const userSystem = document.getElementById('userSystem');
-    if (userSystem.style.display === 'none' || userSystem.style.display === '') {
+    if (!userSystem) {
+        console.error('No se encontró el elemento userSystem');
+        return;
+    }
+    
+    // Verificar si está oculto (display: none o vacío)
+    const isHidden = userSystem.style.display === 'none' || 
+                     userSystem.style.display === '' || 
+                     window.getComputedStyle(userSystem).display === 'none';
+    
+    if (isHidden) {
         userSystem.style.display = 'flex';
         showLoginForm();
     } else {
@@ -2938,19 +2991,56 @@ function toggleUserSystem() {
 
 // Función para cerrar el sistema de usuarios
 function closeUserSystem() {
-    document.getElementById('userSystem').style.display = 'none';
+    const userSystem = document.getElementById('userSystem');
+    if (userSystem) {
+        userSystem.style.display = 'none';
+    }
 }
+
+// Asegurar que todas las funciones estén disponibles globalmente INMEDIATAMENTE
+(function() {
+    'use strict';
+    // Asignar funciones a window tan pronto como se definan
+    if (typeof window !== 'undefined') {
+        // Estas funciones se asignarán cuando se definan más abajo
+        // Pero también las asignamos aquí para asegurar disponibilidad
+        setTimeout(function() {
+            if (typeof toggleUserSystem === 'function') window.toggleUserSystem = toggleUserSystem;
+            if (typeof toggleChatbot === 'function') window.toggleChatbot = toggleChatbot;
+            if (typeof toggleAIChatbot === 'function') window.toggleAIChatbot = toggleAIChatbot;
+            if (typeof toggleCart === 'function') window.toggleCart = toggleCart;
+            if (typeof showLoginForm === 'function') window.showLoginForm = showLoginForm;
+            if (typeof showRegisterForm === 'function') window.showRegisterForm = showRegisterForm;
+            if (typeof closeUserSystem === 'function') window.closeUserSystem = closeUserSystem;
+            if (typeof togglePassword === 'function') window.togglePassword = togglePassword;
+        }, 0);
+    }
+})();
 
 // Función para mostrar el formulario de login
 function showLoginForm() {
-    document.getElementById('loginForm').classList.add('active');
-    document.getElementById('registerForm').classList.remove('active');
+    const loginForm = document.getElementById('loginForm');
+    const registerForm = document.getElementById('registerForm');
+    
+    if (loginForm) {
+        loginForm.classList.add('active');
+    }
+    if (registerForm) {
+        registerForm.classList.remove('active');
+    }
 }
 
 // Función para mostrar el formulario de registro
 function showRegisterForm() {
-    document.getElementById('registerForm').classList.add('active');
-    document.getElementById('loginForm').classList.remove('active');
+    const registerForm = document.getElementById('registerForm');
+    const loginForm = document.getElementById('loginForm');
+    
+    if (registerForm) {
+        registerForm.classList.add('active');
+    }
+    if (loginForm) {
+        loginForm.classList.remove('active');
+    }
 }
 
 // Función para alternar visibilidad de contraseña
@@ -5615,3 +5705,23 @@ function cargarIdiomaGuardado() {
         aplicarTraducciones(idiomaGuardado);
     }
 }
+
+// ===== ASIGNACIÓN GLOBAL DE FUNCIONES =====
+// Asegurar que todas las funciones estén disponibles globalmente
+// Esto se ejecuta después de que todas las funciones estén definidas
+(function() {
+    'use strict';
+    if (typeof window !== 'undefined') {
+        // Asignar funciones críticas
+        if (typeof toggleUserSystem === 'function') window.toggleUserSystem = toggleUserSystem;
+        if (typeof toggleChatbot === 'function') window.toggleChatbot = toggleChatbot;
+        if (typeof toggleAIChatbot === 'function') window.toggleAIChatbot = toggleAIChatbot;
+        if (typeof toggleCart === 'function') window.toggleCart = toggleCart;
+        if (typeof showLoginForm === 'function') window.showLoginForm = showLoginForm;
+        if (typeof showRegisterForm === 'function') window.showRegisterForm = showRegisterForm;
+        if (typeof closeUserSystem === 'function') window.closeUserSystem = closeUserSystem;
+        if (typeof togglePassword === 'function') window.togglePassword = togglePassword;
+        
+        console.log('✅ Funciones globales asignadas correctamente');
+    }
+})();

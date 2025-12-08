@@ -30,10 +30,12 @@
     <meta name="referrer" content="strict-origin-when-cross-origin">
     
     <!-- Favicon - Usando logo completo de Cresalia -->
-    <!-- Rutas absolutas para mejor compatibilidad móvil y PWA -->
+    <!-- Rutas absolutas y relativas para mejor compatibilidad -->
+    <link rel="icon" type="image/png" sizes="32x32" href="assets/logo/logo-cresalia.png?v=6.0">
+    <link rel="icon" type="image/png" sizes="16x16" href="assets/logo/logo-cresalia.png?v=6.0">
+    <link rel="shortcut icon" type="image/png" href="assets/logo/logo-cresalia.png?v=6.0">
     <link rel="icon" type="image/png" sizes="32x32" href="/assets/logo/logo-cresalia.png?v=6.0">
     <link rel="icon" type="image/png" sizes="16x16" href="/assets/logo/logo-cresalia.png?v=6.0">
-    <link rel="shortcut icon" type="image/png" href="/assets/logo/logo-cresalia.png?v=6.0">
     <link rel="apple-touch-icon" sizes="180x180" href="/assets/logo/logo-cresalia.png?v=6.0">
     <link rel="apple-touch-icon" sizes="152x152" href="/assets/logo/logo-cresalia.png?v=6.0">
     <link rel="apple-touch-icon" sizes="144x144" href="/assets/logo/logo-cresalia.png?v=6.0">
@@ -742,9 +744,14 @@
                 </form>
                 <div class="user-form-footer">
                     <p>¿No tienes cuenta? <a href="#" onclick="showRegisterForm()">Regístrate aquí</a></p>
-                    <button class="user-btn secondary" onclick="closeUserSystem()">
-                        <i class="fas fa-times"></i> Cerrar
-                    </button>
+                    <div style="display: flex; gap: 10px; justify-content: center; margin-top: 15px;">
+                        <button class="user-btn secondary" onclick="closeUserSystem()" style="flex: 1;">
+                            <i class="fas fa-arrow-left"></i> Volver
+                        </button>
+                        <button class="user-btn secondary" onclick="closeUserSystem()" style="flex: 1;">
+                            <i class="fas fa-times"></i> Cerrar
+                        </button>
+                    </div>
                 </div>
             </div>
 
@@ -791,9 +798,14 @@
                 </form>
                 <div class="user-form-footer">
                     <p>¿Ya tienes cuenta? <a href="#" onclick="showLoginForm()">Inicia sesión aquí</a></p>
-                    <button class="user-btn secondary" onclick="closeUserSystem()">
-                        <i class="fas fa-times"></i> Cerrar
-                    </button>
+                    <div style="display: flex; gap: 10px; justify-content: center; margin-top: 15px;">
+                        <button class="user-btn secondary" onclick="showLoginForm()" style="flex: 1;">
+                            <i class="fas fa-arrow-left"></i> Volver
+                        </button>
+                        <button class="user-btn secondary" onclick="closeUserSystem()" style="flex: 1;">
+                            <i class="fas fa-times"></i> Cerrar
+                        </button>
+                    </div>
                 </div>
             </div>
         </div>
@@ -1357,93 +1369,6 @@
         </div>
     </section>
 
-    <!-- Sistema de Usuarios -->
-    <div id="userSystem" class="user-system-overlay" style="display: none;">
-        <div class="user-system-container">
-            <!-- Formulario de Login -->
-            <form id="loginUserForm" class="user-form active">
-                <div class="user-form-header">
-                    <h3><i class="fas fa-sign-in-alt"></i> Iniciar Sesión</h3>
-                    <p>Accede a tu cuenta para ver tu historial</p>
-                </div>
-                
-                <div class="form-group">
-                    <label for="loginEmail"><i class="fas fa-envelope"></i> Email</label>
-                    <input type="email" id="loginEmail" name="loginEmail" required>
-                </div>
-                <div class="form-group">
-                    <label for="loginPassword"><i class="fas fa-lock"></i> Contraseña</label>
-                    <div class="password-input">
-                        <input type="password" id="loginPassword" name="loginPassword" required>
-                        <button type="button" class="password-toggle" onclick="togglePassword('loginPassword')">
-                            <i class="fas fa-eye"></i>
-                        </button>
-                    </div>
-                </div>
-                
-                <button type="submit" class="user-btn primary">
-                    <i class="fas fa-sign-in-alt"></i> Iniciar Sesión
-                </button>
-                
-                <div class="user-form-footer">
-                    <p>¿No tienes cuenta? <a href="#" onclick="showRegisterForm()">Regístrate aquí</a></p>
-                    <button type="button" class="user-btn secondary" onclick="closeUserSystem()">
-                        <i class="fas fa-times"></i> Cerrar
-                    </button>
-                </div>
-            </form>
-            
-            <!-- Formulario de Registro -->
-            <form id="registerUserForm" class="user-form">
-                <div class="user-form-header">
-                    <h3><i class="fas fa-user-plus"></i> Crear Cuenta</h3>
-                    <p>Regístrate para acceder a productos, servicios y guardar tu historial</p>
-                </div>
-                
-                <div class="form-group">
-                    <label for="registerName"><i class="fas fa-user"></i> Nombre Completo</label>
-                    <input type="text" id="registerName" name="registerName" required>
-                </div>
-                <div class="form-group">
-                    <label for="registerEmail"><i class="fas fa-envelope"></i> Email</label>
-                    <input type="email" id="registerEmail" name="registerEmail" required>
-                </div>
-                <div class="form-group">
-                    <label for="registerPhone"><i class="fas fa-phone"></i> Teléfono</label>
-                    <input type="tel" id="registerPhone" name="registerPhone" required>
-                </div>
-                <div class="form-group">
-                    <label for="registerPassword"><i class="fas fa-lock"></i> Contraseña</label>
-                    <div class="password-input">
-                        <input type="password" id="registerPassword" name="registerPassword" required>
-                        <button type="button" class="password-toggle" onclick="togglePassword('registerPassword')">
-                            <i class="fas fa-eye"></i>
-                        </button>
-                    </div>
-                </div>
-                <div class="form-group">
-                    <label for="registerConfirmPassword"><i class="fas fa-lock"></i> Confirmar Contraseña</label>
-                    <div class="password-input">
-                        <input type="password" id="registerConfirmPassword" name="registerConfirmPassword" required>
-                        <button type="button" class="password-toggle" onclick="togglePassword('registerConfirmPassword')">
-                            <i class="fas fa-eye"></i>
-                        </button>
-                    </div>
-                </div>
-                
-                <button type="submit" class="user-btn primary">
-                    <i class="fas fa-user-plus"></i> Crear Cuenta
-                </button>
-                
-                <div class="user-form-footer">
-                    <p>¿Ya tienes cuenta? <a href="#" onclick="showLoginForm()">Inicia sesión aquí</a></p>
-                    <button type="button" class="user-btn secondary" onclick="closeUserSystem()">
-                        <i class="fas fa-times"></i> Cerrar
-                    </button>
-                </div>
-            </form>
-        </div>
-    </div>
 
     <!-- Modal de Carrito de Compras -->
     <div class="cart-modal-overlay" id="cartModal">
@@ -1790,7 +1715,7 @@
 
     <!-- Chatbot IA -->
     <div class="ai-chatbot-container">
-        <button class="ai-chatbot-toggle" onclick="toggleAIChatbot()">
+        <button class="ai-chatbot-toggle" onclick="toggleAIChatbot(); return false;" type="button">
             <div class="ai-toggle-content">
                 <i class="fas fa-brain"></i>
                 <span class="ai-toggle-text">Cresalia AI</span>
@@ -1808,7 +1733,7 @@
                         <span class="ai-status">Asistente Inteligente</span>
                     </div>
                 </div>
-                <button class="ai-chatbot-close" onclick="toggleAIChatbot()">
+                <button class="ai-chatbot-close" onclick="toggleAIChatbot(); return false;" type="button">
                     <i class="fas fa-times"></i>
                 </button>
             </div>
@@ -1819,8 +1744,8 @@
             
             <div class="ai-chatbot-input">
                 <div class="input-container">
-                    <input type="text" id="aiChatInput" placeholder="Escribe tu consulta..." onkeypress="handleAIChatKeyPress(event)">
-                    <button onclick="sendAIMessage()" class="send-btn">
+                    <input type="text" id="aiChatInput" placeholder="Escribe tu consulta..." onkeypress="handleAIChatKeyPress(event)" onkeydown="if(event.key === 'Enter') { event.preventDefault(); sendAIMessage(); }">
+                    <button onclick="sendAIMessage(); return false;" class="send-btn" type="button">
                         <i class="fas fa-paper-plane"></i>
                     </button>
                 </div>
@@ -1830,7 +1755,7 @@
 
     <!-- Chatbot Cresalia (Servicio de Ayuda) -->
     <div class="chatbot-container">
-        <button class="chatbot-toggle" onclick="toggleChatbot()">
+        <button class="chatbot-toggle" onclick="toggleChatbot(); return false;" type="button">
             <div class="chatbot-toggle-content">
                 <i class="fas fa-headset"></i>
                 <span class="chatbot-toggle-text">Ayuda</span>
@@ -1848,7 +1773,7 @@
                         <span class="chatbot-status">En línea</span>
                     </div>
                 </div>
-                <button class="chatbot-close" onclick="toggleChatbot()">
+                <button class="chatbot-close" onclick="toggleChatbot(); return false;" type="button">
                     <i class="fas fa-times"></i>
                 </button>
             </div>
@@ -1860,7 +1785,7 @@
             <div class="chatbot-input">
                 <div class="input-container">
                     <input type="text" id="chatInput" placeholder="Escribe tu mensaje..." onkeypress="handleChatKeyPress(event)">
-                    <button onclick="sendMessage()" class="send-btn">
+                    <button onclick="sendChatbotMessage()" class="send-btn">
                         <i class="fas fa-paper-plane"></i>
                     </button>
                 </div>
@@ -1888,28 +1813,14 @@
         </div>
         <div class="chatbot-input">
             <input type="text" id="chatInput" placeholder="Escribe tu mensaje..." onkeypress="handleChatKeyPress(event)">
-            <button onclick="sendMessage()" class="send-btn">
+            <button onclick="sendChatbotMessage()" class="send-btn">
                 <i class="fas fa-paper-plane"></i>
             </button>
         </div>
     </div>
 
     <!-- AI Chatbot -->
-    <div class="ai-chatbot-container" id="aiChatbot">
-        <div class="ai-chatbot-header">
-            <h4><i class="fas fa-robot"></i> Cresalia AI</h4>
-            <button onclick="toggleAIChatbot()" class="close-ai-chatbot">&times;</button>
-        </div>
-        <div class="ai-chatbot-messages" id="aiChatbotMessages">
-            <!-- Los mensajes se cargarán dinámicamente -->
-        </div>
-        <div class="ai-chatbot-input">
-            <input type="text" id="aiChatInput" placeholder="Pregúntale a Cresalia AI..." onkeypress="handleAIChatKeyPress(event)">
-            <button onclick="sendAIMessage()" class="send-btn">
-                <i class="fas fa-paper-plane"></i>
-            </button>
-        </div>
-    </div>
+    <!-- Chatbot IA duplicado removido - usar solo el de arriba -->
 
     <!-- Botones flotantes -->
     <button class="chatbot-toggle" onclick="toggleChatbot()">
@@ -2963,17 +2874,48 @@
         // ===== CRESALIA AI CHATBOT =====
         
         // Función para enviar mensaje al AI
-        function sendAIMessage() {
-            const input = document.getElementById('aiChatInput');
-            const message = input.value.trim();
+        function sendAIMessage(inputElement) {
+            console.log('📤 sendAIMessage llamada');
             
-            if (!message) return;
+            // Si se pasa un input como parámetro, usarlo; sino buscar
+            let input = inputElement;
+            if (!input) {
+                // Buscar el input dentro del modal activo (puede estar en el body después de moverlo)
+                input = document.getElementById('aiChatInput');
+                if (!input) {
+                    // Buscar dentro del modal si existe
+                    const modal = document.getElementById('aiChatbotModal');
+                    if (modal) {
+                        input = modal.querySelector('#aiChatInput');
+                    }
+                }
+            }
+            
+            if (!input) {
+                console.error('❌ Input no encontrado');
+                return;
+            }
+            
+            // Obtener el valor del input directamente del elemento ANTES de cualquier otra operación
+            const inputValue = input.value || '';
+            const message = inputValue.trim();
+            
+            console.log('💬 Mensaje a enviar:', message);
+            console.log('📝 Valor del input antes de trim:', inputValue);
+            console.log('📝 Input element:', input);
+            console.log('📝 Input value length:', inputValue.length);
+            
+            if (!message || message.length === 0) {
+                console.log('⚠️ Mensaje vacío, no se envía');
+                console.log('🔍 Revisando input... valor raw:', `"${input.value}"`, 'length:', input.value ? input.value.length : 0);
+                return;
+            }
+            
+            // Limpiar input ANTES de agregar el mensaje para evitar problemas
+            input.value = '';
             
             // Mostrar mensaje del usuario
             addAIMessage(message, 'user');
-            
-            // Limpiar input
-            input.value = '';
             
             // Simular respuesta del AI
             setTimeout(() => {
@@ -3046,8 +2988,23 @@
         
         // Agregar mensaje al chat
         function addAIMessage(message, sender) {
-            const messagesContainer = document.getElementById('aiChatMessages');
-            if (!messagesContainer) return;
+            // Buscar en el modal que esté activo
+            let messagesContainer = document.getElementById('aiChatbotMessages');
+            if (!messagesContainer) {
+                // Buscar dentro del modal si existe
+                const modal = document.getElementById('aiChatbotModal');
+                if (modal) {
+                    messagesContainer = modal.querySelector('#aiChatbotMessages');
+                }
+            }
+            if (!messagesContainer) {
+                // Fallback al otro ID por si acaso
+                messagesContainer = document.getElementById('aiChatMessages');
+            }
+            if (!messagesContainer) {
+                console.error('❌ Contenedor de mensajes del chatbot IA no encontrado');
+                return;
+            }
             
             const messageDiv = document.createElement('div');
             messageDiv.className = `ai-message ai-message-${sender}`;
@@ -3072,12 +3029,23 @@
             
             messagesContainer.appendChild(messageDiv);
             messagesContainer.scrollTop = messagesContainer.scrollHeight;
+            
+            console.log('✅ Mensaje agregado al contenedor:', messagesContainer.children.length, 'mensajes totales');
+            console.log('📝 Último mensaje:', messageDiv.textContent.substring(0, 50));
         }
         
         // Manejar tecla Enter en el input
         function handleAIChatKeyPress(event) {
-            if (event.key === 'Enter') {
-                sendAIMessage();
+            console.log('⌨️ Tecla presionada:', event.key, 'keyCode:', event.keyCode);
+            if (event.key === 'Enter' || event.keyCode === 13) {
+                event.preventDefault();
+                event.stopPropagation();
+                console.log('✅ Enter detectado, enviando mensaje...');
+                // Pasar el input directamente desde el evento
+                const input = event.target || event.srcElement;
+                console.log('📝 Input del evento:', input, 'valor:', input.value);
+                sendAIMessage(input);
+                return false;
             }
         }
         
@@ -3230,7 +3198,463 @@
             container.appendChild(messageDiv);
             container.scrollTop = container.scrollHeight;
         }
+        
+        // ===== FUNCIONES PARA ABRIR/CERRAR MODALES =====
+        
+        // Función para abrir/cerrar el chatbot IA
+        function toggleAIChatbot() {
+            console.log('🤖 toggleAIChatbot llamada');
+            try {
+                const modal = document.getElementById('aiChatbotModal');
+                if (!modal) {
+                    console.error('❌ Modal de chatbot IA no encontrado');
+                    return;
+                }
+                
+                console.log('✅ Modal encontrado:', modal);
+                const isActive = modal.classList.contains('active') || modal.style.display === 'flex' || window.getComputedStyle(modal).display === 'flex';
+                
+                // Detectar si es móvil/tablet
+                const isMobile = window.innerWidth <= 768;
+                
+                if (isActive) {
+                    console.log('🔄 Cerrando modal IA');
+                    // Cerrar modal
+                    modal.classList.remove('active');
+                    modal.style.display = 'none';
+                    modal.style.opacity = '0';
+                    modal.style.visibility = 'hidden';
+                    
+                    // Remover overlay si existe
+                    const overlay = document.getElementById('chatbotOverlay');
+                    if (overlay) {
+                        overlay.style.display = 'none';
+                    }
+                    
+                    // Restaurar scroll del body completamente
+                    document.body.style.overflow = '';
+                    document.body.style.position = '';
+                    document.body.style.height = '';
+                    document.body.classList.remove('modal-open');
+                    // Asegurar que se restaure el scroll en móvil
+                    if (isMobile) {
+                        document.documentElement.style.overflow = '';
+                        document.documentElement.style.position = '';
+                        document.documentElement.style.height = '';
+                        document.documentElement.classList.remove('modal-open');
+                        // Forzar recálculo del layout
+                        window.scrollTo(0, window.scrollY);
+                    }
+                } else {
+                    console.log('🔄 Abriendo modal IA');
+                    // Cerrar el otro chatbot si está abierto
+                    const helpModal = document.getElementById('chatbotModal');
+                    if (helpModal) {
+                        helpModal.classList.remove('active');
+                        helpModal.style.display = 'none';
+                        helpModal.style.opacity = '0';
+                        helpModal.style.visibility = 'hidden';
+                        // Restaurar scroll si se estaba bloqueado
+                        document.body.style.overflow = '';
+                        document.body.style.position = '';
+                    }
+                    
+                    // Mover el modal fuera del contenedor si está dentro para evitar problemas de overflow
+                    const container = modal.parentElement;
+                    if (container && container.classList.contains('ai-chatbot-container')) {
+                        document.body.appendChild(modal);
+                        console.log('✅ Modal movido fuera del contenedor al body');
+                    }
+                    
+                    // Estilos responsivos según el tamaño de pantalla
+                    let modalStyles;
+                    if (isMobile) {
+                        // En móvil: mini ventana pequeña centrada (similar a feedbacks) - TAMAÑO FIJO IGUAL PARA AMBOS
+                        modalStyles = 'display: flex !important; flex-direction: column !important; opacity: 1 !important; visibility: visible !important; z-index: 10001 !important; position: fixed !important; top: 50% !important; left: 50% !important; transform: translate(-50%, -50%) !important; width: min(90vw, 400px) !important; max-width: 400px !important; height: min(70vh, 500px) !important; max-height: 500px !important; background: white !important; border-radius: 25px !important; box-shadow: 0 20px 60px rgba(0,0,0,0.3) !important; pointer-events: all !important; overflow: hidden !important;';
+                        // En móvil, NO bloquear el scroll del body para evitar problemas
+                        // El modal tiene su propio scroll interno
+                    } else {
+                        // En desktop: tamaño fijo
+                        modalStyles = 'display: flex !important; flex-direction: column !important; opacity: 1 !important; visibility: visible !important; z-index: 10001 !important; position: fixed !important; bottom: 80px !important; right: 20px !important; width: 380px !important; height: 500px !important; max-width: 380px !important; max-height: 500px !important; background: white !important; border-radius: 20px !important; box-shadow: 0 20px 60px rgba(0,0,0,0.3) !important; transform: scale(1) translateY(0) !important; pointer-events: all !important; overflow: hidden !important;';
+                        // En desktop sí podemos bloquear el scroll
+                        document.body.style.overflow = 'hidden';
+                    }
+                    
+                    // Abrir modal
+                    modal.classList.add('active');
+                    modal.setAttribute('style', modalStyles);
+                    
+                    console.log('✅ Estilos aplicados, display:', window.getComputedStyle(modal).display);
+                    console.log('✅ Posición:', window.getComputedStyle(modal).position, window.getComputedStyle(modal).bottom, window.getComputedStyle(modal).right);
+                    console.log('✅ Opacidad:', window.getComputedStyle(modal).opacity);
+                    console.log('✅ Visibility:', window.getComputedStyle(modal).visibility);
+                    console.log('✅ Z-index:', window.getComputedStyle(modal).zIndex);
+                    console.log('✅ Transform:', window.getComputedStyle(modal).transform);
+                    
+                    // Enfocar el input cuando se abre y agregar event listeners - buscar dentro del modal
+                    setTimeout(() => {
+                        // Remover listeners anteriores si existen para evitar duplicados
+                        const input = modal.querySelector('#aiChatInput');
+                        if (input) {
+                            // Clonar el input para remover todos los listeners
+                            const newInput = input.cloneNode(true);
+                            input.parentNode.replaceChild(newInput, input);
+                            
+                            // Ahora trabajar con el nuevo input
+                            const cleanInput = modal.querySelector('#aiChatInput');
+                            cleanInput.focus();
+                            
+                            // Agregar UN SOLO event listener para Enter directamente al input
+                            cleanInput.addEventListener('keydown', function(e) {
+                                if (e.key === 'Enter' || e.keyCode === 13) {
+                                    e.preventDefault();
+                                    e.stopPropagation();
+                                    console.log('⌨️ Enter detectado en listener directo');
+                                    console.log('📝 Input value en listener:', this.value);
+                                    // Pasar el input directamente
+                                    sendAIMessage(this);
+                                    return false;
+                                }
+                            }, { once: false });
+                            
+                            // Agregar event listener al botón de enviar (remover duplicados primero)
+                            const sendButton = modal.querySelector('.send-btn');
+                            if (sendButton) {
+                                // Remover listeners anteriores
+                                const newButton = sendButton.cloneNode(true);
+                                sendButton.parentNode.replaceChild(newButton, sendButton);
+                                
+                                const cleanButton = modal.querySelector('.send-btn');
+                                cleanButton.addEventListener('click', function(e) {
+                                    e.preventDefault();
+                                    e.stopPropagation();
+                                    console.log('🔘 Botón de enviar clickeado');
+                                    console.log('📝 Input value desde botón:', cleanInput.value);
+                                    // Pasar el input directamente
+                                    sendAIMessage(cleanInput);
+                                    return false;
+                                }, { once: false });
+                            }
+                        }
+                    }, 300);
+                    
+                    // Agregar mensaje de bienvenida si está vacío - buscar dentro del modal
+                    setTimeout(() => {
+                        const messagesContainer = modal.querySelector('#aiChatbotMessages');
+                        console.log('🔍 Buscando contenedor de mensajes:', messagesContainer);
+                        if (messagesContainer) {
+                            console.log('✅ Contenedor encontrado, hijos actuales:', messagesContainer.children.length);
+                            if (messagesContainer.children.length === 0) {
+                                console.log('📝 Agregando mensaje de bienvenida...');
+                                const welcomeMessage = generateAIResponse('hola');
+                                addAIMessage(welcomeMessage, 'ai');
+                                console.log('✅ Mensaje de bienvenida agregado, hijos ahora:', messagesContainer.children.length);
+                            } else {
+                                console.log('ℹ️ Ya hay mensajes en el contenedor');
+                            }
+                        } else {
+                            console.error('❌ No se encontró el contenedor de mensajes dentro del modal');
+                        }
+                    }, 100);
+                }
+            } catch (error) {
+                console.error('❌ Error en toggleAIChatbot:', error);
+            }
+        }
+        
+        // Función para abrir/cerrar el chatbot de ayuda/soporte
+        function toggleChatbot() {
+            console.log('💬 toggleChatbot llamada');
+            try {
+                const modal = document.getElementById('chatbotModal');
+                if (!modal) {
+                    console.error('❌ Modal de chatbot de ayuda no encontrado');
+                    return;
+                }
+                
+                console.log('✅ Modal encontrado:', modal);
+                const isActive = modal.classList.contains('active') || modal.style.display === 'flex' || window.getComputedStyle(modal).display === 'flex';
+                
+                // Detectar si es móvil/tablet
+                const isMobile = window.innerWidth <= 768;
+                
+                if (isActive) {
+                    console.log('🔄 Cerrando modal de ayuda');
+                    // Cerrar modal
+                    modal.classList.remove('active');
+                    modal.style.display = 'none';
+                    modal.style.opacity = '0';
+                    modal.style.visibility = 'hidden';
+                    
+                    // Remover overlay si existe
+                    const overlay = document.getElementById('chatbotHelpOverlay');
+                    if (overlay) {
+                        overlay.style.display = 'none';
+                    }
+                    
+                    // Restaurar scroll del body completamente
+                    document.body.style.overflow = '';
+                    document.body.style.position = '';
+                    document.body.style.height = '';
+                    document.body.classList.remove('modal-open');
+                    // Asegurar que se restaure el scroll en móvil
+                    if (isMobile) {
+                        document.documentElement.style.overflow = '';
+                        document.documentElement.style.position = '';
+                        document.documentElement.style.height = '';
+                        document.documentElement.classList.remove('modal-open');
+                        // Forzar recálculo del layout
+                        window.scrollTo(0, window.scrollY);
+                    }
+                } else {
+                    console.log('🔄 Abriendo modal de ayuda');
+                    // Cerrar el otro chatbot si está abierto
+                    const aiModal = document.getElementById('aiChatbotModal');
+                    if (aiModal) {
+                        aiModal.classList.remove('active');
+                        aiModal.style.display = 'none';
+                        aiModal.style.opacity = '0';
+                        aiModal.style.visibility = 'hidden';
+                        // Restaurar scroll si se estaba bloqueado
+                        document.body.style.overflow = '';
+                        document.body.style.position = '';
+                    }
+                    
+                    // Mover el modal fuera del contenedor si está dentro para evitar problemas de overflow
+                    const container = modal.parentElement;
+                    if (container && container.classList.contains('chatbot-container')) {
+                        document.body.appendChild(modal);
+                        console.log('✅ Modal movido fuera del contenedor al body');
+                    }
+                    
+                    // Estilos responsivos según el tamaño de pantalla
+                    let modalStyles;
+                    if (isMobile) {
+                        // Crear overlay de fondo oscuro (similar a feedbacks)
+                        let overlay = document.getElementById('chatbotHelpOverlay');
+                        if (!overlay) {
+                            overlay = document.createElement('div');
+                            overlay.id = 'chatbotHelpOverlay';
+                            overlay.style.cssText = 'position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.7); backdrop-filter: blur(8px); z-index: 10000; display: flex; justify-content: center; align-items: center;';
+                            overlay.onclick = function() { toggleChatbot(); };
+                            document.body.appendChild(overlay);
+                        }
+                        overlay.style.display = 'flex';
+                        
+                        // En móvil: mini ventana pequeña centrada (similar a feedbacks) - TAMAÑO FIJO IGUAL PARA AMBOS
+                        modalStyles = 'display: flex !important; flex-direction: column !important; opacity: 1 !important; visibility: visible !important; z-index: 10001 !important; position: fixed !important; top: 50% !important; left: 50% !important; transform: translate(-50%, -50%) !important; width: min(90vw, 400px) !important; max-width: 400px !important; height: min(70vh, 500px) !important; max-height: 500px !important; background: white !important; border-radius: 25px !important; box-shadow: 0 20px 60px rgba(0,0,0,0.3) !important; pointer-events: all !important; overflow: hidden !important;';
+                        // En móvil, NO bloquear el scroll del body para evitar problemas
+                        // El modal tiene su propio scroll interno
+                    } else {
+                        // En desktop: tamaño fijo
+                        modalStyles = 'display: flex !important; flex-direction: column !important; opacity: 1 !important; visibility: visible !important; z-index: 10001 !important; position: fixed !important; bottom: 80px !important; right: 20px !important; width: 380px !important; height: 500px !important; max-width: 380px !important; max-height: 500px !important; background: white !important; border-radius: 20px !important; box-shadow: 0 20px 60px rgba(0,0,0,0.3) !important; transform: scale(1) translateY(0) !important; pointer-events: all !important; overflow: hidden !important;';
+                        // En desktop sí podemos bloquear el scroll
+                        document.body.style.overflow = 'hidden';
+                    }
+                    
+                    // Abrir modal
+                    modal.classList.add('active');
+                    modal.setAttribute('style', modalStyles);
+                    
+                    console.log('✅ Estilos aplicados, display:', window.getComputedStyle(modal).display);
+                    console.log('✅ Posición:', window.getComputedStyle(modal).position, window.getComputedStyle(modal).bottom, window.getComputedStyle(modal).right);
+                    console.log('✅ Opacidad:', window.getComputedStyle(modal).opacity);
+                    console.log('✅ Visibility:', window.getComputedStyle(modal).visibility);
+                    console.log('✅ Z-index:', window.getComputedStyle(modal).zIndex);
+                    console.log('✅ Transform:', window.getComputedStyle(modal).transform);
+                    
+                    // Enfocar el input cuando se abre - buscar dentro del modal
+                    setTimeout(() => {
+                        const input = modal.querySelector('#chatInput');
+                        if (input) {
+                            input.focus();
+                        }
+                    }, 300);
+                    
+                    // Agregar mensaje de bienvenida si está vacío - buscar dentro del modal
+                    const messagesContainer = modal.querySelector('#chatbotMessages');
+                    if (messagesContainer && messagesContainer.children.length === 0) {
+                        const welcomeMessage = generateHelpResponse('hola', 'help');
+                        addHelpMessage(welcomeMessage, 'help', messagesContainer);
+                    }
+                }
+            } catch (error) {
+                console.error('❌ Error en toggleChatbot:', error);
+            }
+        }
+        
+        // Función para manejar tecla Enter en el input del chatbot de ayuda
+        function handleChatKeyPress(event) {
+            if (event.key === 'Enter') {
+                sendChatbotMessage();
+            }
+        }
+        
+        // Función para enviar mensaje en el chatbot de ayuda (sin parámetros)
+        function sendChatbotMessage() {
+            // Buscar el modal activo primero
+            const modal = document.getElementById('chatbotModal');
+            if (!modal) return;
+            
+            // Buscar elementos dentro del modal específico
+            const input = modal.querySelector('#chatInput');
+            const messagesContainer = modal.querySelector('#chatbotMessages');
+            
+            if (!input || !messagesContainer) return;
+            
+            const message = input.value.trim();
+            if (!message) return;
+            
+            // Mostrar mensaje del usuario
+            addHelpMessage(message, 'user', messagesContainer);
+            
+            // Limpiar input
+            input.value = '';
+            
+            // Simular respuesta del servicio de ayuda
+            setTimeout(() => {
+                const response = generateHelpResponse(message, 'help');
+                addHelpMessage(response, 'help', messagesContainer);
+            }, 1000);
+        }
     </script>
+    
+    <!-- Asegurar que las funciones de chatbot estén disponibles globalmente -->
+    <script>
+        // Asegurar que las funciones estén disponibles cuando el DOM esté listo
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('✅ DOM cargado, funciones de chatbot disponibles');
+            
+            // Verificar que los modales existan
+            const aiModal = document.getElementById('aiChatbotModal');
+            const helpModal = document.getElementById('chatbotModal');
+            
+            if (aiModal) {
+                console.log('✅ Modal de chatbot IA encontrado:', aiModal);
+            } else {
+                console.error('❌ Modal de chatbot IA NO encontrado');
+            }
+            
+            if (helpModal) {
+                console.log('✅ Modal de chatbot de ayuda encontrado:', helpModal);
+            } else {
+                console.error('❌ Modal de chatbot de ayuda NO encontrado');
+            }
+            
+            // Hacer las funciones disponibles globalmente
+            window.toggleAIChatbot = toggleAIChatbot;
+            window.toggleChatbot = toggleChatbot;
+            window.handleChatKeyPress = handleChatKeyPress;
+            window.sendChatbotMessage = sendChatbotMessage;
+            // Funciones del chatbot IA
+            window.sendAIMessage = sendAIMessage;
+            window.handleAIChatKeyPress = handleAIChatKeyPress;
+            window.addAIMessage = addAIMessage;
+            
+            console.log('✅ Funciones de chatbot asignadas a window');
+            
+            // Ajustar modal al redimensionar ventana (especialmente útil en móvil)
+            let resizeTimeout;
+            window.addEventListener('resize', function() {
+                clearTimeout(resizeTimeout);
+                resizeTimeout = setTimeout(function() {
+                    const aiModal = document.getElementById('aiChatbotModal');
+                    const helpModal = document.getElementById('chatbotModal');
+                    const isMobile = window.innerWidth <= 768;
+                    
+                    // Si un modal está abierto, ajustar sus estilos
+                    if (aiModal && (aiModal.classList.contains('active') || window.getComputedStyle(aiModal).display === 'flex')) {
+                        if (isMobile) {
+                            aiModal.setAttribute('style', 'display: flex !important; flex-direction: column !important; opacity: 1 !important; visibility: visible !important; z-index: 10001 !important; position: fixed !important; top: 50% !important; left: 50% !important; transform: translate(-50%, -50%) !important; width: min(90vw, 400px) !important; max-width: 400px !important; height: min(70vh, 500px) !important; max-height: 500px !important; background: white !important; border-radius: 25px !important; box-shadow: 0 20px 60px rgba(0,0,0,0.3) !important; pointer-events: all !important; overflow: hidden !important;');
+                        } else {
+                            aiModal.setAttribute('style', 'display: flex !important; flex-direction: column !important; opacity: 1 !important; visibility: visible !important; z-index: 10001 !important; position: fixed !important; bottom: 80px !important; right: 20px !important; width: 380px !important; height: 500px !important; max-width: 380px !important; max-height: 500px !important; background: white !important; border-radius: 20px !important; box-shadow: 0 20px 60px rgba(0,0,0,0.3) !important; transform: scale(1) translateY(0) !important; pointer-events: all !important; overflow: hidden !important;');
+                        }
+                    }
+                    
+                    if (helpModal && (helpModal.classList.contains('active') || window.getComputedStyle(helpModal).display === 'flex')) {
+                        if (isMobile) {
+                            helpModal.setAttribute('style', 'display: flex !important; flex-direction: column !important; opacity: 1 !important; visibility: visible !important; z-index: 10001 !important; position: fixed !important; top: 50% !important; left: 50% !important; transform: translate(-50%, -50%) !important; width: min(90vw, 400px) !important; max-width: 400px !important; height: min(70vh, 500px) !important; max-height: 500px !important; background: white !important; border-radius: 25px !important; box-shadow: 0 20px 60px rgba(0,0,0,0.3) !important; pointer-events: all !important; overflow: hidden !important;');
+                        } else {
+                            helpModal.setAttribute('style', 'display: flex !important; flex-direction: column !important; opacity: 1 !important; visibility: visible !important; z-index: 10001 !important; position: fixed !important; bottom: 80px !important; right: 20px !important; width: 380px !important; height: 500px !important; max-width: 380px !important; max-height: 500px !important; background: white !important; border-radius: 20px !important; box-shadow: 0 20px 60px rgba(0,0,0,0.3) !important; transform: scale(1) translateY(0) !important; pointer-events: all !important; overflow: hidden !important;');
+                        }
+                    }
+                }, 100);
+            });
+        });
+    </script>
+    
+    <!-- Estilos CSS para chatbot en móvil/tablet -->
+    <style>
+        /* Asegurar que el modal no se corte y el scroll funcione en móvil */
+        @media (max-width: 768px) {
+            .ai-chatbot-modal,
+            .chatbot-modal {
+                /* Mini ventana pequeña centrada (similar a feedbacks) - TAMAÑO FIJO IGUAL PARA AMBOS */
+                position: fixed !important;
+                top: 50% !important;
+                left: 50% !important;
+                transform: translate(-50%, -50%) !important;
+                width: min(90vw, 400px) !important;
+                max-width: 400px !important;
+                height: min(70vh, 500px) !important;
+                max-height: 500px !important;
+                bottom: auto !important;
+                right: auto !important;
+                border-radius: 25px !important;
+                overflow: hidden !important;
+                box-shadow: 0 20px 60px rgba(0,0,0,0.3) !important;
+            }
+            
+            /* Asegurar que el contenedor de mensajes tenga scroll interno correcto */
+            .ai-chatbot-messages,
+            .chatbot-messages {
+                flex: 1 !important;
+                overflow-y: auto !important;
+                overflow-x: hidden !important;
+                min-height: 0 !important;
+                max-height: none !important;
+                height: auto !important;
+                -webkit-overflow-scrolling: touch !important; /* Scroll suave en iOS */
+            }
+            
+            /* Asegurar que el header y input no se corten */
+            .ai-chatbot-header,
+            .chatbot-header {
+                flex-shrink: 0 !important;
+            }
+            
+            .ai-chatbot-input,
+            .chatbot-input {
+                flex-shrink: 0 !important;
+            }
+            
+            /* Prevenir que el body se bloquee en móvil cuando el modal está abierto */
+            body.modal-open {
+                overflow: visible !important;
+                position: relative !important;
+            }
+            
+            html.modal-open {
+                overflow: visible !important;
+            }
+        }
+        
+        /* Para tablets */
+        @media (min-width: 769px) and (max-width: 1024px) {
+            .ai-chatbot-modal,
+            .chatbot-modal {
+                max-width: 90vw !important;
+                max-height: 80vh !important;
+                width: 90vw !important;
+                height: 80vh !important;
+            }
+            
+            .ai-chatbot-messages,
+            .chatbot-messages {
+                max-height: none !important;
+            }
+        }
+    </style>
     
     <!-- ===== SISTEMAS ADICIONALES ===== -->
     
@@ -3880,31 +4304,31 @@
     <script>
         // Solicitar permisos de notificación y ubicación después de cargar la página
         document.addEventListener('DOMContentLoaded', function() {
-            // NO solicitar permisos aquí - el sistema centralizado lo hace
-            // Solo verificar si el sistema de notificaciones está cargado
-            if (window.sistemaNotificaciones) {
-                console.log('✅ Sistema de notificaciones push cargado');
-            }
-                
-                // Solicitar permisos de ubicación para calcular distancias a tiendas
-                if ('geolocation' in navigator) {
-                    console.log('📍 Geolocalización disponible');
-                    // Solicitar ubicación cuando se carguen las tiendas para mostrar distancias
-                    setTimeout(() => {
-                        if (typeof obtenerUbicacionUsuarioGlobal === 'function') {
-                            obtenerUbicacionUsuarioGlobal().then(ubicacion => {
-                                if (ubicacion) {
-                                    console.log('✅ Ubicación obtenida para calcular distancias');
-                                } else {
-                                    console.log('ℹ️ Ubicación no disponible, las distancias no se mostrarán');
-                                }
-                            }).catch(err => {
-                                console.log('ℹ️ Permiso de ubicación no concedido:', err.message);
-                            });
-                        }
-                    }, 2000); // Esperar 2 segundos después de cargar
+            // Esperar a que todos los scripts se carguen
+            setTimeout(() => {
+                // El sistema de notificaciones se inicializa automáticamente en sistema-notificaciones-push.js
+                // Solo verificar que esté disponible
+                if (window.sistemaNotificaciones) {
+                    console.log('✅ Sistema de notificaciones push disponible');
+                    // El sistema ya solicita permisos automáticamente en su inicialización
                 }
-            }, 3000); // Esperar 3 segundos después de cargar
+                
+                // Solicitar permisos de ubicación para alertas de emergencia
+                if (typeof SistemaAlertasEmergenciaGlobal !== 'undefined' && window.sistemaAlertasEmergenciaGlobal) {
+                    console.log('📍 Solicitando permisos de ubicación para alertas de emergencia...');
+                    // Esperar un poco más para que el sistema se inicialice completamente
+                    setTimeout(() => {
+                        window.sistemaAlertasEmergenciaGlobal.solicitarUbicacionParaEmergencias();
+                    }, 3000);
+                } else if (typeof SistemaAlertasEmergenciaGlobal !== 'undefined') {
+                    // Si el sistema existe pero no está en window, inicializarlo
+                    window.sistemaAlertasEmergenciaGlobal = new SistemaAlertasEmergenciaGlobal();
+                    window.sistemaAlertasEmergenciaGlobal.inicializar();
+                    setTimeout(() => {
+                        window.sistemaAlertasEmergenciaGlobal.solicitarUbicacionParaEmergencias();
+                    }, 1000);
+                }
+            }, 4000); // Esperar 4 segundos después de cargar la página para mejor UX
         });
     </script>
     

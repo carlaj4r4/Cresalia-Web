@@ -198,12 +198,21 @@ const SistemaFeedbacksGeneral = {
                     <i class="fas fa-comment-dots"></i> Dejar Feedback
                 </h2>
                 <button id="cerrarFeedbackModal" style="
-                    background: none;
+                    background: rgba(107, 114, 128, 0.1);
                     border: none;
-                    font-size: 24px;
+                    width: 60px;
+                    height: 60px;
+                    border-radius: 50%;
+                    font-size: 48px;
+                    font-weight: bold;
                     color: #6B7280;
                     cursor: pointer;
-                    padding: 5px 10px;
+                    padding: 0;
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    line-height: 1;
+                    transition: all 0.3s ease;
                 ">×</button>
             </div>
             
@@ -324,6 +333,10 @@ const SistemaFeedbacksGeneral = {
                 }
                 #feedbackModal button:hover {
                     opacity: 0.8;
+                }
+                #cerrarFeedbackModal:hover {
+                    background: rgba(107, 114, 128, 0.2) !important;
+                    transform: rotate(90deg) scale(1.1);
                 }
                 #feedbackModal select:focus,
                 #feedbackModal input:focus,
