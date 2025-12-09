@@ -96,21 +96,21 @@ Por qué es ético:
 **Proyección Realista:**
 ```
 Año 1:
-100 tiendas × $29 = $2,900/mes
-50 tiendas × $79 = $3,950/mes
-Total: $6,850/mes = $82,200/año
+100 tiendas × $29,000 ARS = $2,900,000 ARS/mes
+50 tiendas × $79,000 ARS = $3,950,000 ARS/mes
+Total: $6,850,000 ARS/mes = $82,200,000 ARS/año
 
 Año 2:
-300 tiendas × $29 = $8,700/mes
-150 tiendas × $79 = $11,850/mes
-5 enterprise × $800 = $4,000/mes
-Total: $24,550/mes = $294,600/año
+300 tiendas × $29,000 ARS = $8,700,000 ARS/mes
+150 tiendas × $79,000 ARS = $11,850,000 ARS/mes
+5 enterprise × $800,000 ARS = $4,000,000 ARS/mes
+Total: $24,550,000 ARS/mes = $294,600,000 ARS/año
 
 Año 3:
-500 tiendas × $29 = $14,500/mes
-300 tiendas × $79 = $23,700/mes
-15 enterprise × $1,000 = $15,000/mes
-Total: $53,200/mes = $638,400/año
+500 tiendas × $29,000 ARS = $14,500,000 ARS/mes
+300 tiendas × $79,000 ARS = $23,700,000 ARS/mes
+15 enterprise × $1,000,000 ARS = $15,000,000 ARS/mes
+Total: $53,200,000 ARS/mes = $638,400,000 ARS/año
 ```
 
 ---
