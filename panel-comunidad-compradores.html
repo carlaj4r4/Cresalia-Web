@@ -922,6 +922,167 @@
             <p>Esta comunidad está diseñada para proteger a los compradores. Puedes reportar vendedores problemáticos y bloquearlos individualmente. Con 3+ reportes de diferentes compradores, el administrador procederá a tomar medidas.</p>
         </div>
         
+        <!-- Sección: Foro de la Comunidad -->
+        <div class="foro-comunidad-section" style="background: white; border-radius: 15px; padding: 30px; margin-top: 30px; box-shadow: 0 10px 30px rgba(0,0,0,0.2);">
+            <div class="foro-header" style="text-align: center; margin-bottom: 30px;">
+                <h2 style="color: #333; margin-bottom: 10px;">
+                    <i class="fas fa-comments" style="color: #667eea;"></i> 
+                    Foro de la Comunidad
+                </h2>
+                <p style="color: #666; font-size: 1.1rem; line-height: 1.8;">
+                    Un espacio profesional y respetuoso para compartir experiencias de compra, consejos y apoyarnos mutuamente como consumidores informados.
+                </p>
+                <div class="info-box" style="background: linear-gradient(135deg, rgba(102, 126, 234, 0.1), rgba(124, 58, 237, 0.1)); border-left: 4px solid #667eea; padding: 20px; border-radius: 10px; margin-top: 20px;">
+                    <p style="margin: 0; line-height: 1.8; color: #4c1d95;">
+                        <strong>💜 Nuestro compromiso:</strong> Este espacio está diseñado para el crecimiento y el apoyo mutuo. 
+                        Mantengamos un ambiente respetuoso, empático y constructivo. Todas las opiniones son válidas cuando se expresan con respeto.
+                    </p>
+                </div>
+            </div>
+            
+            <!-- Botones de acción -->
+            <div style="display: flex; gap: 15px; justify-content: center; margin-bottom: 30px; flex-wrap: wrap;">
+                <button id="btn-crear-post" class="btn-primary" style="padding: 15px 30px; font-size: 1.1rem; border-radius: 25px;">
+                    <i class="fas fa-plus-circle"></i> Crear Publicación
+                </button>
+                <button id="btn-mi-historial" class="btn-secondary" style="padding: 15px 30px; font-size: 1.1rem; border-radius: 25px;" onclick="mostrarHistorialForo()">
+                    <i class="fas fa-history"></i> Mi Historial
+                </button>
+            </div>
+            
+            <!-- Contenedor de posts -->
+            <div id="posts-container" style="min-height: 200px;">
+                <div class="empty-state" style="text-align: center; padding: 40px; color: #64748b;">
+                    <i class="fas fa-spinner fa-spin" style="font-size: 3rem; margin-bottom: 15px; opacity: 0.5;"></i>
+                    <p>Cargando publicaciones...</p>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Modal: Crear Post -->
+        <div id="modal-crear-post" class="modal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); z-index: 10000; align-items: center; justify-content: center;">
+            <div class="modal-content" style="background: white; border-radius: 20px; padding: 30px; max-width: 700px; width: 90%; max-height: 90vh; overflow-y: auto; box-shadow: 0 20px 60px rgba(0,0,0,0.3);">
+                <div class="modal-header" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px; padding-bottom: 20px; border-bottom: 2px solid #E5E7EB;">
+                    <h3 style="color: #333; margin: 0;">
+                        <i class="fas fa-edit" style="color: #667eea;"></i> 
+                        Crear Publicación
+                    </h3>
+                    <button id="cerrar-form-post" class="close-btn" style="background: none; border: none; font-size: 28px; color: #666; cursor: pointer; padding: 0; width: 35px; height: 35px; display: flex; align-items: center; justify-content: center; border-radius: 50%; transition: all 0.3s;">
+                        &times;
+                    </button>
+                </div>
+                
+                <form id="form-crear-post">
+                    <div class="form-group" style="margin-bottom: 20px;">
+                        <label style="display: block; margin-bottom: 8px; color: #333; font-weight: 600;">
+                            <i class="fas fa-user-circle" style="color: #667eea;"></i> 
+                            Alias (opcional)
+                        </label>
+                        <input type="text" id="autor-alias" placeholder="Cómo querés que te identifiquen (opcional)" 
+                               style="width: 100%; padding: 12px; border: 2px solid #E5E7EB; border-radius: 10px; font-size: 1rem;">
+                        <small style="color: #6b7280; font-size: 0.85rem; display: block; margin-top: 5px;">
+                            Si no ingresás un alias, aparecerás como "Anónimo". Tu privacidad está protegida.
+                        </small>
+                    </div>
+                    
+                    <div class="form-group" style="margin-bottom: 20px;">
+                        <label style="display: block; margin-bottom: 8px; color: #333; font-weight: 600;">
+                            <i class="fas fa-heading" style="color: #667eea;"></i> 
+                            Título (opcional)
+                        </label>
+                        <input type="text" id="post-titulo" placeholder="Título de tu publicación (opcional)" 
+                               style="width: 100%; padding: 12px; border: 2px solid #E5E7EB; border-radius: 10px; font-size: 1rem;">
+                    </div>
+                    
+                    <div class="form-group" style="margin-bottom: 25px;">
+                        <label style="display: block; margin-bottom: 8px; color: #333; font-weight: 600;">
+                            <i class="fas fa-comment-alt" style="color: #667eea;"></i> 
+                            Contenido <span style="color: #ef4444;">*</span>
+                        </label>
+                        <textarea id="post-contenido" rows="8" required 
+                                  placeholder="Compartí tu experiencia de compra, pregunta o consejo de manera profesional y respetuosa. Este espacio es para apoyarnos mutuamente como consumidores informados."
+                                  style="width: 100%; padding: 12px; border: 2px solid #E5E7EB; border-radius: 10px; font-size: 1rem; resize: vertical; font-family: inherit;"></textarea>
+                        <small style="color: #6b7280; font-size: 0.85rem; display: block; margin-top: 5px;">
+                            Mínimo 10 caracteres. Recordá mantener un tono profesional y respetuoso.
+                        </small>
+                    </div>
+                    
+                    <div class="info-box" style="background: linear-gradient(135deg, rgba(16, 185, 129, 0.1), rgba(5, 150, 105, 0.1)); border-left: 4px solid #10b981; padding: 15px; border-radius: 10px; margin-bottom: 25px;">
+                        <p style="margin: 0; line-height: 1.8; color: #065f46; font-size: 0.9rem;">
+                            <i class="fas fa-lightbulb"></i> 
+                            <strong>Tip:</strong> Podés compartir experiencias de compra, pedir recomendaciones, ofrecer consejos o simplemente expresar tus pensamientos. 
+                            Este es un espacio seguro para el crecimiento como consumidor informado.
+                        </p>
+                    </div>
+                    
+                    <div style="display: flex; gap: 15px; justify-content: center;">
+                        <button type="submit" class="btn-primary" style="flex: 1; padding: 15px; font-size: 1.1rem; border-radius: 25px;">
+                            <i class="fas fa-paper-plane"></i> Publicar
+                        </button>
+                        <button type="button" id="cancelar-form-post" class="btn-secondary" style="flex: 1; padding: 15px; font-size: 1.1rem; border-radius: 25px;">
+                            Cancelar
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+        
+        <!-- Modal: Mi Historial -->
+        <div id="modal-mi-historial" class="modal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); z-index: 10000; align-items: center; justify-content: center;">
+            <div class="modal-content" style="background: white; border-radius: 20px; padding: 30px; max-width: 900px; width: 90%; max-height: 90vh; overflow-y: auto; box-shadow: 0 20px 60px rgba(0,0,0,0.3);">
+                <div class="modal-header" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px; padding-bottom: 20px; border-bottom: 2px solid #E5E7EB;">
+                    <h3 style="color: #333; margin: 0;">
+                        <i class="fas fa-history" style="color: #667eea;"></i> 
+                        Mi Historial en el Foro
+                    </h3>
+                    <button onclick="cerrarHistorialForo()" class="close-btn" style="background: none; border: none; font-size: 28px; color: #666; cursor: pointer; padding: 0; width: 35px; height: 35px; display: flex; align-items: center; justify-content: center; border-radius: 50%; transition: all 0.3s;">
+                        &times;
+                    </button>
+                </div>
+                
+                <!-- Tabs del historial -->
+                <div class="historial-tabs" style="display: flex; gap: 10px; margin-bottom: 25px; border-bottom: 2px solid #E5E7EB;">
+                    <button class="historial-tab-btn active" data-tab="mis-posts" onclick="cambiarTabHistorial('mis-posts')" style="padding: 12px 20px; background: none; border: none; border-bottom: 3px solid #667eea; color: #667eea; font-weight: 600; cursor: pointer; transition: all 0.3s;">
+                        <i class="fas fa-file-alt"></i> Mis Publicaciones
+                    </button>
+                    <button class="historial-tab-btn" data-tab="vistos" onclick="cambiarTabHistorial('vistos')" style="padding: 12px 20px; background: none; border: none; border-bottom: 3px solid transparent; color: #666; font-weight: 600; cursor: pointer; transition: all 0.3s;">
+                        <i class="fas fa-eye"></i> Vistos
+                    </button>
+                    <button class="historial-tab-btn" data-tab="respuestas" onclick="cambiarTabHistorial('respuestas')" style="padding: 12px 20px; background: none; border: none; border-bottom: 3px solid transparent; color: #666; font-weight: 600; cursor: pointer; transition: all 0.3s;">
+                        <i class="fas fa-reply"></i> Respuestas
+                    </button>
+                </div>
+                
+                <!-- Contenido de tabs -->
+                <div id="historial-mis-posts" class="historial-tab-content" style="display: block;">
+                    <div id="mi-historial-foro-lista">
+                        <div class="empty-state" style="text-align: center; padding: 40px; color: #64748b;">
+                            <i class="fas fa-spinner fa-spin" style="font-size: 2rem; margin-bottom: 15px; opacity: 0.5;"></i>
+                            <p>Cargando tus publicaciones...</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <div id="historial-vistos" class="historial-tab-content" style="display: none;">
+                    <div id="historial-vistos-lista">
+                        <div class="empty-state" style="text-align: center; padding: 40px; color: #64748b;">
+                            <i class="fas fa-eye" style="font-size: 2rem; margin-bottom: 15px; opacity: 0.5;"></i>
+                            <p>Aún no has visto ninguna publicación</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <div id="historial-respuestas" class="historial-tab-content" style="display: none;">
+                    <div id="historial-respuestas-lista">
+                        <div class="empty-state" style="text-align: center; padding: 40px; color: #64748b;">
+                            <i class="fas fa-reply" style="font-size: 2rem; margin-bottom: 15px; opacity: 0.5;"></i>
+                            <p>Aún no has respondido a ninguna publicación</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
         <!-- Sección para Reportar Vendedores Problemáticos -->
         <div class="reportar-section">
             <h4><i class="fas fa-flag"></i> Sistema de Reportes: Reportar Vendedores Problemáticos</h4>
@@ -1434,6 +1595,78 @@
                 }
             }, 500);
         });
+    </script>
+    
+    <!-- Sistema de Foro para Comunidad -->
+    <script src="js/sistema-foro-comunidades.js"></script>
+    <script>
+        // Inicializar sistema de foro
+        document.addEventListener('DOMContentLoaded', () => {
+            setTimeout(() => {
+                if (typeof SistemaForoComunidades !== 'undefined') {
+                    window.foroComunidadCompradores = new SistemaForoComunidades('compradores');
+                    console.log('✅ Sistema de foro inicializado para compradores');
+                }
+            }, 1000);
+        });
+        
+        // Funciones para historial
+        function mostrarHistorialForo() {
+            const modal = document.getElementById('modal-mi-historial');
+            if (modal) {
+                modal.style.display = 'flex';
+                cambiarTabHistorial('mis-posts');
+                if (window.foroComunidadCompradores) {
+                    window.foroComunidadCompradores.cargarMiHistorial();
+                }
+            }
+        }
+        
+        function cerrarHistorialForo() {
+            const modal = document.getElementById('modal-mi-historial');
+            if (modal) {
+                modal.style.display = 'none';
+            }
+        }
+        
+        function cambiarTabHistorial(tabId) {
+            // Ocultar todos los contenidos
+            document.querySelectorAll('.historial-tab-content').forEach(content => {
+                content.style.display = 'none';
+            });
+            
+            // Desactivar todos los botones
+            document.querySelectorAll('.historial-tab-btn').forEach(btn => {
+                btn.classList.remove('active');
+                btn.style.borderBottomColor = 'transparent';
+                btn.style.color = '#666';
+            });
+            
+            // Mostrar contenido seleccionado
+            const content = document.getElementById(`historial-${tabId}`);
+            if (content) {
+                content.style.display = 'block';
+            }
+            
+            // Activar botón seleccionado
+            const btn = document.querySelector(`[data-tab="${tabId}"]`);
+            if (btn) {
+                btn.classList.add('active');
+                btn.style.borderBottomColor = '#667eea';
+                btn.style.color = '#667eea';
+            }
+            
+            // Cargar contenido según tab
+            if (window.foroComunidadCompradores) {
+                if (tabId === 'mis-posts') {
+                    window.foroComunidadCompradores.cargarMiHistorial();
+                } else if (tabId === 'vistos') {
+                    window.foroComunidadCompradores.cargarPostsVistos();
+                } else if (tabId === 'respuestas') {
+                    window.foroComunidadCompradores.cargarPostsConRespuestas();
+                }
+            }
+        }
     </script>
     
     <!-- Widget de Chat de Email - Brevo -->
