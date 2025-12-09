@@ -400,6 +400,9 @@ class SistemaForoComunidades {
     }
     
     async renderizarPost(post) {
+        // Registrar que el usuario vio este post
+        this.registrarPostVisto(post.id);
+        
         const fecha = new Date(post.created_at).toLocaleDateString('es-AR', {
             year: 'numeric',
             month: 'long',
