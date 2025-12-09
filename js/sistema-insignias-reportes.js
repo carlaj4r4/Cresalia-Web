@@ -1,7 +1,7 @@
 // ===== SISTEMA DE INSIGNIAS PARA REPORTES =====
 // Insignias privadas para usuarios que contribuyen con reportes
 // Solo visible para el usuario, no competitivo
-// Co-fundadores: Carla & Claude
+// Co-fundadores: Cresalia Team
 
 class SistemaInsigniasReportes {
     constructor() {

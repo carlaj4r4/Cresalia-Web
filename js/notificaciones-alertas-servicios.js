@@ -1,6 +1,6 @@
 // ===== SISTEMA DE NOTIFICACIONES PARA ALERTAS DE SERVICIOS PÚBLICOS =====
 // Notificaciones push y email cuando hay cortes de servicios cercanos al usuario
-// Co-fundadores: Carla & Claude
+// Co-fundadores: Cresalia Team
 
 class NotificacionesAlertasServicios {
     constructor() {

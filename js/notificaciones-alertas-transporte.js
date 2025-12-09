@@ -1,6 +1,6 @@
 // ===== SISTEMA DE NOTIFICACIONES PARA ALERTAS DE TRANSPORTE =====
 // Notificaciones push y email cuando hay alertas cercanas al usuario
-// Co-fundadores: Carla & Claude
+// Co-fundadores: Cresalia Team
 
 class NotificacionesAlertasTransporte {
     constructor() {

@@ -1,6 +1,6 @@
 // ===== COMUNIDAD: ALERTAS DE SERVICIOS PÚBLICOS =====
 // Reportes de cortes de luz, agua, gas
-// Co-fundadores: Carla & Claude
+// Co-fundadores: Cresalia Team
 
 class ComunidadAlertasServiciosPublicos {
     constructor() {

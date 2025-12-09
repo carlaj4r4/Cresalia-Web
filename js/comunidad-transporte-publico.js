@@ -1,6 +1,6 @@
 // ===== COMUNIDAD: TRANSPORTE PÚBLICO =====
 // Alertas sobre colectivos, trenes, subtes, aumentos, cambios de recorridos, cortes, tardanzas
-// Co-fundadores: Carla & Claude
+// Co-fundadores: Cresalia Team
 
 class ComunidadTransportePublico {
     constructor() {
