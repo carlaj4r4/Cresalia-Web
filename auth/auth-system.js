@@ -17,10 +17,17 @@ async function registrarNuevoComprador(datos) {
         // 1. Crear usuario en Supabase Auth
         console.log('📧 Intentando registrar comprador:', { email, nombreCompleto });
         
+        // Determinar URL de redirección según el entorno
+        const isProduction = window.location.hostname !== 'localhost' && window.location.hostname !== '127.0.0.1';
+        const redirectUrl = isProduction 
+            ? 'https://cresalia-web.vercel.app/login-comprador.html'
+            : `${window.location.origin}/login-comprador.html`;
+
         const { data: authData, error: authError } = await supabase.auth.signUp({
             email: email,
             password: password,
             options: {
+                emailRedirectTo: redirectUrl,
                 data: {
                     nombre_completo: nombreCompleto,
                     tipo_usuario: 'comprador'
@@ -110,15 +117,21 @@ async function registrarNuevoCliente(datos) {
         console.log('📧 Intentando registrar:', { email, nombreTienda, plan });
         console.log('🔐 Supabase URL:', SUPABASE_CONFIG.url);
         
+        // Determinar URL de redirección según el entorno
+        const isProduction = window.location.hostname !== 'localhost' && window.location.hostname !== '127.0.0.1';
+        const redirectUrl = isProduction 
+            ? 'https://cresalia-web.vercel.app/login-tienda.html'
+            : `${window.location.origin}/login-tienda.html`;
+
         const { data: authData, error: authError } = await supabase.auth.signUp({
             email: email,
             password: password,
             options: {
+                emailRedirectTo: redirectUrl,
                 data: {
                     nombre_tienda: nombreTienda,
                     plan: plan
                 }
-                // NO incluir emailRedirectTo cuando se abre desde archivo local
             }
         });
         

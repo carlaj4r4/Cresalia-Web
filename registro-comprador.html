@@ -410,10 +410,12 @@
                     
                     // Verificar si hay resultado
                     if (!resultado) {
+                        console.error('❌ No se recibió resultado del registro');
                         throw new Error('No se recibió respuesta del servidor. Por favor, intenta nuevamente.');
                     }
                     
                     if (!resultado.success) {
+                        console.error('❌ Registro fallido:', resultado.error);
                         const errorMsg = resultado.error || resultado.mensaje || 'No se pudo crear el usuario';
                         mostrarNotificacion('❌ ' + errorMsg, 'error');
                         btnRegistro.disabled = false;
@@ -422,8 +424,10 @@
                     }
                     
                     console.log('✅ Usuario comprador creado exitosamente');
+                    console.log('📧 Usuario:', resultado.user);
                     
-                    mostrarNotificacion('✅ ¡Cuenta creada exitosamente!', 'success');
+                    // Mostrar notificación de éxito inmediatamente
+                    mostrarNotificacion('✅ ¡Cuenta creada exitosamente! Revisa tu email para confirmar.', 'success');
                     
                     // Guardar info y redirigir
                     localStorage.setItem('registro_exitoso', 'true');
