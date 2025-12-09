@@ -379,30 +379,6 @@
       "destination": "/comunidades/bomberos/index.html"
     },
     {
-      "source": "/comunidades/transporte-publico",
-      "destination": "/comunidades/transporte-publico/index.html"
-    },
-    {
-      "source": "/comunidades/transporte-publico/",
-      "destination": "/comunidades/transporte-publico/index.html"
-    },
-    {
-      "source": "/comunidades/estres",
-      "destination": "/comunidades/estres/index.html"
-    },
-    {
-      "source": "/comunidades/estres/",
-      "destination": "/comunidades/estres/index.html"
-    },
-    {
-      "source": "/comunidades/desempleos",
-      "destination": "/comunidades/desempleos/index.html"
-    },
-    {
-      "source": "/comunidades/desempleos/",
-      "destination": "/comunidades/desempleos/index.html"
-    },
-    {
       "source": "/comunidades/(.*)/",
       "destination": "/comunidades/$1/index.html"
     },
