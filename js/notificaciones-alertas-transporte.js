@@ -202,7 +202,6 @@ class NotificacionesAlertasTransporte {
                 mostrarNotificacion('⚠️ Error al activar notificaciones. Por favor, intenta nuevamente.', 'error');
             }
         }
-    }
         
         // Permisos de ubicación
         if ('geolocation' in navigator) {

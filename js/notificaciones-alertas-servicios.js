@@ -40,6 +40,52 @@ class NotificacionesAlertasServicios {
         }
     }
     
+    // Activar notificaciones (llamado desde el banner)
+    async activarNotificaciones() {
+        if (!('Notification' in window)) {
+            alert('Tu navegador no soporta notificaciones');
+            return;
+        }
+        
+        try {
+            const permission = await Notification.requestPermission();
+            this.permisosNotificacion = permission === 'granted';
+            
+            if (this.permisosNotificacion) {
+                console.log('✅ Permisos de notificación concedidos');
+                
+                // Cerrar banner
+                const banner = document.getElementById('banner-permisos-notificaciones-servicios');
+                if (banner) {
+                    banner.style.animation = 'slideInUp 0.3s ease-out reverse';
+                    setTimeout(() => banner.remove(), 300);
+                }
+                
+                // Mostrar confirmación
+                if (typeof mostrarNotificacion === 'function') {
+                    mostrarNotificacion('🔔 Notificaciones activadas. Recibirás alertas sobre servicios cerca de ti.', 'success');
+                } else {
+                    alert('🔔 Notificaciones activadas. Recibirás alertas sobre servicios cerca de ti.');
+                }
+                
+                // Continuar con la inicialización
+                await this.obtenerUbicacion();
+                this.obtenerEmailUsuario();
+                this.iniciarVerificacionPeriodica();
+                this.escucharNuevasAlertas();
+            } else {
+                if (typeof mostrarNotificacion === 'function') {
+                    mostrarNotificacion('⚠️ Las notificaciones fueron denegadas. Puedes activarlas desde la configuración de tu navegador.', 'warning');
+                }
+            }
+        } catch (error) {
+            console.warn('⚠️ Error al solicitar permisos de notificación:', error);
+            if (typeof mostrarNotificacion === 'function') {
+                mostrarNotificacion('⚠️ Error al activar notificaciones. Por favor, intenta nuevamente.', 'error');
+            }
+        }
+    }
+    
     // Solicitar permisos de ubicación y notificaciones
     async solicitarPermisos() {
         // Permisos de notificaciones
