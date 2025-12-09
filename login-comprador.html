@@ -281,7 +281,7 @@
     </div>
     
     <!-- Scripts -->
-    <script src="auth/supabase-config.js"></script>
+    <script src="config-supabase-seguro.js"></script>
     
     <script>
         let supabase;
@@ -328,10 +328,10 @@
                     
                     // Guardar información de sesión completa
                     localStorage.setItem('cresalia_sesion_activa', 'true');
-                    localStorage.setItem('cresalia_session_token', 'login_exitoso');
+                    localStorage.setItem('cresalia_session_token', data.session?.access_token || 'login_exitoso');
                     localStorage.setItem('cresalia_user_data', JSON.stringify({
-                        email: resultado.comprador.email,
-                        nombre: resultado.comprador.nombre,
+                        email: data.user.email,
+                        nombre: data.user.user_metadata?.nombre_completo || data.user.email,
                         tipo: 'comprador'
                     }));
                     
