@@ -167,6 +167,10 @@
       "destination": "/api/enviar-email-brevo.js"
     },
     {
+      "source": "/api/historias-corazon",
+      "destination": "/api/historias-corazon.js"
+    },
+    {
       "source": "/comunidades/alertas-servicios-publicos",
       "destination": "/comunidades/alertas-servicios-publicos/index.html"
     },
