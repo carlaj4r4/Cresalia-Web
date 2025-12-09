@@ -1486,6 +1486,201 @@ window.eliminarPostForo = function(postId) {
     }
 };
 
+// ===== REGISTRAR POSTS VISTOS =====
+registrarPostVisto(postId) {
+    if (!this.autorHash) return;
+    
+    const key = `posts_vistos_${this.comunidadSlug}_${this.autorHash}`;
+    let postsVistos = JSON.parse(localStorage.getItem(key) || '[]');
+    
+    if (!postsVistos.includes(postId)) {
+        postsVistos.push(postId);
+        // Mantener solo los últimos 100
+        if (postsVistos.length > 100) {
+            postsVistos = postsVistos.slice(-100);
+        }
+        localStorage.setItem(key, JSON.stringify(postsVistos));
+    }
+}
+
+// ===== CAMBIAR TAB DEL HISTORIAL =====
+cambiarTabHistorial(tab) {
+    // Ocultar todos los contenidos
+    document.querySelectorAll('.contenido-tab-historial').forEach(div => {
+        div.style.display = 'none';
+    });
+    
+    // Desactivar todos los botones
+    document.querySelectorAll('.tab-historial').forEach(btn => {
+        btn.style.background = '#e5e7eb';
+        btn.style.color = '#374151';
+    });
+    
+    // Mostrar el contenido seleccionado
+    const contenido = document.getElementById(`contenido-${tab}`);
+    if (contenido) {
+        contenido.style.display = 'block';
+    }
+    
+    // Activar el botón seleccionado
+    const boton = document.querySelector(`[data-tab-historial="${tab}"]`);
+    if (boton) {
+        boton.style.background = '#8b5cf6';
+        boton.style.color = 'white';
+    }
+    
+    // Cargar contenido si es necesario
+    if (tab === 'vistos') {
+        this.cargarPostsVistos();
+    } else if (tab === 'respuestas') {
+        this.cargarPostsConRespuestas();
+    }
+}
+
+// ===== CARGAR POSTS VISTOS =====
+async cargarPostsVistos() {
+    if (!this.autorHash) return;
+    
+    const container = document.getElementById('posts-vistos-lista');
+    if (!container) return;
+    
+    const key = `posts_vistos_${this.comunidadSlug}_${this.autorHash}`;
+    const postsVistosIds = JSON.parse(localStorage.getItem(key) || '[]');
+    
+    if (postsVistosIds.length === 0) {
+        container.innerHTML = `
+            <div class="empty-state">
+                <i class="fas fa-info-circle"></i>
+                <p>Los posts que veas aparecerán aquí</p>
+            </div>
+        `;
+        return;
+    }
+    
+    try {
+        let posts = [];
+        
+        if (this.supabase) {
+            const { data, error } = await this.supabase
+                .from('posts_comunidades')
+                .select('*')
+                .in('id', postsVistosIds)
+                .eq('comunidad_slug', this.comunidadSlug)
+                .order('created_at', { ascending: false });
+            
+            if (error) throw error;
+            posts = data || [];
+        } else {
+            const postsKey = `posts_${this.comunidadSlug}`;
+            const allPosts = JSON.parse(localStorage.getItem(postsKey) || '[]');
+            posts = allPosts.filter(p => postsVistosIds.includes(p.id))
+                .sort((a, b) => new Date(b.created_at || b.fecha) - new Date(a.created_at || a.fecha));
+        }
+        
+        if (posts.length === 0) {
+            container.innerHTML = `
+                <div class="empty-state">
+                    <i class="fas fa-info-circle"></i>
+                    <p>No hay posts vistos aún</p>
+                </div>
+            `;
+            return;
+        }
+        
+        const postsHTML = await Promise.all(posts.map(async post => await this.renderizarPost(post)));
+        container.innerHTML = postsHTML.join('');
+        
+        // Cargar comentarios
+        posts.forEach(post => {
+            this.cargarComentarios(post.id);
+        });
+    } catch (error) {
+        console.error('Error cargando posts vistos:', error);
+        container.innerHTML = `
+            <div class="empty-state">
+                <i class="fas fa-exclamation-triangle"></i>
+                <p>Error al cargar posts vistos</p>
+            </div>
+        `;
+    }
+}
+
+// ===== CARGAR POSTS CON RESPUESTAS =====
+async cargarPostsConRespuestas() {
+    if (!this.autorHash) return;
+    
+    const container = document.getElementById('posts-respuestas-lista');
+    if (!container) return;
+    
+    try {
+        let postsConRespuestas = [];
+        
+        if (this.supabase) {
+            // Obtener comentarios del usuario
+            const { data: comentarios, error: comentariosError } = await this.supabase
+                .from('comentarios_comunidades')
+                .select('post_id')
+                .eq('autor_hash', this.autorHash)
+                .eq('comunidad_slug', this.comunidadSlug);
+            
+            if (comentariosError) throw comentariosError;
+            
+            const postIds = [...new Set(comentarios.map(c => c.post_id))];
+            
+            if (postIds.length > 0) {
+                const { data: posts, error: postsError } = await this.supabase
+                    .from('posts_comunidades')
+                    .select('*')
+                    .in('id', postIds)
+                    .eq('comunidad_slug', this.comunidadSlug)
+                    .order('created_at', { ascending: false });
+                
+                if (postsError) throw postsError;
+                postsConRespuestas = posts || [];
+            }
+        } else {
+            // Modo local
+            const comentariosKey = `comentarios_${this.comunidadSlug}`;
+            const allComentarios = JSON.parse(localStorage.getItem(comentariosKey) || '[]');
+            const misComentarios = allComentarios.filter(c => c.autor_hash === this.autorHash);
+            const postIds = [...new Set(misComentarios.map(c => c.post_id))];
+            
+            if (postIds.length > 0) {
+                const postsKey = `posts_${this.comunidadSlug}`;
+                const allPosts = JSON.parse(localStorage.getItem(postsKey) || '[]');
+                postsConRespuestas = allPosts.filter(p => postIds.includes(p.id))
+                    .sort((a, b) => new Date(b.created_at || b.fecha) - new Date(a.created_at || a.fecha));
+            }
+        }
+        
+        if (postsConRespuestas.length === 0) {
+            container.innerHTML = `
+                <div class="empty-state">
+                    <i class="fas fa-info-circle"></i>
+                    <p>Los posts donde hayas comentado aparecerán aquí</p>
+                </div>
+            `;
+            return;
+        }
+        
+        const postsHTML = await Promise.all(postsConRespuestas.map(async post => await this.renderizarPost(post)));
+        container.innerHTML = postsHTML.join('');
+        
+        // Cargar comentarios
+        postsConRespuestas.forEach(post => {
+            this.cargarComentarios(post.id);
+        });
+    } catch (error) {
+        console.error('Error cargando posts con respuestas:', error);
+        container.innerHTML = `
+            <div class="empty-state">
+                <i class="fas fa-exclamation-triangle"></i>
+                <p>Error al cargar posts con respuestas</p>
+            </div>
+        `;
+    }
+}
+
 // Hacer disponible globalmente
 window.SistemaForoComunidades = SistemaForoComunidades;
 
