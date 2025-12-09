@@ -4,10 +4,10 @@
 class SubscriptionSystem {
     constructor() {
         this.plans = {
-            'starter': { name: 'Starter', price: 0, features: ['Tienda básica', 'Soporte email'] },
-            'basico': { name: 'Básico', price: 29, features: ['Tienda completa', 'Soporte prioritario', 'Analytics básicos'] },
-            'pro': { name: 'Pro', price: 79, features: ['Todo Básico', 'Chatbot IA', 'Soporte 24/7', 'Analytics avanzados'] },
-            'enterprise': { name: 'Enterprise', price: 199, features: ['Todo Pro', 'Account Manager', 'Desarrollo custom', 'SLA 99%'] }
+            'starter': { name: 'Starter', price: 0, currency: 'ARS', features: ['Tienda básica', 'Soporte email'] },
+            'basico': { name: 'Básico', price: 29000, currency: 'ARS', features: ['Tienda completa', 'Soporte prioritario', 'Analytics básicos'] },
+            'pro': { name: 'Pro', price: 79000, currency: 'ARS', features: ['Todo Básico', 'Chatbot IA', 'Soporte 24/7', 'Analytics avanzados'] },
+            'enterprise': { name: 'Enterprise', price: 199000, currency: 'ARS', features: ['Todo Pro', 'Account Manager', 'Desarrollo custom', 'SLA 99%'] }
         };
 
         this.init();
@@ -429,7 +429,7 @@ class SubscriptionSystem {
                     </div>
                     
                     <div class="warning-body">
-                        <p>Tu suscripción <strong>${tenant.plan}</strong> se renovará automáticamente en <strong>24 horas</strong> por <strong>$${amount}</strong>.</p>
+                        <p>Tu suscripción <strong>${tenant.plan}</strong> se renovará automáticamente en <strong>24 horas</strong> por <strong>$${amount.toLocaleString('es-AR')} ARS</strong>.</p>
                         
                         <p>💜 <strong>Entendemos que las cosas pueden cambiar.</strong></p>
                         

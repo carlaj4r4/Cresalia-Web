@@ -4,10 +4,10 @@
 class DistributedPaymentSystem {
     constructor() {
         this.plans = {
-            'starter': { name: 'Starter', price: 0, features: ['Tienda básica', 'Soporte email'] },
-            'basico': { name: 'Básico', price: 29, features: ['Tienda completa', 'Soporte prioritario', 'Analytics básicos'] },
-            'pro': { name: 'Pro', price: 79, features: ['Todo Básico', 'Chatbot IA', 'Soporte 24/7', 'Analytics avanzados'] },
-            'enterprise': { name: 'Enterprise', price: 199, features: ['Todo Pro', 'Account Manager', 'Desarrollo custom', 'SLA 99%'] }
+            'starter': { name: 'Starter', price: 0, currency: 'ARS', features: ['Tienda básica', 'Soporte email'] },
+            'basico': { name: 'Básico', price: 29000, currency: 'ARS', features: ['Tienda completa', 'Soporte prioritario', 'Analytics básicos'] },
+            'pro': { name: 'Pro', price: 79000, currency: 'ARS', features: ['Todo Básico', 'Chatbot IA', 'Soporte 24/7', 'Analytics avanzados'] },
+            'enterprise': { name: 'Enterprise', price: 199000, currency: 'ARS', features: ['Todo Pro', 'Account Manager', 'Desarrollo custom', 'SLA 99%'] }
         };
 
         this.init();

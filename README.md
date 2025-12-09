@@ -267,7 +267,7 @@ GET /api/:tenant/stats
 - ✅ Soporte por email
 - ❌ Sin chatbot IA
 
-### 💼 Basic - $29 USD/mes
+### 💼 Basic - $29,000 ARS/mes
 - ✅ 500 productos
 - ✅ 1,000 órdenes/mes
 - ✅ 3 idiomas
@@ -277,7 +277,7 @@ GET /api/:tenant/stats
 - ✅ Video de presentación
 - ❌ Sin chatbot IA
 
-### 🚀 Pro - $79 USD/mes
+### 🚀 Pro - $79,000 ARS/mes
 - ✅ Productos ilimitados
 - ✅ Órdenes ilimitadas
 - ✅ Todos los idiomas (6)

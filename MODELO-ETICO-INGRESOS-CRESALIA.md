@@ -41,7 +41,7 @@ Por qué es ético:
 
 #### Plan Básico
 ```
-Precio: $29/mes
+Precio: $29,000 ARS/mes
 Target: Emprendedores con ventas estables
 Incluye:
 - 500 productos
@@ -58,7 +58,7 @@ Por qué es ético:
 
 #### Plan Pro
 ```
-Precio: $79/mes
+Precio: $79,000 ARS/mes
 Target: Tiendas establecidas que venden bien
 Incluye:
 - Productos ilimitados
@@ -76,7 +76,7 @@ Por qué es ético:
 
 #### Plan Enterprise
 ```
-Precio: $500-2,000/mes (negociable)
+Precio: $500,000-2,000,000 ARS/mes (negociable)
 Target: Cámaras de comercio, ONGs, cooperativas
 Incluye:
 - Todo de Pro

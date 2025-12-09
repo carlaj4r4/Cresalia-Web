@@ -167,21 +167,21 @@
 - Soporte básico
 - Comisión: 3.5%
 
-#### **💼 Plan Básico - $29/mes**
+#### **💼 Plan Básico - $29,000 ARS/mes**
 - 1 tienda
 - Productos ilimitados
 - Servicios ilimitados
 - Soporte prioritario
 - Comisión: 2.5%
 
-#### **🚀 Plan Pro - $79/mes**
+#### **🚀 Plan Pro - $79,000 ARS/mes**
 - 1 tienda
 - Chatbot IA personalizable
 - Analytics avanzados
 - Soporte premium
 - Comisión: 1.5%
 
-#### **🏢 Plan Enterprise - $199/mes**
+#### **🏢 Plan Enterprise - $199,000 ARS/mes**
 - Múltiples tiendas
 - Chatbot IA avanzado
 - API personalizada

@@ -11,7 +11,7 @@
   - Tickets/Comprobantes
   - Footer de la tienda
   - Emails de notificación
-- 💰 **Precio:** Gratis o $5-10 USD/mes
+- 💰 **Precio:** Gratis o $5,000-10,000 ARS/mes
 
 ---
 
@@ -24,7 +24,7 @@
 - ✅ Estadísticas avanzadas
 - ✅ **SIN branding de CRESALIA** en tickets
 - ✅ Logo personalizado en comprobantes
-- 💰 **Precio:** $25-35 USD/mes
+- 💰 **Precio:** $25,000-35,000 ARS/mes
 
 ---
 
@@ -38,7 +38,7 @@
 - ✅ **100% white-label** (sin menciones a CRESALIA)
 - ✅ Plantillas completamente personalizadas
 - ✅ Integración con CRM
-- 💰 **Precio:** $99+ USD/mes
+- 💰 **Precio:** $99,000+ ARS/mes
 
 ---
 
