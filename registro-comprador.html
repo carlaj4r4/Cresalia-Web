@@ -408,8 +408,17 @@
                     
                     console.log('📊 Resultado del registro comprador:', resultado);
                     
+                    // Verificar si hay resultado
+                    if (!resultado) {
+                        throw new Error('No se recibió respuesta del servidor. Por favor, intenta nuevamente.');
+                    }
+                    
                     if (!resultado.success) {
-                        throw new Error(resultado.error || 'No se pudo crear el usuario');
+                        const errorMsg = resultado.error || resultado.mensaje || 'No se pudo crear el usuario';
+                        mostrarNotificacion('❌ ' + errorMsg, 'error');
+                        btnRegistro.disabled = false;
+                        btnRegistro.innerHTML = '<i class="fas fa-user-plus"></i> Crear Mi Cuenta';
+                        return;
                     }
                     
                     console.log('✅ Usuario comprador creado exitosamente');
@@ -443,9 +452,18 @@
                     
                 } catch (error) {
                     console.error('❌ Error en registro:', error);
-                    mostrarNotificacion('Error: ' + error.message, 'error');
+                    const mensajeError = error.message || 'Error desconocido al crear la cuenta';
+                    mostrarNotificacion('❌ ' + mensajeError, 'error');
                     btnRegistro.disabled = false;
                     btnRegistro.innerHTML = '<i class="fas fa-user-plus"></i> Crear Mi Cuenta';
+                } finally {
+                    // Asegurar que el botón se restaure incluso si hay un error no capturado
+                    setTimeout(() => {
+                        if (btnRegistro.disabled) {
+                            btnRegistro.disabled = false;
+                            btnRegistro.innerHTML = '<i class="fas fa-user-plus"></i> Crear Mi Cuenta';
+                        }
+                    }, 5000);
                 }
             });
         });

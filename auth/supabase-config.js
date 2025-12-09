@@ -4,10 +4,10 @@
 // CONFIGURACIÓN SEGURA - NO EXPONER CLAVES REALES
 const SUPABASE_CONFIG = {
     // 🔗 URL de tu proyecto (desde Supabase Dashboard → Settings → API)
-    url: 'https://lvdgklwcgrmfbqwghxhl.supabase.co',
+    url: 'https://zbomxayytvwjbdzbegcw.supabase.co',
     
-    // 🔑 Clave anónima (pública) - Reemplaza con tu nueva clave
-    anonKey: 'PEGA_AQUI_TU_NUEVA_CLAVE_API_PUBLICABLE',
+    // 🔑 Clave anónima (pública) - Usa la misma que config-supabase-seguro.js
+    anonKey: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inpib214YXl5dHZ3amJkemJlZ2N3Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjIwODczMDMsImV4cCI6MjA3NzY2MzMwM30.ZYpckr8rPaN1vAemdjHxPSe6QvF6R1Ylic6JoNKnsBA',
     
     // Configuración de autenticación
     auth: {

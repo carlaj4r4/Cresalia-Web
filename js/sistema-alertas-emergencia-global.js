@@ -50,6 +50,31 @@ class SistemaAlertasEmergenciaGlobal {
             return;
         }
         
+        // Verificar si ya hay una ubicación guardada reciente (menos de 1 hora)
+        const ubicacionGuardada = localStorage.getItem('cresalia_ubicacion_usuario');
+        if (ubicacionGuardada) {
+            try {
+                const ubicacion = JSON.parse(ubicacionGuardada);
+                const fechaGuardada = new Date(ubicacion.fecha);
+                const ahora = new Date();
+                const horasTranscurridas = (ahora - fechaGuardada) / (1000 * 60 * 60);
+                
+                // Si la ubicación tiene menos de 1 hora, usarla (evita solicitar permiso de nuevo)
+                if (horasTranscurridas < 1) {
+                    console.log('✅ Usando ubicación guardada para alertas (evita solicitar permiso de nuevo)');
+                    this.obtenerUbicacionActual({
+                        coords: {
+                            latitude: ubicacion.latitud || ubicacion.lat,
+                            longitude: ubicacion.longitud || ubicacion.lng
+                        }
+                    });
+                    return;
+                }
+            } catch (error) {
+                console.log('⚠️ Error cargando ubicación guardada:', error);
+            }
+        }
+        
         // Si ya se concedió, obtener ubicación directamente
         if (consentimiento === 'concedido' || consentimiento === 'granted') {
             navigator.geolocation.getCurrentPosition(
@@ -64,8 +89,16 @@ class SistemaAlertasEmergenciaGlobal {
             return;
         }
         
-        // Si no se ha pedido antes, mostrar mensaje amigable y solicitar
+        // Si no se ha pedido antes, mostrar mensaje amigable y solicitar (solo una vez)
         setTimeout(() => {
+            // Verificar si ya se solicitó en esta sesión
+            const yaSolicitado = sessionStorage.getItem('geolocalizacion_solicitada');
+            if (yaSolicitado === 'true') {
+                console.log('ℹ️ Ya se solicitó ubicación en esta sesión, no volver a pedir');
+                return;
+            }
+            
+            sessionStorage.setItem('geolocalizacion_solicitada', 'true');
             const mensaje = '🚨 Para protegerte mejor, Cresalia necesita tu ubicación para enviarte alertas de emergencia personalizadas en tu zona. ¿Nos permites acceder a tu ubicación?';
             const acepta = window.confirm(mensaje);
             
@@ -74,6 +107,13 @@ class SistemaAlertasEmergenciaGlobal {
                 navigator.geolocation.getCurrentPosition(
                     (pos) => {
                         this.obtenerUbicacionActual(pos);
+                        // Guardar también en el formato estándar para reutilizar
+                        const ubicacion = {
+                            latitud: pos.coords.latitude,
+                            longitud: pos.coords.longitude,
+                            fecha: new Date().toISOString()
+                        };
+                        localStorage.setItem('cresalia_ubicacion_usuario', JSON.stringify(ubicacion));
                         console.log('✅ Ubicación obtenida para alertas de emergencia');
                     },
                     (err) => {
