@@ -25,11 +25,17 @@ En **Redirect URLs**, agrega estas URLs (una por línea):
 ```
 https://cresalia-web.vercel.app/login-comprador.html
 https://cresalia-web.vercel.app/login-tienda.html
-https://cresalia-web.vercel.app/**
+https://cresalia-web.vercel.app/registro-comprador.html
+https://cresalia-web.vercel.app/registro-tienda.html
+https://cresalia-web.vercel.app/index-cresalia.html
 http://localhost:8080/login-comprador.html
 http://localhost:8080/login-tienda.html
-http://localhost:8080/**
+http://localhost:8080/registro-comprador.html
+http://localhost:8080/registro-tienda.html
+http://localhost:8080/index-cresalia.html
 ```
+
+**Nota:** Supabase NO acepta asteriscos (`*`) en las URLs. Debes agregar cada URL específica que necesites.
 
 ### Paso 4: Guardar
 
