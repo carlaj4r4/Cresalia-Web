@@ -296,6 +296,12 @@ class SistemaForoComunidades {
                     fecha: new Date().toISOString(), // Duplicar para compatibilidad
                     num_comentarios: 0,
                     num_reacciones: 0,
+                    reacciones: {
+                        apoyo: 0,
+                        entristece: 0,
+                        me_identifico: 0,
+                        gracias: 0
+                    },
                     estado: 'publicado' // Asegurar que tenga estado
                 };
                 posts.unshift(nuevoPost);
@@ -438,9 +444,17 @@ class SistemaForoComunidades {
                     <button class="btn-comentar" onclick="foroComunidad.mostrarFormularioComentario('${post.id}')">
                         <i class="fas fa-comment"></i> Comentar (${post.num_comentarios || 0})
                     </button>
-                    <button class="btn-reaccionar" onclick="foroComunidad.reaccionarPost('${post.id}')">
-                        <i class="fas fa-heart"></i> Apoyo (${post.num_reacciones || 0})
-                    </button>
+                    <div class="reacciones-container" style="display: inline-flex; gap: 5px; align-items: center;">
+                        <button class="btn-reaccionar" onclick="foroComunidad.mostrarMenuReacciones('${post.id}')" title="Reaccionar">
+                            <i class="fas fa-smile"></i> Reaccionar
+                        </button>
+                        <div class="reacciones-contadores" style="display: inline-flex; gap: 8px; margin-left: 5px;">
+                            ${(post.reacciones?.apoyo || 0) > 0 ? `<span style="color: #EF4444; font-size: 0.85rem;"><i class="fas fa-heart"></i> ${post.reacciones.apoyo}</span>` : ''}
+                            ${(post.reacciones?.entristece || 0) > 0 ? `<span style="color: #3B82F6; font-size: 0.85rem;"><i class="fas fa-sad-tear"></i> ${post.reacciones.entristece}</span>` : ''}
+                            ${(post.reacciones?.me_identifico || 0) > 0 ? `<span style="color: #8B5CF6; font-size: 0.85rem;"><i class="fas fa-hand-paper"></i> ${post.reacciones.me_identifico}</span>` : ''}
+                            ${(post.reacciones?.gracias || 0) > 0 ? `<span style="color: #10B981; font-size: 0.85rem;"><i class="fas fa-hands-clapping"></i> ${post.reacciones.gracias}</span>` : ''}
+                        </div>
+                    </div>
                 </div>
                 <div class="comentarios-container" id="comentarios-${post.id}">
                     <!-- Comentarios se cargarán aquí -->
@@ -1004,7 +1018,91 @@ class SistemaForoComunidades {
         }
     }
     
-    async reaccionarPost(postId) {
+    // Mostrar menú de reacciones
+    mostrarMenuReacciones(postId) {
+        // Eliminar menú existente si hay
+        const menuExistente = document.getElementById(`menu-reacciones-${postId}`);
+        if (menuExistente) {
+            menuExistente.remove();
+            return;
+        }
+        
+        // Crear menú de reacciones
+        const menu = document.createElement('div');
+        menu.id = `menu-reacciones-${postId}`;
+        menu.style.cssText = `
+            position: absolute;
+            background: white;
+            border-radius: 25px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            padding: 10px;
+            display: flex;
+            gap: 10px;
+            z-index: 10000;
+            border: 2px solid #E5E7EB;
+        `;
+        
+        const reacciones = [
+            { tipo: 'apoyo', icono: '❤️', texto: 'Apoyo', color: '#EF4444' },
+            { tipo: 'entristece', icono: '😢', texto: 'Me entristece', color: '#3B82F6' },
+            { tipo: 'me_identifico', icono: '✋', texto: 'Me identifico', color: '#8B5CF6' },
+            { tipo: 'gracias', icono: '👏', texto: 'Gracias', color: '#10B981' }
+        ];
+        
+        reacciones.forEach(reaccion => {
+            const boton = document.createElement('button');
+            boton.style.cssText = `
+                background: transparent;
+                border: none;
+                font-size: 2rem;
+                cursor: pointer;
+                padding: 5px;
+                border-radius: 50%;
+                transition: all 0.2s;
+            `;
+            boton.innerHTML = reaccion.icono;
+            boton.title = reaccion.texto;
+            boton.onmouseover = () => {
+                boton.style.transform = 'scale(1.3)';
+                boton.style.background = '#F3F4F6';
+            };
+            boton.onmouseout = () => {
+                boton.style.transform = 'scale(1)';
+                boton.style.background = 'transparent';
+            };
+            boton.onclick = () => {
+                this.reaccionarPost(postId, reaccion.tipo);
+                menu.remove();
+            };
+            menu.appendChild(boton);
+        });
+        
+        // Posicionar el menú cerca del botón
+        const botonReaccion = document.querySelector(`[onclick*="mostrarMenuReacciones('${postId}')"]`);
+        if (botonReaccion) {
+            const rect = botonReaccion.getBoundingClientRect();
+            menu.style.position = 'fixed';
+            menu.style.top = (rect.top - 60) + 'px';
+            menu.style.left = rect.left + 'px';
+        }
+        
+        document.body.appendChild(menu);
+        
+        // Cerrar al hacer click fuera
+        setTimeout(() => {
+            const cerrarMenu = (e) => {
+                if (!menu.contains(e.target) && e.target !== botonReaccion) {
+                    menu.remove();
+                    document.removeEventListener('click', cerrarMenu);
+                }
+            };
+            setTimeout(() => {
+                document.addEventListener('click', cerrarMenu);
+            }, 100);
+        }, 10);
+    }
+    
+    async reaccionarPost(postId, tipoReaccion = 'apoyo') {
         try {
             // Obtener post actual
             let post = null;
@@ -1012,7 +1110,7 @@ class SistemaForoComunidades {
             if (this.supabase) {
                 const { data, error } = await this.supabase
                     .from('posts_comunidades')
-                    .select('num_reacciones')
+                    .select('reacciones, num_reacciones')
                     .eq('id', postId)
                     .single();
                 
@@ -1030,13 +1128,36 @@ class SistemaForoComunidades {
                 return;
             }
             
-            // Incrementar reacciones
-            const nuevasReacciones = (post.num_reacciones || 0) + 1;
+            // Inicializar objeto de reacciones si no existe
+            if (!post.reacciones || typeof post.reacciones !== 'object') {
+                post.reacciones = {
+                    apoyo: 0,
+                    entristece: 0,
+                    me_identifico: 0,
+                    gracias: 0
+                };
+            }
+            
+            // Incrementar reacción específica
+            post.reacciones[tipoReaccion] = (post.reacciones[tipoReaccion] || 0) + 1;
+            
+            // Calcular total de reacciones
+            const totalReacciones = Object.values(post.reacciones).reduce((sum, val) => sum + (val || 0), 0);
+            
+            const mensajes = {
+                'apoyo': '💜 Gracias por tu apoyo',
+                'entristece': '💙 Entendemos tu sentimiento',
+                'me_identifico': '💜 Me alegra que te identifiques',
+                'gracias': '💚 Gracias por compartir'
+            };
             
             if (this.supabase) {
                 const { error } = await this.supabase
                     .from('posts_comunidades')
-                    .update({ num_reacciones: nuevasReacciones })
+                    .update({ 
+                        reacciones: post.reacciones,
+                        num_reacciones: totalReacciones
+                    })
                     .eq('id', postId);
                 
                 if (error) throw error;
@@ -1046,18 +1167,16 @@ class SistemaForoComunidades {
                 const posts = JSON.parse(localStorage.getItem(postsKey) || '[]');
                 const postIndex = posts.findIndex(p => p.id === postId);
                 if (postIndex !== -1) {
-                    posts[postIndex].num_reacciones = nuevasReacciones;
+                    posts[postIndex].reacciones = post.reacciones;
+                    posts[postIndex].num_reacciones = totalReacciones;
                     localStorage.setItem(postsKey, JSON.stringify(posts));
                 }
             }
             
-            // Actualizar UI
-            const botonReaccion = document.querySelector(`[onclick*="reaccionarPost('${postId}')"]`);
-            if (botonReaccion) {
-                botonReaccion.innerHTML = `<i class="fas fa-heart"></i> Apoyo (${nuevasReacciones})`;
-            }
+            // Recargar posts para actualizar UI
+            await this.cargarPosts();
             
-            this.mostrarMensaje('💜 Gracias por tu apoyo', 'success');
+            this.mostrarMensaje(mensajes[tipoReaccion] || '💜 Gracias', 'success');
         } catch (error) {
             console.error('Error reaccionando al post:', error);
             this.mostrarMensaje('Error al reaccionar. Por favor, intenta nuevamente.', 'error');
