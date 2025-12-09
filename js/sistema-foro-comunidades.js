@@ -15,22 +15,36 @@ class SistemaForoComunidades {
         // Inicializar Supabase si está disponible
         if (typeof window.supabase !== 'undefined') {
             try {
-                // Cargar configuración
-                const config = window.SUPABASE_CONFIG || {};
+                // Intentar usar initSupabase primero
+                if (typeof window.initSupabase === 'function') {
+                    const client = window.initSupabase();
+                    if (client && typeof client.from === 'function') {
+                        this.supabase = client;
+                        console.log('✅ Foro: Supabase inicializado desde initSupabase');
+                    }
+                }
                 
-                if (config.url && config.anonKey && !config.anonKey.includes('REEMPLAZA')) {
-                    this.supabase = window.supabase.createClient(
-                        config.url,
-                        config.anonKey,
-                        { auth: config.auth || {} }
-                    );
-                    console.log('✅ Foro: Supabase inicializado');
-                } else {
-                    console.warn('⚠️ Foro: Supabase no configurado, usando modo local');
+                // Si no funcionó, intentar con configuración directa
+                if (!this.supabase) {
+                    const config = window.SUPABASE_CONFIG || {};
+                    
+                    if (config.url && config.anonKey && !config.anonKey.includes('REEMPLAZA') && !config.anonKey.includes('PEGA_AQUI')) {
+                        this.supabase = window.supabase.createClient(
+                            config.url,
+                            config.anonKey,
+                            { auth: config.auth || {} }
+                        );
+                        console.log('✅ Foro: Supabase inicializado desde config');
+                    } else {
+                        console.warn('⚠️ Foro: Supabase no configurado, usando modo local (localStorage)');
+                    }
                 }
             } catch (error) {
                 console.error('❌ Foro: Error al inicializar Supabase', error);
+                console.warn('⚠️ Foro: Continuando en modo local (localStorage)');
             }
+        } else {
+            console.warn('⚠️ Foro: Supabase SDK no disponible, usando modo local (localStorage)');
         }
         
         // Inicializar hash de autor (anonimato)
@@ -272,17 +286,21 @@ class SistemaForoComunidades {
                 tituloInput.value = '';
                 contenidoInput.value = '';
             } else {
-                // Modo local (sin backend)
-                const posts = JSON.parse(localStorage.getItem(`posts_${this.comunidadSlug}`) || '[]');
+                // Modo local (sin backend) - guardar en localStorage
+                const postsKey = `posts_${this.comunidadSlug}`;
+                const posts = JSON.parse(localStorage.getItem(postsKey) || '[]');
                 const nuevoPost = {
                     id: 'local_' + Date.now(),
                     ...postData,
                     created_at: new Date().toISOString(),
+                    fecha: new Date().toISOString(), // Duplicar para compatibilidad
                     num_comentarios: 0,
-                    num_reacciones: 0
+                    num_reacciones: 0,
+                    estado: 'publicado' // Asegurar que tenga estado
                 };
                 posts.unshift(nuevoPost);
-                localStorage.setItem(`posts_${this.comunidadSlug}`, JSON.stringify(posts));
+                localStorage.setItem(postsKey, JSON.stringify(posts));
+                console.log(`✅ Post guardado en localStorage (${postsKey}):`, nuevoPost);
                 
                 this.mostrarMensaje('Post creado exitosamente (modo local)', 'success');
                 this.cargarPosts();
@@ -319,10 +337,28 @@ class SistemaForoComunidades {
                 if (error) throw error;
                 posts = data || [];
             } else {
-                // Modo local
-                posts = JSON.parse(localStorage.getItem(`posts_${this.comunidadSlug}`) || '[]')
-                    .filter(p => p.estado === 'publicado')
-                    .sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
+                // Modo local - cargar desde localStorage
+                const postsKey = `posts_${this.comunidadSlug}`;
+                const postsGuardados = localStorage.getItem(postsKey);
+                
+                if (postsGuardados) {
+                    try {
+                        posts = JSON.parse(postsGuardados)
+                            .filter(p => p.estado === 'publicado' || p.estado === undefined) // Incluir posts sin estado definido
+                            .sort((a, b) => {
+                                const fechaA = new Date(a.created_at || a.fecha || 0);
+                                const fechaB = new Date(b.created_at || b.fecha || 0);
+                                return fechaB - fechaA; // Más recientes primero
+                            });
+                        console.log(`✅ Foro: Cargados ${posts.length} posts desde localStorage para ${this.comunidadSlug}`);
+                    } catch (error) {
+                        console.error('❌ Error parseando posts desde localStorage:', error);
+                        posts = [];
+                    }
+                } else {
+                    console.log(`ℹ️ Foro: No hay posts guardados en localStorage para ${this.comunidadSlug}`);
+                    posts = [];
+                }
             }
             
             if (posts.length === 0) {
