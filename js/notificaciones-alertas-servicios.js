@@ -17,22 +17,27 @@ class NotificacionesAlertasServicios {
     async init() {
         console.log('🔔 Inicializando sistema de notificaciones de servicios públicos...');
         
-        // Solicitar permisos
+        // Solicitar permisos (mostrará banner si es necesario)
         await this.solicitarPermisos();
         
-        // Obtener ubicación del usuario
-        await this.obtenerUbicacion();
-        
-        // Obtener email del usuario (si está disponible)
-        this.obtenerEmailUsuario();
-        
-        // Iniciar verificación periódica
-        this.iniciarVerificacionPeriodica();
-        
-        // Escuchar nuevas alertas en tiempo real
-        this.escucharNuevasAlertas();
-        
-        console.log('✅ Sistema de notificaciones de servicios públicos inicializado');
+        // Si ya tiene permisos, continuar con la inicialización
+        if (this.permisosNotificacion) {
+            // Obtener ubicación del usuario
+            await this.obtenerUbicacion();
+            
+            // Obtener email del usuario (si está disponible)
+            this.obtenerEmailUsuario();
+            
+            // Iniciar verificación periódica
+            this.iniciarVerificacionPeriodica();
+            
+            // Escuchar nuevas alertas en tiempo real
+            this.escucharNuevasAlertas();
+            
+            console.log('✅ Sistema de notificaciones de servicios públicos inicializado');
+        } else {
+            console.log('ℹ️ Esperando permisos de notificación del usuario...');
+        }
     }
     
     // Solicitar permisos de ubicación y notificaciones
@@ -40,19 +45,148 @@ class NotificacionesAlertasServicios {
         // Permisos de notificaciones
         if ('Notification' in window) {
             if (Notification.permission === 'default') {
-                try {
-                    const permission = await Notification.requestPermission();
-                    this.permisosNotificacion = permission === 'granted';
-                    if (this.permisosNotificacion) {
-                        console.log('✅ Permisos de notificación concedidos');
-                    }
-                } catch (error) {
-                    console.warn('⚠️ Error al solicitar permisos de notificación:', error);
-                }
+                // Mostrar banner para solicitar permisos (requiere interacción del usuario)
+                this.mostrarBannerPermisosNotificaciones();
             } else {
                 this.permisosNotificacion = Notification.permission === 'granted';
+                if (this.permisosNotificacion) {
+                    console.log('✅ Permisos de notificación ya concedidos');
+                }
             }
         }
+    }
+    
+    // Mostrar banner para solicitar permisos de notificaciones
+    mostrarBannerPermisosNotificaciones() {
+        // Verificar si ya se mostró el banner en esta sesión
+        const bannerMostrado = sessionStorage.getItem('banner_notificaciones_servicios_mostrado');
+        if (bannerMostrado === 'true') {
+            return;
+        }
+        
+        // Crear banner
+        const banner = document.createElement('div');
+        banner.id = 'banner-permisos-notificaciones-servicios';
+        banner.style.cssText = `
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: linear-gradient(135deg, #059669, #047857);
+            color: white;
+            padding: 20px 25px;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(5, 150, 105, 0.4);
+            z-index: 10000;
+            max-width: 350px;
+            animation: slideInUp 0.3s ease-out;
+        `;
+        
+        banner.innerHTML = `
+            <div style="display: flex; align-items: start; gap: 15px;">
+                <div style="font-size: 2rem;">🔔</div>
+                <div style="flex: 1;">
+                    <h4 style="margin: 0 0 10px 0; font-size: 1.1rem; font-weight: 600;">
+                        Recibe alertas de servicios
+                    </h4>
+                    <p style="margin: 0 0 15px 0; font-size: 0.9rem; line-height: 1.5; opacity: 0.95;">
+                        Activa las notificaciones para recibir alertas sobre cortes de luz, agua y gas cerca de ti.
+                    </p>
+                    <div style="display: flex; gap: 10px;">
+                        <button onclick="window.notificacionesServicios?.activarNotificaciones()" style="
+                            background: white;
+                            color: #059669;
+                            border: none;
+                            padding: 10px 20px;
+                            border-radius: 8px;
+                            font-weight: 600;
+                            cursor: pointer;
+                            flex: 1;
+                            font-size: 0.95rem;
+                        ">Activar</button>
+                        <button onclick="document.getElementById('banner-permisos-notificaciones-servicios')?.remove()" style="
+                            background: rgba(255,255,255,0.2);
+                            color: white;
+                            border: none;
+                            padding: 10px 15px;
+                            border-radius: 8px;
+                            cursor: pointer;
+                            font-size: 0.9rem;
+                        ">Ahora no</button>
+                    </div>
+                </div>
+                <button onclick="document.getElementById('banner-permisos-notificaciones-servicios')?.remove()" style="
+                    background: transparent;
+                    border: none;
+                    color: white;
+                    font-size: 1.2rem;
+                    cursor: pointer;
+                    padding: 0;
+                    width: 24px;
+                    height: 24px;
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                ">×</button>
+            </div>
+        `;
+        
+        document.body.appendChild(banner);
+        sessionStorage.setItem('banner_notificaciones_servicios_mostrado', 'true');
+        
+        // Auto-cerrar después de 30 segundos
+        setTimeout(() => {
+            if (banner.parentNode) {
+                banner.style.animation = 'slideInUp 0.3s ease-out reverse';
+                setTimeout(() => banner.remove(), 300);
+            }
+        }, 30000);
+    }
+    
+    // Activar notificaciones (llamado desde el botón)
+    async activarNotificaciones() {
+        if (!('Notification' in window)) {
+            alert('Tu navegador no soporta notificaciones');
+            return;
+        }
+        
+        try {
+            const permission = await Notification.requestPermission();
+            this.permisosNotificacion = permission === 'granted';
+            
+            if (this.permisosNotificacion) {
+                console.log('✅ Permisos de notificación concedidos');
+                
+                // Cerrar banner
+                const banner = document.getElementById('banner-permisos-notificaciones-servicios');
+                if (banner) {
+                    banner.style.animation = 'slideInUp 0.3s ease-out reverse';
+                    setTimeout(() => banner.remove(), 300);
+                }
+                
+                // Mostrar confirmación
+                if (typeof mostrarNotificacion === 'function') {
+                    mostrarNotificacion('🔔 Notificaciones activadas. Recibirás alertas sobre servicios cerca de ti.', 'success');
+                } else {
+                    alert('🔔 Notificaciones activadas. Recibirás alertas sobre servicios cerca de ti.');
+                }
+                
+                // Continuar con la inicialización
+                await this.obtenerUbicacion();
+                this.obtenerEmailUsuario();
+                this.iniciarVerificacionPeriodica();
+                this.escucharNuevasAlertas();
+            } else {
+                if (typeof mostrarNotificacion === 'function') {
+                    mostrarNotificacion('⚠️ Las notificaciones fueron denegadas. Puedes activarlas desde la configuración de tu navegador.', 'warning');
+                }
+            }
+        } catch (error) {
+            console.warn('⚠️ Error al solicitar permisos de notificación:', error);
+            if (typeof mostrarNotificacion === 'function') {
+                mostrarNotificacion('⚠️ Error al activar notificaciones. Por favor, intenta nuevamente.', 'error');
+            }
+        }
+    }
         
         // Permisos de ubicación
         if ('geolocation' in navigator) {
