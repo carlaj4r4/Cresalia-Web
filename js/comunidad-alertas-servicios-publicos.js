@@ -295,8 +295,30 @@ class ComunidadAlertasServiciosPublicos {
         const form = document.getElementById('form-reportar-corte');
         if (!form) return;
         
+        // Cargar email guardado si existe
+        const emailGuardado = localStorage.getItem('cresalia_user_email') || localStorage.getItem('cresalia_servicios_email');
+        if (emailGuardado) {
+            const emailInput = document.getElementById('email-notificaciones');
+            if (emailInput) {
+                emailInput.value = emailGuardado;
+            }
+        }
+        
         form.addEventListener('submit', async (e) => {
             e.preventDefault();
+            
+            // Guardar email si se ingresó
+            const emailInput = document.getElementById('email-notificaciones');
+            if (emailInput && emailInput.value.trim()) {
+                const email = emailInput.value.trim();
+                localStorage.setItem('cresalia_user_email', email);
+                localStorage.setItem('cresalia_servicios_email', email);
+                
+                // Actualizar email en sistema de notificaciones
+                if (window.notificacionesServicios) {
+                    window.notificacionesServicios.emailUsuario = email;
+                }
+            }
             
             const datos = {
                 tipo_servicio: document.getElementById('tipo-servicio').value,
@@ -309,8 +331,19 @@ class ComunidadAlertasServiciosPublicos {
             };
             
             try {
-                await this.reportarCorte(datos);
+                const resultado = await this.reportarCorte(datos);
                 form.reset();
+                
+                // Restaurar email guardado
+                if (emailInput && emailGuardado) {
+                    emailInput.value = emailGuardado;
+                }
+                
+                // Registrar en sistema de insignias
+                if (window.sistemaInsignias && typeof window.sistemaInsignias.registrarReporte === 'function') {
+                    window.sistemaInsignias.registrarReporte('servicios', resultado.id);
+                }
+                
                 this.mostrarExito('✅ Reporte enviado correctamente. Gracias por ayudar a la comunidad.');
                 await this.cargarReportes();
                 await this.cargarEstadisticas();
@@ -606,8 +639,14 @@ class ComunidadAlertasServiciosPublicos {
         const container = document.getElementById('mi-historial-lista');
         if (!container) return;
         
+        // Agregar panel de insignias al inicio
+        let htmlInsignias = '';
+        if (window.sistemaInsignias && typeof window.sistemaInsignias.crearPanelInsignias === 'function') {
+            htmlInsignias = window.sistemaInsignias.crearPanelInsignias();
+        }
+        
         if (!reportes || reportes.length === 0) {
-            container.innerHTML = `
+            container.innerHTML = htmlInsignias + `
                 <div class="empty-state">
                     <i class="fas fa-inbox"></i>
                     <p>No has creado ningún reporte aún.</p>
@@ -631,7 +670,7 @@ class ComunidadAlertasServiciosPublicos {
             'cerrado': '<span style="background: #6b7280; color: white; padding: 4px 8px; border-radius: 5px; font-size: 0.85rem;">🔒 Cerrado</span>'
         };
         
-        container.innerHTML = reportes.map(reporte => {
+        container.innerHTML = htmlInsignias + reportes.map(reporte => {
             const fecha = new Date(reporte.fecha_reporte).toLocaleString('es-AR', {
                 day: '2-digit',
                 month: '2-digit',

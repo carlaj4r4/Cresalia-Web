@@ -1,0 +1,901 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Transporte Público - Alertas y Avisos - Cresalia</title>
+    <link rel="icon" type="image/x-icon" href="../../favicon.ico">
+    <link rel="icon" type="image/png" href="../../assets/logo/logo-cresalia.png">
+    <link rel="apple-touch-icon" href="../../assets/logo/logo-cresalia.png">
+    
+    <!-- Protección Anti-DevTools -->
+    <script src="../../core/proteccion-devtools-avanzada.js?v=2.0"></script>
+    
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        :root {
+            --color-primary: #2563EB;
+            --color-danger: #dc2626;
+            --color-warning: #ea580c;
+            --color-success: #10b981;
+            --color-info: #3b82f6;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background: linear-gradient(135deg, #dbeafe 0%, #f9fafb 100%);
+            min-height: 100vh;
+        }
+        
+        .header-section {
+            background: linear-gradient(135deg, #2563EB, #3B82F6);
+            color: white;
+            padding: 40px 20px;
+            text-align: center;
+            margin-bottom: 30px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+        
+        .header-section h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            font-weight: 700;
+        }
+        
+        .header-section p {
+            font-size: 1.1rem;
+            opacity: 0.95;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        
+        .container-main {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+        
+        .tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 30px;
+            flex-wrap: wrap;
+            border-bottom: 2px solid #E5E7EB;
+        }
+        
+        .tab {
+            background: transparent;
+            border: none;
+            padding: 15px 25px;
+            font-size: 1rem;
+            cursor: pointer;
+            color: #6B7280;
+            font-weight: 600;
+            border-bottom: 3px solid transparent;
+            transition: all 0.3s;
+        }
+        
+        .tab:hover {
+            color: #2563EB;
+        }
+        
+        .tab.active {
+            color: #2563EB;
+            border-bottom-color: #2563EB;
+        }
+        
+        .tab-content {
+            display: none;
+        }
+        
+        .tab-content.active {
+            display: block;
+        }
+        
+        .info-box {
+            background: linear-gradient(135deg, rgba(37, 99, 235, 0.1), rgba(59, 130, 246, 0.1));
+            padding: 20px;
+            border-radius: 15px;
+            margin-bottom: 30px;
+            border-left: 5px solid #2563EB;
+        }
+        
+        .info-box h3 {
+            color: #1e40af;
+            margin-bottom: 10px;
+        }
+        
+        .alert-card {
+            background: white;
+            border: 2px solid #E5E7EB;
+            border-radius: 15px;
+            padding: 20px;
+            margin-bottom: 20px;
+            transition: all 0.3s;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        }
+        
+        .alert-card:hover {
+            border-color: #2563EB;
+            box-shadow: 0 5px 15px rgba(37, 99, 235, 0.2);
+        }
+        
+        .badge-alert {
+            padding: 8px 15px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            display: inline-block;
+            margin-bottom: 10px;
+            margin-right: 8px;
+        }
+        
+        .badge-aumento { background: #fbbf24; color: #78350f; }
+        .badge-cambio { background: #3b82f6; color: white; }
+        .badge-corte { background: #ef4444; color: white; }
+        .badge-tardanza { background: #ea580c; color: white; }
+        .badge-ruta { background: #dc2626; color: white; }
+        .badge-otro { background: #6b7280; color: white; }
+        
+        .badge-resuelto {
+            background: #10b981;
+            color: white;
+        }
+        
+        .badge-funcionando {
+            background: #059669;
+            color: white;
+        }
+        
+        .badge-verificado {
+            background: #8b5cf6;
+            color: white;
+        }
+        
+        .btn-primary {
+            background: linear-gradient(135deg, #2563EB, #3B82F6);
+            color: white;
+            padding: 12px 30px;
+            border: none;
+            border-radius: 10px;
+            font-weight: 600;
+            cursor: pointer;
+            font-size: 1rem;
+            transition: all 0.3s;
+        }
+        
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(37, 99, 235, 0.4);
+        }
+        
+        .btn-success {
+            background: #10b981;
+            color: white;
+            padding: 8px 16px;
+            border: none;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            font-size: 0.9rem;
+        }
+        
+        .btn-danger {
+            background: #ef4444;
+            color: white;
+            padding: 8px 16px;
+            border: none;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            font-size: 0.9rem;
+        }
+        
+        .btn-secondary {
+            background: #6b7280;
+            color: white;
+            padding: 8px 16px;
+            border: none;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            font-size: 0.9rem;
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #374151;
+        }
+        
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #E5E7EB;
+            border-radius: 8px;
+            font-size: 14px;
+            transition: all 0.3s;
+        }
+        
+        .form-group input:focus,
+        .form-group select:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: #2563EB;
+            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+        }
+        
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+        
+        .stat-card {
+            background: white;
+            padding: 20px;
+            border-radius: 15px;
+            text-align: center;
+            border: 2px solid #E5E7EB;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        }
+        
+        .stat-card .number {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: #2563EB;
+            margin-bottom: 5px;
+        }
+        
+        .stat-card .label {
+            color: #6b7280;
+            font-size: 0.9rem;
+        }
+        
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            color: #6b7280;
+        }
+        
+        .empty-state i {
+            font-size: 4rem;
+            margin-bottom: 20px;
+            opacity: 0.5;
+        }
+        
+        .sugerencias-box {
+            background: linear-gradient(135deg, rgba(139, 92, 246, 0.1), rgba(168, 85, 247, 0.1));
+            padding: 20px;
+            border-radius: 15px;
+            margin-top: 20px;
+            border-left: 5px solid #8b5cf6;
+        }
+        
+        .sugerencias-box h4 {
+            color: #7c3aed;
+            margin-bottom: 15px;
+        }
+        
+        .sugerencia-link {
+            display: inline-block;
+            padding: 10px 20px;
+            background: white;
+            border: 2px solid #8b5cf6;
+            border-radius: 8px;
+            color: #7c3aed;
+            text-decoration: none;
+            font-weight: 600;
+            margin: 5px;
+            transition: all 0.3s;
+        }
+        
+        .sugerencia-link:hover {
+            background: #8b5cf6;
+            color: white;
+            transform: translateY(-2px);
+        }
+        
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.5);
+            overflow-y: auto;
+        }
+        
+        .modal.active {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+        
+        .modal-content {
+            background: white;
+            border-radius: 15px;
+            max-width: 600px;
+            width: 100%;
+            max-height: 90vh;
+            overflow-y: auto;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+            padding: 25px;
+        }
+        
+        .close-modal {
+            background: none;
+            border: none;
+            font-size: 2rem;
+            cursor: pointer;
+            color: #6b7280;
+            line-height: 1;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            transition: all 0.3s;
+        }
+        
+        .close-modal:hover {
+            background: #F3F4F6;
+            color: #111827;
+        }
+        
+        @media (max-width: 768px) {
+            .header-section h1 {
+                font-size: 1.8rem;
+            }
+            
+            .tabs {
+                flex-direction: column;
+            }
+            
+            .tab {
+                width: 100%;
+                text-align: left;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <div class="header-section">
+        <h1>🚌 Transporte Público</h1>
+        <p>Alertas y avisos sobre colectivos, trenes, subtes y otros medios de transporte. Informá sobre aumentos, cambios de recorridos, cortes, tardanzas y más. Juntos podemos mantenernos informados.</p>
+    </div>
+    
+    <div class="container-main">
+        <!-- Área de Alertas de Emergencia Global -->
+        <div id="alertas-emergencia-comunidades"></div>
+        
+        <!-- Tabs -->
+        <div class="tabs">
+            <button class="tab active" data-tab="alertas">📋 Alertas Actuales</button>
+            <button class="tab" data-tab="reportar">➕ Reportar Alerta</button>
+            <button class="tab" data-tab="resolver">✅ Marcar como Resuelto</button>
+            <button class="tab" data-tab="mi-historial">📝 Mi Historial</button>
+            <button class="tab" data-tab="buscar-zonas">🔍 Buscar por Zonas</button>
+            <button class="tab" data-tab="estadisticas">📊 Estadísticas</button>
+            <button class="tab" data-tab="info">ℹ️ Información</button>
+        </div>
+        
+        <!-- Tab: Alertas Actuales -->
+        <div class="tab-content active" id="alertas">
+            <div class="info-box">
+                <h3>💡 ¿Cómo funciona?</h3>
+                <p style="margin: 0; line-height: 1.8;">
+                    Las alertas aquí son públicas y visibles para todos. Podés ver alertas sobre aumentos de tarifas, 
+                    cambios de recorridos, cortes de servicios, tardanzas y más. Si una alerta ya está resuelta o el 
+                    transporte volvió a funcionar, podés marcarla como resuelta. Juntos podemos mantenernos informados.
+                </p>
+            </div>
+            
+            <div id="filtros" style="margin-bottom: 20px; display: flex; gap: 15px; flex-wrap: wrap;">
+                <select id="filtro-tipo" class="form-group" style="flex: 1; min-width: 150px;">
+                    <option value="">Todos los tipos</option>
+                    <option value="aumento">💰 Aumento</option>
+                    <option value="cambio-recorrido">🔄 Cambio Recorrido</option>
+                    <option value="corte">🚫 Corte</option>
+                    <option value="tardanza">⏰ Tardanza</option>
+                    <option value="ruta-no-funciona">❌ Ruta No Funciona</option>
+                </select>
+                
+                <select id="filtro-transporte" class="form-group" style="flex: 1; min-width: 150px;">
+                    <option value="">Todos los transportes</option>
+                    <option value="colectivo">🚌 Colectivo</option>
+                    <option value="tren">🚂 Tren</option>
+                    <option value="subte">🚇 Subte</option>
+                    <option value="trolebus">🚎 Trolebús</option>
+                </select>
+                
+                <select id="filtro-provincia" class="form-group" style="flex: 1; min-width: 150px;">
+                    <option value="">Todas las provincias</option>
+                    <!-- Se llenará dinámicamente -->
+                </select>
+                
+                <button onclick="cargarAlertas()" class="btn-primary">🔍 Filtrar</button>
+            </div>
+            
+            <div id="alertas-lista">
+                <div class="empty-state">
+                    <i class="fas fa-spinner fa-spin"></i>
+                    <p>Cargando alertas...</p>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Tab: Reportar Alerta -->
+        <div class="tab-content" id="reportar">
+            <div class="info-box" style="background: linear-gradient(135deg, rgba(239, 68, 68, 0.1), rgba(220, 38, 38, 0.1)); border-left-color: #ef4444;">
+                <h3 style="color: #dc2626;">⚠️ Importante</h3>
+                <p style="margin: 0; line-height: 1.8;">
+                    Si es una <strong>emergencia grave</strong> relacionada con transporte, 
+                    llama inmediatamente a los servicios de emergencia: <strong>911</strong>. 
+                    Este sistema es para alertas informativas que afectan a la comunidad.
+                </p>
+            </div>
+            
+            <form id="form-reportar-alerta" style="background: white; padding: 30px; border-radius: 15px; border: 2px solid #E5E7EB;">
+                <div class="form-group">
+                    <label><i class="fas fa-exclamation-triangle"></i> Tipo de Alerta <span style="color: #ef4444;">*</span></label>
+                    <select id="tipo-alerta" required>
+                        <option value="">Selecciona el tipo de alerta</option>
+                        <option value="aumento">💰 Aumento de Tarifa</option>
+                        <option value="cambio-recorrido">🔄 Cambio de Recorrido</option>
+                        <option value="corte">🚫 Corte de Servicio</option>
+                        <option value="tardanza">⏰ Tardanza / Demora</option>
+                        <option value="ruta-no-funciona">❌ Ruta No Funciona</option>
+                        <option value="otro">ℹ️ Otro</option>
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label><i class="fas fa-bus"></i> Medio de Transporte <span style="color: #ef4444;">*</span></label>
+                    <select id="medio-transporte" required>
+                        <option value="">Selecciona el medio</option>
+                        <option value="colectivo">🚌 Colectivo</option>
+                        <option value="tren">🚂 Tren</option>
+                        <option value="subte">🚇 Subte / Metro</option>
+                        <option value="trolebus">🚎 Trolebús</option>
+                        <option value="otro">🚗 Otro</option>
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label><i class="fas fa-route"></i> Línea / Ruta (opcional)</label>
+                    <input type="text" id="linea-ruta" placeholder="Ej: Línea 60, Línea Roca, Línea B">
+                </div>
+                
+                <div class="form-group">
+                    <label><i class="fas fa-map-marker-alt"></i> Ubicación <span style="color: #ef4444;">*</span></label>
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 15px;">
+                        <input type="text" id="ciudad" required placeholder="Ciudad" />
+                        <input type="text" id="provincia" required placeholder="Provincia" />
+                    </div>
+                    <input type="text" id="direccion" placeholder="Zona específica o estación (opcional)" />
+                </div>
+                
+                <div class="form-group">
+                    <label><i class="fas fa-file-alt"></i> Descripción <span style="color: #ef4444;">*</span></label>
+                    <textarea id="descripcion" rows="4" required placeholder="Describe la situación: ¿Qué pasó? ¿Desde cuándo? ¿Afecta a muchas personas? ¿Hay más información relevante?"></textarea>
+                </div>
+                
+                <div class="form-group">
+                    <label><i class="fas fa-envelope"></i> Email (opcional) - Para recibir notificaciones de alertas cercanas</label>
+                    <input type="email" id="email-notificaciones" placeholder="tu@email.com" />
+                    <small style="color: #6b7280; font-size: 0.85rem; display: block; margin-top: 5px;">
+                        Si ingresás tu email y permitís ubicación, recibirás notificaciones cuando haya cortes, cambios de recorrido o tardanzas cerca de vos.
+                    </small>
+                </div>
+                
+                <div class="info-box" style="background: linear-gradient(135deg, rgba(37, 99, 235, 0.1), rgba(59, 130, 246, 0.1)); margin-top: 20px;">
+                    <p style="margin: 0; line-height: 1.8; font-size: 0.9rem;">
+                        <strong>💡 Nota:</strong> Este sistema es para que la comunidad se informe y se apoye mutuamente. 
+                        No podemos garantizar que se resuelva el problema, pero juntos podemos ayudarnos a planificar nuestros viajes.
+                    </p>
+                </div>
+                
+                <div style="display: flex; gap: 15px; justify-content: center; margin-top: 30px;">
+                    <button type="submit" class="btn-primary">
+                        <i class="fas fa-paper-plane"></i> Enviar Alerta
+                    </button>
+                    <button type="reset" class="btn-primary" style="background: #6b7280;">
+                        <i class="fas fa-redo"></i> Limpiar
+                    </button>
+                </div>
+            </form>
+        </div>
+        
+        <!-- Tab: Marcar como Resuelto -->
+        <div class="tab-content" id="resolver">
+            <div class="info-box" style="background: linear-gradient(135deg, rgba(16, 185, 129, 0.1), rgba(5, 150, 105, 0.1)); border-left-color: #10b981;">
+                <h3 style="color: #059669;">✅ ¿El transporte ya está funcionando?</h3>
+                <p style="margin: 0; line-height: 1.8;">
+                    Si una alerta ya está resuelta o el transporte volvió a su recorrido habitual, marcála como resuelta. 
+                    Esto ayuda a otros usuarios a saber que el problema ya no existe. Podés buscar por zona o línea para encontrar la alerta.
+                </p>
+            </div>
+            
+            <div style="background: white; padding: 30px; border-radius: 15px; border: 2px solid #E5E7EB; margin-top: 30px; margin-bottom: 30px;">
+                <div class="form-group">
+                    <label><i class="fas fa-search"></i> Buscar Alerta para Marcar como Resuelta</label>
+                    <div style="display: grid; grid-template-columns: 1fr 1fr auto; gap: 15px; align-items: end;">
+                        <input type="text" id="buscar-resolver-linea" placeholder="Línea o ruta (opcional)" />
+                        <input type="text" id="buscar-resolver-zona" placeholder="Ciudad o zona (opcional)" />
+                        <button class="btn-primary" onclick="buscarParaResolver()" style="white-space: nowrap;">
+                            <i class="fas fa-search"></i> Buscar
+                        </button>
+                    </div>
+                </div>
+            </div>
+            
+            <div id="resultados-resolver">
+                <div style="text-align: center; padding: 40px; color: #6b7280;">
+                    <i class="fas fa-search" style="font-size: 3rem; margin-bottom: 15px; opacity: 0.5;"></i>
+                    <p>Ingresa una línea o zona para buscar alertas que puedas marcar como resueltas.</p>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Tab: Mi Historial -->
+        <div class="tab-content" id="mi-historial">
+            <div class="info-box">
+                <h3>📝 Tu Historial de Alertas</h3>
+                <p style="margin: 0; line-height: 1.8;">
+                    Acá podés ver todas las alertas que reportaste. Podés editarlas, borrarlas o marcarlas como resueltas.
+                </p>
+            </div>
+            
+            <!-- Historial del Foro -->
+            <div style="margin-top: 20px; padding-top: 20px; border-top: 2px solid #e5e7eb;">
+                <h4 style="color: #374151; margin-bottom: 15px;">💬 Mis Posts en el Foro</h4>
+                <div id="mi-historial-foro-lista" style="margin-top: 15px;">
+                    <!-- El historial del foro se cargará aquí automáticamente -->
+                </div>
+            </div>
+            
+            <!-- Historial de Alertas -->
+            <div style="margin-top: 30px; padding-top: 20px; border-top: 2px solid #e5e7eb;">
+                <h4 style="color: #374151; margin-bottom: 15px;">🚌 Mis Alertas de Transporte</h4>
+                <div id="mi-historial-lista" style="margin-top: 15px;">
+                    <div class="empty-state">
+                        <i class="fas fa-spinner fa-spin"></i>
+                        <p>Cargando tu historial...</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Tab: Buscar por Zonas -->
+        <div class="tab-content" id="buscar-zonas">
+            <div class="info-box" style="background: linear-gradient(135deg, rgba(245, 158, 11, 0.1), rgba(217, 119, 6, 0.1)); border-left-color: #f59e0b;">
+                <h3 style="color: #d97706;">🔍 Buscar por Zonas</h3>
+                <p style="margin: 0; line-height: 1.8;">
+                    Buscá zonas específicas para ver alertas activas y el estado actual del transporte en esa área. 
+                    Esto te ayuda a planificar mejor tus viajes.
+                </p>
+            </div>
+            
+            <div style="background: white; padding: 30px; border-radius: 15px; border: 2px solid #E5E7EB; margin-top: 30px; margin-bottom: 30px;">
+                <div class="form-group">
+                    <label><i class="fas fa-map-marker-alt"></i> Buscar Zona</label>
+                    <div style="display: grid; grid-template-columns: 1fr 1fr auto; gap: 15px; align-items: end;">
+                        <input type="text" id="buscar-ciudad" placeholder="Ciudad (opcional)" />
+                        <input type="text" id="buscar-provincia" placeholder="Provincia (opcional)" />
+                        <button class="btn-primary" onclick="buscarPorZona()" style="white-space: nowrap;">
+                            <i class="fas fa-search"></i> Buscar
+                        </button>
+                    </div>
+                </div>
+            </div>
+            
+            <div id="resultados-zona">
+                <div style="text-align: center; padding: 40px; color: #6b7280;">
+                    <i class="fas fa-search" style="font-size: 3rem; margin-bottom: 15px; opacity: 0.5;"></i>
+                    <p>Ingresa una ciudad o provincia para buscar alertas en esa zona.</p>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Tab: Estadísticas -->
+        <div class="tab-content" id="estadisticas">
+            <h2 style="margin-bottom: 20px; color: #374151;">📊 Estadísticas de Alertas</h2>
+            
+            <div class="stats-grid" id="estadisticas-container">
+                <div class="stat-card">
+                    <div class="number" id="total-alertas">-</div>
+                    <div class="label">Total de Alertas</div>
+                </div>
+                <div class="stat-card">
+                    <div class="number" id="alertas-hoy">-</div>
+                    <div class="label">Alertas Hoy</div>
+                </div>
+                <div class="stat-card">
+                    <div class="number" id="zona-mas-afectada">-</div>
+                    <div class="label">Zona Más Afectada</div>
+                </div>
+                <div class="stat-card">
+                    <div class="number" id="transporte-mas-reportado">-</div>
+                    <div class="label">Transporte Más Reportado</div>
+                </div>
+            </div>
+            
+            <div style="background: white; padding: 30px; border-radius: 15px; border: 2px solid #E5E7EB; margin-top: 30px;">
+                <h3 style="color: #374151; margin-bottom: 20px;">📈 Gráficos</h3>
+                <p style="color: #6b7280;">Los gráficos detallados estarán disponibles próximamente.</p>
+            </div>
+        </div>
+        
+        <!-- Tab: Información -->
+        <div class="tab-content" id="info">
+            <div class="info-box">
+                <h3>ℹ️ ¿Qué es este sistema?</h3>
+                <p style="line-height: 1.8;">
+                    Este sistema permite a la comunidad reportar alertas sobre transporte público (aumentos, cambios de recorridos, 
+                    cortes, tardanzas) en sus zonas y ver el estado actual del transporte. <strong>No podemos garantizar que se resuelva 
+                    el problema</strong>, pero podemos apoyarnos como comunidad: informarnos sobre los cambios, ver qué zonas están 
+                    más afectadas, y planificar mejor nuestros viajes. Juntos podemos hacer la diferencia.
+                </p>
+            </div>
+            
+            <div style="background: white; padding: 25px; border-radius: 15px; border: 2px solid #E5E7EB; margin-bottom: 20px;">
+                <h3 style="color: #374151; margin-bottom: 15px;">🚌 Aplicaciones Recomendadas</h3>
+                <div class="sugerencias-box">
+                    <h4>📱 Moovit</h4>
+                    <p style="margin: 0 0 15px 0; color: #374151;">
+                        Moovit es una aplicación de transporte público que puede ayudarte a planificar tus viajes. 
+                        Podés buscar rutas y horarios en tu zona.
+                    </p>
+                    <a href="https://moovitapp.com" target="_blank" class="sugerencia-link">
+                        <i class="fas fa-external-link-alt"></i> Abrir Moovit
+                    </a>
+                </div>
+                
+                <div class="sugerencias-box" style="background: linear-gradient(135deg, rgba(37, 99, 235, 0.1), rgba(59, 130, 246, 0.1)); border-left-color: #2563EB; margin-top: 15px;">
+                    <h4 style="color: #1e40af;">🚗 Servicios de Remises en Cresalia</h4>
+                    <p style="margin: 0 0 15px 0; color: #374151;">
+                        Si necesitás un remis y hay servicios activos en tu zona, podés solicitarlos desde nuestra plataforma. 
+                        Los servicios aparecerán aquí una vez que estén disponibles.
+                    </p>
+                    <p style="margin: 0; color: #6b7280; font-size: 0.9rem; font-style: italic;">
+                        (Los servicios de remises estarán disponibles próximamente)
+                    </p>
+                </div>
+            </div>
+            
+            <div style="background: white; padding: 25px; border-radius: 15px; border: 2px solid #E5E7EB;">
+                <h3 style="color: #374151; margin-bottom: 15px;">❓ Preguntas Frecuentes</h3>
+                <div style="line-height: 1.8;">
+                    <p><strong>¿Mis datos son privados?</strong><br>
+                    Sí, no publicamos tu información personal. Solo mostramos la zona reportada y tu alias.</p>
+                    
+                    <p><strong>¿Puedo editar o borrar mis alertas?</strong><br>
+                    Sí, desde "Mi Historial" podés editar o borrar las alertas que reportaste.</p>
+                    
+                    <p><strong>¿Cómo marco una alerta como resuelta?</strong><br>
+                    Usá la pestaña "Marcar como Resuelto" y buscá la alerta por línea o zona. Luego marcála como resuelta.</p>
+                    
+                    <p><strong>¿Hay sistema de verificación?</strong><br>
+                    Sí, las alertas pueden ser verificadas por otros usuarios. Las alertas verificadas tienen un badge especial.</p>
+                    
+                    <p><strong>🔔 ¿Recibiré notificaciones de alertas cercanas?</strong><br>
+                    Si ingresás tu email (opcional) y permitís la ubicación, recibirás notificaciones push y por email cuando haya 
+                    <strong>cortes de servicio</strong>, <strong>cambios de recorrido</strong> o <strong>tardanzas</strong> cerca de tu ubicación (dentro de 20 km). 
+                    <strong>No recibirás notificaciones por aumentos de tarifas</strong>, solo por problemas operativos que afecten tu viaje.</p>
+                </div>
+            </div>
+        </div>
+        
+        <!-- SISTEMA DE FORO (Integrado) -->
+        <div style="background: white; border-radius: 15px; padding: 30px; border: 2px solid #E5E7EB; margin-top: 40px;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; flex-wrap: wrap; gap: 15px;">
+                <h2 style="color: #374151; margin: 0;">💬 Foro de la Comunidad</h2>
+                <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+                    <button class="btn-primary" onclick="mostrarHistorialTransporte()" style="background: #3B82F6; font-size: 0.9rem; padding: 10px 20px;">
+                        <i class="fas fa-history"></i> Mi Historial
+                    </button>
+                    <button class="btn-primary" id="btn-crear-post" style="font-size: 0.9rem; padding: 10px 20px;">
+                        <i class="fas fa-plus"></i> Crear Post
+                    </button>
+                </div>
+            </div>
+            
+            <div id="posts-container" style="display: grid; gap: 20px; margin-top: 20px;">
+                <!-- Los posts se cargarán aquí -->
+            </div>
+            
+            <!-- Historial del Foro (oculto por defecto) -->
+            <div id="mi-historial-foro-lista" style="display: none; margin-top: 30px;"></div>
+        </div>
+        
+        <!-- Modal crear post -->
+        <div class="modal" id="modal-crear-post">
+            <div class="modal-content">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                    <h3 style="margin: 0; color: #111827;">🚌 Crear Nuevo Post</h3>
+                    <button class="close-modal" id="cerrar-form-post">&times;</button>
+                </div>
+                
+                <form id="form-crear-post">
+                    <div class="form-group">
+                        <label for="autor-alias">Tu Alias (opcional):</label>
+                        <input type="text" id="autor-alias" placeholder="Ej: Viajero Frecuente, Usuario de Transporte..." maxlength="50">
+                    </div>
+                    <div class="form-group">
+                        <label for="post-titulo">Título (opcional):</label>
+                        <input type="text" id="post-titulo" placeholder="Un título para tu post..." maxlength="500">
+                    </div>
+                    <div class="form-group">
+                        <label for="post-contenido">Tu mensaje: *</label>
+                        <textarea id="post-contenido" placeholder="Compartí información sobre transporte, alertas, o simplemente desahógate sobre problemas de transporte... (mínimo 10 caracteres)" required></textarea>
+                    </div>
+                    <div style="display: flex; gap: 10px; justify-content: flex-end;">
+                        <button type="button" class="btn-secondary" id="cancelar-form-post">Cancelar</button>
+                        <button type="submit" class="btn-primary">
+                            <i class="fas fa-paper-plane"></i> Publicar
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+        
+        <!-- Footer: Comunidades Relacionadas -->
+        <div style="background: white; padding: 30px; border-radius: 15px; border: 2px solid #E5E7EB; margin-top: 40px;">
+            <h3 style="color: #374151; margin-bottom: 20px; text-align: center;">🚌 Comunidades de Servicios y Transporte</h3>
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 15px;">
+                <a href="../alertas-servicios-publicos/" style="
+                    display: block;
+                    padding: 20px;
+                    background: linear-gradient(135deg, #059669, #047857);
+                    color: white;
+                    text-decoration: none;
+                    border-radius: 12px;
+                    text-align: center;
+                    font-weight: 600;
+                    transition: all 0.3s ease;
+                    box-shadow: 0 4px 12px rgba(5, 150, 105, 0.2);
+                " onmouseover="this.style.transform='translateY(-4px)'; this.style.boxShadow='0 8px 20px rgba(5, 150, 105, 0.3)';" onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 4px 12px rgba(5, 150, 105, 0.2)';">
+                    ⚡ Alertas de Servicios Públicos
+                    <p style="margin: 10px 0 0 0; font-size: 0.9rem; opacity: 0.9; font-weight: 400;">
+                        Cortes de luz, agua y gas
+                    </p>
+                </a>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="../../auth/supabase-config.js"></script>
+    
+    <!-- Sistema de Foro -->
+    <script src="../../js/sistema-foro-comunidades.js"></script>
+    
+    <!-- Sistema de Alertas de Emergencia -->
+    <script src="../../js/sistema-alertas-comunidades.js"></script>
+    
+    <!-- Sistema de Interconexiones -->
+    <script src="../../js/sistema-interconexiones-global.js"></script>
+    
+    <!-- Sistema de Feedbacks de Comunidad -->
+    <script src="../../js/sistema-feedbacks-comunidades.js"></script>
+    
+    <!-- Sistema de Alertas de Emergencia Global -->
+    <script src="../../js/sistema-alertas-emergencia-global.js"></script>
+    
+    <!-- Sistema específico de Transporte Público -->
+    <script src="../../js/comunidad-transporte-publico.js"></script>
+    
+    <!-- Sistema de Notificaciones de Alertas de Transporte -->
+    <script src="../../js/notificaciones-alertas-transporte.js"></script>
+    
+    <!-- Sistema de Insignias para Reportes -->
+    <script src="../../js/sistema-insignias-reportes.js"></script>
+    
+    <script>
+        // Inicializar sistema de transporte público
+        let comunidadTransporte;
+        let foroComunidad;
+        let feedbacksComunidad;
+        
+        document.addEventListener('DOMContentLoaded', () => {
+            // Inicializar sistema de transporte
+            if (typeof ComunidadTransportePublico !== 'undefined') {
+                comunidadTransporte = new ComunidadTransportePublico();
+                window.comunidadTransporte = comunidadTransporte;
+            }
+            
+            // Inicializar foro
+            foroComunidad = new SistemaForoComunidades('transporte-publico');
+            window.foroComunidad = foroComunidad;
+            
+            // Inicializar sistema de notificaciones de transporte
+            if (typeof NotificacionesAlertasTransporte !== 'undefined') {
+                setTimeout(() => {
+                    window.notificacionesTransporte = new NotificacionesAlertasTransporte();
+                }, 3000);
+            }
+            
+            setTimeout(() => {
+                // Inicializar sistema de feedbacks de comunidad
+                if (typeof SistemaFeedbacksComunidades !== 'undefined') {
+                    feedbacksComunidad = new SistemaFeedbacksComunidades('transporte-publico');
+                    window.feedbacksComunidad = feedbacksComunidad;
+                }
+                
+                // Inicializar sistema de alertas de emergencia global
+                if (typeof SistemaAlertasEmergenciaGlobal !== 'undefined') {
+                    window.sistemaAlertasEmergenciaGlobal = new SistemaAlertasEmergenciaGlobal();
+                    window.sistemaAlertasEmergenciaGlobal.inicializar();
+                }
+                
+                // Inicializar Sistema de Interconexiones
+                if (typeof SistemaInterconexionesGlobal !== 'undefined') {
+                    window.interconexionesGlobal = new SistemaInterconexionesGlobal();
+                }
+            }, 500);
+        });
+        
+        // Funciones globales para tabs
+        function cargarAlertas() {
+            if (window.comunidadTransporte && typeof window.comunidadTransporte.cargarAlertas === 'function') {
+                window.comunidadTransporte.cargarAlertas();
+            }
+        }
+        
+        function buscarPorZona() {
+            if (window.comunidadTransporte && typeof window.comunidadTransporte.buscarPorZona === 'function') {
+                window.comunidadTransporte.buscarPorZona();
+            }
+        }
+        
+        function buscarParaResolver() {
+            if (window.comunidadTransporte && typeof window.comunidadTransporte.buscarParaResolver === 'function') {
+                window.comunidadTransporte.buscarParaResolver();
+            }
+        }
+        
+        // Función para mostrar historial del foro
+        function mostrarHistorialTransporte() {
+            const postsContainer = document.getElementById('posts-container');
+            const historialContainer = document.getElementById('mi-historial-foro-lista');
+            
+            if (!historialContainer) return;
+            
+            // Toggle mostrar/ocultar
+            if (historialContainer.style.display === 'none') {
+                historialContainer.style.display = 'block';
+                if (postsContainer) postsContainer.style.display = 'none';
+                
+                // Cargar historial
+                if (foroComunidad && typeof foroComunidad.cargarMiHistorial === 'function') {
+                    foroComunidad.cargarMiHistorial();
+                }
+            } else {
+                historialContainer.style.display = 'none';
+                if (postsContainer) postsContainer.style.display = 'grid';
+            }
+        }
+    </script>
+</body>
+</html>

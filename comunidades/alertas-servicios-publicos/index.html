@@ -4,9 +4,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Alertas de Servicios Públicos - Cresalia</title>
-    <link rel="icon" href="/favicon.ico" type="image/x-icon">
-    <link rel="shortcut icon" href="/favicon.ico" type="image/x-icon">
-    <link rel="apple-touch-icon" href="/favicon.ico">
+    <link rel="icon" type="image/x-icon" href="../../favicon.ico">
+    <link rel="icon" type="image/png" href="../../assets/logo/logo-cresalia.png">
+    <link rel="apple-touch-icon" href="../../assets/logo/logo-cresalia.png">
     
     <!-- Protección Anti-DevTools -->
     <script src="../../core/proteccion-devtools-avanzada.js?v=2.0"></script>
@@ -438,6 +438,14 @@
                     <textarea id="descripcion" rows="4" required placeholder="Describe el corte: ¿Desde cuándo? ¿Afecta a muchas personas? ¿Hay más información relevante?"></textarea>
                 </div>
                 
+                <div class="form-group">
+                    <label><i class="fas fa-envelope"></i> Email (opcional) - Para recibir notificaciones de cortes cercanos</label>
+                    <input type="email" id="email-notificaciones" placeholder="tu@email.com" />
+                    <small style="color: #6b7280; font-size: 0.85rem; display: block; margin-top: 5px;">
+                        Si ingresás tu email y permitís ubicación, recibirás notificaciones cuando haya cortes de servicios cerca de vos.
+                    </small>
+                </div>
+                
                 <div class="info-box" style="background: linear-gradient(135deg, rgba(5, 150, 105, 0.1), rgba(4, 120, 87, 0.1)); margin-top: 20px;">
                     <p style="margin: 0; line-height: 1.8; font-size: 0.9rem;">
                         <strong>💡 Nota:</strong> Este sistema es para que la comunidad se informe y se apoye mutuamente. 
@@ -727,7 +735,36 @@
                     
                     <p><strong>¿Puedo reportar múltiples veces?</strong><br>
                     Sí, pero intenta no duplicar reportes muy similares. Si el problema persiste, puedes actualizar tu reporte anterior.</p>
+                    
+                    <p><strong>🔔 ¿Recibiré notificaciones de cortes cercanos?</strong><br>
+                    Si ingresás tu email (opcional) y permitís la ubicación, recibirás notificaciones push y por email cuando haya 
+                    cortes de servicios (luz, agua, gas) cerca de tu ubicación (dentro de 20 km). Esto te ayuda a estar informado 
+                    sobre problemas en tu zona.</p>
                 </div>
+            </div>
+        </div>
+        
+        <!-- Footer: Comunidades Relacionadas -->
+        <div style="background: white; padding: 30px; border-radius: 15px; border: 2px solid #E5E7EB; margin-top: 40px;">
+            <h3 style="color: #374151; margin-bottom: 20px; text-align: center;">🚌 Comunidades de Servicios y Transporte</h3>
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 15px;">
+                <a href="../transporte-publico/" style="
+                    display: block;
+                    padding: 20px;
+                    background: linear-gradient(135deg, #2563EB, #3B82F6);
+                    color: white;
+                    text-decoration: none;
+                    border-radius: 12px;
+                    text-align: center;
+                    font-weight: 600;
+                    transition: all 0.3s ease;
+                    box-shadow: 0 4px 12px rgba(37, 99, 235, 0.2);
+                " onmouseover="this.style.transform='translateY(-4px)'; this.style.boxShadow='0 8px 20px rgba(37, 99, 235, 0.3)';" onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 4px 12px rgba(37, 99, 235, 0.2)';">
+                    🚌 Transporte Público
+                    <p style="margin: 10px 0 0 0; font-size: 0.9rem; opacity: 0.9; font-weight: 400;">
+                        Alertas sobre colectivos, trenes, subtes, aumentos y cambios de recorridos
+                    </p>
+                </a>
             </div>
         </div>
     </div>
@@ -735,7 +772,7 @@
     <!-- Scripts -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <script src="../../config-supabase-seguro.js"></script>
+    <script src="../../auth/supabase-config.js"></script>
     
     <!-- Sistema de Alertas de Emergencia -->
     <script src="../../js/sistema-alertas-comunidades.js"></script>
@@ -753,6 +790,12 @@
     
     <!-- Sistema de Alertas de Emergencia Global -->
     <script src="../../js/sistema-alertas-emergencia-global.js"></script>
+    
+    <!-- Sistema de Notificaciones de Alertas de Servicios -->
+    <script src="../../js/notificaciones-alertas-servicios.js"></script>
+    
+    <!-- Sistema de Insignias para Reportes -->
+    <script src="../../js/sistema-insignias-reportes.js"></script>
     
     <script>
         // Inicializar sistema de alertas
@@ -779,8 +822,28 @@
                 if (typeof SistemaInterconexionesGlobal !== 'undefined') {
                     window.interconexionesGlobal = new SistemaInterconexionesGlobal();
                 }
+                
+                // Inicializar sistema de notificaciones de servicios
+                if (typeof NotificacionesAlertasServicios !== 'undefined') {
+                    setTimeout(() => {
+                        window.notificacionesServicios = new NotificacionesAlertasServicios();
+                    }, 3000);
+                }
             }, 500);
         });
+        
+        // Función global para ofrecer ayuda a trabajadores
+        window.ofrecerAyudaTrabajadores = function(trabajadorId) {
+            if (window.sistemaInsignias && typeof window.sistemaInsignias.registrarAyuda === 'function') {
+                window.sistemaInsignias.registrarAyuda('servicios');
+            }
+            
+            if (typeof mostrarNotificacion === 'function') {
+                mostrarNotificacion('💜 Gracias por ofrecer tu ayuda solidaria. Tu gesto hace la diferencia.', 'success');
+            } else {
+                alert('💜 Gracias por ofrecer tu ayuda solidaria. Tu gesto hace la diferencia.');
+            }
+        };
     </script>
 </body>
 </html>

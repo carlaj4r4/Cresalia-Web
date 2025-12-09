@@ -10947,5 +10947,174 @@ Precio: $${precio}/mes
     
     <!-- Widget de Chat de Email - Brevo -->
     <script src="../../js/widget-brevo-chat.js"></script>
+    
+    <script>
+        // ============================================
+        // SISTEMA DE BIENESTAR EMOCIONAL - WIDGET
+        // ============================================
+        
+        // Función para deshabilitar widget de bienestar
+        function deshabilitarBienestar() {
+            console.log('💜 Deshabilitando widget de bienestar...');
+            const widget = document.getElementById('bienestarWidget');
+            const menu = document.getElementById('bienestarMenu');
+            const panelControl = document.getElementById('panelControlBienestar');
+            
+            if (widget) {
+                // Ocultar widget y menú
+                widget.style.display = 'none';
+                if (menu) menu.style.display = 'none';
+                
+                // Guardar estado
+                localStorage.setItem('bienestar_deshabilitado', 'true');
+                
+                // Mostrar panel de control simple
+                mostrarPanelControlBienestar();
+                
+                if (typeof mostrarNotificacion === 'function') {
+                    mostrarNotificacion('✅ Widget de bienestar deshabilitado', 'success');
+                }
+            } else {
+                console.log('⚠️ Widget de bienestar no encontrado');
+            }
+        }
+        
+        // Función para habilitar widget de bienestar
+        function habilitarBienestar() {
+            console.log('💜 Habilitando widget de bienestar...');
+            const widget = document.getElementById('bienestarWidget');
+            const panelControl = document.getElementById('panelControlBienestar');
+            
+            if (widget) {
+                // Mostrar widget
+                widget.style.display = 'flex';
+                
+                // Remover estado deshabilitado
+                localStorage.removeItem('bienestar_deshabilitado');
+                
+                // Ocultar panel de control
+                if (panelControl) {
+                    panelControl.style.display = 'none';
+                }
+                
+                if (typeof mostrarNotificacion === 'function') {
+                    mostrarNotificacion('✅ Widget de bienestar habilitado', 'success');
+                }
+            } else {
+                console.log('⚠️ Widget de bienestar no encontrado');
+            }
+        }
+        
+        // Función para mostrar panel de control simple (solo botones)
+        function mostrarPanelControlBienestar() {
+            let panelControl = document.getElementById('panelControlBienestar');
+            
+            // Si no existe, crearlo
+            if (!panelControl) {
+                panelControl = document.createElement('div');
+                panelControl.id = 'panelControlBienestar';
+                panelControl.style.cssText = `
+                    position: fixed !important;
+                    bottom: 20px !important;
+                    right: 20px !important;
+                    background: white !important;
+                    border-radius: 15px !important;
+                    box-shadow: 0 10px 40px rgba(0,0,0,0.15) !important;
+                    padding: 20px !important;
+                    z-index: 999998 !important;
+                    min-width: 250px !important;
+                    border: 2px solid #E5E7EB !important;
+                `;
+                
+                panelControl.innerHTML = `
+                    <div style="text-align: center; margin-bottom: 15px;">
+                        <h4 style="margin: 0 0 10px 0; color: #374151; font-size: 1rem;">💜 Bienestar Emocional</h4>
+                        <p style="margin: 0; color: #6B7280; font-size: 0.85rem; line-height: 1.5;">Sabemos que no todos los días son buenos. Si deseas desahogarte, puedes habilitarlo en cualquier momento. Estamos aquí para ayudarte 💜</p>
+                    </div>
+                    <div style="display: flex; gap: 10px; flex-direction: column;">
+                        <button onclick="habilitarBienestar()" style="
+                            background: #22c55e !important;
+                            color: white !important;
+                            border: none !important;
+                            padding: 12px 20px !important;
+                            border-radius: 8px !important;
+                            cursor: pointer !important;
+                            font-size: 0.9rem !important;
+                            font-weight: 600 !important;
+                            width: 100% !important;
+                        ">
+                            <i class="fas fa-heart"></i> Habilitar
+                        </button>
+                        <button onclick="deshabilitarBienestar()" style="
+                            background: #ef4444 !important;
+                            color: white !important;
+                            border: none !important;
+                            padding: 12px 20px !important;
+                            border-radius: 8px !important;
+                            cursor: pointer !important;
+                            font-size: 0.9rem !important;
+                            font-weight: 600 !important;
+                            width: 100% !important;
+                            opacity: 0.5 !important;
+                            cursor: not-allowed !important;
+                        " disabled>
+                            <i class="fas fa-heart-broken"></i> Deshabilitar
+                        </button>
+                    </div>
+                `;
+                
+                document.body.appendChild(panelControl);
+            }
+            
+            // Mostrar panel
+            panelControl.style.display = 'block';
+        }
+        
+        // Hacer funciones globales para acceso desde onclick
+        window.deshabilitarBienestar = deshabilitarBienestar;
+        window.habilitarBienestar = habilitarBienestar;
+        window.mostrarPanelControlBienestar = mostrarPanelControlBienestar;
+        
+        // Función para verificar estado del widget de bienestar al cargar
+        function verificarEstadoWidgetBienestar() {
+            console.log('💜 Verificando estado del widget de bienestar...');
+            const widget = document.getElementById('bienestarWidget');
+            const menu = document.getElementById('bienestarMenu');
+            
+            if (widget) {
+                const deshabilitado = localStorage.getItem('bienestar_deshabilitado');
+                if (deshabilitado === 'true') {
+                    // Ocultar widget y menú completamente
+                    widget.style.display = 'none';
+                    if (menu) menu.style.display = 'none';
+                    
+                    // Mostrar panel de control simple
+                    mostrarPanelControlBienestar();
+                    
+                    console.log('💜 Widget de bienestar deshabilitado por configuración - Panel de control mostrado');
+                } else {
+                    // Asegurar que el widget esté visible
+                    widget.style.display = 'flex';
+                    
+                    // Ocultar panel de control si existe
+                    const panelControl = document.getElementById('panelControlBienestar');
+                    if (panelControl) {
+                        panelControl.style.display = 'none';
+                    }
+                    
+                    console.log('💜 Widget de bienestar habilitado');
+                }
+            } else {
+                console.log('⚠️ Widget de bienestar no encontrado en el DOM');
+            }
+        }
+        
+        // Verificar estado al cargar
+        document.addEventListener('DOMContentLoaded', () => {
+            setTimeout(() => {
+                verificarEstadoWidgetBienestar();
+            }, 1500);
+        });
+    </script>
 </body>
 </html>

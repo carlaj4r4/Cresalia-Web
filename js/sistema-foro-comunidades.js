@@ -1005,8 +1005,63 @@ class SistemaForoComunidades {
     }
     
     async reaccionarPost(postId) {
-        // TODO: Implementar reacciones
-        this.mostrarMensaje('💜 Gracias por tu apoyo', 'success');
+        try {
+            // Obtener post actual
+            let post = null;
+            
+            if (this.supabase) {
+                const { data, error } = await this.supabase
+                    .from('posts_comunidades')
+                    .select('num_reacciones')
+                    .eq('id', postId)
+                    .single();
+                
+                if (error) throw error;
+                post = data;
+            } else {
+                // Modo local
+                const postsKey = `posts_${this.comunidadSlug}`;
+                const posts = JSON.parse(localStorage.getItem(postsKey) || '[]');
+                post = posts.find(p => p.id === postId);
+            }
+            
+            if (!post) {
+                this.mostrarMensaje('Post no encontrado', 'error');
+                return;
+            }
+            
+            // Incrementar reacciones
+            const nuevasReacciones = (post.num_reacciones || 0) + 1;
+            
+            if (this.supabase) {
+                const { error } = await this.supabase
+                    .from('posts_comunidades')
+                    .update({ num_reacciones: nuevasReacciones })
+                    .eq('id', postId);
+                
+                if (error) throw error;
+            } else {
+                // Modo local
+                const postsKey = `posts_${this.comunidadSlug}`;
+                const posts = JSON.parse(localStorage.getItem(postsKey) || '[]');
+                const postIndex = posts.findIndex(p => p.id === postId);
+                if (postIndex !== -1) {
+                    posts[postIndex].num_reacciones = nuevasReacciones;
+                    localStorage.setItem(postsKey, JSON.stringify(posts));
+                }
+            }
+            
+            // Actualizar UI
+            const botonReaccion = document.querySelector(`[onclick*="reaccionarPost('${postId}')"]`);
+            if (botonReaccion) {
+                botonReaccion.innerHTML = `<i class="fas fa-heart"></i> Apoyo (${nuevasReacciones})`;
+            }
+            
+            this.mostrarMensaje('💜 Gracias por tu apoyo', 'success');
+        } catch (error) {
+            console.error('Error reaccionando al post:', error);
+            this.mostrarMensaje('Error al reaccionar. Por favor, intenta nuevamente.', 'error');
+        }
     }
     
     configurarBotonesComentarios() {
