@@ -734,7 +734,7 @@
     
     <!-- Scripts -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <script src="../config-supabase-seguro.js"></script>
+    <script src="../auth/supabase-config.js"></script>
     <script>
         let supabase = null;
         let comunidades = [];
@@ -753,7 +753,7 @@
                     supabase = window.supabase.createClient(config.url, config.anonKey);
                     console.log('✅ Supabase inicializado');
                 } else {
-                    mostrarAlerta('⚠️ Supabase no configurado. Configurá config-supabase-seguro.js', 'error');
+                    mostrarAlerta('⚠️ Supabase no configurado. Verificá auth/supabase-config.js', 'error');
                 }
                 
                 // Cargar comunidades
