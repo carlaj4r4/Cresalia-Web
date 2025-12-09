@@ -900,6 +900,17 @@
     <!-- Sistema de Alertas de Emergencia Global -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="auth/supabase-config.js"></script>
+    <script>
+        // Inicializar Supabase al cargar
+        document.addEventListener('DOMContentLoaded', () => {
+            if (typeof initSupabase === 'function') {
+                window.SUPABASE_CLIENT = initSupabase();
+                console.log('✅ Supabase inicializado en panel de vendedores');
+            } else {
+                console.warn('⚠️ initSupabase no está disponible');
+            }
+        });
+    </script>
     <script src="js/sistema-alertas-comunidades.js"></script>
     <!-- Sistema de Check-in Automático de Emergencias -->
     <script src="js/sistema-checkin-emergencias.js"></script>
