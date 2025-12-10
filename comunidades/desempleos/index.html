@@ -1,0 +1,881 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Comunidad de Desempleos - Cresalia</title>
+    <link rel="icon" type="image/x-icon" href="../../favicon.ico">
+    <link rel="icon" type="image/png" href="../../assets/logo/logo-cresalia.png">
+    <link rel="apple-touch-icon" href="../../assets/logo/logo-cresalia.png">
+    
+    <!-- PWA Manifest -->
+    <link rel="manifest" href="../../comunidades/manifest-comunidades.json">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    <meta name="apple-mobile-web-app-title" content="Cresalia Comunidades">
+    <meta name="theme-color" content="#F59E0B">
+    
+    <!-- Protección Anti-DevTools -->
+    <script src="../../core/proteccion-devtools-avanzada.js?v=2.0"></script>
+    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            -webkit-user-select: none;
+            -moz-user-select: none;
+            -ms-user-select: none;
+            user-select: none;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #F59E0B 0%, #F97316 50%, #EF4444 100%);
+            min-height: 100vh;
+            padding: 20px;
+            position: relative;
+        }
+        
+        body::before {
+            content: 'CONFIDENCIAL';
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%) rotate(-45deg);
+            font-size: 120px;
+            color: rgba(245, 158, 11, 0.05);
+            z-index: 0;
+            pointer-events: none;
+            font-weight: 900;
+            letter-spacing: 20px;
+        }
+        
+        .page-wrapper {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            flex-direction: column;
+            gap: 30px;
+        }
+        
+        .container {
+            background: white;
+            border-radius: 24px;
+            padding: 60px 40px;
+            max-width: 100%;
+            text-align: center;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            position: relative;
+            z-index: 1;
+        }
+        
+        .foro-container {
+            background: white;
+            border-radius: 24px;
+            padding: 40px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            position: relative;
+            z-index: 1;
+            text-align: left;
+        }
+        
+        .foro-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 2px solid #E5E7EB;
+        }
+        
+        .foro-header h2 {
+            color: #374151;
+            font-size: 2rem;
+            margin: 0;
+        }
+        
+        .btn-primary {
+            background: linear-gradient(135deg, #F59E0B 0%, #F97316 100%);
+            color: white;
+            padding: 12px 30px;
+            border-radius: 10px;
+            border: none;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(245, 158, 11, 0.4);
+        }
+        
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.7);
+            z-index: 10000;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+        
+        .modal-content {
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            max-width: 600px;
+            width: 100%;
+            max-height: 90vh;
+            overflow-y: auto;
+            position: relative;
+        }
+        
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+        }
+        
+        .modal-header h3 {
+            color: #374151;
+            margin: 0;
+        }
+        
+        .cerrar-modal {
+            background: none;
+            border: none;
+            font-size: 28px;
+            cursor: pointer;
+            color: #6B7280;
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            color: #374151;
+            font-weight: 600;
+        }
+        
+        .form-group input,
+        .form-group textarea {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #E5E7EB;
+            border-radius: 10px;
+            font-family: inherit;
+            font-size: 1rem;
+            transition: border-color 0.3s ease;
+            -webkit-user-select: text;
+            -moz-user-select: text;
+            -ms-user-select: text;
+            user-select: text;
+        }
+        
+        .form-group input:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: #F59E0B;
+        }
+        
+        .form-group textarea {
+            min-height: 150px;
+            resize: vertical;
+        }
+        
+        #posts-container {
+            margin-top: 30px;
+        }
+        
+        .post {
+            background: #F9FAFB;
+            border-radius: 15px;
+            padding: 25px;
+            margin-bottom: 25px;
+            border-left: 4px solid #F59E0B;
+        }
+        
+        .post-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 15px;
+        }
+        
+        .post-autor {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+        
+        .post-autor strong {
+            color: #374151;
+            font-size: 1.1rem;
+        }
+        
+        .post-fecha {
+            color: #9CA3AF;
+            font-size: 0.9rem;
+        }
+        
+        .post-acciones {
+            display: flex;
+            gap: 10px;
+        }
+        
+        .btn-editar, .btn-borrar {
+            background: none;
+            border: none;
+            color: #6B7280;
+            cursor: pointer;
+            padding: 5px 10px;
+            border-radius: 5px;
+            transition: all 0.3s ease;
+        }
+        
+        .btn-editar:hover {
+            background: #FEF3C7;
+            color: #F59E0B;
+        }
+        
+        .btn-borrar:hover {
+            background: #FEE2E2;
+            color: #EF4444;
+        }
+        
+        .post-titulo {
+            color: #374151;
+            font-size: 1.3rem;
+            margin-bottom: 15px;
+        }
+        
+        .post-contenido {
+            color: #4B5563;
+            line-height: 1.8;
+            margin-bottom: 20px;
+            white-space: pre-wrap;
+        }
+        
+        .post-footer {
+            display: flex;
+            gap: 15px;
+            padding-top: 15px;
+            border-top: 1px solid #E5E7EB;
+        }
+        
+        .btn-comentar, .btn-reaccionar {
+            background: none;
+            border: none;
+            color: #F59E0B;
+            cursor: pointer;
+            padding: 8px 15px;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+        
+        .btn-comentar:hover, .btn-reaccionar:hover {
+            background: rgba(245, 158, 11, 0.1);
+        }
+        
+        .comentarios-container {
+            margin-top: 20px;
+            padding-top: 20px;
+            border-top: 1px solid #E5E7EB;
+        }
+        
+        .comentarios-list {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+        
+        .comentario {
+            background: white;
+            padding: 15px;
+            border-radius: 10px;
+            border-left: 3px solid rgba(245, 158, 11, 0.3);
+        }
+        
+        .comentario-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+        
+        .comentario-header strong {
+            color: #374151;
+        }
+        
+        .comentario-fecha {
+            color: #9CA3AF;
+            font-size: 0.85rem;
+        }
+        
+        .comentario-contenido {
+            color: #4B5563;
+            line-height: 1.6;
+            white-space: pre-wrap;
+        }
+        
+        .form-comentar {
+            margin-top: 15px;
+            padding: 15px;
+            background: #F9FAFB;
+            border-radius: 10px;
+        }
+        
+        .form-comentar textarea {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #E5E7EB;
+            border-radius: 8px;
+            font-family: inherit;
+            resize: vertical;
+            margin-bottom: 10px;
+            -webkit-user-select: text;
+            -moz-user-select: text;
+            -ms-user-select: text;
+            user-select: text;
+        }
+        
+        .form-comentar-botones {
+            display: flex;
+            gap: 10px;
+        }
+        
+        .btn-secondary {
+            background: #E5E7EB;
+            color: #374151;
+            padding: 10px 20px;
+            border-radius: 8px;
+            border: none;
+            font-weight: 600;
+            cursor: pointer;
+        }
+        
+        .sin-posts, .cargando {
+            text-align: center;
+            padding: 60px 20px;
+            color: #6B7280;
+        }
+        
+        .sin-posts h3 {
+            color: #374151;
+            margin-bottom: 15px;
+        }
+        
+        .error {
+            background: #FEE2E2;
+            color: #DC2626;
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+        }
+        
+        .trigger-warning {
+            background: #FEF3C7;
+            border: 2px solid #F59E0B;
+            padding: 20px;
+            border-radius: 12px;
+            margin: 25px 0;
+            color: #92400E;
+            font-weight: 500;
+        }
+        
+        .trigger-warning strong {
+            color: #B45309;
+            display: block;
+            margin-bottom: 8px;
+            font-size: 1.1em;
+        }
+        
+        .icon {
+            font-size: 80px;
+            margin-bottom: 30px;
+        }
+        
+        h1 {
+            color: #374151;
+            margin-bottom: 20px;
+            font-size: 2.5rem;
+        }
+        
+        .subtitle {
+            background: linear-gradient(135deg, #F59E0B, #F97316, #EF4444);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            font-weight: 700;
+            font-size: 1.3rem;
+            margin-bottom: 20px;
+        }
+        
+        p {
+            color: #6B7280;
+            font-size: 1.1rem;
+            line-height: 1.8;
+            margin-bottom: 30px;
+        }
+        
+        .btn {
+            display: inline-block;
+            background: linear-gradient(135deg, #F59E0B 0%, #F97316 100%);
+            color: white;
+            padding: 15px 40px;
+            border-radius: 12px;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 1.1rem;
+            transition: all 0.3s ease;
+            margin: 5px;
+            cursor: pointer;
+            border: none;
+        }
+        
+        .btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 30px rgba(245, 158, 11, 0.4);
+        }
+        
+        .btn-rules {
+            background: linear-gradient(135deg, #F97316 0%, #EF4444 100%);
+        }
+        
+        .btn-home {
+            background: linear-gradient(135deg, #EC4899, #F9A8D4);
+        }
+        
+        .btn-home:hover {
+            box-shadow: 0 10px 30px rgba(236, 72, 153, 0.4);
+        }
+        
+        .safe-space {
+            background: linear-gradient(135deg, rgba(245, 158, 11, 0.1), rgba(249, 115, 22, 0.1), rgba(239, 68, 68, 0.1));
+            padding: 30px;
+            border-radius: 15px;
+            margin: 30px 0;
+            border: 3px solid;
+            border-image: linear-gradient(135deg, #F59E0B, #F97316, #EF4444) 1;
+        }
+        
+        .safe-space h3 {
+            color: #374151;
+            margin-bottom: 15px;
+            font-size: 1.5rem;
+        }
+        
+        .safe-space p {
+            margin-bottom: 0;
+        }
+        
+        .features {
+            margin-top: 40px;
+            padding-top: 40px;
+            border-top: 2px solid #E5E7EB;
+        }
+        
+        .feature {
+            margin-bottom: 20px;
+            color: #374151;
+            font-size: 1rem;
+            text-align: left;
+            padding-left: 20px;
+        }
+        
+        .feature i {
+            margin-right: 10px;
+            color: #F59E0B;
+            font-size: 1.2rem;
+        }
+        
+        .divider {
+            height: 4px;
+            background: linear-gradient(90deg, #F59E0B, #F97316, #EF4444);
+            border-radius: 2px;
+            margin: 30px 0;
+        }
+        
+        .other-communities {
+            margin-top: 50px;
+            padding-top: 30px;
+            border-top: 2px solid #E5E7EB;
+        }
+        
+        .other-communities h3 {
+            color: #374151;
+            margin-bottom: 20px;
+        }
+        
+        .community-links {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            justify-content: center;
+        }
+        
+        .community-link {
+            display: inline-block;
+            padding: 10px 20px;
+            color: white;
+            text-decoration: none;
+            border-radius: 8px;
+            font-size: 0.9rem;
+            transition: all 0.3s ease;
+        }
+        
+        .community-link:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        }
+        
+        #copyWarning {
+            display: none;
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: #EF4444;
+            color: white;
+            padding: 15px 20px;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+            z-index: 10000;
+            font-weight: 600;
+        }
+        
+        @media (max-width: 768px) {
+            .container {
+                padding: 40px 25px;
+            }
+            
+            h1 {
+                font-size: 2rem;
+            }
+            
+            .icon {
+                font-size: 60px;
+            }
+            
+            .feature {
+                text-align: center;
+                padding-left: 0;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div id="copyWarning">
+        ⚠️ Este contenido está protegido. No copies historias de otros usuarios.
+    </div>
+    
+    <div class="page-wrapper">
+    <div class="container">
+        <div class="icon">💼</div>
+        <h1>Comunidad de Desempleos</h1>
+        <p class="subtitle">Un Espacio Seguro para Compartir tu Experiencia Sin Ser Juzgado/a</p>
+        
+        <div class="trigger-warning">
+            <strong>⚠️ Advertencia de Contenido:</strong>
+            Esta comunidad puede contener contenido sensible sobre desempleo, búsqueda laboral y dificultades económicas. 
+            Si estás en un momento vulnerable, por favor considerá tu bienestar emocional antes de participar. 
+            No estás obligado/a a leer nada que te haga daño. Tu bienestar es lo más importante.
+        </div>
+        
+        <p>Un espacio seguro y anónimo para compartir tu experiencia con el desempleo, buscar apoyo, consejos y oportunidades laborales sin ser juzgado. Aquí tu situación es válida y respetada, sin importar cuánto tiempo llevás buscando trabajo.</p>
+        
+        <div class="safe-space">
+            <h3>💼 Este es un espacio SEGURO para ti</h3>
+            <p>Estar desempleado/a NO es tu culpa. NO significa que no valés. NO significa que no sos capaz. Es una situación difícil que muchos enfrentamos. Aquí no te dirán "no buscás bien", "no tenés experiencia", "sos muy viejo/a" o "sos muy joven". Tu búsqueda es VÁLIDA y respetada aquí. 💼</p>
+            <p style="margin-top: 15px; font-size: 0.95rem; opacity: 0.9;"><strong>Nota importante:</strong> Este espacio es para apoyo emocional y compartir experiencias. Para oportunidades laborales reales, también podés visitar <a href="../../cresalia-jobs/" style="color: #F59E0B; font-weight: 600;">Cresalia Jobs</a> donde hay ofertas de trabajo disponibles.</p>
+        </div>
+        
+        <div class="divider"></div>
+        
+        <a href="../reglas-comunidad.html" class="btn btn-rules">
+            <i class="fas fa-shield-alt"></i> Leer Reglas (IMPORTANTE)
+        </a>
+        
+        <a href="../../index-cresalia.html" class="btn btn-home">
+            <i class="fas fa-home"></i> Volver a Cresalia
+        </a>
+        
+        <div class="features">
+            <h3 style="color: #374151; margin-bottom: 25px; text-align: center;">Lo que encontrarás aquí:</h3>
+            <div class="feature">
+                <i class="fas fa-comments"></i> <strong>Compartir experiencias:</strong> Cuenta cómo te sentís, tus frustraciones, tus logros en la búsqueda
+            </div>
+            <div class="feature">
+                <i class="fas fa-handshake"></i> <strong>Consejos y tips:</strong> Comparte y recibe consejos sobre búsqueda laboral, CVs, entrevistas
+            </div>
+            <div class="feature">
+                <i class="fas fa-briefcase"></i> <strong>Oportunidades:</strong> Comparte ofertas que encontraste o busca recomendaciones
+            </div>
+            <div class="feature">
+                <i class="fas fa-heart"></i> <strong>Apoyo emocional:</strong> Si te sentís desanimado/a, aquí te entendemos y apoyamos
+            </div>
+            <div class="feature">
+                <i class="fas fa-users"></i> <strong>Networking:</strong> Conecta con otros que están en la misma situación
+            </div>
+            <div class="feature">
+                <i class="fas fa-shield-alt"></i> <strong>Anonimato total:</strong> Comparte sin miedo a ser identificado/a
+            </div>
+            <div class="feature">
+                <i class="fas fa-lightbulb"></i> <strong>Ideas y recursos:</strong> Comparte recursos útiles, cursos, capacitaciones
+            </div>
+            <div class="feature">
+                <i class="fas fa-edit"></i> <strong>Control total:</strong> Edita o borra tus mensajes cuando quieras
+            </div>
+        </div>
+        
+        <div class="divider"></div>
+        
+        <div class="safe-space">
+            <h3>💼 Tu situación NO define tu valor</h3>
+            <p>Te han dicho "no buscás bien", "no tenés experiencia suficiente", "sos muy viejo/a para empezar", "sos muy joven", "no tenés estudios", "tenés demasiados estudios". Esas palabras DUELEN. Pero aquí sabés que NO es tu culpa. El mercado laboral es difícil. Y merecés un espacio donde compartir tu experiencia sin miedo. 💼</p>
+        </div>
+        
+        <div class="safe-space" style="background: linear-gradient(135deg, rgba(245, 158, 11, 0.15), rgba(249, 115, 22, 0.15), rgba(239, 68, 68, 0.15)); margin-top: 20px;">
+            <h3>💙 Personas mayores: Este es VUESTRO espacio</h3>
+            <p>Si sos mayor y te dicen "sos muy viejo/a", "no vas a adaptarte", "buscamos perfiles jóvenes", sabés lo difícil que es. Aquí NO te juzgamos. Tu experiencia es valiosa. Este es VUESTRO refugio.</p>
+        </div>
+        
+        <div class="safe-space" style="background: linear-gradient(135deg, rgba(245, 158, 11, 0.15), rgba(249, 115, 22, 0.15), rgba(239, 68, 68, 0.15)); margin-top: 20px;">
+            <h3>🎯 Todos estamos en la misma lucha</h3>
+            <p>No importa tu edad, tu experiencia, tu educación. No importa cuánto tiempo llevás buscando. No importa si es tu primer trabajo o si tenés años de experiencia. Tu búsqueda es VÁLIDA. Aquí no hay "buscador correcto" o "buscador incorrecto". Solo personas apoyándose mutuamente.</p>
+        </div>
+        
+        <!-- Otras Comunidades -->
+        <div class="other-communities">
+            <h3>Otras Comunidades de Apoyo</h3>
+            <div class="community-links">
+                <a href="../estres-laboral/" class="community-link" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
+                    💼 Estrés Laboral
+                </a>
+                <a href="../estres/" class="community-link" style="background: linear-gradient(135deg, #8B5CF6, #A78BFA);">
+                    😰 Estrés
+                </a>
+                <a href="../libertad-economica/" class="community-link" style="background: linear-gradient(135deg, #10B981, #059669);">
+                    💰 Libertad Económica
+                </a>
+                <a href="../../cresalia-jobs/" class="community-link" style="background: linear-gradient(135deg, #F59E0B, #EAB308);">
+                    💼 Cresalia Jobs
+                </a>
+                <a href="../gamers-videojuegos/" class="community-link" style="background: linear-gradient(135deg, #6366F1, #8B5CF6);">
+                    🎮 Gamers
+                </a>
+                <a href="../otakus-anime-manga/" class="community-link" style="background: linear-gradient(135deg, #FF6B9D, #C471ED);">
+                    🌸 Otakus
+                </a>
+                <a href="../madres-padres-solteros/" class="community-link" style="background: linear-gradient(135deg, #F472B6, #EC4899);">
+                    👨‍👩‍👧‍👦 Madres y Padres Solteros
+                </a>
+                <a href="../medicos-enfermeros/" class="community-link" style="background: linear-gradient(135deg, #10B981, #059669);">
+                    👨‍⚕️👩‍⚕️ Médicos y Enfermeros
+                </a>
+                <a href="../veterinarios/" class="community-link" style="background: linear-gradient(135deg, #059669, #047857);">
+                    🐾 Veterinarios
+                </a>
+                <a href="../bomberos/" class="community-link" style="background: linear-gradient(135deg, #EF4444, #DC2626);">
+                    🚒 Bomberos
+                </a>
+                <a href="../mujeres-sobrevivientes/" class="community-link" style="background: linear-gradient(135deg, #C084FC, #E879F9);">
+                    💜 Mujeres Sobrevivientes
+                </a>
+                <a href="../hombres-sobrevivientes/" class="community-link" style="background: linear-gradient(135deg, #3B82F6, #1E40AF);">
+                    💙 Hombres Sobrevivientes
+                </a>
+                <a href="../lgbtq-experiencias/" class="community-link" style="background: linear-gradient(135deg, #FF6B6B, #FF8E53);">
+                    🏳️‍🌈 Experiencias LGBTQ+
+                </a>
+                <a href="../anti-bullying/" class="community-link" style="background: linear-gradient(135deg, #60A5FA, #34D399);">
+                    🛡️ Anti-Bullying
+                </a>
+                <a href="../discapacidad/" class="community-link" style="background: linear-gradient(135deg, #8B5CF6, #A78BFA);">
+                    ♿ Personas con Discapacidad
+                </a>
+            </div>
+        </div>
+        
+        <p style="margin-top: 40px; font-size: 0.9rem; color: #9CA3AF;">
+            💼💜 Parte del ecosistema Cresalia - Tu búsqueda es válida
+        </p>
+    </div>
+    
+    <!-- SISTEMA DE FORO -->
+    <div class="foro-container">
+        <div class="foro-header">
+            <h2>💼 Foro de la Comunidad</h2>
+            <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+                <button class="btn-primary" onclick="mostrarHistorialDesempleos()" style="background: #F97316;">
+                    <i class="fas fa-history"></i> Mi Historial
+                </button>
+                <button class="btn-primary" id="btn-crear-post">
+                    <i class="fas fa-plus"></i> Crear Post
+                </button>
+            </div>
+        </div>
+        
+        <div id="posts-container">
+            <!-- Los posts se cargarán aquí -->
+        </div>
+        
+        <!-- Historial (oculto por defecto) -->
+        <div id="mi-historial-foro-lista" style="display: none; margin-top: 30px;"></div>
+    </div>
+    
+    <!-- Modal crear post -->
+    <div class="modal" id="modal-crear-post">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>💼 Crear Nuevo Post</h3>
+                <button class="cerrar-modal" id="cerrar-form-post">&times;</button>
+            </div>
+            <form id="form-crear-post">
+                <div class="form-group">
+                    <label for="autor-alias">Tu alias (opcional):</label>
+                    <input type="text" id="autor-alias" placeholder="Ej: Buscador Persistente, Profesional en Transición..." maxlength="50">
+                </div>
+                <div class="form-group">
+                    <label for="post-titulo">Título (opcional):</label>
+                    <input type="text" id="post-titulo" placeholder="Un título para tu post..." maxlength="500">
+                </div>
+                <div class="form-group">
+                    <label for="post-contenido">Tu mensaje: *</label>
+                    <textarea id="post-contenido" placeholder="Compartí tu experiencia, busca consejos, comparte oportunidades laborales, o simplemente desahógate... (mínimo 10 caracteres)" required></textarea>
+                </div>
+                <div style="display: flex; gap: 10px; justify-content: flex-end;">
+                    <button type="button" class="btn-secondary" id="cancelar-form-post">Cancelar</button>
+                    <button type="submit" class="btn-primary">
+                        <i class="fas fa-paper-plane"></i> Publicar
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+    </div>
+    
+    <!-- Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="../../auth/supabase-config.js"></script>
+    <script src="../../js/sistema-foro-comunidades.js"></script>
+    <script src="../../js/sistema-feedbacks-comunidades.js"></script>
+    <script src="../../js/sistema-validacion-identidades.js"></script>
+    <script src="../../js/sistema-alertas-comunidades.js"></script>
+    <!-- Sistema de Check-in Automático de Emergencias -->
+    <script src="../../js/sistema-checkin-emergencias.js"></script>
+    <script>
+        let foroComunidad;
+        let validacionIdentidad;
+        let alertasComunidad;
+        document.addEventListener('DOMContentLoaded', () => {
+            foroComunidad = new SistemaForoComunidades('desempleos');
+            window.foroComunidad = foroComunidad;
+            
+            setTimeout(() => {
+                validacionIdentidad = new SistemaValidacionIdentidades('desempleos');
+                window.validacionIdentidad = validacionIdentidad;
+                
+                alertasComunidad = new SistemaAlertasComunidades('desempleos');
+                window.alertasComunidad = alertasComunidad;
+            }, 500);
+            
+            document.getElementById('cancelar-form-post')?.addEventListener('click', () => {
+                foroComunidad.ocultarFormularioPost();
+            });
+        });
+        
+        // Función para mostrar historial
+        function mostrarHistorialDesempleos() {
+            const postsContainer = document.getElementById('posts-container');
+            const historialContainer = document.getElementById('mi-historial-foro-lista');
+            
+            if (!historialContainer) return;
+            
+            // Toggle mostrar/ocultar
+            if (historialContainer.style.display === 'none' || historialContainer.style.display === '') {
+                postsContainer.style.display = 'none';
+                historialContainer.style.display = 'block';
+                historialContainer.innerHTML = `
+                    <div class="foro-header">
+                        <h2><i class="fas fa-history"></i> Mi Historial de Publicaciones</h2>
+                        <button class="btn-primary" onclick="mostrarHistorialDesempleos()" style="background: #6b7280;">
+                            <i class="fas fa-arrow-left"></i> Volver al Foro
+                        </button>
+                    </div>
+                    <p style="color: #6b7280; margin: 20px 0;">
+                        Aquí puedes ver todas tus publicaciones, editarlas, pausarlas o eliminarlas. Tu anonimato está protegido.
+                    </p>
+                    <div class="publicaciones-lista"></div>
+                `;
+                setTimeout(() => {
+                    if (window.foroComunidad) {
+                        window.foroComunidad.cargarMiHistorial();
+                    }
+                }, 100);
+            } else {
+                postsContainer.style.display = 'block';
+                historialContainer.style.display = 'none';
+            }
+        }
+        
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('../../sw.js')
+                    .then(registration => {
+                        console.log('✅ Service Worker registrado');
+                    })
+                    .catch(error => {
+                        console.log('⚠️ Service Worker no disponible');
+                    });
+            });
+        }
+    </script>
+    <script>
+        document.addEventListener('copy', function(e) {
+            e.preventDefault();
+            const copyWarning = document.getElementById('copyWarning');
+            copyWarning.style.display = 'block';
+            setTimeout(() => {
+                copyWarning.style.display = 'none';
+            }, 3000);
+            return false;
+        });
+        
+        document.addEventListener('contextmenu', function(e) {
+            e.preventDefault();
+            alert('⚠️ El menú contextual está desactivado para proteger el contenido compartido.');
+            return false;
+        });
+        
+        document.addEventListener('keyup', function(e) {
+            if (e.key === 'PrintScreen') {
+                navigator.clipboard.writeText('');
+                alert('⚠️ Las capturas de pantalla están desactivadas para proteger las historias compartidas.');
+            }
+        });
+        
+        console.log('%c💼 Bienvenido/a a Cresalia - Comunidad de Desempleos', 'color: #F59E0B; font-size: 18px; font-weight: bold;');
+        console.log('%c🛡️ Este contenido está protegido. No copies historias de otros usuarios.', 'font-size: 14px;');
+        console.log('%cTu búsqueda es válida. Gracias por respetar esta comunidad. 💼', 'font-size: 14px; font-weight: bold;');
+    </script>
+</body>
+</html>
+
