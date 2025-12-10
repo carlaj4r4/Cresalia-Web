@@ -407,15 +407,59 @@ class GeneradorShortcutsPWA {
 
 ### 2.5 Compatibilidad
 
-#### Android
-- ✅ Soporte completo de PWA Shortcuts
-- ✅ Aparecen al mantener presionado el icono de la app
-- ✅ Se pueden agregar a la pantalla de inicio
+#### Android (Chrome/Edge)
+- ✅ **Soporte completo de PWA Shortcuts API**
+- ✅ Los shortcuts aparecen al mantener presionado el icono de la PWA instalada
+- ✅ Se pueden agregar a la pantalla de inicio como iconos independientes
+- ✅ Comportamiento muy similar a apps nativas
+- ✅ Funciona perfectamente con PWAs instaladas
 
-#### iOS
-- ⚠️ Soporte limitado
-- ✅ Se pueden agregar a la pantalla de inicio manualmente
-- ⚠️ Los shortcuts aparecen en el menú de compartir, no como shortcuts nativos
+**Ejemplo en Android:**
+```
+1. Usuario instala la PWA de Cresalia
+2. Mantiene presionado el icono de Cresalia
+3. Aparece un menú con shortcuts:
+   - 🏪 Mi Tienda
+   - ⚙️ Admin
+   - ➕ Agregar Producto
+4. Puede agregar cualquiera a la pantalla de inicio
+```
+
+#### iOS (Safari)
+- ⚠️ **Soporte limitado de PWA Shortcuts API**
+- ❌ No hay menú de shortcuts al mantener presionado (como en Android)
+- ✅ Se puede agregar la PWA a la pantalla de inicio
+- ⚠️ Los shortcuts aparecen en el menú de compartir, no como iconos independientes
+- ✅ Se pueden crear accesos directos manuales usando "Agregar a pantalla de inicio"
+
+**Ejemplo en iOS:**
+```
+1. Usuario instala la PWA de Cresalia
+2. Agrega a la pantalla de inicio
+3. Al abrir, puede usar "Agregar a pantalla de inicio" 
+   para crear accesos directos manuales
+4. Los shortcuts no aparecen automáticamente como en Android
+```
+
+#### Comparación de Plataformas
+
+| Característica | App Nativa | PWA (Android) | PWA (iOS) |
+|----------------|------------|---------------|-----------|
+| Shortcuts automáticos | ✅ | ✅ | ⚠️ Limitado |
+| Agregar a pantalla de inicio | ✅ | ✅ | ✅ |
+| Menú de shortcuts | ✅ | ✅ | ❌ |
+| Funciona offline | ✅ | ✅ (con Service Worker) | ✅ (con Service Worker) |
+
+#### Conclusión sobre Compatibilidad
+
+- **En Android**: Los shortcuts funcionan **muy bien** en PWAs, casi igual que en apps nativas
+- **En iOS**: Funcionan de forma **limitada**, pero se pueden crear accesos directos manuales
+- **En ambos**: La PWA se puede instalar y agregar a la pantalla de inicio
+
+**Para Cresalia, podemos:**
+1. Implementar shortcuts para Android (máxima compatibilidad)
+2. En iOS, ofrecer instrucciones para crear accesos directos manuales
+3. Detectar la plataforma y mostrar instrucciones según corresponda
 
 ### 2.6 Implementación
 
