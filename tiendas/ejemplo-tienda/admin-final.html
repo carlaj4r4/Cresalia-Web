@@ -10903,9 +10903,64 @@ Precio: $${precio.toLocaleString('es-AR')} ARS/mes
                         const tipoVendedor = 'tienda'; // o 'servicio' según corresponda
                         panelHistorias.init(vendedorId, tipoVendedor);
                     }
+                    
+                    if (seccionId === 'configuracion-celebraciones') {
+                        inicializarPanelCelebraciones();
+                    }
                 };
             }, 500);
         });
+        
+        function inicializarPanelCelebraciones() {
+            const seccion = document.getElementById('configuracion-celebraciones');
+            if (!seccion) return;
+            
+            seccion.innerHTML = `
+                <div class="content-header">
+                    <h1>🎉 Configuración de Celebraciones</h1>
+                    <p>Gestiona las celebraciones y eventos especiales de tu tienda</p>
+                </div>
+                
+                <div class="card">
+                    <div class="alert alert-info">
+                        <h3><i class="fas fa-info-circle"></i> ¿Qué son las Celebraciones?</h3>
+                        <p>Las celebraciones son banners especiales que aparecen en tu panel de administración para conmemorar fechas importantes como:</p>
+                        <ul>
+                            <li>🎂 Cumpleaños del fundador/emprendedor</li>
+                            <li>🏢 Aniversario del negocio</li>
+                            <li>💜 Aniversario en Cresalia</li>
+                        </ul>
+                    </div>
+                    
+                    <div class="card" style="margin-top: 2rem;">
+                        <h3><i class="fas fa-cog"></i> Estado Actual</h3>
+                        <div id="estadoCelebraciones" style="padding: 1rem; background: #F3F4F6; border-radius: 8px; margin-top: 1rem;">
+                            <p style="color: #6B7280;">Cargando información de celebraciones...</p>
+                        </div>
+                    </div>
+                    
+                    <div class="card" style="margin-top: 2rem;">
+                        <h3><i class="fas fa-eye"></i> Previsualización</h3>
+                        <p style="color: #6B7280; margin-top: 0.5rem;">El banner de celebración aparecerá automáticamente en tu panel cuando haya una fecha especial.</p>
+                        <p style="color: #6B7280;">Puedes ocultarlo temporalmente usando los botones del banner.</p>
+                    </div>
+                </div>
+            `;
+            
+            // Cargar estado de celebraciones
+            setTimeout(() => {
+                const estadoDiv = document.getElementById('estadoCelebraciones');
+                if (estadoDiv) {
+                    const banner = document.getElementById('celebracionBanner');
+                    const estaVisible = banner && banner.style.display !== 'none';
+                    
+                    estadoDiv.innerHTML = `
+                        <p><strong>Banner de Celebración:</strong> ${estaVisible ? '<span style="color: #10B981;">✅ Visible</span>' : '<span style="color: #6B7280;">❌ Oculto</span>'}</p>
+                        <p style="margin-top: 0.5rem; color: #6B7280; font-size: 0.9rem;">Las celebraciones se cargan automáticamente desde nuestro sistema cuando hay fechas especiales.</p>
+                    `;
+                }
+            }, 500);
+        }
     </script>
     
     <style>
