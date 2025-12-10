@@ -357,7 +357,7 @@ const SISTEMA_UBICACIONES = {
         // Obtener token de Mapbox
         const token = (window.MAPBOX_CONFIG && window.MAPBOX_CONFIG.accessToken) 
             || window.__MAPBOX_ACCESS_TOKEN__ 
-            || process.env.MAPBOX_ACCESS_TOKEN;
+            || (typeof process !== 'undefined' && process.env && process.env.MAPBOX_ACCESS_TOKEN);
 
         if (!token) {
             console.warn('⚠️ MAPBOX_ACCESS_TOKEN no configurado. El mapa funcionará en modo limitado.');

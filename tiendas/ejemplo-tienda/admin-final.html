@@ -1709,7 +1709,7 @@
                             </div>
                             <div>
                                 <h3 class="text-success">BASIC</h3>
-                                <h2>$29/mes</h2>
+                                <h2>$29,000 ARS/mes</h2>
                                 <ul style="list-style: none; padding: 0;">
                                     <li>✅ Hasta 50 productos</li>
                                     <li>✅ Gestión completa de tienda</li>
@@ -1727,7 +1727,7 @@
                             </div>
                             <div>
                                 <h3 class="text-warning">PRO</h3>
-                                <h2>$79/mes</h2>
+                                <h2>$79,000 ARS/mes</h2>
                                 <ul style="list-style: none; padding: 0;">
                                     <li>✅ Productos ilimitados</li>
                                     <li>✅ Gestión avanzada de tienda</li>
@@ -1745,7 +1745,7 @@
                             </div>
                             <div>
                                 <h3 class="text-info">ENTERPRISE</h3>
-                                <h2>$199/mes</h2>
+                                <h2>$199,000 ARS/mes</h2>
                                 <ul style="list-style: none; padding: 0;">
                                     <li>✅ Todo ilimitado</li>
                                     <li>✅ Gestión empresarial</li>
@@ -1857,9 +1857,9 @@
             <div class="mb-3">
                 <label for="nuevoPlanSeleccionado" class="form-label">Selecciona tu nuevo plan:</label>
                 <select id="nuevoPlanSeleccionado" name="nuevoPlanSeleccionado" class="form-control" required>
-                    <option value="basic">BASIC - $29/mes (Comisión: 1.2%)</option>
-                    <option value="pro">PRO - $79/mes (Comisión: 1.2%)</option>
-                    <option value="enterprise">ENTERPRISE - $199/mes (Comisión: 0.8%)</option>
+                    <option value="basic">BASIC - $29,000 ARS/mes (Comisión: 1.2%)</option>
+                    <option value="pro">PRO - $79,000 ARS/mes (Comisión: 1.2%)</option>
+                    <option value="enterprise">ENTERPRISE - $199,000 ARS/mes (Comisión: 0.8%)</option>
                 </select>
             </div>
             <div class="alert alert-info">
@@ -2958,9 +2958,9 @@
             const planActual = localStorage.getItem('plan-actual') || 'free';
             const planes = {
                 'free': { nombre: 'FREE', precio: 0 },
-                'basic': { nombre: 'BASIC', precio: 29 },
-                'pro': { nombre: 'PRO', precio: 79 },
-                'enterprise': { nombre: 'ENTERPRISE', precio: 199 }
+                'basic': { nombre: 'BASIC', precio: 29000 },
+                'pro': { nombre: 'PRO', precio: 79000 },
+                'enterprise': { nombre: 'ENTERPRISE', precio: 199000 }
             };
             
             const plan = planes[planId];
@@ -4354,6 +4354,12 @@
                         colorPrimario: config.servicioAyuda?.colorPrimario || '#EC4899',
                         colorSecundario: config.servicioAyuda?.colorSecundario || '#F9A8D4',
                         mensajePersonalizado: config.servicioAyuda?.mensajePersonalizado || '¡Estamos aquí para ayudarte!'
+                    },
+                    contenidoEmpresa: {
+                        nosotros: config.contenidoEmpresa?.nosotros || '',
+                        terminosCondiciones: config.contenidoEmpresa?.terminosCondiciones || '',
+                        prensa: config.contenidoEmpresa?.prensa || '',
+                        trabajaConNosotros: config.contenidoEmpresa?.trabajaConNosotros || ''
                     }
                 };
             }
@@ -4449,6 +4455,11 @@
                 this.guardarConfiguracion();
             }
             
+            actualizarContenidoEmpresa(datos) {
+                this.configuracion.contenidoEmpresa = { ...this.configuracion.contenidoEmpresa, ...datos };
+                this.guardarConfiguracion();
+            }
+            
             obtenerEstadisticas() {
                 return {
                     configuracionCompleta: Object.keys(this.configuracion).length,
@@ -4508,6 +4519,7 @@
                                 <button onclick="mostrarTabConfiguracion('multimedia')" id="tabMultimedia" style="background: #E5E7EB; color: #374151; border: none; padding: 12px 20px; border-radius: 8px; cursor: pointer; font-weight: 600;">📸 Multimedia</button>
                                 <button onclick="mostrarTabConfiguracion('bot')" id="tabBot" style="background: #E5E7EB; color: #374151; border: none; padding: 12px 20px; border-radius: 8px; cursor: pointer; font-weight: 600;">🤖 Bot</button>
                                 <button onclick="mostrarTabConfiguracion('ayuda')" id="tabAyuda" style="background: #E5E7EB; color: #374151; border: none; padding: 12px 20px; border-radius: 8px; cursor: pointer; font-weight: 600;">🎧 Ayuda</button>
+                                <button onclick="mostrarTabConfiguracion('contenido')" id="tabContenido" style="background: #E5E7EB; color: #374151; border: none; padding: 12px 20px; border-radius: 8px; cursor: pointer; font-weight: 600;">📄 Contenido</button>
                             </div>
                             <div id="contenidoConfiguracion">
                                 <div id="tabContenidoInformacion" style="display: block;">
@@ -4665,6 +4677,50 @@
                                         <div style="grid-column: 1 / -1;"><label style="display: block; margin-bottom: 8px; font-weight: 600; color: #374151;">Mensaje Personalizado</label><textarea id="mensajePersonalizadoAyudaConfig" style="width: 100%; padding: 10px; border: 1px solid #D1D5DB; border-radius: 8px; resize: vertical; min-height: 80px;">${config.servicioAyuda.mensajePersonalizado}</textarea></div>
                                     </div>
                                 </div>
+                                <div id="tabContenidoContenido" style="display: none;">
+                                    <h3 style="margin: 0 0 20px; color: #374151;">📄 Contenido de la Empresa</h3>
+                                    <p style="color: #6B7280; margin-bottom: 20px; font-size: 0.9rem;">Estos contenidos se mostrarán automáticamente en el footer y en las secciones correspondientes de tu tienda.</p>
+                                    
+                                    <div style="margin-bottom: 30px; padding: 20px; background: #F9FAFB; border-radius: 12px; border: 1px solid #E5E7EB;">
+                                        <label style="display: block; margin-bottom: 12px; font-weight: 600; color: #374151;">
+                                            <i class="fas fa-users"></i> Nosotros
+                                        </label>
+                                        <textarea id="nosotrosConfig" style="width: 100%; padding: 12px; border: 2px solid #E5E7EB; border-radius: 10px; resize: vertical; min-height: 150px; font-size: 1rem;" placeholder="Cuéntale a tus clientes sobre tu empresa, tu historia, misión, visión y valores...">${config.contenidoEmpresa?.nosotros || ''}</textarea>
+                                        <small style="color: #6B7280; font-size: 0.85rem; display: block; margin-top: 8px;">
+                                            <i class="fas fa-info-circle"></i> Este contenido aparecerá en la sección "Nosotros" del footer y en la página correspondiente.
+                                        </small>
+                                    </div>
+                                    
+                                    <div style="margin-bottom: 30px; padding: 20px; background: #F9FAFB; border-radius: 12px; border: 1px solid #E5E7EB;">
+                                        <label style="display: block; margin-bottom: 12px; font-weight: 600; color: #374151;">
+                                            <i class="fas fa-file-contract"></i> Términos y Condiciones
+                                        </label>
+                                        <textarea id="terminosCondicionesConfig" style="width: 100%; padding: 12px; border: 2px solid #E5E7EB; border-radius: 10px; resize: vertical; min-height: 200px; font-size: 1rem;" placeholder="Establece los términos y condiciones de uso de tu tienda, políticas de devolución, garantías, etc...">${config.contenidoEmpresa?.terminosCondiciones || ''}</textarea>
+                                        <small style="color: #6B7280; font-size: 0.85rem; display: block; margin-top: 8px;">
+                                            <i class="fas fa-info-circle"></i> Este contenido aparecerá en la sección "Términos" del footer y en la página correspondiente.
+                                        </small>
+                                    </div>
+                                    
+                                    <div style="margin-bottom: 30px; padding: 20px; background: #F9FAFB; border-radius: 12px; border: 1px solid #E5E7EB;">
+                                        <label style="display: block; margin-bottom: 12px; font-weight: 600; color: #374151;">
+                                            <i class="fas fa-newspaper"></i> Prensa
+                                        </label>
+                                        <textarea id="prensaConfig" style="width: 100%; padding: 12px; border: 2px solid #E5E7EB; border-radius: 10px; resize: vertical; min-height: 150px; font-size: 1rem;" placeholder="Información para medios de comunicación: notas de prensa, comunicados, material para periodistas, reconocimientos, etc...">${config.contenidoEmpresa?.prensa || ''}</textarea>
+                                        <small style="color: #6B7280; font-size: 0.85rem; display: block; margin-top: 8px;">
+                                            <i class="fas fa-info-circle"></i> Esta sección es útil para compartir información con medios de comunicación, notas de prensa, comunicados oficiales, material para periodistas (logos, fotos, contacto), reconocimientos y menciones en medios.
+                                        </small>
+                                    </div>
+                                    
+                                    <div style="margin-bottom: 30px; padding: 20px; background: #F9FAFB; border-radius: 12px; border: 1px solid #E5E7EB;">
+                                        <label style="display: block; margin-bottom: 12px; font-weight: 600; color: #374151;">
+                                            <i class="fas fa-briefcase"></i> Trabaja con Nosotros
+                                        </label>
+                                        <textarea id="trabajaConNosotrosConfig" style="width: 100%; padding: 12px; border: 2px solid #E5E7EB; border-radius: 10px; resize: vertical; min-height: 150px; font-size: 1rem;" placeholder="Información sobre oportunidades laborales, cómo aplicar, requisitos, beneficios, etc...">${config.contenidoEmpresa?.trabajaConNosotros || ''}</textarea>
+                                        <small style="color: #6B7280; font-size: 0.85rem; display: block; margin-top: 8px;">
+                                            <i class="fas fa-info-circle"></i> Este contenido aparecerá en la sección "Trabaja con nosotros" del footer y en la página correspondiente.
+                                        </small>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                         <div style="display: flex; gap: 16px; justify-content: center; flex-wrap: wrap;">
@@ -4813,6 +4869,15 @@
                 cuit: document.getElementById('cuitConfig')?.value || '',
                 rubro: document.getElementById('rubroConfig')?.value || ''
             };
+            const redesSociales = {
+                instagram: document.getElementById('instagramConfig')?.value || '',
+                facebook: document.getElementById('facebookConfig')?.value || '',
+                twitter: document.getElementById('twitterConfig')?.value || '',
+                tiktok: document.getElementById('tiktokConfig')?.value || '',
+                youtube: document.getElementById('youtubeConfig')?.value || '',
+                linkedin: document.getElementById('linkedinConfig')?.value || '',
+                whatsapp: document.getElementById('whatsappConfig')?.value || ''
+            };
             
             // Obtener valores de multimedia (URL o archivo)
             Promise.all([
@@ -4836,6 +4901,12 @@
                     colorSecundario: document.getElementById('colorSecundarioAyudaConfig')?.value || '#F9A8D4',
                     mensajePersonalizado: document.getElementById('mensajePersonalizadoAyudaConfig')?.value || ''
                 };
+                const contenidoEmpresa = {
+                    nosotros: document.getElementById('nosotrosConfig')?.value || '',
+                    terminosCondiciones: document.getElementById('terminosCondicionesConfig')?.value || '',
+                    prensa: document.getElementById('prensaConfig')?.value || '',
+                    trabajaConNosotros: document.getElementById('trabajaConNosotrosConfig')?.value || ''
+                };
                 sistemaConfiguracionTienda.actualizarInformacionTienda(informacionTienda);
                 sistemaConfiguracionTienda.actualizarRedesSociales(redesSociales);
                 sistemaConfiguracionTienda.actualizarUbicacion(ubicacion);
@@ -4843,7 +4914,8 @@
                 sistemaConfiguracionTienda.actualizarImagenesVideos(imagenesVideos);
                 sistemaConfiguracionTienda.actualizarCresaliaBot(cresaliaBot);
                 sistemaConfiguracionTienda.actualizarServicioAyuda(servicioAyuda);
-                mostrarNotificacion('✅ Configuración guardada', 'success');
+                sistemaConfiguracionTienda.actualizarContenidoEmpresa(contenidoEmpresa);
+                mostrarNotificacion('✅ Configuración guardada. Los cambios se actualizarán automáticamente en tu tienda.', 'success');
             }).catch(error => {
                 console.error('Error guardando multimedia:', error);
                 mostrarNotificacion('⚠️ Error al guardar multimedia', 'error');
@@ -9776,7 +9848,7 @@
                             <td style="padding: 12px; color: #374151;">${fechaInicio}</td>
                             <td style="padding: 12px; color: #374151;">${fechaFin}</td>
                             <td style="padding: 12px; color: #374151;">${duracion} días</td>
-                            <td style="padding: 12px; font-weight: 600; color: #10B981;">$${suscripcion.precio}</td>
+                            <td style="padding: 12px; font-weight: 600; color: #10B981;">$${suscripcion.precio.toLocaleString('es-AR')} ARS</td>
                             <td style="padding: 12px;">${estadoBadge}</td>
                         </tr>
                     `;
@@ -9786,9 +9858,9 @@
             obtenerPrecioPlan(plan) {
                 const precios = {
                     'free': 0,
-                    'basic': 29,
-                    'pro': 79,
-                    'enterprise': 199
+                    'basic': 29000,
+                    'pro': 79000,
+                    'enterprise': 199000
                 };
                 return precios[plan.toLowerCase()] || 0;
             }
