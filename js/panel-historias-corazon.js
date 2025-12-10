@@ -18,15 +18,27 @@ class PanelHistoriasCorazon {
     
     async cargarHistoria() {
         try {
+            // Si no hay vendedor_id, no intentar cargar
+            if (!this.vendedorId) {
+                console.log('⚠️ No hay vendedor_id, mostrando formulario vacío');
+                this.renderizarFormulario();
+                return;
+            }
+            
             const response = await fetch(`/api/historias-corazon?vendedor_id=${this.vendedorId}`);
-            if (!response.ok) throw new Error('Error cargando historia');
+            if (!response.ok) {
+                // Si la API no está disponible, continuar con formulario vacío
+                console.warn('⚠️ API no disponible, mostrando formulario vacío');
+                this.renderizarFormulario();
+                return;
+            }
             
             const data = await response.json();
             this.historiaActual = data.historias && data.historias.length > 0 ? data.historias[0] : null;
             
             this.renderizarFormulario();
         } catch (error) {
-            console.error('❌ Error cargando historia:', error);
+            console.warn('⚠️ Error cargando historia (continuando con formulario vacío):', error);
             this.renderizarFormulario();
         }
     }

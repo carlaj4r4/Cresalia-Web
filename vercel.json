@@ -380,19 +380,23 @@
     },
     {
       "source": "/comunidades/estres",
-      "destination": "/comunidades/estres/index.html"
+      "destination": "/comunidades/estres/index.html",
+      "permanent": false
     },
     {
       "source": "/comunidades/estres/",
-      "destination": "/comunidades/estres/index.html"
+      "destination": "/comunidades/estres/index.html",
+      "permanent": false
     },
     {
       "source": "/comunidades/desempleos",
-      "destination": "/comunidades/desempleos/index.html"
+      "destination": "/comunidades/desempleos/index.html",
+      "permanent": false
     },
     {
       "source": "/comunidades/desempleos/",
-      "destination": "/comunidades/desempleos/index.html"
+      "destination": "/comunidades/desempleos/index.html",
+      "permanent": false
     },
     {
       "source": "/comunidades/(.*)/",

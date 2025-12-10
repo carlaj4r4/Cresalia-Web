@@ -944,6 +944,71 @@
         </div>
     </section>
 
+    <!-- Sección Nosotros -->
+    <section id="nosotros" class="py-5" style="background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%); display: none;">
+        <div class="container">
+            <div class="section-header">
+                <h2><i class="fas fa-users"></i> Nosotros</h2>
+            </div>
+            <div class="row">
+                <div class="col-lg-10 mx-auto">
+                    <div id="contenidoNosotros" style="background: white; padding: 40px; border-radius: 16px; box-shadow: 0 4px 16px rgba(0,0,0,0.1); line-height: 1.8; color: #374151;">
+                        <p style="text-align: center; color: #6B7280; font-style: italic;">Configura el contenido de "Nosotros" desde el panel de administración.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Sección Trabaja con Nosotros -->
+    <section id="trabaja" class="py-5" style="background: #F8FAFC; display: none;">
+        <div class="container">
+            <div class="section-header">
+                <h2><i class="fas fa-briefcase"></i> Trabaja con Nosotros</h2>
+            </div>
+            <div class="row">
+                <div class="col-lg-10 mx-auto">
+                    <div id="contenidoTrabaja" style="background: white; padding: 40px; border-radius: 16px; box-shadow: 0 4px 16px rgba(0,0,0,0.1); line-height: 1.8; color: #374151;">
+                        <p style="text-align: center; color: #6B7280; font-style: italic;">Configura el contenido de "Trabaja con Nosotros" desde el panel de administración.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Sección Prensa -->
+    <section id="prensa" class="py-5" style="background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%); display: none;">
+        <div class="container">
+            <div class="section-header">
+                <h2><i class="fas fa-newspaper"></i> Prensa</h2>
+                <p>Información para medios de comunicación</p>
+            </div>
+            <div class="row">
+                <div class="col-lg-10 mx-auto">
+                    <div id="contenidoPrensa" style="background: white; padding: 40px; border-radius: 16px; box-shadow: 0 4px 16px rgba(0,0,0,0.1); line-height: 1.8; color: #374151;">
+                        <p style="text-align: center; color: #6B7280; font-style: italic;">Configura el contenido de "Prensa" desde el panel de administración.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Sección Términos y Condiciones -->
+    <section id="terminos" class="py-5" style="background: #F8FAFC; display: none;">
+        <div class="container">
+            <div class="section-header">
+                <h2><i class="fas fa-file-contract"></i> Términos y Condiciones</h2>
+            </div>
+            <div class="row">
+                <div class="col-lg-10 mx-auto">
+                    <div id="contenidoTerminos" style="background: white; padding: 40px; border-radius: 16px; box-shadow: 0 4px 16px rgba(0,0,0,0.1); line-height: 1.8; color: #374151;">
+                        <p style="text-align: center; color: #6B7280; font-style: italic;">Configura los términos y condiciones desde el panel de administración.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
     <!-- Modal de Feedback -->
     <div id="feedbackModal" class="modal">
         <div class="feedback-modal-content">
@@ -1363,6 +1428,51 @@
             }
             
             console.log('✅ Datos de tienda cargados correctamente:', nombreTienda);
+            
+            // Cargar contenido de empresa (Nosotros, Términos, Prensa, Trabaja con Nosotros)
+            const contenidoEmpresa = configCompleta.contenidoEmpresa || {};
+            
+            // Actualizar sección "Nosotros"
+            const contenidoNosotros = document.getElementById('contenidoNosotros');
+            const seccionNosotros = document.getElementById('nosotros');
+            if (contenidoNosotros && seccionNosotros) {
+                if (contenidoEmpresa.nosotros && contenidoEmpresa.nosotros.trim() !== '') {
+                    contenidoNosotros.innerHTML = contenidoEmpresa.nosotros.replace(/\n/g, '<br>');
+                    seccionNosotros.style.display = 'block';
+                } else {
+                    seccionNosotros.style.display = 'none';
+                }
+            }
+            
+            // Actualizar sección "Trabaja con Nosotros"
+            const contenidoTrabaja = document.getElementById('contenidoTrabaja');
+            const seccionTrabaja = document.getElementById('trabaja');
+            if (contenidoTrabaja && contenidoEmpresa.trabajaConNosotros) {
+                contenidoTrabaja.innerHTML = contenidoEmpresa.trabajaConNosotros.replace(/\n/g, '<br>');
+                seccionTrabaja.style.display = 'block';
+            } else if (seccionTrabaja) {
+                seccionTrabaja.style.display = 'none';
+            }
+            
+            // Actualizar sección "Prensa"
+            const contenidoPrensa = document.getElementById('contenidoPrensa');
+            const seccionPrensa = document.getElementById('prensa');
+            if (contenidoPrensa && contenidoEmpresa.prensa) {
+                contenidoPrensa.innerHTML = contenidoEmpresa.prensa.replace(/\n/g, '<br>');
+                seccionPrensa.style.display = 'block';
+            } else if (seccionPrensa) {
+                seccionPrensa.style.display = 'none';
+            }
+            
+            // Actualizar sección "Términos y Condiciones"
+            const contenidoTerminos = document.getElementById('contenidoTerminos');
+            const seccionTerminos = document.getElementById('terminos');
+            if (contenidoTerminos && contenidoEmpresa.terminosCondiciones) {
+                contenidoTerminos.innerHTML = contenidoEmpresa.terminosCondiciones.replace(/\n/g, '<br>');
+                seccionTerminos.style.display = 'block';
+            } else if (seccionTerminos) {
+                seccionTerminos.style.display = 'none';
+            }
             
             // Cargar productos y categorías
             cargarProductosYCategorias();
