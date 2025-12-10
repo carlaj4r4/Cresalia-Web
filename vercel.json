@@ -379,6 +379,26 @@
       "destination": "/comunidades/bomberos/index.html"
     },
     {
+      "source": "/comunidades/estres",
+      "destination": "/comunidades/estres/index.html",
+      "permanent": false
+    },
+    {
+      "source": "/comunidades/estres/",
+      "destination": "/comunidades/estres/index.html",
+      "permanent": false
+    },
+    {
+      "source": "/comunidades/desempleos",
+      "destination": "/comunidades/desempleos/index.html",
+      "permanent": false
+    },
+    {
+      "source": "/comunidades/desempleos/",
+      "destination": "/comunidades/desempleos/index.html",
+      "permanent": false
+    },
+    {
       "source": "/comunidades/(.*)/",
       "destination": "/comunidades/$1/index.html"
     },
