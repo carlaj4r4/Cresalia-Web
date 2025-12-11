@@ -5938,11 +5938,39 @@
         }
         
         function mostrarFormularioOferta() {
+            // Cargar productos y servicios para seleccionar imágenes
+            const productos = sistemaProductos.cargarProductos();
+            const servicios = sistemaServicios.cargarServicios();
+            const config = window.sistemaConfiguracionTienda?.configuracion || {};
+            const imagenesPerfil = config.imagenesVideos || {};
+            
+            // Obtener todas las imágenes disponibles
+            const imagenesDisponibles = [];
+            
+            // Imágenes de productos
+            productos.forEach(p => {
+                if (p.imagen) imagenesDisponibles.push({ tipo: 'producto', nombre: p.nombre, url: p.imagen, id: p.id });
+            });
+            
+            // Imágenes de servicios
+            servicios.forEach(s => {
+                if (s.imagen) imagenesDisponibles.push({ tipo: 'servicio', nombre: s.nombre, url: s.imagen, id: s.id });
+            });
+            
+            // Imágenes del perfil de la tienda
+            if (imagenesPerfil.bannerPrincipal) imagenesDisponibles.push({ tipo: 'perfil', nombre: 'Banner Principal', url: imagenesPerfil.bannerPrincipal, id: 'banner' });
+            if (imagenesPerfil.logo) imagenesDisponibles.push({ tipo: 'perfil', nombre: 'Logo', url: imagenesPerfil.logo, id: 'logo' });
+            if (imagenesPerfil.galeriaImagenes && Array.isArray(imagenesPerfil.galeriaImagenes)) {
+                imagenesPerfil.galeriaImagenes.forEach((img, idx) => {
+                    if (img) imagenesDisponibles.push({ tipo: 'perfil', nombre: `Galería ${idx + 1}`, url: img, id: `galeria_${idx}` });
+                });
+            }
+            
             const modal = document.createElement('div');
             modal.id = 'modalFormularioOferta';
             modal.style.cssText = 'position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.8); display: flex; align-items: center; justify-content: center; z-index: 999999;';
             modal.innerHTML = `
-                <div style="background: white; border-radius: 16px; max-width: 600px; width: 95%; max-height: 90vh; overflow-y: auto;">
+                <div style="background: white; border-radius: 16px; max-width: 700px; width: 95%; max-height: 90vh; overflow-y: auto;">
                     <div style="background: linear-gradient(135deg, #F59E0B, #D97706); color: white; padding: 24px; text-align: center; position: relative;">
                         <button onclick="cerrarFormularioOferta()" style="position: absolute; top: 20px; right: 20px; background: rgba(255,255,255,0.2); color: white; border: none; padding: 8px 12px; border-radius: 50%; cursor: pointer; font-size: 20px; width: 40px; height: 40px;">×</button>
                         <h3 style="margin: 0;">🏷️ Crear Nueva Oferta</h3>
@@ -5951,6 +5979,48 @@
                         <form id="formularioOferta" onsubmit="guardarOferta(event); return false;">
                             <div style="margin-bottom: 20px;"><label style="display: block; margin-bottom: 8px; font-weight: 600; color: #374151;">Nombre</label><input type="text" id="nombreOferta" required style="width: 100%; padding: 12px; border: 1px solid #D1D5DB; border-radius: 8px;"></div>
                             <div style="margin-bottom: 20px;"><label style="display: block; margin-bottom: 8px; font-weight: 600; color: #374151;">Descripción</label><textarea id="descripcionOferta" rows="3" style="width: 100%; padding: 12px; border: 1px solid #D1D5DB; border-radius: 8px;"></textarea></div>
+                            
+                            <!-- Sección de Imagen -->
+                            <div style="margin-bottom: 20px;">
+                                <label style="display: block; margin-bottom: 8px; font-weight: 600; color: #374151;">📸 Imagen de la Oferta</label>
+                                <div style="display: flex; gap: 10px; margin-bottom: 10px;">
+                                    <button type="button" onclick="cambiarModoImagenOferta('subir')" id="btnSubirImagenOferta" style="flex: 1; background: #F59E0B; color: white; border: none; padding: 10px; border-radius: 8px; cursor: pointer; font-weight: 600;">📤 Subir Nueva</button>
+                                    <button type="button" onclick="cambiarModoImagenOferta('existente')" id="btnUsarExistenteOferta" style="flex: 1; background: #E5E7EB; color: #374151; border: none; padding: 10px; border-radius: 8px; cursor: pointer; font-weight: 600;">🖼️ Usar Existente</button>
+                                </div>
+                                
+                                <!-- Modo Subir Nueva -->
+                                <div id="modoSubirImagenOferta" style="display: block;">
+                                    <input type="file" id="imagenOfertaFile" accept="image/*" style="width: 100%; padding: 12px; border: 1px solid #D1D5DB; border-radius: 8px; margin-bottom: 10px;" onchange="previsualizarImagenOferta(this)">
+                                    <div id="previewImagenOferta" style="display: none; margin-top: 10px;">
+                                        <img id="previewImgOferta" src="" alt="Preview" style="max-width: 100%; max-height: 200px; border-radius: 8px; border: 1px solid #D1D5DB;">
+                                    </div>
+                                </div>
+                                
+                                <!-- Modo Usar Existente -->
+                                <div id="modoExistenteImagenOferta" style="display: none;">
+                                    ${imagenesDisponibles.length > 0 ? `
+                                        <div style="max-height: 300px; overflow-y: auto; border: 1px solid #D1D5DB; border-radius: 8px; padding: 10px;">
+                                            <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(120px, 1fr)); gap: 10px;">
+                                                ${imagenesDisponibles.map((img, idx) => `
+                                                    <div onclick="seleccionarImagenExistenteOferta('${img.url}', '${img.nombre}')" style="cursor: pointer; border: 2px solid #E5E7EB; border-radius: 8px; overflow: hidden; transition: all 0.2s;" onmouseover="this.style.borderColor='#F59E0B'" onmouseout="this.style.borderColor='#E5E7EB'">
+                                                        <img src="${img.url}" alt="${img.nombre}" style="width: 100%; height: 100px; object-fit: cover;">
+                                                        <div style="padding: 5px; font-size: 0.75rem; color: #6B7280; text-align: center; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${img.nombre}</div>
+                                                    </div>
+                                                `).join('')}
+                                            </div>
+                                        </div>
+                                        <input type="hidden" id="imagenOfertaExistente" value="">
+                                        <div id="imagenSeleccionadaOferta" style="display: none; margin-top: 10px; padding: 10px; background: #F0FDF4; border-radius: 8px;">
+                                            <p style="margin: 0; color: #059669; font-size: 0.9rem;">✅ Imagen seleccionada: <span id="nombreImagenSeleccionadaOferta"></span></p>
+                                        </div>
+                                    ` : `
+                                        <div style="padding: 20px; background: #FEF2F2; border-radius: 8px; text-align: center; color: #DC2626;">
+                                            <p style="margin: 0;">⚠️ No hay imágenes disponibles en tu perfil. Por favor, sube una nueva imagen.</p>
+                                        </div>
+                                    `}
+                                </div>
+                            </div>
+                            
                             <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 20px;">
                                 <div><label style="display: block; margin-bottom: 8px; font-weight: 600; color: #374151;">Tipo</label><select id="tipoOferta" required style="width: 100%; padding: 12px; border: 1px solid #D1D5DB; border-radius: 8px;"><option value="porcentaje">Porcentaje</option><option value="fijo">Fijo</option><option value="2x1">2x1</option></select></div>
                                 <div><label style="display: block; margin-bottom: 8px; font-weight: 600; color: #374151;">Valor</label><input type="number" id="valorOferta" required style="width: 100%; padding: 12px; border: 1px solid #D1D5DB; border-radius: 8px;"></div>
@@ -5968,6 +6038,55 @@
                 </div>
             `;
             document.body.appendChild(modal);
+        }
+        
+        function cambiarModoImagenOferta(modo) {
+            const modoSubir = document.getElementById('modoSubirImagenOferta');
+            const modoExistente = document.getElementById('modoExistenteImagenOferta');
+            const btnSubir = document.getElementById('btnSubirImagenOferta');
+            const btnExistente = document.getElementById('btnUsarExistenteOferta');
+            
+            if (modo === 'subir') {
+                modoSubir.style.display = 'block';
+                modoExistente.style.display = 'none';
+                btnSubir.style.background = '#F59E0B';
+                btnSubir.style.color = 'white';
+                btnExistente.style.background = '#E5E7EB';
+                btnExistente.style.color = '#374151';
+            } else {
+                modoSubir.style.display = 'none';
+                modoExistente.style.display = 'block';
+                btnSubir.style.background = '#E5E7EB';
+                btnSubir.style.color = '#374151';
+                btnExistente.style.background = '#F59E0B';
+                btnExistente.style.color = 'white';
+            }
+        }
+        
+        function previsualizarImagenOferta(input) {
+            const preview = document.getElementById('previewImagenOferta');
+            const previewImg = document.getElementById('previewImgOferta');
+            if (input.files && input.files[0]) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    previewImg.src = e.target.result;
+                    preview.style.display = 'block';
+                };
+                reader.readAsDataURL(input.files[0]);
+            }
+        }
+        
+        function seleccionarImagenExistenteOferta(url, nombre) {
+            document.getElementById('imagenOfertaExistente').value = url;
+            document.getElementById('nombreImagenSeleccionadaOferta').textContent = nombre;
+            document.getElementById('imagenSeleccionadaOferta').style.display = 'block';
+            
+            // Resaltar la imagen seleccionada
+            document.querySelectorAll('#modoExistenteImagenOferta img').forEach(img => {
+                img.parentElement.style.borderColor = '#E5E7EB';
+            });
+            event.target.closest('div').style.borderColor = '#F59E0B';
+            event.target.closest('div').style.borderWidth = '3px';
         }
         
         function mostrarFormularioCombo() {
@@ -5999,8 +6118,26 @@
             document.body.appendChild(modal);
         }
         
-        function guardarOferta(event) {
+        async function guardarOferta(event) {
             event.preventDefault();
+            
+            // Obtener imagen (subida o existente)
+            let imagenUrl = '';
+            const imagenFile = document.getElementById('imagenOfertaFile');
+            const imagenExistente = document.getElementById('imagenOfertaExistente');
+            
+            if (imagenFile && imagenFile.files && imagenFile.files[0]) {
+                // Convertir archivo a Base64
+                const file = imagenFile.files[0];
+                imagenUrl = await new Promise((resolve) => {
+                    const reader = new FileReader();
+                    reader.onload = (e) => resolve(e.target.result);
+                    reader.readAsDataURL(file);
+                });
+            } else if (imagenExistente && imagenExistente.value) {
+                imagenUrl = imagenExistente.value;
+            }
+            
             const datos = {
                 nombre: document.getElementById('nombreOferta').value,
                 descripcion: document.getElementById('descripcionOferta').value,
@@ -6010,7 +6147,8 @@
                 fechaInicio: document.getElementById('fechaInicioOferta').value,
                 fechaFin: document.getElementById('fechaFinOferta').value,
                 limiteUsos: null,
-                condiciones: ''
+                condiciones: '',
+                imagen: imagenUrl
             };
             const oferta = sistemaOfertasCombos.crearOferta(datos);
             if (oferta) {
@@ -7518,6 +7656,9 @@
             }
             
             crearTurno(datos) {
+                const remisero = this.remiseros.find(r => r.id === datos.remiseroId);
+                const esRural = remisero?.zona === 'rural';
+                
                 const turno = {
                     id: Date.now(),
                     remiseroId: datos.remiseroId,
@@ -7529,7 +7670,9 @@
                     origen: datos.origen,
                     destino: datos.destino,
                     precio: datos.precio,
+                    zona: remisero?.zona || 'urbana',
                     estado: 'disponible',
+                    completo: false,
                     reservas: [],
                     fechaCreacion: new Date().toISOString()
                 };
@@ -7539,23 +7682,48 @@
             }
             
             crearReserva(datos) {
+                const turno = this.turnos.find(t => t.id === datos.turnoId);
+                const remisero = this.remiseros.find(r => r.id === turno?.remiseroId);
+                const esRural = remisero?.zona === 'rural';
+                
                 const reserva = {
                     id: Date.now(),
                     turnoId: datos.turnoId,
+                    tipo: datos.tipo || 'pasajero', // 'pasajero' o 'encomienda'
                     cliente: { nombre: datos.nombreCliente, telefono: datos.telefonoCliente, email: datos.emailCliente },
                     asientos: datos.asientos || 1,
                     origen: datos.origen,
                     destino: datos.destino,
+                    tipoViaje: datos.tipoViaje || 'ida', // 'ida', 'vuelta', 'ambas'
                     precio: datos.precio,
                     metodoPago: datos.metodoPago || 'efectivo',
                     estado: 'pendiente',
                     ticket: null,
+                    // Para encomiendas
+                    peso: datos.peso || null,
+                    dimensiones: datos.dimensiones || null,
+                    descripcion: datos.descripcion || null,
                     fechaCreacion: new Date().toISOString()
                 };
                 reserva.ticket = this.generarTicket(reserva);
                 this.reservas.unshift(reserva);
                 this.guardarReservas();
                 this.actualizarTurnoReserva(datos.turnoId, reserva);
+                
+                // Verificar si turno rural está completo (4 pasajeros)
+                if (esRural && turno) {
+                    const totalPasajeros = this.reservas
+                        .filter(r => r.turnoId === datos.turnoId && r.tipo === 'pasajero')
+                        .reduce((sum, r) => sum + (r.asientos || 1), 0);
+                    
+                    if (totalPasajeros >= 4) {
+                        turno.completo = true;
+                        turno.estado = 'completo';
+                        this.guardarTurnos();
+                        mostrarNotificacion(`✅ Turno RURAL COMPLETO: ${totalPasajeros} pasajeros`, 'success');
+                    }
+                }
+                
                 return reserva;
             }
             
@@ -7581,12 +7749,121 @@
             
             actualizarTurnoReserva(turnoId, reserva) {
                 const turno = this.turnos.find(t => t.id === turnoId);
+                const remisero = this.remiseros.find(r => r.id === turno?.remiseroId);
+                const esRural = remisero?.zona === 'rural';
+                
                 if (turno) {
-                    turno.asientosOcupados += reserva.asientos;
+                    if (reserva.tipo === 'pasajero') {
+                        turno.asientosOcupados += reserva.asientos || 1;
+                    }
                     turno.reservas.push(reserva.id);
-                    if (turno.asientosOcupados >= turno.asientosDisponibles) turno.estado = 'ocupado';
+                    
+                    // Solo zona rural requiere mínimo de pasajeros (cobra por asiento)
+                    if (esRural) {
+                        const minimoRural = 4; // Mínimo requerido para zona rural (cobra por asiento)
+                        
+                        const totalPasajeros = this.reservas
+                            .filter(r => r.turnoId === turnoId && r.tipo === 'pasajero')
+                            .reduce((sum, r) => sum + (r.asientos || 1), 0);
+                        
+                        if (totalPasajeros >= minimoRural) {
+                            turno.completo = true;
+                            turno.estado = 'completo';
+                            mostrarNotificacion(`✅ Turno RURAL COMPLETO: ${totalPasajeros} pasajeros`, 'success');
+                        } else {
+                            const faltantes = minimoRural - totalPasajeros;
+                            mostrarNotificacion(`ℹ️ Turno rural: faltan ${faltantes} pasajero(s) para completar (mínimo ${minimoRural} - cobra por asiento)`, 'info');
+                        }
+                    } else {
+                        // Zona urbana: cobra por kilómetro, NO requiere mínimo de pasajeros
+                        // Solo verificar si se llenaron todos los asientos disponibles
+                        if (turno.asientosOcupados >= turno.asientosDisponibles) {
+                            turno.estado = 'ocupado';
+                        }
+                    }
+                    
                     this.guardarTurnos();
                 }
+            }
+            
+            // Sistema de matching para zona rural
+            buscarMatching(reservaCancelada) {
+                const turnoCancelado = this.turnos.find(t => t.id === reservaCancelada.turnoId);
+                if (!turnoCancelado) return null;
+                
+                const remisero = this.remiseros.find(r => r.id === turnoCancelado.remiseroId);
+                const esRural = remisero?.zona === 'rural';
+                
+                if (!esRural) return null; // Solo matching para zona rural
+                
+                // Buscar otras solicitudes de pasajeros buscando remis
+                const solicitudesPendientes = JSON.parse(localStorage.getItem('solicitudes_pasajeros') || '[]');
+                
+                // Buscar solicitudes con mismo destino (ciudad) y fecha similar
+                // Para matching: busca por destino (ciudad) y tipo de viaje compatible
+                // IMPORTANTE: "Solo Ida" puede matchear con "Solo Vuelta" (y viceversa) para optimizar viajes
+                const matches = solicitudesPendientes.filter(solicitud => {
+                    const mismoDestino = solicitud.destino === turnoCancelado.destino;
+                    const mismaFecha = solicitud.fecha === turnoCancelado.fecha;
+                    const mismoHorario = Math.abs(new Date(`2000-01-01T${solicitud.hora}`) - new Date(`2000-01-01T${turnoCancelado.horaInicio}`)) < 3600000; // 1 hora de diferencia
+                    
+                    // Compatibilidad de tipo de viaje (OPTIMIZADO):
+                    // - "Solo Ida" puede matchear con "Solo Vuelta" (remisero hace ida y vuelta con dos pasajeros)
+                    // - "Solo Vuelta" puede matchear con "Solo Ida" (remisero hace ida y vuelta con dos pasajeros)
+                    // - "Ida y Vuelta" puede matchear con cualquiera
+                    // - Mismo tipo también es compatible
+                    const tipoViajeCancelado = reservaCancelada.tipoViaje || 'ida';
+                    const tipoViajeSolicitud = solicitud.tipoViaje || 'ida';
+                    
+                    const tipoViajeCompatible = 
+                        tipoViajeCancelado === 'ambas' || // "Ida y Vuelta" matchea con cualquiera
+                        tipoViajeSolicitud === 'ambas' || // Cualquiera matchea con "Ida y Vuelta"
+                        tipoViajeCancelado === tipoViajeSolicitud || // Mismo tipo
+                        (tipoViajeCancelado === 'ida' && tipoViajeSolicitud === 'vuelta') || // Ida + Vuelta = viaje completo
+                        (tipoViajeCancelado === 'vuelta' && tipoViajeSolicitud === 'ida'); // Vuelta + Ida = viaje completo
+                    
+                    return mismoDestino && mismaFecha && mismoHorario && tipoViajeCompatible && solicitud.estado === 'pendiente';
+                });
+                
+                // También buscar en reservas existentes del sistema (no solo solicitudes pendientes)
+                const reservasPendientes = this.reservas.filter(r => 
+                    r.turnoId !== turnoCancelado.id &&
+                    r.estado === 'pendiente' &&
+                    r.tipo === 'pasajero' &&
+                    r.destino === turnoCancelado.destino
+                );
+                
+                // Filtrar reservas por compatibilidad de tipo de viaje
+                const reservasCompatibles = reservasPendientes.filter(reserva => {
+                    const tipoViajeCancelado = reservaCancelada.tipoViaje || 'ida';
+                    const tipoViajeReserva = reserva.tipoViaje || 'ida';
+                    
+                    const tipoViajeCompatible = 
+                        tipoViajeCancelado === 'ambas' ||
+                        tipoViajeReserva === 'ambas' ||
+                        tipoViajeCancelado === tipoViajeReserva ||
+                        (tipoViajeCancelado === 'ida' && tipoViajeReserva === 'vuelta') ||
+                        (tipoViajeCancelado === 'vuelta' && tipoViajeReserva === 'ida');
+                    
+                    return tipoViajeCompatible;
+                });
+                
+                // Buscar encomiendas pendientes (mismo destino - ciudad)
+                const encomiendasPendientes = this.reservas.filter(r => 
+                    r.tipo === 'encomienda' && 
+                    r.estado === 'pendiente' &&
+                    r.turnoId !== turnoCancelado.id &&
+                    r.destino === turnoCancelado.destino
+                );
+                
+                return {
+                    turno: turnoCancelado,
+                    remisero: remisero,
+                    solicitudesPasajeros: matches,
+                    reservasCompatibles: reservasCompatibles, // Reservas del sistema con tipo de viaje compatible
+                    encomiendas: encomiendasPendientes,
+                    totalMatches: matches.length + reservasCompatibles.length + encomiendasPendientes.length
+                };
             }
             
             obtenerEstadisticas() {
@@ -7600,11 +7877,31 @@
                     ingresosTotales: this.reservas.reduce((sum, r) => sum + r.precio, 0)
                 };
             }
+            
+            // Alias para mantener compatibilidad
+            agregarTurno(datos) {
+                return this.crearTurno(datos);
+            }
+            
+            agregarReserva(datos) {
+                return this.crearReserva({
+                    turnoId: datos.turnoId,
+                    nombreCliente: datos.cliente.nombre,
+                    telefonoCliente: datos.cliente.telefono,
+                    emailCliente: datos.cliente.email || '',
+                    origen: datos.origen,
+                    destino: datos.destino,
+                    precio: datos.precio,
+                    metodoPago: datos.metodoPago,
+                    asientos: 1
+                });
+            }
         }
         
         let sistemaRemiseriaCompleto = new SistemaRemiseriaCompleto();
         
-        function abrirGestionRemiseriaCompleta() {
+        // Hacer función global
+        window.abrirGestionRemiseriaCompleta = function abrirGestionRemiseriaCompleta() {
             console.log('🚗 Abriendo gestión de remisería completa...');
             const modal = document.createElement('div');
             modal.id = 'modalGestionRemiseriaCompleta';
@@ -7681,14 +7978,36 @@
                                     <div id="listaTurnos" style="display: grid; gap: 16px;">
                                         ${sistemaRemiseriaCompleto.turnos.length > 0 ? sistemaRemiseriaCompleto.turnos.map(turno => {
                                             const remisero = sistemaRemiseriaCompleto.remiseros.find(r => r.id === turno.remiseroId);
+                                            const reservasAfectadas = sistemaRemiseriaCompleto.reservas.filter(r => r.turnoId === turno.id);
                                             return `
-                                                <div style="background: ${turno.estado === 'disponible' ? '#F0FDF4' : '#FEF2F2'}; border: 1px solid ${turno.estado === 'disponible' ? '#BBF7D0' : '#FECACA'}; border-radius: 12px; padding: 20px;">
+                                                <div style="background: ${turno.estado === 'disponible' ? '#F0FDF4' : turno.estado === 'no-puede-concurrir' ? '#FEF3C7' : turno.estado === 'dia-libre' ? '#DBEAFE' : '#FEF2F2'}; border: 1px solid ${turno.estado === 'disponible' ? '#BBF7D0' : turno.estado === 'no-puede-concurrir' ? '#FDE68A' : turno.estado === 'dia-libre' ? '#BAE6FD' : '#FECACA'}; border-radius: 12px; padding: 20px;">
                                                     <div style="display: flex; justify-content: space-between; margin-bottom: 12px;">
                                                         <div><h4 style="margin: 0; color: #374151;">${remisero ? remisero.nombre + ' ' + remisero.apellido : 'N/A'}</h4><p style="margin: 5px 0; color: #6B7280; font-size: 0.9rem;">${new Date(turno.fecha).toLocaleDateString('es-ES')} | ${turno.horaInicio}-${turno.horaFin}</p></div>
-                                                        <span style="background: ${turno.estado === 'disponible' ? '#10B981' : '#F59E0B'}; color: white; padding: 4px 8px; border-radius: 6px; font-size: 0.8rem;">${turno.estado === 'disponible' ? 'Disponible' : 'Ocupado'}</span>
+                                                        <span style="background: ${turno.estado === 'disponible' ? '#10B981' : turno.estado === 'no-puede-concurrir' ? '#F59E0B' : turno.estado === 'dia-libre' ? '#3B82F6' : '#EF4444'}; color: white; padding: 4px 8px; border-radius: 6px; font-size: 0.8rem;">${turno.estado === 'disponible' ? 'Disponible' : turno.estado === 'no-puede-concurrir' ? '⚠️ No puede concurrir' : turno.estado === 'dia-libre' ? '🏖️ Día libre' : 'Ocupado'}</span>
                                                     </div>
-                                                    <div style="margin-bottom: 12px;"><p style="margin: 0; color: #374151; font-size: 0.95rem;"><strong>Asientos:</strong> ${turno.asientosOcupados}/${turno.asientosDisponibles} | <strong>Precio:</strong> $${turno.precio}</p></div>
-                                                    <div style="display: flex; gap: 10px;">
+                                                    <div style="margin-bottom: 12px;">
+                                                        <p style="margin: 0; color: #374151; font-size: 0.95rem;">
+                                                            <strong>Asientos:</strong> ${turno.asientosOcupados}/${turno.asientosDisponibles} | 
+                                                            <strong>Precio:</strong> $${turno.precio}
+                                                            ${reservasAfectadas.length > 0 ? ` | <strong>Reservas:</strong> ${reservasAfectadas.length}` : ''}
+                                                            ${remisero?.zona === 'rural' ? ` | <strong>Zona:</strong> Rural` : ''}
+                                                        </p>
+                                                        ${remisero?.zona === 'rural' ? `
+                                                            <p style="margin: 8px 0 0; color: ${turno.completo ? '#10B981' : '#F59E0B'}; font-weight: 600; font-size: 0.9rem;">
+                                                                ${turno.completo ? `✅ COMPLETO (${turno.asientosOcupados} pasajeros)` : `⚠️ Faltan ${Math.max(0, 4 - turno.asientosOcupados)} pasajero(s) para completar (mínimo 4)`}
+                                                            </p>
+                                                        ` : ''}
+                                                    </div>
+                                                    <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+                                                        ${turno.estado === 'disponible' ? `
+                                                            ${remisero?.zona === 'rural' && !turno.completo ? `
+                                                                <button onclick="marcarTurnoCompleto(${turno.id})" style="background: #10B981; color: white; border: none; padding: 6px 12px; border-radius: 6px; cursor: pointer; font-size: 0.8rem;">✅ Marcar Completo</button>
+                                                            ` : ''}
+                                                            <button onclick="marcarTurnoNoPuedeConcurrir(${turno.id})" style="background: #F59E0B; color: white; border: none; padding: 6px 12px; border-radius: 6px; cursor: pointer; font-size: 0.8rem;">⚠️ No puede concurrir</button>
+                                                            <button onclick="marcarTurnoDiaLibre(${turno.id})" style="background: #3B82F6; color: white; border: none; padding: 6px 12px; border-radius: 6px; cursor: pointer; font-size: 0.8rem;">🏖️ Día libre</button>
+                                                        ` : `
+                                                            <button onclick="marcarTurnoDisponible(${turno.id})" style="background: #10B981; color: white; border: none; padding: 6px 12px; border-radius: 6px; cursor: pointer; font-size: 0.8rem;">✅ Disponible</button>
+                                                        `}
                                                         <button onclick="eliminarTurnoDesdeModal(${turno.id})" style="background: #EF4444; color: white; border: none; padding: 6px 12px; border-radius: 6px; cursor: pointer; font-size: 0.8rem;">🗑️</button>
                                                     </div>
                                                 </div>
@@ -7783,6 +8102,7 @@
                                 <div><label style="display: block; margin-bottom: 8px; font-weight: 600; color: #374151;">Patente</label><input type="text" id="patenteVehiculo" required style="width: 100%; padding: 12px; border: 1px solid #D1D5DB; border-radius: 8px;"></div>
                                 <div><label style="display: block; margin-bottom: 8px; font-weight: 600; color: #374151;">Color</label><input type="text" id="colorVehiculo" style="width: 100%; padding: 12px; border: 1px solid #D1D5DB; border-radius: 8px;"></div>
                             </div>
+                            <div style="margin-bottom: 20px;"><label style="display: block; margin-bottom: 8px; font-weight: 600; color: #374151;">Cantidad de Asientos del Vehículo</label><input type="number" id="asientosVehiculo" required min="1" max="6" value="4" style="width: 100%; padding: 12px; border: 1px solid #D1D5DB; border-radius: 8px;" placeholder="Máximo 6 asientos"></div>
                             <div style="display: flex; gap: 16px; justify-content: center;">
                                 <button type="submit" style="background: linear-gradient(135deg, #F59E0B, #D97706); color: white; border: none; padding: 12px 24px; border-radius: 8px; cursor: pointer; font-weight: 600;">💾 Guardar</button>
                                 <button type="button" onclick="cerrarFormularioRemisero()" style="padding: 12px 24px; border: 2px solid #E5E7EB; background: white; border-radius: 8px; cursor: pointer;">Cancelar</button>
@@ -7805,7 +8125,8 @@
                 marcaVehiculo: document.getElementById('marcaVehiculo').value,
                 modeloVehiculo: document.getElementById('modeloVehiculo').value,
                 patente: document.getElementById('patenteVehiculo').value,
-                colorVehiculo: document.getElementById('colorVehiculo').value
+                colorVehiculo: document.getElementById('colorVehiculo').value,
+                asientos: parseInt(document.getElementById('asientosVehiculo').value || 4)
             };
             const remisero = sistemaRemiseriaCompleto.agregarRemisero(datos);
             if (remisero) {
@@ -7822,11 +8143,380 @@
         }
         
         function mostrarFormularioTurno() {
-            mostrarNotificacion('🔧 Función en desarrollo', 'info');
+            const remiseros = sistemaRemiseriaCompleto.remiseros.filter(r => r.activo);
+            const modal = document.createElement('div');
+            modal.id = 'modalFormularioTurnoRemiseria';
+            modal.style.cssText = 'position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.8); display: flex; align-items: center; justify-content: center; z-index: 9999999;';
+            modal.innerHTML = `
+                <div style="background: white; border-radius: 16px; max-width: 600px; width: 95%; max-height: 90vh; overflow-y: auto;">
+                    <div style="background: linear-gradient(135deg, #10B981, #059669); color: white; padding: 24px; text-align: center; position: relative;">
+                        <button onclick="cerrarFormularioTurnoRemiseria()" style="position: absolute; top: 20px; right: 20px; background: rgba(255,255,255,0.2); color: white; border: none; padding: 8px 12px; border-radius: 50%; cursor: pointer; font-size: 20px; width: 40px; height: 40px;">×</button>
+                        <h3 style="margin: 0;">📅 Crear Turno de Remisero</h3>
+                    </div>
+                    <div style="padding: 24px;">
+                        <form id="formularioTurnoRemiseria" onsubmit="guardarTurnoRemiseria(event); return false;">
+                            <div style="margin-bottom: 20px;"><label style="display: block; margin-bottom: 8px; font-weight: 600; color: #374151;">Remisero</label><select id="remiseroTurno" required onchange="actualizarAsientosMaximos()" style="width: 100%; padding: 12px; border: 1px solid #D1D5DB; border-radius: 8px;">${remiseros.length > 0 ? remiseros.map(r => `<option value="${r.id}">${r.nombre} ${r.apellido} - ${r.vehiculo.patente} (${r.vehiculo.asientos || 4} asientos)</option>`).join('') : '<option value="">No hay remiseros activos</option>'}</select></div>
+                            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 20px;">
+                                <div><label style="display: block; margin-bottom: 8px; font-weight: 600; color: #374151;">Fecha</label><input type="date" id="fechaTurnoRemiseria" required style="width: 100%; padding: 12px; border: 1px solid #D1D5DB; border-radius: 8px;"></div>
+                                <div><label style="display: block; margin-bottom: 8px; font-weight: 600; color: #374151;">Hora Inicio</label><input type="time" id="horaInicioTurno" required style="width: 100%; padding: 12px; border: 1px solid #D1D5DB; border-radius: 8px;"></div>
+                            </div>
+                            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 20px;">
+                                <div><label style="display: block; margin-bottom: 8px; font-weight: 600; color: #374151;">Hora Fin</label><input type="time" id="horaFinTurno" required style="width: 100%; padding: 12px; border: 1px solid #D1D5DB; border-radius: 8px;"></div>
+                                <div><label style="display: block; margin-bottom: 8px; font-weight: 600; color: #374151;">Precio</label><input type="number" id="precioTurno" required min="0" step="0.01" style="width: 100%; padding: 12px; border: 1px solid #D1D5DB; border-radius: 8px;"></div>
+                            </div>
+                            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 20px;">
+                                <div><label style="display: block; margin-bottom: 8px; font-weight: 600; color: #374151;">Origen</label><input type="text" id="origenTurno" placeholder="Ej: Centro, Terminal, etc." style="width: 100%; padding: 12px; border: 1px solid #D1D5DB; border-radius: 8px;"></div>
+                                <div id="campoDestinoTurno">
+                                    <!-- Se actualizará dinámicamente según la zona del remisero -->
+                                    <label style="display: block; margin-bottom: 8px; font-weight: 600; color: #374151;">Destino</label>
+                                    <select id="destinoTurnoRural" style="width: 100%; padding: 12px; border: 1px solid #D1D5DB; border-radius: 8px; display: none;"><option value="Resistencia">Resistencia (Chaco)</option><option value="Corrientes">Corrientes</option><option value="Formosa">Formosa</option><option value="Posadas">Posadas (Misiones)</option><option value="Paraná">Paraná (Entre Ríos)</option><option value="Santa Fe">Santa Fe</option><option value="Rosario">Rosario</option><option value="Córdoba">Córdoba</option><option value="Buenos Aires">Buenos Aires</option><option value="Otro">Otro</option></select>
+                                    <input type="text" id="destinoTurnoUrbano" placeholder="Dirección exacta de destino (ej: Av. 9 de Julio 1234)" style="width: 100%; padding: 12px; border: 1px solid #D1D5DB; border-radius: 8px; display: none;">
+                                </div>
+                            </div>
+                            <div id="destinoOtroTurno" style="display: none; margin-bottom: 20px;"><label style="display: block; margin-bottom: 8px; font-weight: 600; color: #374151;">Especificar otro destino</label><input type="text" id="destinoOtroTurnoInput" placeholder="Nombre de la ciudad" style="width: 100%; padding: 12px; border: 1px solid #D1D5DB; border-radius: 8px;"></div>
+                            <div id="camposAsientosTurno" style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 20px;">
+                                <div><label style="display: block; margin-bottom: 8px; font-weight: 600; color: #374151;">Asientos Disponibles</label><input type="number" id="asientosDisponibles" required min="1" max="6" value="4" style="width: 100%; padding: 12px; border: 1px solid #D1D5DB; border-radius: 8px;"></div>
+                                <div><label style="display: block; margin-bottom: 8px; font-weight: 600; color: #374151;">Asientos Ocupados</label><input type="number" id="asientosOcupados" min="0" value="0" style="width: 100%; padding: 12px; border: 1px solid #D1D5DB; border-radius: 8px;"></div>
+                            </div>
+                            <div id="infoZonaTurno" style="background: #F0F9FF; border: 1px solid #BAE6FD; border-radius: 8px; padding: 12px; margin-bottom: 20px; display: none;">
+                                <p style="margin: 0; color: #0369A1; font-size: 0.9rem;"><strong>ℹ️ Zona Rural:</strong> Cobra por asiento. Mínimo 4 pasajeros. Destino: ciudad principal.</p>
+                                <p style="margin: 8px 0 0; color: #0369A1; font-size: 0.9rem;"><strong>ℹ️ Zona Urbana:</strong> Cobra por kilómetro. No requiere mínimo de pasajeros. Destino: dirección exacta.</p>
+                            </div>
+                            <div style="display: flex; gap: 16px; justify-content: center;">
+                                <button type="submit" style="background: linear-gradient(135deg, #10B981, #059669); color: white; border: none; padding: 12px 24px; border-radius: 8px; cursor: pointer; font-weight: 600;">💾 Guardar</button>
+                                <button type="button" onclick="cerrarFormularioTurnoRemiseria()" style="padding: 12px 24px; border: 2px solid #E5E7EB; background: white; border-radius: 8px; cursor: pointer;">Cancelar</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            `;
+            document.body.appendChild(modal);
+            setTimeout(() => {
+                configurarSelectDestino();
+                actualizarAsientosMaximos();
+            }, 100);
         }
         
+        function guardarTurnoRemiseria(event) {
+            event.preventDefault();
+            const remiseroId = parseInt(document.getElementById('remiseroTurno').value);
+            const remisero = sistemaRemiseriaCompleto.remiseros.find(r => r.id === remiseroId);
+            const esRural = remisero?.zona === 'rural';
+            
+            let destino = '';
+            if (esRural) {
+                // Zona rural: usar select de ciudades
+                destino = document.getElementById('destinoTurnoRural').value;
+                if (destino === 'Otro') {
+                    destino = document.getElementById('destinoOtroTurnoInput').value || '';
+                }
+            } else {
+                // Zona urbana: usar campo de texto para dirección exacta
+                destino = document.getElementById('destinoTurnoUrbano').value;
+                if (!destino.trim()) {
+                    mostrarNotificacion('⚠️ La zona urbana requiere una dirección exacta de destino', 'warning');
+                    return;
+                }
+            }
+            
+            const datos = {
+                remiseroId: remiseroId,
+                fecha: document.getElementById('fechaTurnoRemiseria').value,
+                horaInicio: document.getElementById('horaInicioTurno').value,
+                horaFin: document.getElementById('horaFinTurno').value,
+                precio: parseFloat(document.getElementById('precioTurno').value),
+                origen: document.getElementById('origenTurno').value || '',
+                destino: destino,
+                asientosDisponibles: esRural ? parseInt(document.getElementById('asientosDisponibles').value) : (remisero?.vehiculo?.asientos || 4),
+                asientosOcupados: parseInt(document.getElementById('asientosOcupados').value || 0)
+            };
+            const turno = sistemaRemiseriaCompleto.agregarTurno(datos);
+            if (turno) {
+                mostrarNotificacion('✅ Turno creado', 'success');
+                cerrarFormularioTurnoRemiseria();
+                cerrarGestionRemiseriaCompleta();
+                setTimeout(() => abrirGestionRemiseriaCompleta(), 500);
+            }
+        }
+        
+        function cerrarFormularioTurnoRemiseria() {
+            const modal = document.getElementById('modalFormularioTurnoRemiseria');
+            if (modal) modal.remove();
+        }
+        
+        function actualizarAsientosMaximos() {
+            const asientosInput = document.getElementById('asientosDisponibles');
+            const remiseroSelect = document.getElementById('remiseroTurno');
+            const destinoRural = document.getElementById('destinoTurnoRural');
+            const destinoUrbano = document.getElementById('destinoTurnoUrbano');
+            const destinoOtro = document.getElementById('destinoOtroTurno');
+            const camposAsientos = document.getElementById('camposAsientosTurno');
+            const infoZona = document.getElementById('infoZonaTurno');
+            
+            if (remiseroSelect) {
+                const remiseroId = parseInt(remiseroSelect.value);
+                const remisero = sistemaRemiseriaCompleto.remiseros.find(r => r.id === remiseroId);
+                
+                if (remisero) {
+                    const esRural = remisero.zona === 'rural';
+                    
+                    // Actualizar asientos máximos
+                    if (asientosInput && remisero.vehiculo && remisero.vehiculo.asientos) {
+                        asientosInput.max = remisero.vehiculo.asientos;
+                        if (parseInt(asientosInput.value) > remisero.vehiculo.asientos) {
+                            asientosInput.value = remisero.vehiculo.asientos;
+                        }
+                    }
+                    
+                    // Mostrar/ocultar campos según zona
+                    if (destinoRural && destinoUrbano) {
+                        if (esRural) {
+                            destinoRural.style.display = 'block';
+                            destinoRural.required = true;
+                            destinoUrbano.style.display = 'none';
+                            destinoUrbano.required = false;
+                            destinoUrbano.value = '';
+                            if (camposAsientos) camposAsientos.style.display = 'grid';
+                        } else {
+                            destinoRural.style.display = 'none';
+                            destinoRural.required = false;
+                            destinoRural.value = '';
+                            destinoUrbano.style.display = 'block';
+                            destinoUrbano.required = true;
+                            if (destinoOtro) destinoOtro.style.display = 'none';
+                            if (camposAsientos) camposAsientos.style.display = 'none';
+                        }
+                    }
+                    
+                    // Mostrar información de zona
+                    if (infoZona) {
+                        infoZona.style.display = 'block';
+                        const infoText = esRural 
+                            ? `<strong>ℹ️ Zona Rural:</strong> Cobra por ASIENTO. Mínimo 4 pasajeros requeridos. Destino: ciudad principal.`
+                            : `<strong>ℹ️ Zona Urbana:</strong> Cobra por KILÓMETRO. No requiere mínimo de pasajeros. Destino: dirección EXACTA requerida.`;
+                        infoZona.innerHTML = `<p style="margin: 0; color: #0369A1; font-size: 0.9rem;">${infoText}</p>`;
+                    }
+                }
+            }
+        }
+        
+        function configurarSelectDestino() {
+            // Para formulario de turnos (zona rural)
+            const destinoTurnoRural = document.getElementById('destinoTurnoRural');
+            if (destinoTurnoRural && !destinoTurnoRural.hasAttribute('data-listener')) {
+                destinoTurnoRural.setAttribute('data-listener', 'true');
+                destinoTurnoRural.addEventListener('change', function() {
+                    const otroDiv = document.getElementById('destinoOtroTurno');
+                    if (otroDiv) {
+                        otroDiv.style.display = this.value === 'Otro' ? 'block' : 'none';
+                    }
+                });
+            }
+            
+            // Para formulario de reservas (zona rural)
+            const destinoReservaRural = document.getElementById('destinoReservaRural');
+            if (destinoReservaRural && !destinoReservaRural.hasAttribute('data-listener')) {
+                destinoReservaRural.setAttribute('data-listener', 'true');
+                destinoReservaRural.addEventListener('change', function() {
+                    const otroDiv = document.getElementById('destinoOtroReserva');
+                    if (otroDiv) {
+                        otroDiv.style.display = this.value === 'Otro' ? 'block' : 'none';
+                    }
+                });
+            }
+            
+            // Actualizar destino según turno seleccionado en formulario de reservas
+            const turnoReserva = document.getElementById('turnoReserva');
+            if (turnoReserva && !turnoReserva.hasAttribute('data-listener')) {
+                turnoReserva.setAttribute('data-listener', 'true');
+                turnoReserva.addEventListener('change', function() {
+                    actualizarDestinoSegunTurno();
+                });
+            }
+        }
+        
+        function actualizarDestinoSegunTurno() {
+            const turnoSelect = document.getElementById('turnoReserva');
+            const destinoRural = document.getElementById('destinoReservaRural');
+            const destinoUrbano = document.getElementById('destinoReservaUrbano');
+            const destinoOtro = document.getElementById('destinoOtroReserva');
+            
+            if (turnoSelect && destinoRural && destinoUrbano) {
+                const turnoId = parseInt(turnoSelect.value);
+                const turno = sistemaRemiseriaCompleto.turnos.find(t => t.id === turnoId);
+                
+                if (turno) {
+                    const remisero = sistemaRemiseriaCompleto.remiseros.find(r => r.id === turno.remiseroId);
+                    const esRural = remisero?.zona === 'rural';
+                    
+                    if (esRural) {
+                        destinoRural.style.display = 'block';
+                        destinoRural.required = true;
+                        destinoUrbano.style.display = 'none';
+                        destinoUrbano.required = false;
+                        destinoUrbano.value = '';
+                        if (destinoOtro && destinoRural.value !== 'Otro') destinoOtro.style.display = 'none';
+                    } else {
+                        destinoRural.style.display = 'none';
+                        destinoRural.required = false;
+                        destinoRural.value = '';
+                        destinoUrbano.style.display = 'block';
+                        destinoUrbano.required = true;
+                        if (destinoOtro) destinoOtro.style.display = 'none';
+                    }
+                }
+            }
+        }
+        
+        
         function mostrarFormularioReserva() {
-            mostrarNotificacion('🔧 Función en desarrollo', 'info');
+            const turnos = sistemaRemiseriaCompleto.turnos.filter(t => t.estado === 'disponible');
+            const modal = document.createElement('div');
+            modal.id = 'modalFormularioReserva';
+            modal.style.cssText = 'position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.8); display: flex; align-items: center; justify-content: center; z-index: 9999999;';
+            modal.innerHTML = `
+                <div style="background: white; border-radius: 16px; max-width: 600px; width: 95%; max-height: 90vh; overflow-y: auto;">
+                    <div style="background: linear-gradient(135deg, #8B5CF6, #7C3AED); color: white; padding: 24px; text-align: center; position: relative;">
+                        <button onclick="cerrarFormularioReserva()" style="position: absolute; top: 20px; right: 20px; background: rgba(255,255,255,0.2); color: white; border: none; padding: 8px 12px; border-radius: 50%; cursor: pointer; font-size: 20px; width: 40px; height: 40px;">×</button>
+                        <h3 style="margin: 0;">🎫 Nueva Reserva</h3>
+                    </div>
+                    <div style="padding: 24px;">
+                        <div style="display: flex; gap: 10px; margin-bottom: 20px;">
+                            <button type="button" onclick="cambiarTipoReserva('pasajero')" id="btnTipoPasajero" style="flex: 1; background: #8B5CF6; color: white; border: none; padding: 12px; border-radius: 8px; cursor: pointer; font-weight: 600;">👥 Pasajero</button>
+                            <button type="button" onclick="cambiarTipoReserva('encomienda')" id="btnTipoEncomienda" style="flex: 1; background: #E5E7EB; color: #6B7280; border: none; padding: 12px; border-radius: 8px; cursor: pointer; font-weight: 600;">📦 Encomienda</button>
+                        </div>
+                        <form id="formularioReserva" onsubmit="guardarReservaRemiseria(event); return false;">
+                            <input type="hidden" id="tipoReserva" value="pasajero">
+                            <div style="margin-bottom: 20px;"><label style="display: block; margin-bottom: 8px; font-weight: 600; color: #374151;">Turno</label><select id="turnoReserva" required style="width: 100%; padding: 12px; border: 1px solid #D1D5DB; border-radius: 8px;">${turnos.length > 0 ? turnos.map(t => {
+                                const remisero = sistemaRemiseriaCompleto.remiseros.find(r => r.id === t.remiseroId);
+                                return `<option value="${t.id}">${remisero ? remisero.nombre + ' ' + remisero.apellido : 'N/A'} - ${new Date(t.fecha).toLocaleDateString('es-ES')} ${t.horaInicio}-${t.horaFin}</option>`;
+                            }).join('') : '<option value="">No hay turnos disponibles</option>'}</select></div>
+                            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 20px;">
+                                <div><label style="display: block; margin-bottom: 8px; font-weight: 600; color: #374151;">Nombre Cliente</label><input type="text" id="nombreClienteReserva" required style="width: 100%; padding: 12px; border: 1px solid #D1D5DB; border-radius: 8px;"></div>
+                                <div><label style="display: block; margin-bottom: 8px; font-weight: 600; color: #374151;">Teléfono</label><input type="tel" id="telefonoClienteReserva" required style="width: 100%; padding: 12px; border: 1px solid #D1D5DB; border-radius: 8px;"></div>
+                            </div>
+                            <div id="camposPasajero">
+                                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 20px;">
+                                    <div><label style="display: block; margin-bottom: 8px; font-weight: 600; color: #374151;">Asientos</label><input type="number" id="asientosReserva" min="1" value="1" required style="width: 100%; padding: 12px; border: 1px solid #D1D5DB; border-radius: 8px;"></div>
+                                    <div><label style="display: block; margin-bottom: 8px; font-weight: 600; color: #374151;">Email (opcional)</label><input type="email" id="emailClienteReserva" style="width: 100%; padding: 12px; border: 1px solid #D1D5DB; border-radius: 8px;"></div>
+                                </div>
+                            </div>
+                            <div id="camposEncomienda" style="display: none;">
+                                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 20px;">
+                                    <div><label style="display: block; margin-bottom: 8px; font-weight: 600; color: #374151;">Peso (kg)</label><input type="number" id="pesoEncomienda" min="0" step="0.1" style="width: 100%; padding: 12px; border: 1px solid #D1D5DB; border-radius: 8px;"></div>
+                                    <div><label style="display: block; margin-bottom: 8px; font-weight: 600; color: #374151;">Dimensiones</label><input type="text" id="dimensionesEncomienda" placeholder="Ej: 30x20x15 cm" style="width: 100%; padding: 12px; border: 1px solid #D1D5DB; border-radius: 8px;"></div>
+                                </div>
+                                <div style="margin-bottom: 20px;"><label style="display: block; margin-bottom: 8px; font-weight: 600; color: #374151;">Descripción</label><textarea id="descripcionEncomienda" rows="3" style="width: 100%; padding: 12px; border: 1px solid #D1D5DB; border-radius: 8px;" placeholder="Descripción del contenido"></textarea></div>
+                            </div>
+                            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 20px;">
+                                <div><label style="display: block; margin-bottom: 8px; font-weight: 600; color: #374151;">Origen</label><input type="text" id="origenReserva" required style="width: 100%; padding: 12px; border: 1px solid #D1D5DB; border-radius: 8px;" placeholder="Dirección de origen"></div>
+                                <div><label style="display: block; margin-bottom: 8px; font-weight: 600; color: #374151;">Destino (Ciudad)</label><select id="destinoReserva" required style="width: 100%; padding: 12px; border: 1px solid #D1D5DB; border-radius: 8px;"><option value="Resistencia">Resistencia (Chaco)</option><option value="Corrientes">Corrientes</option><option value="Formosa">Formosa</option><option value="Posadas">Posadas (Misiones)</option><option value="Paraná">Paraná (Entre Ríos)</option><option value="Santa Fe">Santa Fe</option><option value="Rosario">Rosario</option><option value="Córdoba">Córdoba</option><option value="Buenos Aires">Buenos Aires</option><option value="Otro">Otro</option></select></div>
+                            </div>
+                            <div id="destinoOtroReserva" style="display: none; margin-bottom: 20px;"><label style="display: block; margin-bottom: 8px; font-weight: 600; color: #374151;">Especificar otro destino</label><input type="text" id="destinoOtroReservaInput" placeholder="Nombre de la ciudad" style="width: 100%; padding: 12px; border: 1px solid #D1D5DB; border-radius: 8px;"></div>
+                            <div style="margin-bottom: 20px;"><label style="display: block; margin-bottom: 8px; font-weight: 600; color: #374151;">Tipo de Viaje</label><select id="tipoViajeReserva" required style="width: 100%; padding: 12px; border: 1px solid #D1D5DB; border-radius: 8px;"><option value="ida">Solo Ida</option><option value="vuelta">Solo Vuelta</option><option value="ambas">Ida y Vuelta</option></select></div>
+                            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 20px;">
+                                <div><label style="display: block; margin-bottom: 8px; font-weight: 600; color: #374151;">Método de Pago</label><select id="metodoPagoReserva" required style="width: 100%; padding: 12px; border: 1px solid #D1D5DB; border-radius: 8px;"><option value="efectivo">Efectivo</option><option value="tarjeta">Tarjeta</option><option value="transferencia">Transferencia</option></select></div>
+                                <div><label style="display: block; margin-bottom: 8px; font-weight: 600; color: #374151;">Precio</label><input type="number" id="precioReserva" required min="0" step="0.01" style="width: 100%; padding: 12px; border: 1px solid #D1D5DB; border-radius: 8px;"></div>
+                            </div>
+                            <div style="display: flex; gap: 16px; justify-content: center;">
+                                <button type="submit" style="background: linear-gradient(135deg, #8B5CF6, #7C3AED); color: white; border: none; padding: 12px 24px; border-radius: 8px; cursor: pointer; font-weight: 600;">💾 Guardar</button>
+                                <button type="button" onclick="cerrarFormularioReserva()" style="padding: 12px 24px; border: 2px solid #E5E7EB; background: white; border-radius: 8px; cursor: pointer;">Cancelar</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            `;
+            document.body.appendChild(modal);
+            setTimeout(() => {
+                configurarSelectDestino();
+            }, 100);
+        }
+        
+        function cambiarTipoReserva(tipo) {
+            document.getElementById('tipoReserva').value = tipo;
+            const btnPasajero = document.getElementById('btnTipoPasajero');
+            const btnEncomienda = document.getElementById('btnTipoEncomienda');
+            const camposPasajero = document.getElementById('camposPasajero');
+            const camposEncomienda = document.getElementById('camposEncomienda');
+            
+            if (tipo === 'pasajero') {
+                btnPasajero.style.background = '#8B5CF6';
+                btnPasajero.style.color = 'white';
+                btnEncomienda.style.background = '#E5E7EB';
+                btnEncomienda.style.color = '#6B7280';
+                camposPasajero.style.display = 'block';
+                camposEncomienda.style.display = 'none';
+                const asientos = document.getElementById('asientosReserva');
+                if (asientos) asientos.required = true;
+            } else {
+                btnEncomienda.style.background = '#8B5CF6';
+                btnEncomienda.style.color = 'white';
+                btnPasajero.style.background = '#E5E7EB';
+                btnPasajero.style.color = '#6B7280';
+                camposEncomienda.style.display = 'block';
+                camposPasajero.style.display = 'none';
+                const asientos = document.getElementById('asientosReserva');
+                if (asientos) asientos.required = false;
+            }
+        }
+        
+        function guardarReservaRemiseria(event) {
+            event.preventDefault();
+            const tipo = document.getElementById('tipoReserva').value;
+            const turnoId = parseInt(document.getElementById('turnoReserva').value);
+            const turno = sistemaRemiseriaCompleto.turnos.find(t => t.id === turnoId);
+            const remisero = turno ? sistemaRemiseriaCompleto.remiseros.find(r => r.id === turno.remiseroId) : null;
+            const esRural = remisero?.zona === 'rural';
+            
+            let destino = '';
+            if (esRural) {
+                // Zona rural: usar select de ciudades
+                destino = document.getElementById('destinoReservaRural').value;
+                if (destino === 'Otro') {
+                    destino = document.getElementById('destinoOtroReservaInput').value || '';
+                }
+            } else {
+                // Zona urbana: usar campo de texto para dirección exacta
+                destino = document.getElementById('destinoReservaUrbano').value;
+                if (!destino.trim()) {
+                    mostrarNotificacion('⚠️ La zona urbana requiere una dirección exacta de destino', 'warning');
+                    return;
+                }
+            }
+            
+            const datos = {
+                turnoId: parseInt(document.getElementById('turnoReserva').value),
+                tipo: tipo,
+                nombreCliente: document.getElementById('nombreClienteReserva').value,
+                telefonoCliente: document.getElementById('telefonoClienteReserva').value,
+                emailCliente: document.getElementById('emailClienteReserva')?.value || '',
+                origen: document.getElementById('origenReserva').value,
+                destino: destino,
+                tipoViaje: document.getElementById('tipoViajeReserva').value,
+                precio: parseFloat(document.getElementById('precioReserva').value),
+                metodoPago: document.getElementById('metodoPagoReserva').value
+            };
+            
+            if (tipo === 'pasajero') {
+                datos.asientos = parseInt(document.getElementById('asientosReserva').value || 1);
+            } else {
+                datos.peso = parseFloat(document.getElementById('pesoEncomienda').value) || null;
+                datos.dimensiones = document.getElementById('dimensionesEncomienda').value || null;
+                datos.descripcion = document.getElementById('descripcionEncomienda').value || null;
+            }
+            
+            const reserva = sistemaRemiseriaCompleto.crearReserva(datos);
+            if (reserva) {
+                mostrarNotificacion(`✅ ${tipo === 'pasajero' ? 'Pasajero' : 'Encomienda'} agregado(a)`, 'success');
+                cerrarFormularioReserva();
+                cerrarGestionRemiseriaCompleta();
+                setTimeout(() => abrirGestionRemiseriaCompleta(), 500);
+            }
+        }
+        
+        function cerrarFormularioReserva() {
+            const modal = document.getElementById('modalFormularioReserva');
+            if (modal) modal.remove();
         }
         
         function toggleRemiseroDesdeModal(remiseroId) {
@@ -7857,11 +8547,495 @@
             if (confirm('¿Eliminar este turno?')) {
                 const index = sistemaRemiseriaCompleto.turnos.findIndex(t => t.id === turnoId);
                 if (index !== -1) {
+                    const turno = sistemaRemiseriaCompleto.turnos[index];
+                    const reservasAfectadas = sistemaRemiseriaCompleto.reservas.filter(r => r.turnoId === turnoId);
+                    
+                    if (reservasAfectadas.length > 0) {
+                        if (confirm(`⚠️ Este turno tiene ${reservasAfectadas.length} reserva(s). ¿Deseas notificar a los clientes antes de eliminar?`)) {
+                            notificarClientesTurnoCancelado(turno, reservasAfectadas, 'eliminado');
+                        }
+                    }
+                    
                     sistemaRemiseriaCompleto.turnos.splice(index, 1);
                     sistemaRemiseriaCompleto.guardarTurnos();
                     mostrarNotificacion('✅ Turno eliminado', 'success');
                     cerrarGestionRemiseriaCompleta();
                     setTimeout(() => abrirGestionRemiseriaCompleta(), 500);
+                }
+            }
+        }
+        
+        function marcarTurnoNoPuedeConcurrir(turnoId) {
+            const turno = sistemaRemiseriaCompleto.turnos.find(t => t.id === turnoId);
+            if (turno) {
+                const reservasAfectadas = sistemaRemiseriaCompleto.reservas.filter(r => r.turnoId === turnoId);
+                
+                if (reservasAfectadas.length > 0) {
+                    if (confirm(`⚠️ Este turno tiene ${reservasAfectadas.length} reserva(s). ¿Deseas notificar a los clientes?`)) {
+                        notificarClientesTurnoCancelado(turno, reservasAfectadas, 'no-puede-concurrir');
+                    }
+                }
+                
+                turno.estado = 'no-puede-concurrir';
+                turno.motivo = 'No puede concurrir';
+                turno.fechaCambio = new Date().toISOString();
+                sistemaRemiseriaCompleto.guardarTurnos();
+                mostrarNotificacion('⚠️ Turno marcado como "No puede concurrir"', 'warning');
+                cerrarGestionRemiseriaCompleta();
+                setTimeout(() => abrirGestionRemiseriaCompleta(), 500);
+            }
+        }
+        
+        function marcarTurnoDiaLibre(turnoId) {
+            const turno = sistemaRemiseriaCompleto.turnos.find(t => t.id === turnoId);
+            if (turno) {
+                const reservasAfectadas = sistemaRemiseriaCompleto.reservas.filter(r => r.turnoId === turnoId);
+                
+                if (reservasAfectadas.length > 0) {
+                    if (confirm(`⚠️ Este turno tiene ${reservasAfectadas.length} reserva(s). ¿Deseas notificar a los clientes?`)) {
+                        notificarClientesTurnoCancelado(turno, reservasAfectadas, 'dia-libre');
+                    }
+                }
+                
+                turno.estado = 'dia-libre';
+                turno.motivo = 'Día libre';
+                turno.fechaCambio = new Date().toISOString();
+                sistemaRemiseriaCompleto.guardarTurnos();
+                mostrarNotificacion('🏖️ Turno marcado como "Día libre"', 'info');
+                cerrarGestionRemiseriaCompleta();
+                setTimeout(() => abrirGestionRemiseriaCompleta(), 500);
+            }
+        }
+        
+        function marcarTurnoDisponible(turnoId) {
+            const turno = sistemaRemiseriaCompleto.turnos.find(t => t.id === turnoId);
+            if (turno) {
+                turno.estado = 'disponible';
+                turno.motivo = null;
+                turno.fechaCambio = new Date().toISOString();
+                sistemaRemiseriaCompleto.guardarTurnos();
+                mostrarNotificacion('✅ Turno marcado como disponible', 'success');
+                cerrarGestionRemiseriaCompleta();
+                setTimeout(() => abrirGestionRemiseriaCompleta(), 500);
+            }
+        }
+        
+        function marcarTurnoCompleto(turnoId) {
+            const turno = sistemaRemiseriaCompleto.turnos.find(t => t.id === turnoId);
+            const remisero = sistemaRemiseriaCompleto.remiseros.find(r => r.id === turno?.remiseroId);
+            
+            if (turno && remisero?.zona === 'rural') {
+                if (confirm('¿Marcar este turno como COMPLETO? El sistema dejará de buscar más pasajeros.')) {
+                    turno.completo = true;
+                    turno.estado = 'completo';
+                    sistemaRemiseriaCompleto.guardarTurnos();
+                    mostrarNotificacion('✅ Turno marcado como COMPLETO', 'success');
+                    cerrarGestionRemiseriaCompleta();
+                    setTimeout(() => abrirGestionRemiseriaCompleta(), 500);
+                }
+            }
+        }
+        
+        async function notificarClientesTurnoCancelado(turno, reservasAfectadas, motivo) {
+            const remisero = sistemaRemiseriaCompleto.remiseros.find(r => r.id === turno.remiseroId);
+            const remiseroNombre = remisero ? `${remisero.nombre} ${remisero.apellido}` : 'el remisero';
+            const esRural = remisero?.zona === 'rural';
+            
+            // Si es zona rural, buscar matching para proteger al remisero
+            if (esRural && reservasAfectadas.length > 0) {
+                for (const reserva of reservasAfectadas) {
+                    const matching = sistemaRemiseriaCompleto.buscarMatching(reserva);
+                    
+                    if (matching && matching.totalMatches > 0) {
+                        // Mostrar modal de matching para el remisero
+                        mostrarModalMatching(turno, reserva, matching);
+                        
+                        // Notificar al remisero sobre las opciones de matching
+                        const mensajeRemisero = generarMensajeMatchingRemisero(turno, reserva, matching);
+                        await enviarNotificacionEmail(remisero.email, remiseroNombre, mensajeRemisero);
+                    }
+                }
+            }
+            
+            // Buscar otros remiseros disponibles para la misma fecha/hora
+            const otrosRemiseros = sistemaRemiseriaCompleto.remiseros.filter(r => 
+                r.id !== turno.remiseroId && 
+                r.activo && 
+                r.zona === remisero?.zona
+            );
+            
+            // Buscar otros turnos disponibles para la misma fecha/hora
+            const otrosTurnos = sistemaRemiseriaCompleto.turnos.filter(t => 
+                t.id !== turno.id &&
+                t.fecha === turno.fecha &&
+                t.estado === 'disponible' &&
+                t.horaInicio === turno.horaInicio
+            );
+            
+            // Buscar horarios de colectivos (si hay integración con transporte público)
+            const horariosColectivos = await buscarHorariosColectivos(turno.origen, turno.destino, turno.fecha, turno.horaInicio);
+            
+            for (const reserva of reservasAfectadas) {
+                const mensaje = generarMensajeDisculpa(reserva, turno, remiseroNombre, motivo, otrosRemiseros, otrosTurnos, horariosColectivos);
+                
+                // Enviar por email (gratis con Brevo)
+                await enviarNotificacionEmail(reserva.cliente.email || reserva.cliente.telefono, reserva.cliente.nombre, mensaje);
+                
+                // Preparar para WhatsApp (cuando tenga API KEY)
+                if (sistemaRemiseriaCompleto.configuracion.notificaciones.whatsapp) {
+                    await enviarNotificacionWhatsApp(reserva.cliente.telefono, mensaje);
+                }
+            }
+            
+            mostrarNotificacion(`✅ ${reservasAfectadas.length} cliente(s) notificado(s)`, 'success');
+        }
+        
+        function generarMensajeMatchingRemisero(turno, reservaCancelada, matching) {
+            let mensaje = `Hola ${matching.remisero.nombre},\n\n`;
+            mensaje += `Se ha cancelado una reserva en tu turno del ${new Date(turno.fecha).toLocaleDateString('es-ES')} a las ${turno.horaInicio}.\n\n`;
+            mensaje += `🔍 SISTEMA DE MATCHING ACTIVADO:\n\n`;
+            mensaje += `Hemos encontrado ${matching.totalMatches} opción(es) para que no pierdas dinero:\n\n`;
+            
+            if (matching.solicitudesPasajeros.length > 0) {
+                mensaje += `👥 Solicitudes de pasajeros (${matching.solicitudesPasajeros.length}):\n`;
+                matching.solicitudesPasajeros.slice(0, 3).forEach(s => {
+                    const tipoViaje = s.tipoViaje || 'ida';
+                    const tipoViajeTexto = tipoViaje === 'ida' ? 'Solo Ida' : tipoViaje === 'vuelta' ? 'Solo Vuelta' : 'Ida y Vuelta';
+                    const compatibilidad = reservaCancelada.tipoViaje === 'ida' && tipoViaje === 'vuelta' ? '✅ (Ida + Vuelta = Viaje Completo)' :
+                                         reservaCancelada.tipoViaje === 'vuelta' && tipoViaje === 'ida' ? '✅ (Vuelta + Ida = Viaje Completo)' : '';
+                    mensaje += `- ${s.nombre} - ${s.asientos} asiento(s) - ${s.origen} → ${s.destino} - ${tipoViajeTexto} ${compatibilidad} - Tel: ${s.telefono}\n`;
+                });
+                mensaje += `\n`;
+            }
+            
+            if (matching.reservasCompatibles && matching.reservasCompatibles.length > 0) {
+                mensaje += `🎫 Reservas compatibles del sistema (${matching.reservasCompatibles.length}):\n`;
+                matching.reservasCompatibles.slice(0, 3).forEach(r => {
+                    const tipoViaje = r.tipoViaje || 'ida';
+                    const tipoViajeTexto = tipoViaje === 'ida' ? 'Solo Ida' : tipoViaje === 'vuelta' ? 'Solo Vuelta' : 'Ida y Vuelta';
+                    const compatibilidad = reservaCancelada.tipoViaje === 'ida' && tipoViaje === 'vuelta' ? '✅ (Ida + Vuelta = Viaje Completo)' :
+                                         reservaCancelada.tipoViaje === 'vuelta' && tipoViaje === 'ida' ? '✅ (Vuelta + Ida = Viaje Completo)' : '';
+                    mensaje += `- ${r.cliente.nombre} - ${r.asientos} asiento(s) - ${r.origen} → ${r.destino} - ${tipoViajeTexto} ${compatibilidad} - Tel: ${r.cliente.telefono}\n`;
+                });
+                mensaje += `\n`;
+            }
+            
+            if (matching.encomiendas.length > 0) {
+                mensaje += `📦 Encomiendas disponibles (${matching.encomiendas.length}):\n`;
+                matching.encomiendas.slice(0, 3).forEach(e => {
+                    mensaje += `- ${e.cliente.nombre} - ${e.peso || 'N/A'} kg - ${e.origen} → ${e.destino} - $${e.precio} - Tel: ${e.cliente.telefono}\n`;
+                });
+                mensaje += `\n`;
+            }
+            
+            mensaje += `Puedes contactar directamente a estos clientes o usar el panel para aceptarlos automáticamente.\n\n`;
+            mensaje += `💜 Cresalia Remisería`;
+            
+            return mensaje;
+        }
+        
+        function mostrarModalMatching(turno, reservaCancelada, matching) {
+            const modal = document.createElement('div');
+            modal.id = 'modalMatchingRural';
+            modal.style.cssText = 'position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.8); display: flex; align-items: center; justify-content: center; z-index: 99999999;';
+            modal.innerHTML = `
+                <div style="background: white; border-radius: 16px; max-width: 800px; width: 95%; max-height: 90vh; overflow-y: auto;">
+                    <div style="background: linear-gradient(135deg, #F59E0B, #D97706); color: white; padding: 24px; text-align: center; position: relative;">
+                        <button onclick="cerrarModalMatching()" style="position: absolute; top: 20px; right: 20px; background: rgba(255,255,255,0.2); color: white; border: none; padding: 8px 12px; border-radius: 50%; cursor: pointer; font-size: 20px; width: 40px; height: 40px;">×</button>
+                        <h3 style="margin: 0;">🔍 MATCHING PARA ZONA RURAL</h3>
+                        <p style="margin: 8px 0 0; opacity: 0.95;">Encontramos opciones para que no pierdas dinero</p>
+                    </div>
+                    <div style="padding: 24px;">
+                        <div style="background: #FEF3C7; border: 2px solid #F59E0B; border-radius: 12px; padding: 16px; margin-bottom: 20px;">
+                            <p style="margin: 0; color: #92400E; font-weight: 600;">⚠️ Se canceló una reserva en tu turno del ${new Date(turno.fecha).toLocaleDateString('es-ES')} a las ${turno.horaInicio}</p>
+                        </div>
+                        
+                        ${matching.solicitudesPasajeros.length > 0 ? `
+                            <h4 style="margin: 0 0 16px; color: #374151;">👥 Solicitudes de Pasajeros (${matching.solicitudesPasajeros.length})</h4>
+                            <div style="background: #EFF6FF; border-left: 4px solid #3B82F6; padding: 12px; margin-bottom: 16px; border-radius: 4px;">
+                                <p style="margin: 0; color: #1E40AF; font-size: 0.9rem;"><strong>💡 Tip:</strong> Si alguien necesita "Solo Ida" y otro "Solo Vuelta", puedes hacer ambos viajes y optimizar tu recorrido.</p>
+                            </div>
+                            <div style="display: grid; gap: 12px; margin-bottom: 24px;">
+                                ${matching.solicitudesPasajeros.map(s => {
+                                    const tipoViaje = s.tipoViaje || 'ida';
+                                    const tipoViajeTexto = tipoViaje === 'ida' ? 'Solo Ida' : tipoViaje === 'vuelta' ? 'Solo Vuelta' : 'Ida y Vuelta';
+                                    const reservaTipo = reservaCancelada.tipoViaje || 'ida';
+                                    const esCompatible = (reservaTipo === 'ida' && tipoViaje === 'vuelta') || (reservaTipo === 'vuelta' && tipoViaje === 'ida');
+                                    const badgeColor = esCompatible ? '#10B981' : '#6B7280';
+                                    return `
+                                    <div style="background: ${esCompatible ? '#F0FDF4' : '#F9FAFB'}; border: 1px solid ${esCompatible ? '#10B981' : '#E5E7EB'}; border-radius: 8px; padding: 16px;">
+                                        <div style="display: flex; justify-content: space-between; margin-bottom: 8px; align-items: center;">
+                                            <strong style="color: #374151;">${s.nombre}</strong>
+                                            <div style="display: flex; gap: 8px; align-items: center;">
+                                                <span style="background: ${badgeColor}; color: white; padding: 4px 8px; border-radius: 4px; font-size: 0.8rem;">${tipoViajeTexto}</span>
+                                                <span style="background: #10B981; color: white; padding: 4px 8px; border-radius: 4px; font-size: 0.8rem;">${s.asientos} asiento(s)</span>
+                                            </div>
+                                        </div>
+                                        ${esCompatible ? `<p style="margin: 4px 0; color: #10B981; font-size: 0.85rem; font-weight: 600;">✅ Viaje Completo: ${reservaTipo === 'ida' ? 'Ida + Vuelta' : 'Vuelta + Ida'}</p>` : ''}
+                                        <p style="margin: 4px 0; color: #6B7280; font-size: 0.9rem;">📍 ${s.origen} → ${s.destino}</p>
+                                        <p style="margin: 4px 0; color: #6B7280; font-size: 0.9rem;">📞 ${s.telefono}</p>
+                                        <button onclick="aceptarMatchingPasajero('${s.id}', ${turno.id})" style="background: #10B981; color: white; border: none; padding: 8px 16px; border-radius: 6px; cursor: pointer; font-weight: 600; margin-top: 8px;">✅ Aceptar</button>
+                                    </div>
+                                `;
+                                }).join('')}
+                            </div>
+                        ` : ''}
+                        
+                        ${matching.reservasCompatibles && matching.reservasCompatibles.length > 0 ? `
+                            <h4 style="margin: 0 0 16px; color: #374151;">🎫 Reservas Compatibles del Sistema (${matching.reservasCompatibles.length})</h4>
+                            <div style="display: grid; gap: 12px; margin-bottom: 24px;">
+                                ${matching.reservasCompatibles.map(r => {
+                                    const tipoViaje = r.tipoViaje || 'ida';
+                                    const tipoViajeTexto = tipoViaje === 'ida' ? 'Solo Ida' : tipoViaje === 'vuelta' ? 'Solo Vuelta' : 'Ida y Vuelta';
+                                    const reservaTipo = reservaCancelada.tipoViaje || 'ida';
+                                    const esCompatible = (reservaTipo === 'ida' && tipoViaje === 'vuelta') || (reservaTipo === 'vuelta' && tipoViaje === 'ida');
+                                    const badgeColor = esCompatible ? '#10B981' : '#6B7280';
+                                    return `
+                                    <div style="background: ${esCompatible ? '#F0FDF4' : '#F9FAFB'}; border: 1px solid ${esCompatible ? '#10B981' : '#E5E7EB'}; border-radius: 8px; padding: 16px;">
+                                        <div style="display: flex; justify-content: space-between; margin-bottom: 8px; align-items: center;">
+                                            <strong style="color: #374151;">${r.cliente.nombre}</strong>
+                                            <div style="display: flex; gap: 8px; align-items: center;">
+                                                <span style="background: ${badgeColor}; color: white; padding: 4px 8px; border-radius: 4px; font-size: 0.8rem;">${tipoViajeTexto}</span>
+                                                <span style="background: #10B981; color: white; padding: 4px 8px; border-radius: 4px; font-size: 0.8rem;">${r.asientos} asiento(s)</span>
+                                            </div>
+                                        </div>
+                                        ${esCompatible ? `<p style="margin: 4px 0; color: #10B981; font-size: 0.85rem; font-weight: 600;">✅ Viaje Completo: ${reservaTipo === 'ida' ? 'Ida + Vuelta' : 'Vuelta + Ida'}</p>` : ''}
+                                        <p style="margin: 4px 0; color: #6B7280; font-size: 0.9rem;">📍 ${r.origen} → ${r.destino}</p>
+                                        <p style="margin: 4px 0; color: #6B7280; font-size: 0.9rem;">📞 ${r.cliente.telefono}</p>
+                                        <button onclick="aceptarMatchingReserva(${r.id}, ${turno.id})" style="background: #10B981; color: white; border: none; padding: 8px 16px; border-radius: 6px; cursor: pointer; font-weight: 600; margin-top: 8px;">✅ Aceptar</button>
+                                    </div>
+                                `;
+                                }).join('')}
+                            </div>
+                        ` : ''}
+                        
+                        ${matching.encomiendas.length > 0 ? `
+                            <h4 style="margin: 0 0 16px; color: #374151;">📦 Encomiendas Disponibles (${matching.encomiendas.length})</h4>
+                            <div style="display: grid; gap: 12px; margin-bottom: 24px;">
+                                ${matching.encomiendas.map(e => `
+                                    <div style="background: #F0F9FF; border: 1px solid #BAE6FD; border-radius: 8px; padding: 16px;">
+                                        <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
+                                            <strong style="color: #374151;">${e.cliente.nombre}</strong>
+                                            <span style="background: #3B82F6; color: white; padding: 4px 8px; border-radius: 4px; font-size: 0.8rem;">$${e.precio}</span>
+                                        </div>
+                                        <p style="margin: 4px 0; color: #6B7280; font-size: 0.9rem;">📍 ${e.origen} → ${e.destino}</p>
+                                        <p style="margin: 4px 0; color: #6B7280; font-size: 0.9rem;">📦 ${e.peso || 'N/A'} kg - ${e.dimensiones || 'N/A'}</p>
+                                        <p style="margin: 4px 0; color: #6B7280; font-size: 0.9rem;">📞 ${e.cliente.telefono}</p>
+                                        <button onclick="aceptarMatchingEncomienda(${e.id}, ${turno.id})" style="background: #3B82F6; color: white; border: none; padding: 8px 16px; border-radius: 6px; cursor: pointer; font-weight: 600; margin-top: 8px;">✅ Aceptar</button>
+                                    </div>
+                                `).join('')}
+                            </div>
+                        ` : ''}
+                    </div>
+                </div>
+            `;
+            document.body.appendChild(modal);
+        }
+        
+        function cerrarModalMatching() {
+            const modal = document.getElementById('modalMatchingRural');
+            if (modal) modal.remove();
+        }
+        
+        function aceptarMatchingPasajero(solicitudId, turnoId) {
+            const solicitudes = JSON.parse(localStorage.getItem('solicitudes_pasajeros') || '[]');
+            const solicitud = solicitudes.find(s => s.id === solicitudId);
+            
+            if (solicitud) {
+                // Crear reserva automática
+                const reserva = sistemaRemiseriaCompleto.crearReserva({
+                    turnoId: turnoId,
+                    tipo: 'pasajero',
+                    nombreCliente: solicitud.nombre,
+                    telefonoCliente: solicitud.telefono,
+                    emailCliente: solicitud.email || '',
+                    asientos: solicitud.asientos || 1,
+                    origen: solicitud.origen,
+                    destino: solicitud.destino,
+                    precio: solicitud.precio || sistemaRemiseriaCompleto.configuracion.zonas.rural.precioBase * solicitud.asientos,
+                    metodoPago: 'efectivo'
+                });
+                
+                // Marcar solicitud como aceptada
+                solicitud.estado = 'aceptada';
+                solicitud.turnoId = turnoId;
+                solicitud.reservaId = reserva.id;
+                localStorage.setItem('solicitudes_pasajeros', JSON.stringify(solicitudes));
+                
+                mostrarNotificacion('✅ Pasajero agregado al turno', 'success');
+                cerrarModalMatching();
+                cerrarGestionRemiseriaCompleta();
+                setTimeout(() => abrirGestionRemiseriaCompleta(), 500);
+            }
+        }
+        
+        function aceptarMatchingReserva(reservaId, turnoId) {
+            const reserva = sistemaRemiseriaCompleto.reservas.find(r => r.id === reservaId);
+            
+            if (reserva) {
+                // Actualizar reserva al nuevo turno
+                const turnoAnterior = reserva.turnoId;
+                reserva.turnoId = turnoId;
+                reserva.estado = 'confirmada';
+                sistemaRemiseriaCompleto.guardarReservas();
+                
+                // Actualizar turno anterior (restar asientos)
+                if (turnoAnterior) {
+                    const turnoAnt = sistemaRemiseriaCompleto.turnos.find(t => t.id === turnoAnterior);
+                    if (turnoAnt && reserva.tipo === 'pasajero') {
+                        turnoAnt.asientosOcupados = Math.max(0, turnoAnt.asientosOcupados - (reserva.asientos || 1));
+                        sistemaRemiseriaCompleto.guardarTurnos();
+                    }
+                }
+                
+                // Actualizar nuevo turno
+                sistemaRemiseriaCompleto.actualizarTurnoReserva(turnoId, reserva);
+                
+                const tipoViaje = reserva.tipoViaje || 'ida';
+                const tipoViajeTexto = tipoViaje === 'ida' ? 'Solo Ida' : tipoViaje === 'vuelta' ? 'Solo Vuelta' : 'Ida y Vuelta';
+                mostrarNotificacion(`✅ Reserva (${tipoViajeTexto}) agregada al turno`, 'success');
+                cerrarModalMatching();
+                cerrarGestionRemiseriaCompleta();
+                setTimeout(() => abrirGestionRemiseriaCompleta(), 500);
+            }
+        }
+        
+        function aceptarMatchingEncomienda(encomiendaId, turnoId) {
+            const encomienda = sistemaRemiseriaCompleto.reservas.find(r => r.id === encomiendaId);
+            
+            if (encomienda) {
+                // Actualizar encomienda al nuevo turno
+                encomienda.turnoId = turnoId;
+                encomienda.estado = 'confirmada';
+                sistemaRemiseriaCompleto.guardarReservas();
+                
+                // Actualizar turno
+                sistemaRemiseriaCompleto.actualizarTurnoReserva(turnoId, encomienda);
+                
+                mostrarNotificacion('✅ Encomienda agregada al turno', 'success');
+                cerrarModalMatching();
+                cerrarGestionRemiseriaCompleta();
+                setTimeout(() => abrirGestionRemiseriaCompleta(), 500);
+            }
+        }
+        
+        function generarMensajeDisculpa(reserva, turno, remiseroNombre, motivo, otrosRemiseros, otrosTurnos, horariosColectivos) {
+            let mensaje = `Hola ${reserva.cliente.nombre},\n\n`;
+            mensaje += `Lamentamos informarte que ${remiseroNombre} ${motivo === 'no-puede-concurrir' ? 'no puede concurrir' : motivo === 'dia-libre' ? 'tomó el día libre' : 'canceló'} el turno del ${new Date(turno.fecha).toLocaleDateString('es-ES')} a las ${turno.horaInicio}.\n\n`;
+            mensaje += `Entendemos que esto puede causarte inconvenientes y nos disculpamos sinceramente. 💜\n\n`;
+            
+            if (otrosRemiseros.length > 0 || otrosTurnos.length > 0 || horariosColectivos.length > 0) {
+                mensaje += `Te ofrecemos las siguientes alternativas:\n\n`;
+                
+                if (otrosRemiseros.length > 0) {
+                    mensaje += `🚗 Otros remiseros disponibles:\n`;
+                    otrosRemiseros.slice(0, 3).forEach(r => {
+                        mensaje += `- ${r.nombre} ${r.apellido} (${r.telefono}) - ${r.vehiculo.marca} ${r.vehiculo.modelo}\n`;
+                    });
+                    mensaje += `\n`;
+                }
+                
+                if (otrosTurnos.length > 0) {
+                    mensaje += `📅 Otros turnos disponibles:\n`;
+                    otrosTurnos.slice(0, 3).forEach(t => {
+                        const r = sistemaRemiseriaCompleto.remiseros.find(rem => rem.id === t.remiseroId);
+                        mensaje += `- ${r ? r.nombre + ' ' + r.apellido : 'Remisero'} - ${t.horaInicio}-${t.horaFin} - $${t.precio}\n`;
+                    });
+                    mensaje += `\n`;
+                }
+                
+                if (horariosColectivos.length > 0) {
+                    mensaje += `🚌 Horarios de colectivos disponibles:\n`;
+                    horariosColectivos.slice(0, 3).forEach(h => {
+                        mensaje += `- Línea ${h.linea} - ${h.hora} - Desde ${h.origen} hasta ${h.destino}\n`;
+                    });
+                    mensaje += `\n`;
+                }
+            }
+            
+            mensaje += `Si deseas reprogramar tu viaje o necesitas más información, no dudes en contactarnos.\n\n`;
+            mensaje += `Gracias por tu comprensión.\n`;
+            mensaje += `Cresalia Remisería 💜`;
+            
+            return mensaje;
+        }
+        
+        async function buscarHorariosColectivos(origen, destino, fecha, hora) {
+            // Integración futura con sistema de transporte público
+            // Por ahora retorna array vacío
+            // Puedes integrar con la comunidad de "Transporte Público" más adelante
+            try {
+                // Aquí podrías buscar en localStorage de la comunidad de transporte público
+                const alertasTransporte = JSON.parse(localStorage.getItem('alertas_transporte_publico') || '[]');
+                // Filtrar por origen/destino cercanos y horarios
+                // Por ahora retornamos vacío
+                return [];
+            } catch (error) {
+                console.warn('⚠️ Error buscando horarios de colectivos:', error);
+                return [];
+            }
+        }
+        
+        async function enviarNotificacionEmail(email, nombre, mensaje) {
+            if (!email) return;
+            
+            try {
+                // Usar sistema de emails automáticos de Cresalia (Brevo)
+                if (window.sistemaEmailsCresalia) {
+                    await window.sistemaEmailsCresalia.enviarEmailConBrevo(
+                        email,
+                        nombre,
+                        '⚠️ Cambio en tu reserva de remisería - Cresalia',
+                        mensaje.replace(/\n/g, '<br>')
+                    );
+                    console.log('✅ Email enviado a:', email);
+                } else {
+                    console.warn('⚠️ Sistema de emails no disponible');
+                }
+            } catch (error) {
+                console.error('❌ Error enviando email:', error);
+            }
+        }
+        
+        async function enviarNotificacionWhatsApp(telefono, mensaje) {
+            if (!telefono) return;
+            
+            // Verificar si hay API KEY de WhatsApp configurada
+            const whatsappApiKey = localStorage.getItem('whatsapp_api_key') || 
+                                 (typeof process !== 'undefined' && process.env && process.env.WHATSAPP_API_KEY);
+            
+            if (!whatsappApiKey) {
+                console.log('ℹ️ WhatsApp API KEY no configurada. Usando email en su lugar.');
+                // Guardar para enviar cuando se configure
+                const pendientes = JSON.parse(localStorage.getItem('whatsapp_pendientes') || '[]');
+                pendientes.push({ telefono, mensaje, fecha: new Date().toISOString() });
+                localStorage.setItem('whatsapp_pendientes', JSON.stringify(pendientes));
+                return;
+            }
+            
+            try {
+                // Llamar a API de WhatsApp (Vercel Serverless Function)
+                const response = await fetch('/api/enviar-whatsapp', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        to: telefono,
+                        message: mensaje,
+                        api_key: whatsappApiKey
+                    })
+                });
+                
+                if (response.ok) {
+                    console.log('✅ WhatsApp enviado a:', telefono);
+                } else {
+                    throw new Error('Error en respuesta de API');
+                }
+            } catch (error) {
+                console.error('❌ Error enviando WhatsApp:', error);
+                // Fallback a email si está disponible
+                const email = sistemaRemiseriaCompleto.reservas.find(r => r.cliente.telefono === telefono)?.cliente.email;
+                if (email) {
+                    await enviarNotificacionEmail(email, '', mensaje);
                 }
             }
         }
@@ -7918,10 +9092,10 @@
             mostrarNotificacion('📤 Datos exportados', 'success');
         }
         
-        function cerrarGestionRemiseriaCompleta() {
+        window.cerrarGestionRemiseriaCompleta = function cerrarGestionRemiseriaCompleta() {
             const modal = document.getElementById('modalGestionRemiseriaCompleta');
             if (modal) modal.remove();
-        }
+        };
         
         // ============================================
         // HISTORIAL DE PAGOS Y SUSCRIPCIONES
@@ -8119,34 +9293,306 @@
         // ============================================
         
         function abrirSistemaTurnos() {
+            // Cargar FullCalendar.js si no está cargado
+            if (!window.FullCalendar) {
+                const link = document.createElement('link');
+                link.href = 'https://cdn.jsdelivr.net/npm/fullcalendar@6.1.10/index.global.min.css';
+                link.rel = 'stylesheet';
+                document.head.appendChild(link);
+                
+                const script = document.createElement('script');
+                script.src = 'https://cdn.jsdelivr.net/npm/fullcalendar@6.1.10/index.global.min.js';
+                script.onload = () => {
+                    mostrarModalTurnos();
+                };
+                document.head.appendChild(script);
+            } else {
+                mostrarModalTurnos();
+            }
+        }
+        
+        function mostrarModalTurnos() {
             const modal = document.createElement('div');
             modal.id = 'modalTurnos';
             modal.style.cssText = 'position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.8); display: flex; align-items: center; justify-content: center; z-index: 999999;';
-            const turnos = JSON.parse(localStorage.getItem('turnos_tienda') || '[]');
+            
+            const turnos = JSON.parse(localStorage.getItem('turnos_reservados') || '[]');
+            const servicios = sistemaServicios.cargarServicios();
+            
             modal.innerHTML = `
-                <div style="background: white; border-radius: 16px; max-width: 800px; width: 95%; max-height: 80vh; overflow-y: auto; padding: 30px;">
-                    <div style="display: flex; justify-content: space-between; margin-bottom: 25px;">
-                        <div><div style="font-size: 2rem; margin-bottom: 10px;">📅</div><h3 style="margin: 0; color: #1e293b;">Sistema de Turnos</h3><p style="margin: 5px 0 0; color: #6B7280;">Gestiona las citas de tus clientes</p></div>
+                <div style="background: white; border-radius: 16px; max-width: 1200px; width: 95%; max-height: 90vh; overflow-y: auto; padding: 30px;">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px;">
+                        <div>
+                            <div style="font-size: 2rem; margin-bottom: 10px;">📅</div>
+                            <h3 style="margin: 0; color: #1e293b;">Sistema de Turnos</h3>
+                            <p style="margin: 5px 0 0; color: #6B7280;">Gestiona las citas de tus clientes</p>
+                        </div>
                         <button onclick="cerrarModalTurnos()" style="background: #6B7280; color: white; border: none; padding: 8px 12px; border-radius: 50%; cursor: pointer; font-size: 18px; width: 40px; height: 40px;">×</button>
                     </div>
-                    <div id="turnos-disponibles" style="margin-bottom: 20px;">
-                        ${turnos.length === 0 ? '<div style="text-align: center; padding: 40px; background: #F8FAFC; border-radius: 12px; color: #6B7280;"><div style="font-size: 3rem; margin-bottom: 15px;">📅</div><p>No hay turnos disponibles</p></div>' : turnos.map(turno => `
-                            <div style="background: #F8FAFC; border: 1px solid #E5E7EB; border-radius: 8px; padding: 20px; margin-bottom: 15px;">
-                                <div style="display: flex; justify-content: space-between; margin-bottom: 10px;">
-                                    <div><h5 style="margin: 0 0 5px; color: #1F2937;">${turno.servicio || 'Turno'}</h5><p style="margin: 0; color: #6B7280; font-size: 0.9rem;">${turno.fecha ? new Date(turno.fecha).toLocaleDateString('es-ES') : 'N/A'} - ${turno.hora || 'N/A'}</p></div>
-                                    <span style="background: ${turno.disponible ? '#D1FAE5' : '#FEE2E2'}; color: ${turno.disponible ? '#065F46' : '#991B1B'}; padding: 4px 8px; border-radius: 4px; font-size: 0.8rem; font-weight: 600;">${turno.disponible ? '✅ Disponible' : '❌ Ocupado'}</span>
+                    
+                    <div style="display: flex; gap: 20px; margin-bottom: 20px;">
+                        <button onclick="mostrarVistaTurnos('calendario')" id="btnVistaCalendario" style="background: #8B5CF6; color: white; border: none; padding: 10px 20px; border-radius: 8px; cursor: pointer; font-weight: 600;">📅 Calendario</button>
+                        <button onclick="mostrarVistaTurnos('lista')" id="btnVistaLista" style="background: #E5E7EB; color: #374151; border: none; padding: 10px 20px; border-radius: 8px; cursor: pointer; font-weight: 600;">📋 Lista</button>
+                        <button onclick="mostrarFormularioNuevoTurno()" style="background: linear-gradient(135deg, #8B5CF6, #7C3AED); color: white; border: none; padding: 10px 20px; border-radius: 8px; cursor: pointer; font-weight: 600; margin-left: auto;">➕ Nuevo Turno</button>
                                 </div>
-                                ${turno.cliente ? `<p style="margin: 0; color: #6B7280; font-size: 0.9rem;">Cliente: ${turno.cliente}</p>` : ''}
+                    
+                    <!-- Vista Calendario -->
+                    <div id="vistaCalendarioTurnos" style="display: block;">
+                        <div id="calendarioTurnos" style="background: white; border-radius: 12px; padding: 20px; min-height: 500px;"></div>
+                    </div>
+                    
+                    <!-- Vista Lista -->
+                    <div id="vistaListaTurnos" style="display: none;">
+                        <div id="listaTurnos" style="display: grid; gap: 15px;">
+                            ${turnos.length === 0 ? '<div style="text-align: center; padding: 40px; background: #F8FAFC; border-radius: 12px; color: #6B7280;"><div style="font-size: 3rem; margin-bottom: 15px;">📅</div><p>No hay turnos programados</p></div>' : turnos.map(turno => `
+                                <div style="background: #F8FAFC; border: 1px solid #E5E7EB; border-radius: 8px; padding: 20px;">
+                                    <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 10px;">
+                                        <div>
+                                            <h5 style="margin: 0 0 5px; color: #1F2937;">${turno.servicio || 'Turno'}</h5>
+                                            <p style="margin: 0; color: #6B7280; font-size: 0.9rem;">
+                                                📅 ${turno.fecha ? new Date(turno.fecha).toLocaleDateString('es-ES', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' }) : 'N/A'}
+                                            </p>
+                                            <p style="margin: 5px 0 0; color: #6B7280; font-size: 0.9rem;">🕐 ${turno.hora || 'N/A'}</p>
+                                        </div>
+                                        <span style="background: ${turno.estado === 'confirmado' ? '#D1FAE5' : turno.estado === 'completado' ? '#DBEAFE' : turno.estado === 'cancelado' ? '#FEE2E2' : '#FEF3C7'}; color: ${turno.estado === 'confirmado' ? '#065F46' : turno.estado === 'completado' ? '#1E40AF' : turno.estado === 'cancelado' ? '#991B1B' : '#92400E'}; padding: 4px 12px; border-radius: 4px; font-size: 0.8rem; font-weight: 600; text-transform: capitalize;">${turno.estado || 'Pendiente'}</span>
+                                    </div>
+                                    ${turno.cliente ? `<p style="margin: 5px 0; color: #6B7280; font-size: 0.9rem;">👤 Cliente: ${turno.cliente}</p>` : ''}
+                                    ${turno.clienteEmail ? `<p style="margin: 5px 0; color: #6B7280; font-size: 0.9rem;">📧 ${turno.clienteEmail}</p>` : ''}
+                                    ${turno.clienteTelefono ? `<p style="margin: 5px 0; color: #6B7280; font-size: 0.9rem;">📱 ${turno.clienteTelefono}</p>` : ''}
+                                    ${turno.notas ? `<p style="margin: 5px 0; color: #6B7280; font-size: 0.9rem;">📝 ${turno.notas}</p>` : ''}
+                                    <div style="display: flex; gap: 10px; margin-top: 15px;">
+                                        <button onclick="editarTurno(${turno.id})" style="background: #3B82F6; color: white; border: none; padding: 6px 12px; border-radius: 6px; cursor: pointer; font-size: 0.85rem;">✏️ Editar</button>
+                                        <button onclick="cambiarEstadoTurno(${turno.id}, 'completado')" style="background: #10B981; color: white; border: none; padding: 6px 12px; border-radius: 6px; cursor: pointer; font-size: 0.85rem;">✅ Completar</button>
+                                        <button onclick="cambiarEstadoTurno(${turno.id}, 'cancelado')" style="background: #EF4444; color: white; border: none; padding: 6px 12px; border-radius: 6px; cursor: pointer; font-size: 0.85rem;">❌ Cancelar</button>
+                                    </div>
                             </div>
                         `).join('')}
                     </div>
-                    <div style="display: flex; gap: 16px; justify-content: center;">
-                        <button onclick="agregarTurno()" style="background: linear-gradient(135deg, #8B5CF6, #7C3AED); color: white; border: none; padding: 12px 24px; border-radius: 8px; cursor: pointer; font-weight: 600;">➕ Agregar Turno</button>
-                        <button onclick="cerrarModalTurnos()" style="padding: 12px 24px; border: 2px solid #E5E7EB; background: white; border-radius: 8px; cursor: pointer; font-weight: 600;">Cerrar</button>
                     </div>
                 </div>
             `;
             document.body.appendChild(modal);
+            
+            // Inicializar calendario
+            if (window.FullCalendar) {
+                inicializarCalendarioTurnos(turnos);
+            }
+        }
+        
+        function inicializarCalendarioTurnos(turnos) {
+            const calendarEl = document.getElementById('calendarioTurnos');
+            if (!calendarEl) return;
+            
+            // Convertir turnos a formato de FullCalendar
+            const events = turnos.map(turno => {
+                const fecha = turno.fecha ? new Date(turno.fecha) : new Date();
+                const hora = turno.hora ? turno.hora.split(':') : [9, 0];
+                fecha.setHours(parseInt(hora[0]), parseInt(hora[1]), 0);
+                
+                return {
+                    id: turno.id,
+                    title: `${turno.servicio || 'Turno'} - ${turno.cliente || 'Sin cliente'}`,
+                    start: fecha.toISOString(),
+                    backgroundColor: turno.estado === 'confirmado' ? '#10B981' : turno.estado === 'completado' ? '#3B82F6' : turno.estado === 'cancelado' ? '#EF4444' : '#F59E0B',
+                    borderColor: turno.estado === 'confirmado' ? '#059669' : turno.estado === 'completado' ? '#2563EB' : turno.estado === 'cancelado' ? '#DC2626' : '#D97706',
+                    extendedProps: turno
+                };
+            });
+            
+            const calendar = new FullCalendar.Calendar(calendarEl, {
+                initialView: 'dayGridMonth',
+                locale: 'es',
+                headerToolbar: {
+                    left: 'prev,next today',
+                    center: 'title',
+                    right: 'dayGridMonth,timeGridWeek,timeGridDay'
+                },
+                events: events,
+                editable: true,
+                selectable: true,
+                selectMirror: true,
+                dayMaxEvents: true,
+                select: function(arg) {
+                    mostrarFormularioNuevoTurno(arg.startStr);
+                    calendar.unselect();
+                },
+                eventClick: function(arg) {
+                    mostrarDetallesTurno(arg.event.extendedProps);
+                },
+                eventDrop: function(arg) {
+                    actualizarFechaTurno(arg.event.id, arg.event.start);
+                }
+            });
+            
+            calendar.render();
+            window.calendarioTurnosInstance = calendar;
+        }
+        
+        function mostrarVistaTurnos(vista) {
+            const vistaCalendario = document.getElementById('vistaCalendarioTurnos');
+            const vistaLista = document.getElementById('vistaListaTurnos');
+            const btnCalendario = document.getElementById('btnVistaCalendario');
+            const btnLista = document.getElementById('btnVistaLista');
+            
+            if (vista === 'calendario') {
+                vistaCalendario.style.display = 'block';
+                vistaLista.style.display = 'none';
+                btnCalendario.style.background = '#8B5CF6';
+                btnCalendario.style.color = 'white';
+                btnLista.style.background = '#E5E7EB';
+                btnLista.style.color = '#374151';
+            } else {
+                vistaCalendario.style.display = 'none';
+                vistaLista.style.display = 'block';
+                btnCalendario.style.background = '#E5E7EB';
+                btnCalendario.style.color = '#374151';
+                btnLista.style.background = '#8B5CF6';
+                btnLista.style.color = 'white';
+            }
+        }
+        
+        function mostrarFormularioNuevoTurno(fechaSeleccionada) {
+            const servicios = sistemaServicios.cargarServicios();
+            const modal = document.createElement('div');
+            modal.id = 'modalNuevoTurno';
+            modal.style.cssText = 'position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.8); display: flex; align-items: center; justify-content: center; z-index: 1000000;';
+            modal.innerHTML = `
+                <div style="background: white; border-radius: 16px; max-width: 600px; width: 95%; max-height: 90vh; overflow-y: auto; padding: 30px;">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px;">
+                        <h3 style="margin: 0; color: #1e293b;">➕ Nuevo Turno</h3>
+                        <button onclick="cerrarModalNuevoTurno()" style="background: #6B7280; color: white; border: none; padding: 8px 12px; border-radius: 50%; cursor: pointer; font-size: 18px; width: 40px; height: 40px;">×</button>
+                    </div>
+                    <form id="formNuevoTurno" onsubmit="guardarNuevoTurno(event); return false;">
+                        <div style="margin-bottom: 20px;">
+                            <label style="display: block; margin-bottom: 8px; font-weight: 600; color: #374151;">Servicio</label>
+                            <select id="servicioTurno" required style="width: 100%; padding: 12px; border: 1px solid #D1D5DB; border-radius: 8px;">
+                                <option value="">Seleccionar servicio...</option>
+                                ${servicios.map(s => `<option value="${s.nombre}">${s.nombre} - $${s.precio}</option>`).join('')}
+                            </select>
+                        </div>
+                        <div style="margin-bottom: 20px;">
+                            <label style="display: block; margin-bottom: 8px; font-weight: 600; color: #374151;">Cliente</label>
+                            <input type="text" id="clienteTurno" required style="width: 100%; padding: 12px; border: 1px solid #D1D5DB; border-radius: 8px;" placeholder="Nombre del cliente">
+                        </div>
+                        <div style="margin-bottom: 20px;">
+                            <label style="display: block; margin-bottom: 8px; font-weight: 600; color: #374151;">Email</label>
+                            <input type="email" id="emailTurno" style="width: 100%; padding: 12px; border: 1px solid #D1D5DB; border-radius: 8px;" placeholder="email@ejemplo.com">
+                        </div>
+                        <div style="margin-bottom: 20px;">
+                            <label style="display: block; margin-bottom: 8px; font-weight: 600; color: #374151;">Teléfono</label>
+                            <input type="tel" id="telefonoTurno" style="width: 100%; padding: 12px; border: 1px solid #D1D5DB; border-radius: 8px;" placeholder="+54 9 11 1234-5678">
+                        </div>
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 20px;">
+                            <div>
+                                <label style="display: block; margin-bottom: 8px; font-weight: 600; color: #374151;">Fecha</label>
+                                <input type="date" id="fechaTurno" required value="${fechaSeleccionada ? fechaSeleccionada.split('T')[0] : ''}" style="width: 100%; padding: 12px; border: 1px solid #D1D5DB; border-radius: 8px;">
+                            </div>
+                            <div>
+                                <label style="display: block; margin-bottom: 8px; font-weight: 600; color: #374151;">Hora</label>
+                                <input type="time" id="horaTurno" required style="width: 100%; padding: 12px; border: 1px solid #D1D5DB; border-radius: 8px;">
+                            </div>
+                        </div>
+                        <div style="margin-bottom: 20px;">
+                            <label style="display: block; margin-bottom: 8px; font-weight: 600; color: #374151;">Notas</label>
+                            <textarea id="notasTurno" rows="3" style="width: 100%; padding: 12px; border: 1px solid #D1D5DB; border-radius: 8px;" placeholder="Notas adicionales..."></textarea>
+                    </div>
+                    <div style="display: flex; gap: 16px; justify-content: center;">
+                            <button type="submit" style="background: linear-gradient(135deg, #8B5CF6, #7C3AED); color: white; border: none; padding: 12px 24px; border-radius: 8px; cursor: pointer; font-weight: 600;">💾 Guardar</button>
+                            <button type="button" onclick="cerrarModalNuevoTurno()" style="padding: 12px 24px; border: 2px solid #E5E7EB; background: white; border-radius: 8px; cursor: pointer;">Cancelar</button>
+                    </div>
+                    </form>
+                </div>
+            `;
+            document.body.appendChild(modal);
+        }
+        
+        function guardarNuevoTurno(event) {
+            event.preventDefault();
+            const turnos = JSON.parse(localStorage.getItem('turnos_reservados') || '[]');
+            const nuevoTurno = {
+                id: Date.now(),
+                servicio: document.getElementById('servicioTurno').value,
+                cliente: document.getElementById('clienteTurno').value,
+                clienteEmail: document.getElementById('emailTurno').value,
+                clienteTelefono: document.getElementById('telefonoTurno').value,
+                fecha: document.getElementById('fechaTurno').value,
+                hora: document.getElementById('horaTurno').value,
+                notas: document.getElementById('notasTurno').value,
+                estado: 'confirmado',
+                fechaCreacion: new Date().toISOString()
+            };
+            turnos.push(nuevoTurno);
+            localStorage.setItem('turnos_reservados', JSON.stringify(turnos));
+            mostrarNotificacion('✅ Turno creado exitosamente', 'success');
+            cerrarModalNuevoTurno();
+            cerrarModalTurnos();
+            setTimeout(() => abrirSistemaTurnos(), 500);
+        }
+        
+        function cerrarModalNuevoTurno() {
+            const modal = document.getElementById('modalNuevoTurno');
+            if (modal) modal.remove();
+        }
+        
+        function cambiarEstadoTurno(id, nuevoEstado) {
+            const turnos = JSON.parse(localStorage.getItem('turnos_reservados') || '[]');
+            const turno = turnos.find(t => t.id === id);
+            if (turno) {
+                turno.estado = nuevoEstado;
+                localStorage.setItem('turnos_reservados', JSON.stringify(turnos));
+                mostrarNotificacion(`✅ Turno ${nuevoEstado}`, 'success');
+                cerrarModalTurnos();
+                setTimeout(() => abrirSistemaTurnos(), 500);
+            }
+        }
+        
+        function editarTurno(id) {
+            const turnos = JSON.parse(localStorage.getItem('turnos_reservados') || '[]');
+            const turno = turnos.find(t => t.id === id);
+            if (turno) {
+                mostrarFormularioNuevoTurno();
+                // Pre-llenar formulario
+                setTimeout(() => {
+                    document.getElementById('servicioTurno').value = turno.servicio || '';
+                    document.getElementById('clienteTurno').value = turno.cliente || '';
+                    document.getElementById('emailTurno').value = turno.clienteEmail || '';
+                    document.getElementById('telefonoTurno').value = turno.clienteTelefono || '';
+                    document.getElementById('fechaTurno').value = turno.fecha || '';
+                    document.getElementById('horaTurno').value = turno.hora || '';
+                    document.getElementById('notasTurno').value = turno.notas || '';
+                    
+                    // Cambiar submit para editar
+                    document.getElementById('formNuevoTurno').onsubmit = (e) => {
+                        e.preventDefault();
+                        turno.servicio = document.getElementById('servicioTurno').value;
+                        turno.cliente = document.getElementById('clienteTurno').value;
+                        turno.clienteEmail = document.getElementById('emailTurno').value;
+                        turno.clienteTelefono = document.getElementById('telefonoTurno').value;
+                        turno.fecha = document.getElementById('fechaTurno').value;
+                        turno.hora = document.getElementById('horaTurno').value;
+                        turno.notas = document.getElementById('notasTurno').value;
+                        localStorage.setItem('turnos_reservados', JSON.stringify(turnos));
+                        mostrarNotificacion('✅ Turno actualizado', 'success');
+                        cerrarModalNuevoTurno();
+                        cerrarModalTurnos();
+                        setTimeout(() => abrirSistemaTurnos(), 500);
+                    };
+                }, 100);
+            }
+        }
+        
+        function mostrarDetallesTurno(turno) {
+            alert(`Turno: ${turno.servicio}\nCliente: ${turno.cliente}\nFecha: ${turno.fecha} ${turno.hora}\nEstado: ${turno.estado}`);
+        }
+        
+        function actualizarFechaTurno(id, nuevaFecha) {
+            const turnos = JSON.parse(localStorage.getItem('turnos_reservados') || '[]');
+            const turno = turnos.find(t => t.id === id);
+            if (turno) {
+                turno.fecha = nuevaFecha.toISOString().split('T')[0];
+                localStorage.setItem('turnos_reservados', JSON.stringify(turnos));
+                mostrarNotificacion('✅ Fecha actualizada', 'success');
+            }
         }
 
         function guardarTurno() {
@@ -8162,12 +9608,16 @@
         }
         
         function agregarTurno() {
-            mostrarNotificacion('🔧 Función de agregar turno en desarrollo', 'info');
+            mostrarFormularioNuevoTurno();
         }
         
         function cerrarModalTurnos() {
             const modal = document.getElementById('modalTurnos');
             if (modal) modal.remove();
+            if (window.calendarioTurnosInstance) {
+                window.calendarioTurnosInstance.destroy();
+                window.calendarioTurnosInstance = null;
+            }
         }
         
         // ============================================
@@ -8998,138 +10448,6 @@
         function cerrarModalGestionServicios() {
             const modal = document.getElementById('modalGestionServicios');
             if (modal) modal.remove();
-        }
-        
-        // Función para abrir sistema de turnos
-        function abrirSistemaTurnos() {
-            console.log('📅 Abriendo Sistema de Turnos...');
-            
-            // Cerrar modal anterior si existe
-            const modalAnterior = document.getElementById('modalSistemaTurnos');
-            if (modalAnterior) modalAnterior.remove();
-            
-            const modal = document.createElement('div');
-            modal.id = 'modalSistemaTurnos';
-            modal.style.cssText = 'position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.8); display: flex; align-items: center; justify-content: center; z-index: 999999;';
-            
-            modal.innerHTML = `
-                <div style="background: white; border-radius: 24px; max-width: 900px; width: 95%; max-height: 90vh; overflow-y: auto;">
-                    <div style="background: linear-gradient(135deg, #10B981, #059669); color: white; padding: 32px; text-align: center; position: relative;">
-                        <button onclick="cerrarModalTurnos()" style="position: absolute; top: 20px; right: 20px; background: rgba(255,255,255,0.2); color: white; border: none; padding: 8px 12px; border-radius: 50%; cursor: pointer; font-size: 20px; width: 40px; height: 40px;">×</button>
-                        <div style="font-size: 64px; margin-bottom: 16px;">📅</div>
-                        <h2 style="margin: 0;">Sistema de Gestión de Turnos</h2>
-                        <p style="margin: 8px 0 0; opacity: 0.95;">Administra las citas y horarios de tu negocio</p>
-                    </div>
-                    
-                    <div style="padding: 32px;">
-                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 30px;">
-                            <!-- Turnos Disponibles -->
-                            <div>
-                                <h3 style="color: #1e293b; margin-bottom: 20px;">🕐 Turnos Disponibles</h3>
-                                <div id="turnosGrid" style="display: grid; gap: 10px;">
-                                    <div class="turno-item" style="display: flex; justify-content: space-between; align-items: center; padding: 15px; background: #F8FAFC; border-radius: 8px; border: 1px solid #E5E7EB;">
-                                        <span class="hora" style="font-weight: 600; color: #1e293b;">09:00</span>
-                                        <span class="estado disponible" style="color: #10B981; font-weight: 500;">Disponible</span>
-                                        <button class="btn-reservar" onclick="reservarTurno('09:00')" style="background: linear-gradient(135deg, #10B981, #059669); color: white; border: none; padding: 8px 16px; border-radius: 6px; cursor: pointer; font-weight: 600;">Reservar</button>
-                                    </div>
-                                    <div class="turno-item" style="display: flex; justify-content: space-between; align-items: center; padding: 15px; background: #F8FAFC; border-radius: 8px; border: 1px solid #E5E7EB;">
-                                        <span class="hora" style="font-weight: 600; color: #1e293b;">10:00</span>
-                                        <span class="estado disponible" style="color: #10B981; font-weight: 500;">Disponible</span>
-                                        <button class="btn-reservar" onclick="reservarTurno('10:00')" style="background: linear-gradient(135deg, #10B981, #059669); color: white; border: none; padding: 8px 16px; border-radius: 6px; cursor: pointer; font-weight: 600;">Reservar</button>
-                                    </div>
-                                    <div class="turno-item" style="display: flex; justify-content: space-between; align-items: center; padding: 15px; background: #F8FAFC; border-radius: 8px; border: 1px solid #E5E7EB;">
-                                        <span class="hora" style="font-weight: 600; color: #1e293b;">11:00</span>
-                                        <span class="estado ocupado" style="color: #EF4444; font-weight: 500;">María - Corte</span>
-                                        <button class="btn-cancelar" onclick="cancelarTurno('11:00')" style="background: linear-gradient(135deg, #EF4444, #DC2626); color: white; border: none; padding: 8px 16px; border-radius: 6px; cursor: pointer; font-weight: 600;">Cancelar</button>
-                                    </div>
-                                    <div class="turno-item" style="display: flex; justify-content: space-between; align-items: center; padding: 15px; background: #F8FAFC; border-radius: 8px; border: 1px solid #E5E7EB;">
-                                        <span class="hora" style="font-weight: 600; color: #1e293b;">14:00</span>
-                                        <span class="estado disponible" style="color: #10B981; font-weight: 500;">Disponible</span>
-                                        <button class="btn-reservar" onclick="reservarTurno('14:00')" style="background: linear-gradient(135deg, #10B981, #059669); color: white; border: none; padding: 8px 16px; border-radius: 6px; cursor: pointer; font-weight: 600;">Reservar</button>
-                                    </div>
-                                    <div class="turno-item" style="display: flex; justify-content: space-between; align-items: center; padding: 15px; background: #F8FAFC; border-radius: 8px; border: 1px solid #E5E7EB;">
-                                        <span class="hora" style="font-weight: 600; color: #1e293b;">15:00</span>
-                                        <span class="estado disponible" style="color: #10B981; font-weight: 500;">Disponible</span>
-                                        <button class="btn-reservar" onclick="reservarTurno('15:00')" style="background: linear-gradient(135deg, #10B981, #059669); color: white; border: none; padding: 8px 16px; border-radius: 6px; cursor: pointer; font-weight: 600;">Reservar</button>
-                                    </div>
-                                    <div class="turno-item" style="display: flex; justify-content: space-between; align-items: center; padding: 15px; background: #F8FAFC; border-radius: 8px; border: 1px solid #E5E7EB;">
-                                        <span class="hora" style="font-weight: 600; color: #1e293b;">16:00</span>
-                                        <span class="estado disponible" style="color: #10B981; font-weight: 500;">Disponible</span>
-                                        <button class="btn-reservar" onclick="reservarTurno('16:00')" style="background: linear-gradient(135deg, #10B981, #059669); color: white; border: none; padding: 8px 16px; border-radius: 6px; cursor: pointer; font-weight: 600;">Reservar</button>
-                                    </div>
-                                </div>
-                            </div>
-                            
-                            <!-- Agregar Turno y Estadísticas -->
-                            <div>
-                                <div style="margin-bottom: 30px;">
-                                    <h3 style="color: #1e293b; margin-bottom: 20px;">➕ Agregar Nuevo Turno</h3>
-                                    <div style="display: flex; flex-direction: column; gap: 15px;">
-                                        <input type="time" id="horaTurno" placeholder="Hora" required style="padding: 12px; border: 1px solid #D1D5DB; border-radius: 8px; font-size: 1rem;">
-                                        <input type="text" id="servicioTurno" placeholder="Servicio" required style="padding: 12px; border: 1px solid #D1D5DB; border-radius: 8px; font-size: 1rem;">
-                                        <input type="text" id="clienteTurno" placeholder="Cliente" required style="padding: 12px; border: 1px solid #D1D5DB; border-radius: 8px; font-size: 1rem;">
-                                        <button type="button" onclick="agregarTurno()" style="background: linear-gradient(135deg, #8B5CF6, #7C3AED); color: white; border: none; padding: 12px 20px; border-radius: 8px; cursor: pointer; font-weight: 600; font-size: 1rem;">Agregar Turno</button>
-                                    </div>
-                                </div>
-                                
-                                <div>
-                                    <h3 style="color: #1e293b; margin-bottom: 20px;">📊 Estadísticas de Turnos</h3>
-                                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
-                                        <div style="background: linear-gradient(135deg, #3B82F6, #1D4ED8); color: white; padding: 20px; border-radius: 12px; text-align: center;">
-                                            <div style="font-size: 2rem; font-weight: 700;" id="totalTurnos">6</div>
-                                            <div style="font-size: 0.9rem; opacity: 0.9;">Turnos Hoy</div>
-                                        </div>
-                                        <div style="background: linear-gradient(135deg, #10B981, #059669); color: white; padding: 20px; border-radius: 12px; text-align: center;">
-                                            <div style="font-size: 2rem; font-weight: 700;" id="turnosOcupados">1</div>
-                                            <div style="font-size: 0.9rem; opacity: 0.9;">Ocupados</div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            `;
-            
-            document.body.appendChild(modal);
-            actualizarEstadisticasTurnos();
-        }
-        
-        // Función para agregar turno
-        function agregarTurno() {
-            const hora = document.getElementById('horaTurno').value;
-            const servicio = document.getElementById('servicioTurno').value;
-            const cliente = document.getElementById('clienteTurno').value;
-            
-            if (hora && servicio && cliente) {
-                console.log('✅ Turno agregado:', hora, servicio, cliente);
-                
-                // Crear nuevo elemento de turno
-                const turnosGrid = document.getElementById('turnosGrid');
-                const nuevoTurno = document.createElement('div');
-                nuevoTurno.className = 'turno-item';
-                nuevoTurno.style.cssText = 'display: flex; justify-content: space-between; align-items: center; padding: 15px; background: #F8FAFC; border-radius: 8px; border: 1px solid #E5E7EB;';
-                nuevoTurno.innerHTML = `
-                    <span class="hora" style="font-weight: 600; color: #1e293b;">${hora}</span>
-                    <span class="estado ocupado" style="color: #EF4444; font-weight: 500;">${cliente} - ${servicio}</span>
-                    <button class="btn-cancelar" onclick="cancelarTurno('${hora}')" style="background: linear-gradient(135deg, #EF4444, #DC2626); color: white; border: none; padding: 8px 16px; border-radius: 6px; cursor: pointer; font-weight: 600;">Cancelar</button>
-                `;
-                
-                // Insertar al principio
-                turnosGrid.insertBefore(nuevoTurno, turnosGrid.firstChild);
-                
-                // Limpiar formulario
-                document.getElementById('horaTurno').value = '';
-                document.getElementById('servicioTurno').value = '';
-                document.getElementById('clienteTurno').value = '';
-                
-                // Actualizar estadísticas
-                actualizarEstadisticasTurnos();
-                
-                mostrarNotificacion(`✅ Turno agregado: ${hora} - ${servicio} para ${cliente}`, 'success');
-            } else {
-                mostrarNotificacion('⚠️ Por favor completa todos los campos', 'warning');
-            }
         }
         
         // Función para reservar turno
