@@ -73,45 +73,67 @@ async function registrarNuevoComprador(datos) {
         let compradorData = null;
         let compradorError = null;
         let attempts = 0;
-        const maxAttempts = 3;
+        const maxAttempts = 5; // Aumentar a 5 intentos
         
         while (attempts < maxAttempts) {
-            const result = await supabase
-                .from('compradores')
-                .insert([
-                    {
-                        user_id: authData.user.id,
-                        nombre_completo: nombreCompleto,
-                        email: email,
-                        activo: true,
-                        fecha_registro: new Date().toISOString()
+            try {
+                // Intentar insertar
+                const result = await supabase
+                    .from('compradores')
+                    .insert([
+                        {
+                            user_id: authData.user.id,
+                            nombre_completo: nombreCompleto,
+                            email: email,
+                            activo: true,
+                            fecha_registro: new Date().toISOString()
+                        }
+                    ])
+                    .select()
+                    .single();
+                
+                compradorData = result.data;
+                compradorError = result.error;
+                
+                // Si no hay error, salir del loop
+                if (!compradorError) {
+                    break;
+                }
+                
+                // Si el error es de schema cache, intentar refrescar y esperar
+                if (compradorError.message && (
+                    compradorError.message.includes('Could not find the table') ||
+                    compradorError.message.includes('schema cache') ||
+                    compradorError.message.includes('does not exist')
+                )) {
+                    attempts++;
+                    if (attempts < maxAttempts) {
+                        console.log(`⏳ Problema de schema cache (intento ${attempts}/${maxAttempts}), esperando y reintentando...`);
+                        
+                        // Intentar refrescar el schema haciendo una consulta SELECT simple
+                        try {
+                            await supabase.from('compradores').select('id').limit(1);
+                            console.log('✅ Schema cache refrescado');
+                        } catch (refreshError) {
+                            console.log('ℹ️ No se pudo refrescar el schema, continuando...');
+                        }
+                        
+                        // Esperar más tiempo - el schema cache puede tardar
+                        await new Promise(resolve => setTimeout(resolve, 2000 * attempts));
+                        continue;
                     }
-                ])
-                .select()
-                .single();
-            
-            compradorData = result.data;
-            compradorError = result.error;
-            
-            // Si no hay error, salir del loop
-            if (!compradorError) {
-                break;
-            }
-            
-            // Si el error es de schema cache, esperar y reintentar
-            if (compradorError.message && (
-                compradorError.message.includes('Could not find the table') ||
-                compradorError.message.includes('schema cache')
-            )) {
+                } else {
+                    // Si es otro tipo de error, salir del loop
+                    break;
+                }
+            } catch (err) {
+                compradorError = err;
                 attempts++;
                 if (attempts < maxAttempts) {
-                    console.log(`⏳ Problema de schema cache, reintentando... (intento ${attempts}/${maxAttempts})`);
-                    // Esperar un poco más cada vez
-                    await new Promise(resolve => setTimeout(resolve, 1000 * attempts));
+                    console.log(`⏳ Error inesperado (intento ${attempts}/${maxAttempts}), reintentando...`);
+                    await new Promise(resolve => setTimeout(resolve, 2000 * attempts));
                     continue;
                 }
-            } else {
-                // Si es otro tipo de error, salir del loop
                 break;
             }
         }
@@ -270,47 +292,68 @@ async function registrarNuevoCliente(datos) {
         let tiendaData = null;
         let tiendaError = null;
         let attempts = 0;
-        const maxAttempts = 3;
+        const maxAttempts = 5; // Aumentar a 5 intentos
         
         while (attempts < maxAttempts) {
-            const result = await supabase
-                .from('tiendas')
-                .insert([
-                    {
-                        user_id: authData.user.id,
-                        nombre_tienda: nombreTienda,
-                        email: email,
-                        plan: plan || 'basico',
-                        subdomain: subdomain,
-                        activa: true,
-                        fecha_creacion: new Date().toISOString()
+            try {
+                const result = await supabase
+                    .from('tiendas')
+                    .insert([
+                        {
+                            user_id: authData.user.id,
+                            nombre_tienda: nombreTienda,
+                            email: email,
+                            plan: plan || 'basico',
+                            subdomain: subdomain,
+                            activa: true,
+                            fecha_creacion: new Date().toISOString()
+                        }
+                    ])
+                    .select()
+                    .single();
+                
+                tiendaData = result.data;
+                tiendaError = result.error;
+                
+                // Si no hay error, salir del loop
+                if (!tiendaError) {
+                    break;
+                }
+                
+                // Si el error es de schema cache, intentar refrescar y esperar
+                if (tiendaError.message && (
+                    tiendaError.message.includes('Could not find the table') ||
+                    tiendaError.message.includes('schema cache') ||
+                    tiendaError.message.includes('does not exist')
+                )) {
+                    attempts++;
+                    if (attempts < maxAttempts) {
+                        console.log(`⏳ Problema de schema cache (intento ${attempts}/${maxAttempts}), esperando y reintentando...`);
+                        
+                        // Intentar refrescar el schema haciendo una consulta SELECT simple
+                        try {
+                            await supabase.from('tiendas').select('id').limit(1);
+                            console.log('✅ Schema cache refrescado');
+                        } catch (refreshError) {
+                            console.log('ℹ️ No se pudo refrescar el schema, continuando...');
+                        }
+                        
+                        // Esperar más tiempo - el schema cache puede tardar
+                        await new Promise(resolve => setTimeout(resolve, 2000 * attempts));
+                        continue;
                     }
-                ])
-                .select()
-                .single();
-            
-            tiendaData = result.data;
-            tiendaError = result.error;
-            
-            // Si no hay error, salir del loop
-            if (!tiendaError) {
-                break;
-            }
-            
-            // Si el error es de schema cache, esperar y reintentar
-            if (tiendaError.message && (
-                tiendaError.message.includes('Could not find the table') ||
-                tiendaError.message.includes('schema cache')
-            )) {
+                } else {
+                    // Si es otro tipo de error, salir del loop
+                    break;
+                }
+            } catch (err) {
+                tiendaError = err;
                 attempts++;
                 if (attempts < maxAttempts) {
-                    console.log(`⏳ Problema de schema cache, reintentando... (intento ${attempts}/${maxAttempts})`);
-                    // Esperar un poco más cada vez
-                    await new Promise(resolve => setTimeout(resolve, 1000 * attempts));
+                    console.log(`⏳ Error inesperado (intento ${attempts}/${maxAttempts}), reintentando...`);
+                    await new Promise(resolve => setTimeout(resolve, 2000 * attempts));
                     continue;
                 }
-            } else {
-                // Si es otro tipo de error, salir del loop
                 break;
             }
         }
