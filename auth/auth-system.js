@@ -740,11 +740,9 @@ async function registrarNuevoEmprendedor(datos) {
         // 1. Crear usuario en Supabase Auth
         console.log('📧 Intentando registrar emprendedor:', { email, nombreServicio, plan });
         
-        // Determinar URL de redirección según el entorno
-        const isProduction = window.location.hostname !== 'localhost' && window.location.hostname !== '127.0.0.1';
-        const redirectUrl = isProduction 
-            ? 'https://cresalia-web.vercel.app/login-tienda.html'
-            : `${window.location.origin}/login-tienda.html`;
+        // Siempre usar producción para emails (los emails de confirmación deben ir a producción)
+        const redirectUrl = 'https://cresalia-web.vercel.app/login-tienda.html';
+        console.log('🔗 URL de redirección para email:', redirectUrl);
 
         const { data: authData, error: authError } = await supabase.auth.signUp({
             email: email,
