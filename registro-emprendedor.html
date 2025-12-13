@@ -1,0 +1,481 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Registro Emprendedores - CRESALIA</title>
+    
+    <!-- Favicon -->
+    <link rel="icon" type="image/x-icon" href="favicon.ico">
+    <link rel="icon" type="image/png" href="assets/logo/logo-cresalia.png">
+    <link rel="apple-touch-icon" href="assets/logo/logo-cresalia.png">
+    
+    <!-- Supabase Client Library -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #F59E0B 0%, #EF4444 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+        
+        .registro-container {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            max-width: 500px;
+            width: 100%;
+            padding: 40px;
+            animation: slideIn 0.5s ease-out;
+        }
+        
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(-30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .logo-container {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        
+        .logo-container img {
+            max-width: 120px;
+            margin-bottom: 10px;
+        }
+        
+        .logo-container h1 {
+            color: #F59E0B;
+            font-size: 1.8rem;
+            margin-bottom: 5px;
+        }
+        
+        .logo-container p {
+            color: #6b7280;
+            font-size: 0.9rem;
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            color: #374151;
+            font-weight: 600;
+        }
+        
+        .form-group label i {
+            margin-right: 8px;
+            color: #F59E0B;
+        }
+        
+        .form-group input,
+        .form-group select {
+            width: 100%;
+            padding: 12px 15px;
+            border: 2px solid #e5e7eb;
+            border-radius: 10px;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+        }
+        
+        .form-group input:focus,
+        .form-group select:focus {
+            outline: none;
+            border-color: #F59E0B;
+            box-shadow: 0 0 0 3px rgba(245, 158, 11, 0.1);
+        }
+        
+        .password-input {
+            position: relative;
+        }
+        
+        .password-toggle {
+            position: absolute;
+            right: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: none;
+            border: none;
+            color: #6b7280;
+            cursor: pointer;
+            font-size: 1.1rem;
+        }
+        
+        .password-toggle:hover {
+            color: #F59E0B;
+        }
+        
+        .password-strength {
+            margin-top: 8px;
+            font-size: 0.85rem;
+            display: none;
+        }
+        
+        .password-strength.visible {
+            display: block;
+        }
+        
+        .password-strength.weak {
+            color: #ef4444;
+        }
+        
+        .password-strength.medium {
+            color: #f59e0b;
+        }
+        
+        .password-strength.strong {
+            color: #10b981;
+        }
+        
+        .btn-registro {
+            width: 100%;
+            padding: 15px;
+            background: linear-gradient(135deg, #F59E0B, #EF4444);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-top: 10px;
+        }
+        
+        .btn-registro:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(245, 158, 11, 0.3);
+        }
+        
+        .btn-registro:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+        
+        .notification {
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            display: none;
+        }
+        
+        .notification.visible {
+            display: block;
+        }
+        
+        .notification.success {
+            background: #d1fae5;
+            color: #065f46;
+            border: 2px solid #10b981;
+        }
+        
+        .notification.error {
+            background: #fee2e2;
+            color: #991b1b;
+            border: 2px solid #ef4444;
+        }
+        
+        .links {
+            text-align: center;
+            margin-top: 25px;
+            color: #6b7280;
+        }
+        
+        .links a {
+            color: #F59E0B;
+            text-decoration: none;
+            font-weight: 600;
+        }
+        
+        .links a:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+    <div class="registro-container">
+        <div class="logo-container">
+            <img src="assets/logo/logo-cresalia.png" alt="Cresalia">
+            <h1><i class="fas fa-briefcase"></i> Emprendedores</h1>
+            <p>Ofrece tus servicios profesionales</p>
+        </div>
+        
+        <div id="notificacion" class="notification"></div>
+        
+        <form id="registroForm">
+            <div class="form-group">
+                <label for="nombreServicio">
+                    <i class="fas fa-briefcase"></i> Nombre del Servicio/Emprendimiento
+                </label>
+                <input 
+                    type="text" 
+                    id="nombreServicio" 
+                    name="nombreServicio" 
+                    placeholder="Ej: Consultoría en Marketing Digital"
+                    required
+                >
+            </div>
+            
+            <div class="form-group">
+                <label for="email">
+                    <i class="fas fa-envelope"></i> Email
+                </label>
+                <input 
+                    type="email" 
+                    id="email" 
+                    name="email" 
+                    placeholder="tu@email.com"
+                    required
+                >
+            </div>
+            
+            <div class="form-group">
+                <label for="password">
+                    <i class="fas fa-lock"></i> Contraseña
+                </label>
+                <div class="password-input">
+                    <input 
+                        type="password" 
+                        id="password" 
+                        name="password" 
+                        placeholder="Mínimo 8 caracteres"
+                        required
+                        minlength="8"
+                    >
+                    <button type="button" class="password-toggle" onclick="togglePassword('password')">
+                        <i class="fas fa-eye"></i>
+                    </button>
+                </div>
+                <div id="passwordStrength" class="password-strength"></div>
+            </div>
+            
+            <div class="form-group">
+                <label for="confirmPassword">
+                    <i class="fas fa-lock"></i> Confirmar Contraseña
+                </label>
+                <div class="password-input">
+                    <input 
+                        type="password" 
+                        id="confirmPassword" 
+                        name="confirmPassword" 
+                        placeholder="Repite tu contraseña"
+                        required
+                        autocomplete="new-password"
+                    >
+                    <button type="button" class="password-toggle" onclick="togglePassword('confirmPassword')">
+                        <i class="fas fa-eye"></i>
+                    </button>
+                </div>
+            </div>
+            
+            <div class="form-group">
+                <label for="plan">
+                    <i class="fas fa-star"></i> Plan
+                </label>
+                <select id="plan" required>
+                    <option value="">Selecciona un plan</option>
+                    <option value="basico">Básico - $0/mes</option>
+                    <option value="pro">Pro - $29/mes</option>
+                    <option value="premium">Premium - $79/mes</option>
+                </select>
+            </div>
+            
+            <button type="submit" id="btnRegistro" class="btn-registro">
+                <i class="fas fa-rocket"></i> Crear Mi Emprendimiento
+            </button>
+        </form>
+        
+        <div class="links">
+            ¿Ya tienes cuenta? <a href="login-tienda.html">Inicia sesión</a><br>
+            <br>
+            ¿Quieres vender productos? <a href="registro-tienda.html">Crea tu Tienda</a><br>
+            ¿Solo quieres comprar? <a href="registro-comprador.html">Regístrate como Comprador</a>
+        </div>
+    </div>
+    
+    <!-- Scripts -->
+    <script src="auth/supabase-config.js"></script>
+    <script src="auth/auth-system.js"></script>
+    
+    <script>
+        function togglePassword(inputId) {
+            const input = document.getElementById(inputId);
+            const icon = input.nextElementSibling.querySelector('i');
+            if (input.type === 'password') {
+                input.type = 'text';
+                icon.classList.remove('fa-eye');
+                icon.classList.add('fa-eye-slash');
+            } else {
+                input.type = 'password';
+                icon.classList.remove('fa-eye-slash');
+                icon.classList.add('fa-eye');
+            }
+        }
+        
+        function mostrarNotificacion(mensaje, tipo) {
+            const notif = document.getElementById('notificacion');
+            notif.textContent = mensaje;
+            notif.className = `notification ${tipo} visible`;
+            
+            setTimeout(() => {
+                notif.classList.remove('visible');
+            }, 5000);
+        }
+        
+        document.addEventListener('DOMContentLoaded', function() {
+            const supabaseClient = initSupabase();
+            if (!supabaseClient) {
+                console.error('❌ No se pudo inicializar Supabase');
+                mostrarNotificacion('No se pudo conectar con el servicio de autenticación. Intenta más tarde.', 'error');
+                return;
+            }
+            
+            // Indicador de fortaleza de contraseña
+            const passwordInput = document.getElementById('password');
+            const strengthIndicator = document.getElementById('passwordStrength');
+            
+            passwordInput.addEventListener('input', function() {
+                const password = this.value;
+                let strength = '';
+                let className = '';
+                
+                if (password.length === 0) {
+                    strengthIndicator.classList.remove('visible');
+                    return;
+                }
+                
+                strengthIndicator.classList.add('visible');
+                
+                if (password.length < 8) {
+                    strength = 'Muy débil';
+                    className = 'weak';
+                } else if (password.length < 12) {
+                    strength = 'Media';
+                    className = 'medium';
+                } else {
+                    strength = 'Fuerte';
+                    className = 'strong';
+                }
+                
+                strengthIndicator.textContent = `Fortaleza: ${strength}`;
+                strengthIndicator.className = `password-strength visible ${className}`;
+            });
+            
+            // Manejar envío del formulario
+            const form = document.getElementById('registroForm');
+            form.addEventListener('submit', async function(e) {
+                e.preventDefault();
+                
+                console.log('📝 Formulario enviado, validando datos...');
+                
+                const nombreServicio = document.getElementById('nombreServicio').value.trim();
+                const email = document.getElementById('email').value.trim();
+                const password = document.getElementById('password').value;
+                const confirmPassword = document.getElementById('confirmPassword').value;
+                const plan = document.getElementById('plan').value;
+                
+                console.log('📊 Datos del formulario:', { nombreServicio, email, plan });
+                
+                // Validar que las contraseñas coincidan
+                if (password !== confirmPassword) {
+                    mostrarNotificacion('Las contraseñas no coinciden', 'error');
+                    return;
+                }
+                
+                // Validar plan seleccionado
+                if (!plan) {
+                    mostrarNotificacion('Por favor selecciona un plan', 'error');
+                    return;
+                }
+                
+                // Deshabilitar botón
+                const btnRegistro = document.getElementById('btnRegistro');
+                btnRegistro.disabled = true;
+                btnRegistro.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Creando tu emprendimiento...';
+                
+                // Intentar registro
+                console.log('🚀 Llamando a registrarNuevoEmprendedor...');
+                console.log('📋 Función disponible:', typeof registrarNuevoEmprendedor);
+                
+                try {
+                    const resultado = await registrarNuevoEmprendedor({
+                        email,
+                        password,
+                        nombreServicio,
+                        plan
+                    });
+                    
+                    console.log('📊 Resultado del registro:', resultado);
+                    
+                    if (resultado.success) {
+                        mostrarNotificacion('✅ ¡Emprendimiento creado exitosamente! ¡Bienvenido a Cresalia!', 'success');
+                        
+                        // Guardar información de sesión
+                        localStorage.setItem('cresalia_sesion_activa', 'true');
+                        localStorage.setItem('cresalia_session_token', resultado.token || 'nuevo_usuario');
+                        localStorage.setItem('cresalia_user_data', JSON.stringify({
+                            email: email,
+                            nombre_servicio: nombreServicio,
+                            plan: plan,
+                            tipo: 'emprendedor'
+                        }));
+                        localStorage.setItem('plan-actual', plan);
+                        
+                        // Mostrar mensaje de bienvenida
+                        setTimeout(() => {
+                            mostrarNotificacion('🎉 ¡Bienvenido a tu panel de administración!', 'success');
+                        }, 1000);
+                        
+                        // Redirigir al panel admin de la tienda específica
+                        setTimeout(() => {
+                            // Crear subdomain único para el emprendimiento
+                            const subdomain = nombreServicio
+                                .toLowerCase()
+                                .replace(/\s+/g, '-')
+                                .replace(/[^a-z0-9-]/g, '');
+                            
+                            // Redirigir al admin de la tienda específica
+                            const adminUrl = `tiendas/${subdomain}/admin.html`;
+                            console.log('🚀 Redirigiendo a panel admin de emprendimiento:', adminUrl);
+                            window.location.href = adminUrl;
+                        }, 2000);
+                    } else {
+                        mostrarNotificacion(resultado.mensaje || resultado.error || 'Error al crear emprendimiento', 'error');
+                        btnRegistro.disabled = false;
+                        btnRegistro.innerHTML = '<i class="fas fa-rocket"></i> Crear Mi Emprendimiento';
+                    }
+                } catch (error) {
+                    console.error('❌ Error en registro:', error);
+                    mostrarNotificacion('Error al crear emprendimiento: ' + error.message, 'error');
+                    btnRegistro.disabled = false;
+                    btnRegistro.innerHTML = '<i class="fas fa-rocket"></i> Crear Mi Emprendimiento';
+                }
+            });
+        });
+    </script>
+</body>
+</html>
+

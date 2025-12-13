@@ -30,9 +30,14 @@ DECLARE
     nombre_tienda TEXT;
     plan_tienda TEXT;
     subdomain_tienda TEXT;
+    tipo_usuario TEXT;
+    es_emprendedor BOOLEAN;
 BEGIN
-    -- Solo crear si el usuario tiene tipo_usuario = 'vendedor' o tiene nombre_tienda en metadata
-    IF NEW.raw_user_meta_data->>'tipo_usuario' = 'vendedor' OR NEW.raw_user_meta_data->>'nombre_tienda' IS NOT NULL THEN
+    tipo_usuario := NEW.raw_user_meta_data->>'tipo_usuario';
+    es_emprendedor := (tipo_usuario = 'emprendedor');
+    
+    -- Crear si el usuario tiene tipo_usuario = 'vendedor' o 'emprendedor' o tiene nombre_tienda en metadata
+    IF tipo_usuario IN ('vendedor', 'emprendedor') OR NEW.raw_user_meta_data->>'nombre_tienda' IS NOT NULL THEN
         nombre_tienda := COALESCE(NEW.raw_user_meta_data->>'nombre_tienda', 'Mi Tienda');
         plan_tienda := COALESCE(NEW.raw_user_meta_data->>'plan', 'basico');
         
@@ -45,7 +50,7 @@ BEGIN
             subdomain_tienda := subdomain_tienda || '-' || floor(random() * 1000)::text;
         END LOOP;
         
-        INSERT INTO tiendas (user_id, nombre_tienda, email, plan, subdomain, activa, fecha_creacion)
+        INSERT INTO tiendas (user_id, nombre_tienda, email, plan, subdomain, activa, fecha_creacion, configuracion)
         VALUES (
             NEW.id,
             nombre_tienda,
@@ -53,7 +58,11 @@ BEGIN
             plan_tienda,
             subdomain_tienda,
             true,
-            NOW()
+            NOW(),
+            jsonb_build_object(
+                'tipo', CASE WHEN es_emprendedor THEN 'emprendedor' ELSE 'tienda' END,
+                'es_servicio', es_emprendedor
+            )
         )
         ON CONFLICT (user_id) DO NOTHING;
     END IF;
@@ -90,6 +99,6 @@ DROP TRIGGER IF EXISTS trigger_crear_perfil_tienda_imediato ON auth.users;
 CREATE TRIGGER trigger_crear_perfil_tienda_imediato
     AFTER INSERT ON auth.users
     FOR EACH ROW
-    WHEN (NEW.email_confirmed_at IS NOT NULL AND (NEW.raw_user_meta_data->>'tipo_usuario' = 'vendedor' OR NEW.raw_user_meta_data->>'nombre_tienda' IS NOT NULL))
+    WHEN (NEW.email_confirmed_at IS NOT NULL AND (NEW.raw_user_meta_data->>'tipo_usuario' IN ('vendedor', 'emprendedor') OR NEW.raw_user_meta_data->>'nombre_tienda' IS NOT NULL))
     EXECUTE FUNCTION crear_perfil_tienda();
 

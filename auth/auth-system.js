@@ -648,9 +648,142 @@ function generarMensajeBienvenidaComprador(nombre) {
     `;
 }
 
+// ===== REGISTRO DE NUEVOS EMPRENDEDORES (SERVICIOS PROFESIONALES) =====
+async function registrarNuevoEmprendedor(datos) {
+    console.log('📝 Registrando nuevo emprendedor...');
+    
+    const { email, password, nombreServicio, plan } = datos;
+    
+    try {
+        const supabase = initSupabase();
+        
+        if (!supabase) {
+            throw new Error('No se pudo inicializar Supabase');
+        }
+        
+        // 1. Crear usuario en Supabase Auth
+        console.log('📧 Intentando registrar emprendedor:', { email, nombreServicio, plan });
+        
+        // Determinar URL de redirección según el entorno
+        const isProduction = window.location.hostname !== 'localhost' && window.location.hostname !== '127.0.0.1';
+        const redirectUrl = isProduction 
+            ? 'https://cresalia-web.vercel.app/login-tienda.html'
+            : `${window.location.origin}/login-tienda.html`;
+
+        const { data: authData, error: authError } = await supabase.auth.signUp({
+            email: email,
+            password: password,
+            options: {
+                emailRedirectTo: redirectUrl,
+                data: {
+                    nombre_tienda: nombreServicio,
+                    plan: plan,
+                    tipo_usuario: 'emprendedor' // Diferenciar de tiendas regulares
+                }
+            }
+        });
+        
+        console.log('📊 Respuesta de signUp:', { data: authData, error: authError });
+        
+        if (authError) {
+            console.error('❌ Error en signUp:', authError);
+            throw authError;
+        }
+        
+        // Verificar que el usuario se creó
+        if (!authData.user) {
+            throw new Error('No se pudo crear el usuario. Verifica tu configuración de Supabase.');
+        }
+        
+        console.log('✅ Usuario creado en Auth:', authData.user.id);
+        
+        // Esperar un momento para que la sesión se establezca
+        if (authData.session) {
+            console.log('✅ Sesión establecida, continuando con registro en tabla tiendas...');
+        } else {
+            console.log('⚠️ No hay sesión inmediata (normal si requiere confirmación de email)');
+        }
+        
+        // 2. Crear registro en tabla de tiendas (los emprendedores también usan esta tabla)
+        const subdomain = nombreServicio
+            .toLowerCase()
+            .replace(/\s+/g, '-')
+            .replace(/[^a-z0-9-]/g, '');
+        
+        const { data: tiendaData, error: tiendaError } = await supabase
+            .from('tiendas')
+            .insert([
+                {
+                    user_id: authData.user.id,
+                    nombre_tienda: nombreServicio,
+                    email: email,
+                    plan: plan,
+                    subdomain: subdomain,
+                    activa: true,
+                    fecha_creacion: new Date().toISOString(),
+                    configuracion: {
+                        tipo: 'emprendedor',
+                        es_servicio: true
+                    }
+                }
+            ])
+            .select()
+            .single();
+        
+        if (tiendaError) {
+            console.error('❌ Error creando emprendimiento:', tiendaError);
+            console.error('📋 Detalles del error:', {
+                message: tiendaError.message,
+                details: tiendaError.details,
+                hint: tiendaError.hint,
+                code: tiendaError.code
+            });
+            
+            // Si el error es por RLS (no hay sesión), informar al usuario
+            if (tiendaError.code === '42501' || tiendaError.message.includes('permission denied') || tiendaError.message.includes('new row violates row-level security')) {
+                throw new Error('Tu cuenta se creó, pero necesitas confirmar tu email primero. Revisa tu bandeja de entrada y haz clic en el enlace de confirmación.');
+            }
+            
+            throw new Error(`Error al crear perfil de emprendimiento: ${tiendaError.message}. ${tiendaError.hint || ''}`);
+        }
+        
+        console.log('✅ Emprendedor registrado exitosamente');
+        
+        // Enviar mensaje de bienvenida automático con sistema de emails
+        if (window.sistemaEmailsCresalia) {
+            await window.sistemaEmailsCresalia.procesarEvento('registro', {
+                id: authData.user.id,
+                email: email,
+                nombre: nombreServicio,
+                tipo: 'emprendedor'
+            });
+        } else {
+            // Fallback al método anterior
+            await enviarMensajeBienvenida(email, nombreServicio, 'emprendedor');
+        }
+        
+        return {
+            success: true,
+            user: authData.user,
+            tienda: tiendaData,
+            token: authData.session?.access_token,
+            mensaje: '¡Registro exitoso! Revisa tu email para verificar tu cuenta.'
+        };
+        
+    } catch (error) {
+        console.error('❌ Error en registro de emprendedor:', error);
+        return {
+            success: false,
+            error: error.message,
+            mensaje: 'Error al registrar. ' + error.message
+        };
+    }
+}
+
 // Hacer funciones disponibles globalmente
 window.registrarNuevoComprador = registrarNuevoComprador;
 window.registrarNuevoCliente = registrarNuevoCliente;
+window.registrarNuevoEmprendedor = registrarNuevoEmprendedor;
 window.loginCliente = loginCliente;
 window.logoutCliente = logoutCliente;
 window.verificarAccesoAdmin = verificarAccesoAdmin;
