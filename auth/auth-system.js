@@ -761,6 +761,13 @@ async function registrarNuevoEmprendedor(datos) {
         
         if (authError) {
             console.error('❌ Error en signUp:', authError);
+            
+            // Manejar rate limiting de Supabase
+            if (authError.message && authError.message.includes('only request this after')) {
+                const waitTime = authError.message.match(/\d+/)?.[0] || '60';
+                throw new Error(`Por seguridad, debes esperar ${waitTime} segundos antes de intentar nuevamente. Por favor, espera un momento.`);
+            }
+            
             throw authError;
         }
         
