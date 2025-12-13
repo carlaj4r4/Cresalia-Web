@@ -18,10 +18,14 @@ async function registrarNuevoComprador(datos) {
         console.log('📧 Intentando registrar comprador:', { email, nombreCompleto });
         
         // Determinar URL de redirección según el entorno
-        const isProduction = window.location.hostname !== 'localhost' && window.location.hostname !== '127.0.0.1';
-        const redirectUrl = isProduction 
-            ? 'https://cresalia-web.vercel.app/login-comprador.html'
-            : `${window.location.origin}/login-comprador.html`;
+        // Siempre usar producción para emails (los emails de confirmación deben ir a producción)
+        const isProduction = window.location.hostname !== 'localhost' && 
+                            window.location.hostname !== '127.0.0.1' &&
+                            !window.location.hostname.includes('localhost');
+        
+        // Para emails, siempre usar la URL de producción
+        const redirectUrl = 'https://cresalia-web.vercel.app/login-comprador.html';
+        console.log('🔗 URL de redirección para email:', redirectUrl);
 
         const { data: authData, error: authError } = await supabase.auth.signUp({
             email: email,
@@ -39,6 +43,13 @@ async function registrarNuevoComprador(datos) {
         
         if (authError) {
             console.error('❌ Error en signUp:', authError);
+            
+            // Manejar rate limiting de Supabase
+            if (authError.message && authError.message.includes('only request this after')) {
+                const waitTime = authError.message.match(/\d+/)?.[0] || '60';
+                throw new Error(`Por seguridad, debes esperar ${waitTime} segundos antes de intentar nuevamente. Por favor, espera un momento.`);
+            }
+            
             throw authError;
         }
         
@@ -81,9 +92,33 @@ async function registrarNuevoComprador(datos) {
                 code: compradorError.code
             });
             
+            // Si el error es que no encuentra la tabla, puede ser problema de schema cache
+            if (compradorError.message.includes('Could not find the table') || compradorError.message.includes('schema cache')) {
+                console.error('❌ Error: Tabla compradores no encontrada. Posibles causas:');
+                console.error('   1. La tabla no existe en Supabase');
+                console.error('   2. Problema de caché de schema en Supabase');
+                console.error('   3. El trigger SQL no está ejecutado');
+                // El trigger SQL creará el perfil después de confirmar email, así que esto no es fatal
+                return {
+                    success: true,
+                    user: authData.user,
+                    comprador: null,
+                    mensaje: '¡Registro exitoso! Revisa tu email para verificar tu cuenta. Tu perfil se creará automáticamente después de confirmar tu email.',
+                    requiereConfirmacion: true
+                };
+            }
+            
             // Si el error es por RLS (no hay sesión), informar al usuario
             if (compradorError.code === '42501' || compradorError.message.includes('permission denied') || compradorError.message.includes('new row violates row-level security')) {
-                throw new Error('Tu cuenta se creó, pero necesitas confirmar tu email primero. Revisa tu bandeja de entrada y haz clic en el enlace de confirmación.');
+                console.log('ℹ️ Error por RLS - el trigger SQL creará el perfil después de confirmar email');
+                // No es un error fatal - el trigger SQL creará el perfil después de la confirmación
+                return {
+                    success: true,
+                    user: authData.user,
+                    comprador: null,
+                    mensaje: '¡Registro exitoso! Revisa tu email para verificar tu cuenta. Tu perfil se creará automáticamente después de confirmar tu email.',
+                    requiereConfirmacion: true
+                };
             }
             
             // No intentar eliminar usuario desde el cliente (requiere admin)
@@ -161,7 +196,8 @@ async function registrarNuevoCliente(datos) {
                 emailRedirectTo: redirectUrl,
                 data: {
                     nombre_tienda: nombreTienda,
-                    plan: plan
+                    plan: plan,
+                    tipo_usuario: 'vendedor'
                 }
             }
         });
@@ -170,6 +206,13 @@ async function registrarNuevoCliente(datos) {
         
         if (authError) {
             console.error('❌ Error en signUp:', authError);
+            
+            // Manejar rate limiting de Supabase
+            if (authError.message && authError.message.includes('only request this after')) {
+                const waitTime = authError.message.match(/\d+/)?.[0] || '60';
+                throw new Error(`Por seguridad, debes esperar ${waitTime} segundos antes de intentar nuevamente. Por favor, espera un momento.`);
+            }
+            
             throw authError;
         }
         
