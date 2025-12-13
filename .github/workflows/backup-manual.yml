@@ -38,11 +38,17 @@ jobs:
           npm install
       
       - name: 💾 Ejecutar Backup
-        working-directory: ./scripts
         env:
           SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
           SUPABASE_SERVICE_KEY: ${{ secrets.SUPABASE_SERVICE_KEY }}
-        run: node backup-supabase.js
+        run: |
+          if [ -f "scripts/backup-supabase.js" ]; then
+            cd scripts
+            node backup-supabase.js
+          else
+            echo "❌ Error: No se encontró scripts/backup-supabase.js"
+            exit 1
+          fi
       
       - name: 📦 Comprimir backups
         if: success()
