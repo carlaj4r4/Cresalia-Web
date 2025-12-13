@@ -109,7 +109,7 @@ class MonitoreoErrores {
         }
     }
     
-    // Enviar alerta por email (solo si EmailJS está configurado)
+    // Enviar alerta por email usando Brevo API
     async enviarAlertaEmail(errorInfo) {
         // Verificar límite de alertas por hora
         const ahora = Date.now();
@@ -117,33 +117,102 @@ class MonitoreoErrores {
             return; // Ya se envió una alerta recientemente
         }
         
-        // Solo enviar si EmailJS está disponible y configurado
-        if (typeof emailjs === 'undefined' || !window.EMAIL_CONFIG || !window.EMAIL_CONFIG.publicKey) {
-            console.log('ℹ️ EmailJS no configurado - alertas por email deshabilitadas');
-            return;
-        }
-        
         try {
-            // Intentar enviar email usando EmailJS (si está configurado)
-            const templateParams = {
-                to_email: this.configAlertas.email,
-                error_message: errorInfo.mensaje,
-                error_type: errorInfo.tipo,
-                error_url: errorInfo.url,
-                error_timestamp: errorInfo.timestamp,
-                error_stack: errorInfo.stack.substring(0, 500), // Limitar tamaño
-                total_errores: this.errores.length,
-                errores_criticos: this.erroresCriticos.length
-            };
+            // Preparar contenido HTML del email
+            const htmlContent = `
+                <!DOCTYPE html>
+                <html>
+                <head>
+                    <meta charset="UTF-8">
+                    <style>
+                        body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; }
+                        .container { max-width: 600px; margin: 0 auto; padding: 20px; }
+                        .header { background: linear-gradient(135deg, #dc2626 0%, #991b1b 100%); color: white; padding: 30px; text-align: center; border-radius: 10px 10px 0 0; }
+                        .content { background: #f9fafb; padding: 30px; border-radius: 0 0 10px 10px; }
+                        .error-box { background: #fee2e2; border-left: 4px solid #dc2626; padding: 15px; margin: 15px 0; border-radius: 4px; }
+                        .error-stack { background: #1f2937; color: #f9fafb; padding: 15px; border-radius: 4px; font-family: monospace; font-size: 12px; overflow-x: auto; max-height: 300px; overflow-y: auto; }
+                        .stats { display: flex; justify-content: space-around; margin: 20px 0; }
+                        .stat { text-align: center; }
+                        .stat-value { font-size: 24px; font-weight: bold; color: #dc2626; }
+                        .stat-label { font-size: 12px; color: #6b7280; }
+                        .footer { text-align: center; padding: 20px; color: #6b7280; font-size: 12px; }
+                    </style>
+                </head>
+                <body>
+                    <div class="container">
+                        <div class="header">
+                            <h1>🚨 Error Crítico Detectado</h1>
+                            <p>Cresalia - Sistema de Monitoreo</p>
+                        </div>
+                        <div class="content">
+                            <div class="error-box">
+                                <h2>${errorInfo.tipo || 'Error'}</h2>
+                                <p><strong>Mensaje:</strong> ${errorInfo.mensaje}</p>
+                                <p><strong>URL:</strong> <a href="${errorInfo.url}">${errorInfo.url}</a></p>
+                                <p><strong>Fecha:</strong> ${new Date(errorInfo.timestamp).toLocaleString('es-ES')}</p>
+                            </div>
+                            
+                            <div class="stats">
+                                <div class="stat">
+                                    <div class="stat-value">${this.errores.length}</div>
+                                    <div class="stat-label">Total de Errores</div>
+                                </div>
+                                <div class="stat">
+                                    <div class="stat-value">${this.erroresCriticos.length}</div>
+                                    <div class="stat-label">Errores Críticos</div>
+                                </div>
+                            </div>
+                            
+                            ${errorInfo.stack ? `
+                            <h3>Stack Trace:</h3>
+                            <div class="error-stack">${errorInfo.stack.substring(0, 1000).replace(/\n/g, '<br>')}</div>
+                            ` : ''}
+                            
+                            <p style="margin-top: 20px;">
+                                <strong>User Agent:</strong><br>
+                                <small>${errorInfo.userAgent}</small>
+                            </p>
+                            
+                            <p style="margin-top: 20px; padding-top: 20px; border-top: 1px solid #e5e7eb;">
+                                Este email fue enviado automáticamente por el sistema de monitoreo de Cresalia.<br>
+                                Para revisar todos los errores, abre la consola del navegador y ejecuta: <code>verErrores()</code>
+                            </p>
+                        </div>
+                        <div class="footer">
+                            <p>Cresalia - Plataforma para emprendedores</p>
+                        </div>
+                    </div>
+                </body>
+                </html>
+            `;
             
-            // Buscar template de alerta en EmailJS (si existe)
-            // Por ahora solo logueamos, el usuario puede configurar el template después
-            console.log('📧 Alerta crítica detectada - Configura EmailJS para recibir emails automáticos');
-            console.log('📧 Detalles del error:', templateParams);
+            // Enviar email usando el endpoint de Brevo
+            const response = await fetch('/api/enviar-email-brevo', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    to: this.configAlertas.email,
+                    to_name: 'Equipo Cresalia',
+                    subject: `🚨 Error Crítico: ${errorInfo.tipo || 'Error'} - ${errorInfo.mensaje.substring(0, 50)}`,
+                    html_content: htmlContent,
+                    text_content: `Error Crítico Detectado\n\nTipo: ${errorInfo.tipo}\nMensaje: ${errorInfo.mensaje}\nURL: ${errorInfo.url}\nFecha: ${errorInfo.timestamp}\n\nTotal de errores: ${this.errores.length}\nErrores críticos: ${this.erroresCriticos.length}`
+                })
+            });
             
+            if (!response.ok) {
+                const errorData = await response.json().catch(() => ({ error: 'Error desconocido' }));
+                console.warn('⚠️ Error enviando alerta por email:', errorData.error || 'Error desconocido');
+                return;
+            }
+            
+            const result = await response.json();
+            console.log('✅ Alerta de error crítico enviada por email:', result.message);
             this.ultimaAlertaEmail = ahora;
+            
         } catch (e) {
-            console.warn('Error enviando alerta por email:', e);
+            console.warn('⚠️ Error enviando alerta por email:', e);
         }
     }
     

@@ -24,115 +24,47 @@ Las notificaciones push del navegador **YA ESTÁN ACTIVAS** y funcionan automát
 
 ---
 
-## 📧 **Alertas por Email (Opcional)**
+## 📧 **Alertas por Email con Brevo (Ya Configurado)**
 
-Para recibir emails cuando hay errores críticos, necesitas configurar EmailJS.
+¡Perfecto! Ya usamos **Brevo** para enviar emails. El sistema de alertas está integrado con tu endpoint de Brevo.
 
-### **Paso 1: Configurar EmailJS (si aún no lo tienes)**
+### **¿Qué necesitas hacer?**
 
-1. Ve a **https://www.emailjs.com/**
-2. Crea una cuenta gratuita (200 emails/mes gratis)
-3. Conecta tu Gmail
-4. Crea un template para alertas de errores
+**Nada más** - ya está todo configurado. Solo asegúrate de que:
 
-### **Paso 2: Crear Template de Alerta en EmailJS**
+1. ✅ **Brevo API Key está configurada en Vercel** (ya la tienes configurada)
+2. ✅ **El endpoint `/api/enviar-email-brevo` funciona** (ya existe)
+3. ⚙️ **Configurar el email de destino** (si quieres cambiarlo)
 
-1. En EmailJS, ve a **"Email Templates"**
-2. Click en **"Create New Template"**
-3. Configura:
-   - **Template Name:** `Alerta de Error Crítico`
-   - **Template ID:** `template_alerta_error`
+### **Configurar Email de Destino**
 
-4. **Subject (Asunto):**
-```
-🚨 ERROR CRÍTICO - Cresalia: {{error_type}}
-```
-
-5. **Content (Contenido HTML):**
-```html
-<h2>🚨 Error Crítico Detectado</h2>
-
-<p><strong>Tipo:</strong> {{error_type}}</p>
-<p><strong>Mensaje:</strong> {{error_message}}</p>
-<p><strong>URL:</strong> {{error_url}}</p>
-<p><strong>Fecha:</strong> {{error_timestamp}}</p>
-
-<h3>Stack Trace:</h3>
-<pre>{{error_stack}}</pre>
-
-<hr>
-<p><strong>Total de errores:</strong> {{total_errores}}</p>
-<p><strong>Errores críticos:</strong> {{errores_criticos}}</p>
-
-<p style="color: #666; font-size: 12px;">
-Este email fue enviado automáticamente por el sistema de monitoreo de Cresalia.
-</p>
-```
-
-6. **Variables a usar:**
-```
-{{to_email}}           - Email del destinatario
-{{error_message}}      - Mensaje del error
-{{error_type}}         - Tipo de error
-{{error_url}}          - URL donde ocurrió
-{{error_timestamp}}    - Fecha y hora
-{{error_stack}}        - Stack trace
-{{total_errores}}      - Total de errores
-{{errores_criticos}}   - Total de errores críticos
-```
-
-### **Paso 3: Configurar en el Código**
-
-**Opción A: Si ya tienes EmailJS configurado**
-
-Solo necesitas asegurarte de que el template `template_alerta_error` existe.
-
-**Opción B: Si no tienes EmailJS configurado**
-
-1. Ve a `email-notifications.js`
-2. Agrega el template de alerta a `EMAIL_CONFIG`:
+**Opción 1: Desde la consola del navegador:**
 
 ```javascript
-const EMAIL_CONFIG = {
-    serviceID: 'TU_SERVICE_ID',
-    publicKey: 'TU_PUBLIC_KEY',
-    templates: {
-        reservaCliente: 'template_reserva_cliente',
-        reservaProveedor: 'template_reserva_proveedor',
-        cancelacion: 'template_cancelacion',
-        alertaError: 'template_alerta_error' // ← Agregar esto
-    }
-};
+configurarEmailAlerta('cresalia25@gmail.com')
 ```
 
-3. Luego, edita `js/monitoreo-errores-gratuito.js` y en la función `enviarAlertaEmail`, descomenta/agrega:
+**Opción 2: Editar directamente en el código:**
 
-```javascript
-await emailjs.send(
-    EMAIL_CONFIG.serviceID,
-    EMAIL_CONFIG.templates.alertaError,
-    templateParams
-);
-```
-
-### **Paso 4: Configurar Email de Destino**
-
-En la consola del navegador:
-
-```javascript
-configurarEmailAlerta('tu-email@gmail.com')
-```
-
-O edita `js/monitoreo-errores-gratuito.js` directamente:
+Edita `js/monitoreo-errores-gratuito.js` y cambia:
 
 ```javascript
 this.configAlertas = {
     enabled: true,
-    email: 'tu-email@gmail.com', // ← Cambiar aquí
+    email: 'cresalia25@gmail.com', // ← Tu email aquí
     erroresCriticosParaAlerta: 5, // Alertar si hay 5+ errores críticos en 1 hora
     // ...
 };
 ```
+
+### **¿Cómo funciona?**
+
+Cuando hay 5+ errores críticos en 1 hora, el sistema:
+1. Llama a tu endpoint `/api/enviar-email-brevo`
+2. Envía un email HTML con todos los detalles del error
+3. El email incluye: tipo de error, mensaje, URL, stack trace, estadísticas
+
+**¡Ya está funcionando!** Solo necesitas configurar el email de destino si quieres cambiarlo.
 
 ---
 
