@@ -37,7 +37,15 @@ function initSupabase() {
                         SUPABASE_CONFIG.anonKey,
                         { auth: SUPABASE_CONFIG.auth }
                     );
+                    
+                    // Validar que el cliente se creó correctamente
+                    if (!supabase || typeof supabase.from !== 'function') {
+                        throw new Error('El cliente de Supabase no se creó correctamente');
+                    }
+                    
                     console.log('✅ Supabase inicializado correctamente');
+                    console.log('🔍 Cliente validado - método from disponible:', typeof supabase.from);
+                    
                     if (typeof window !== 'undefined') {
                         window.SUPABASE_CLIENT = supabase;
                         window.SUPABASE_CONFIG = SUPABASE_CONFIG;
@@ -45,6 +53,12 @@ function initSupabase() {
                     return supabase;
                 } catch (error) {
                     console.error('❌ Error creando cliente de Supabase:', error);
+                    attempts++;
+                    if (attempts < maxAttempts) {
+                        console.log(`⏳ Reintentando inicialización... (intento ${attempts}/${maxAttempts})`);
+                        setTimeout(tryInit, 100);
+                        return null;
+                    }
                     return null;
                 }
             } else {
@@ -56,6 +70,7 @@ function initSupabase() {
                 } else {
                     console.error('❌ Librería de Supabase no se cargó después de 5 segundos');
                     console.error('💡 Verifica que el script de Supabase esté cargado antes de este archivo');
+                    console.error('💡 URL esperada del SDK: https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2');
                     return null;
                 }
             }

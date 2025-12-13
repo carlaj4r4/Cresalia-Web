@@ -135,9 +135,18 @@ async function registrarNuevoCliente(datos) {
     try {
         const supabase = initSupabase();
         
+        // Validar que Supabase esté inicializado correctamente
+        if (!supabase || typeof supabase.from !== 'function') {
+            console.error('❌ Supabase no está inicializado correctamente');
+            throw new Error('No se pudo conectar con la base de datos. Por favor, recarga la página e intenta nuevamente.');
+        }
+        
         // 1. Crear usuario en Supabase Auth
         console.log('📧 Intentando registrar:', { email, nombreTienda, plan });
-        console.log('🔐 Supabase URL:', SUPABASE_CONFIG.url);
+        const supabaseConfig = window.SUPABASE_CONFIG || SUPABASE_CONFIG || {};
+        console.log('🔐 Supabase URL:', supabaseConfig.url || 'No configurado');
+        console.log('✅ Cliente de Supabase inicializado correctamente:', !!supabase);
+        console.log('🔍 Tipo de supabase:', typeof supabase, 'Método from:', typeof supabase?.from);
         
         // Determinar URL de redirección según el entorno
         const isProduction = window.location.hostname !== 'localhost' && window.location.hostname !== '127.0.0.1';
@@ -172,10 +181,14 @@ async function registrarNuevoCliente(datos) {
         console.log('✅ Usuario creado en Auth:', authData.user.id);
         
         // 2. Crear registro en tabla de tiendas
+        // Nota: Si el usuario no ha confirmado su email, RLS puede bloquear esto
+        // En ese caso, el trigger SQL creará el perfil automáticamente después de la confirmación
         const subdomain = nombreTienda
             .toLowerCase()
             .replace(/\s+/g, '-')
             .replace(/[^a-z0-9-]/g, '');
+        
+        console.log('📝 Intentando crear registro en tabla tiendas...');
         
         const { data: tiendaData, error: tiendaError } = await supabase
             .from('tiendas')
@@ -184,7 +197,7 @@ async function registrarNuevoCliente(datos) {
                     user_id: authData.user.id,
                     nombre_tienda: nombreTienda,
                     email: email,
-                    plan: plan,
+                    plan: plan || 'basico',
                     subdomain: subdomain,
                     activa: true,
                     fecha_creacion: new Date().toISOString()
@@ -202,9 +215,29 @@ async function registrarNuevoCliente(datos) {
                 code: tiendaError.code
             });
             
+            // Si el error es que no encuentra la tabla, puede ser problema de inicialización
+            if (tiendaError.message.includes('Could not find the table') || tiendaError.message.includes('schema cache')) {
+                console.error('❌ Error: Tabla no encontrada. Posibles causas:');
+                console.error('   1. El cliente de Supabase no está inicializado correctamente');
+                console.error('   2. La tabla "tiendas" no existe en Supabase');
+                console.error('   3. Problema de conexión con Supabase');
+                throw new Error('Error de conexión con la base de datos. Por favor, recarga la página e intenta nuevamente. Si el problema persiste, contacta al soporte.');
+            }
+            
             // Si el error es por RLS (no hay sesión), informar al usuario
-            if (tiendaError.code === '42501' || tiendaError.message.includes('permission denied') || tiendaError.message.includes('new row violates row-level security')) {
-                throw new Error('Tu cuenta se creó, pero necesitas confirmar tu email primero. Revisa tu bandeja de entrada y haz clic en el enlace de confirmación.');
+            if (tiendaError.code === '42501' || 
+                tiendaError.message.includes('permission denied') || 
+                tiendaError.message.includes('new row violates row-level security') ||
+                tiendaError.message.includes('RLS')) {
+                console.log('ℹ️ Error por RLS - el trigger SQL creará el perfil después de confirmar email');
+                // No es un error fatal - el trigger SQL creará el perfil después de la confirmación
+                return {
+                    success: true,
+                    user: authData.user,
+                    tienda: null,
+                    mensaje: '¡Registro exitoso! Revisa tu email para verificar tu cuenta. Tu perfil se creará automáticamente después de confirmar tu email.',
+                    requiereConfirmacion: true
+                };
             }
             
             // No intentar eliminar usuario desde el cliente (requiere admin)
