@@ -153,9 +153,20 @@
         function deshabilitarBienestar() {
             console.log('💜 Deshabilitando widget de bienestar...');
             const widget = document.getElementById('bienestarWidget');
+            const menu = document.getElementById('bienestarMenu');
+            const panelControl = document.getElementById('panelControlBienestar');
+            
             if (widget) {
+                // Ocultar widget y menú
                 widget.style.display = 'none';
+                if (menu) menu.style.display = 'none';
+                
+                // Guardar estado
                 localStorage.setItem('bienestar_deshabilitado', 'true');
+                
+                // Mostrar panel de control simple
+                mostrarPanelControlBienestar();
+                
                 mostrarNotificacion('✅ Widget de bienestar deshabilitado', 'success');
             } else {
                 console.log('⚠️ Widget de bienestar no encontrado');
@@ -166,26 +177,123 @@
         function habilitarBienestar() {
             console.log('💜 Habilitando widget de bienestar...');
             const widget = document.getElementById('bienestarWidget');
+            const panelControl = document.getElementById('panelControlBienestar');
+            
             if (widget) {
-                widget.style.display = 'block';
+                // Mostrar widget
+                widget.style.display = 'flex';
+                
+                // Remover estado deshabilitado
                 localStorage.removeItem('bienestar_deshabilitado');
+                
+                // Ocultar panel de control
+                if (panelControl) {
+                    panelControl.style.display = 'none';
+                }
+                
                 mostrarNotificacion('✅ Widget de bienestar habilitado', 'success');
             } else {
                 console.log('⚠️ Widget de bienestar no encontrado');
             }
         }
         
+        // Función para mostrar panel de control simple (solo botones)
+        function mostrarPanelControlBienestar() {
+            let panelControl = document.getElementById('panelControlBienestar');
+            
+            // Si no existe, crearlo
+            if (!panelControl) {
+                panelControl = document.createElement('div');
+                panelControl.id = 'panelControlBienestar';
+                panelControl.style.cssText = `
+                    position: fixed !important;
+                    bottom: 20px !important;
+                    right: 20px !important;
+                    background: white !important;
+                    border-radius: 15px !important;
+                    box-shadow: 0 10px 40px rgba(0,0,0,0.15) !important;
+                    padding: 20px !important;
+                    z-index: 999998 !important;
+                    min-width: 250px !important;
+                    border: 2px solid #E5E7EB !important;
+                `;
+                
+                panelControl.innerHTML = `
+                    <div style="text-align: center; margin-bottom: 15px;">
+                        <h4 style="margin: 0 0 10px 0; color: #374151; font-size: 1rem;">💜 Bienestar Emocional</h4>
+                        <p style="margin: 0; color: #6B7280; font-size: 0.85rem; line-height: 1.5;">Sabemos que no todos los días son buenos. Si deseas desahogarte, puedes habilitarlo en cualquier momento. Estamos aquí para ayudarte 💜</p>
+                    </div>
+                    <div style="display: flex; gap: 10px; flex-direction: column;">
+                        <button onclick="habilitarBienestar()" style="
+                            background: #22c55e !important;
+                            color: white !important;
+                            border: none !important;
+                            padding: 12px 20px !important;
+                            border-radius: 8px !important;
+                            cursor: pointer !important;
+                            font-size: 0.9rem !important;
+                            font-weight: 600 !important;
+                            width: 100% !important;
+                        ">
+                            <i class="fas fa-heart"></i> Habilitar
+                        </button>
+                        <button onclick="deshabilitarBienestar()" style="
+                            background: #ef4444 !important;
+                            color: white !important;
+                            border: none !important;
+                            padding: 12px 20px !important;
+                            border-radius: 8px !important;
+                            cursor: pointer !important;
+                            font-size: 0.9rem !important;
+                            font-weight: 600 !important;
+                            width: 100% !important;
+                            opacity: 0.5 !important;
+                            cursor: not-allowed !important;
+                        " disabled>
+                            <i class="fas fa-heart-broken"></i> Deshabilitar
+                        </button>
+                    </div>
+                `;
+                
+                document.body.appendChild(panelControl);
+            }
+            
+            // Mostrar panel
+            panelControl.style.display = 'block';
+        }
+        
+        // Hacer funciones globales para acceso desde onclick
+        window.deshabilitarBienestar = deshabilitarBienestar;
+        window.habilitarBienestar = habilitarBienestar;
+        window.mostrarPanelControlBienestar = mostrarPanelControlBienestar;
+        
         // Función para verificar estado del widget de bienestar al cargar
         function verificarEstadoWidgetBienestar() {
             console.log('💜 Verificando estado del widget de bienestar...');
             const widget = document.getElementById('bienestarWidget');
+            const menu = document.getElementById('bienestarMenu');
+            
             if (widget) {
                 const deshabilitado = localStorage.getItem('bienestar_deshabilitado');
                 if (deshabilitado === 'true') {
+                    // Ocultar widget y menú completamente
                     widget.style.display = 'none';
-                    console.log('💜 Widget de bienestar deshabilitado por configuración');
+                    if (menu) menu.style.display = 'none';
+                    
+                    // Mostrar panel de control simple
+                    mostrarPanelControlBienestar();
+                    
+                    console.log('💜 Widget de bienestar deshabilitado por configuración - Panel de control mostrado');
                 } else {
-                    widget.style.display = 'block';
+                    // Asegurar que el widget esté visible
+                    widget.style.display = 'flex';
+                    
+                    // Ocultar panel de control si existe
+                    const panelControl = document.getElementById('panelControlBienestar');
+                    if (panelControl) {
+                        panelControl.style.display = 'none';
+                    }
+                    
                     console.log('💜 Widget de bienestar habilitado');
                 }
             } else {
@@ -12815,10 +12923,22 @@ Los reportes detallados están disponibles en:
         function toggleBienestarMenu() {
             console.log('💜 toggleBienestarMenu ejecutado');
             
+            // Verificar si el bienestar está deshabilitado
+            const deshabilitado = localStorage.getItem('bienestar_deshabilitado');
+            if (deshabilitado === 'true') {
+                console.log('💜 Widget deshabilitado - mostrando panel de control');
+                mostrarPanelControlBienestar();
+                if (typeof mostrarNotificacion === 'function') {
+                    mostrarNotificacion('💔 El widget de bienestar está deshabilitado. Usa el panel de control para habilitarlo.', 'info');
+                }
+                return;
+            }
+            
             // Verificar si el bienestar está deshabilitado manualmente
             const widget = document.getElementById('bienestarWidget');
             if (widget && widget.style.display === 'none') {
                 console.log('💜 Widget deshabilitado manualmente');
+                mostrarPanelControlBienestar();
                 if (typeof mostrarNotificacion === 'function') {
                     mostrarNotificacion('💔 El widget de bienestar está deshabilitado', 'info');
                 }
@@ -12897,6 +13017,17 @@ Los reportes detallados están disponibles en:
         // Manejador centralizado de acciones
         function handleBienestarAction(action) {
             console.log('🎯 Ejecutando acción:', action);
+            
+            // Verificar si el bienestar está deshabilitado - BLOQUEAR CONTENIDO
+            const deshabilitado = localStorage.getItem('bienestar_deshabilitado');
+            if (deshabilitado === 'true') {
+                console.log('💔 Acción bloqueada - Widget de bienestar deshabilitado');
+                if (typeof mostrarNotificacion === 'function') {
+                    mostrarNotificacion('💔 El widget de bienestar está deshabilitado. Usa el panel de control para habilitarlo.', 'info');
+                }
+                mostrarPanelControlBienestar();
+                return;
+            }
             
             switch(action) {
                 case 'progreso-personal':
@@ -17376,6 +17507,33 @@ Los reportes detallados están disponibles en:
         };
         
         console.log('✅ [FINAL] Función de modal de productos cargada correctamente');
+    </script>
+    
+    <!-- Sistema de Onboarding Automatizado -->
+    <script src="../../core/onboarding-system.js"></script>
+    <script>
+        // Activar onboarding cuando cargue el panel
+        document.addEventListener('DOMContentLoaded', function() {
+            // Obtener información del tenant
+            const tenantSlug = window.location.pathname.split('/')[2] || 'ejemplo-tienda';
+            const plan = localStorage.getItem('plan-actual') || 'basico';
+            const tenant = {
+                slug: tenantSlug,
+                nombre: localStorage.getItem('nombre-tienda') || 'Mi Tienda',
+                email: localStorage.getItem('email-tienda') || ''
+            };
+            
+            // Inicializar onboarding automáticamente
+            if (window.initOnboarding) {
+                window.initOnboarding({
+                    tenant: tenant,
+                    plan: plan
+                });
+                console.log('🎓 Sistema de onboarding activado');
+            } else {
+                console.warn('⚠️ Sistema de onboarding no disponible');
+            }
+        });
     </script>
     
 </body>

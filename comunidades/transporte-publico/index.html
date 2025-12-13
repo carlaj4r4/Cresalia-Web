@@ -713,7 +713,7 @@
                     <button class="btn-primary" onclick="mostrarHistorialTransporte()" style="background: #3B82F6; font-size: 0.9rem; padding: 10px 20px;">
                         <i class="fas fa-history"></i> Mi Historial
                     </button>
-                    <button class="btn-primary" id="btn-crear-post" style="font-size: 0.9rem; padding: 10px 20px;">
+                    <button class="btn-primary" id="btn-crear-post" onclick="if(window.foroComunidad) window.foroComunidad.mostrarFormularioPost(); return false;" style="font-size: 0.9rem; padding: 10px 20px;">
                         <i class="fas fa-plus"></i> Crear Post
                     </button>
                 </div>
@@ -835,6 +835,13 @@
                     window.notificacionesTransporte = new NotificacionesAlertasTransporte();
                 }, 3000);
             }
+            
+            // Configurar botón cancelar del modal
+            document.getElementById('cancelar-form-post')?.addEventListener('click', () => {
+                if (foroComunidad) {
+                    foroComunidad.ocultarFormularioPost();
+                }
+            });
             
             setTimeout(() => {
                 // Inicializar sistema de feedbacks de comunidad

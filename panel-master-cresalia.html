@@ -686,8 +686,10 @@
                             <i class="fas fa-store"></i>
                         </div>
                         <div class="stat-label">Total Tiendas</div>
-                        <div class="stat-number" id="totalTiendas">0</div>
-                        <div class="stat-change">↑ Tiendas activas</div>
+                        <div class="stat-number" id="totalTenants">0</div>
+                        <div class="stat-change">
+                            <span id="activeTenants">0</span> activas
+                        </div>
                     </div>
                     
                     <div class="stat-card tickets">
@@ -703,10 +705,46 @@
                         <div class="stat-icon">
                             <i class="fas fa-dollar-sign"></i>
                         </div>
-                        <div class="stat-label">Ingresos Mensuales</div>
-                        <div class="stat-number" id="totalIngresos">$0</div>
+                        <div class="stat-label">Ingresos Mensuales (MRR)</div>
+                        <div class="stat-number" id="totalMRR">$0</div>
                         <div class="stat-change">Proyección del mes</div>
                     </div>
+                    
+                    <div class="stat-card crecimiento" style="background: linear-gradient(135deg, rgba(16, 185, 129, 0.1), rgba(5, 150, 105, 0.1)); border: 2px solid rgba(16, 185, 129, 0.3);">
+                        <div class="stat-icon" style="background: linear-gradient(135deg, #10B981, #34D399);">
+                            <i class="fas fa-chart-line"></i>
+                        </div>
+                        <div class="stat-label">Crecimiento Mensual</div>
+                        <div class="stat-number" id="growthRate">0%</div>
+                        <div class="stat-change">vs mes anterior</div>
+                    </div>
+                </div>
+                
+                <!-- Tabla de Tenants -->
+                <div class="content-section">
+                    <div class="section-header">
+                        <h2><i class="fas fa-store"></i> Gestión de Tenants</h2>
+                        <button class="btn btn-success" onclick="superAdmin?.generarReporte(new Date().toISOString().split('T')[0], new Date().toISOString().split('T')[0])">
+                            <i class="fas fa-download"></i> Exportar Reporte
+                        </button>
+                    </div>
+                    <table class="tenants-table">
+                        <thead>
+                            <tr>
+                                <th>Tienda</th>
+                                <th>Plan</th>
+                                <th>Estado</th>
+                                <th>MRR</th>
+                                <th>Productos</th>
+                                <th>Ventas</th>
+                                <th>Creado</th>
+                                <th>Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tenantsTableBody">
+                            <tr><td colspan="8"><div class="loading"><div class="spinner"></div>Cargando tenants...</div></td></tr>
+                        </tbody>
+                    </table>
                 </div>
                 
                 <!-- Actividad Reciente -->
@@ -976,6 +1014,10 @@
     <script src="config-privado.js"></script>
     <script src="auth/supabase-config.js"></script>
     <script src="js/gestion-mantenimiento.js"></script>
+    
+    <!-- Super Admin Completo -->
+    <link rel="stylesheet" href="css/super-admin-completo.css">
+    <script src="js/super-admin-completo.js"></script>
     
     <script>
         // No redeclarar supabase - ya está en supabase-config.js

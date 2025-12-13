@@ -90,12 +90,12 @@ const SistemaFeedbacksGeneral = {
         boton.title = 'Dejar Feedback';
         boton.setAttribute('aria-label', 'Abrir formulario de feedback');
         
-        // Estilos del botón (ajustado para no superponerse con carrito y widget de soporte)
-        // Posición: a la derecha, entre widget de soporte (abajo) y chatbot IA (arriba)
-        // Aproximadamente 1 cm (37px) más arriba que los demás widgets
+        // Estilos del botón (ajustado para no superponerse con otros widgets)
+        // Posición: a la derecha, más arriba del widget de cuenta (140px)
+        // Manteniendo distancia de 120px entre widgets (misma que entre soporte y cuenta)
         boton.style.cssText = `
             position: fixed;
-            bottom: 140px; /* Entre soporte (20px) y chatbot IA (220px), ~1 cm más arriba */
+            bottom: 260px; /* 120px arriba del widget de cuenta (140px), manteniendo misma distancia */
             right: 20px;
             width: 50px;
             height: 50px;

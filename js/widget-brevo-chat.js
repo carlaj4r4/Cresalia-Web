@@ -156,13 +156,12 @@
         style.textContent = `
             .brevo-contact-widget {
                 position: fixed;
-                bottom: 20px;
-                right: 100px;
+                bottom: 380px; /* 120px arriba del widget de feedbacks (260px) para no superponerse */
+                right: 20px; /* Mismo right que otros widgets */
                 z-index: 7998;
             }
             
-            /* Ajuste para que no se superponga con soporte (z-index: 9999) ni chatbots (z-index: 10000) */
-            /* Widget de feedback debe estar debajo del soporte */
+            /* Ajuste para que no se superponga con soporte, cuenta, feedbacks ni chatbots */
             
             .brevo-contact-button {
                 background: linear-gradient(135deg, #7C3AED, #EC4899);
@@ -192,8 +191,8 @@
             /* Ajuste responsive para móviles */
             @media (max-width: 768px) {
                 .brevo-contact-widget {
-                    bottom: 15px;
-                    right: 90px;
+                    bottom: 380px; /* Mantener misma posición relativa en móvil */
+                    right: 15px;
                     z-index: 7997;
                 }
                 

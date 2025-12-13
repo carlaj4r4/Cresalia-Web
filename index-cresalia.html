@@ -4311,7 +4311,7 @@
             }
         }
 
-        // 👤 Botón flotante de perfil para PWA
+        // 👤 Botón flotante de perfil para PWA y móvil/tablet
         function mostrarBotonPerfilPWA() {
             // Verificar si ya existe el botón
             if (document.getElementById('pwa-profile-btn')) {
@@ -4320,24 +4320,30 @@
 
             const profileButton = document.createElement('div');
             profileButton.id = 'pwa-profile-btn';
+            const isMobile = window.innerWidth <= 768;
+            const bottomPos = isMobile ? '140px' : '140px';
+            const rightPos = isMobile ? '15px' : '20px';
+            const size = isMobile ? '50px' : '56px';
+            const fontSize = isMobile ? '20px' : '24px';
+            
             profileButton.innerHTML = `
                 <button onclick="toggleUserSystem()" style="
                     background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
                     color: white;
                     border: none;
-                    width: 56px;
-                    height: 56px;
+                    width: ${size};
+                    height: ${size};
                     border-radius: 50%;
                     cursor: pointer;
-                    font-size: 24px;
+                    font-size: ${fontSize};
                     box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
                     transition: all 0.3s ease;
                     display: flex;
                     align-items: center;
                     justify-content: center;
                     position: fixed;
-                    bottom: 100px;
-                    right: 20px;
+                    bottom: ${bottomPos};
+                    right: ${rightPos};
                     z-index: 9998;
                 " onmouseover="this.style.transform='scale(1.1)'; this.style.boxShadow='0 6px 20px rgba(102, 126, 234, 0.5)';" onmouseout="this.style.transform='scale(1)'; this.style.boxShadow='0 4px 15px rgba(102, 126, 234, 0.4)';" title="Mi Cuenta - Crear cuenta o iniciar sesión">
                     <i class="fas fa-user-circle"></i>
@@ -4345,10 +4351,21 @@
             `;
             document.body.appendChild(profileButton);
         }
+        
+        // También mostrar en móvil/tablet siempre (no solo PWA)
+        function mostrarBotonCuentaMovil() {
+            if (window.innerWidth > 768) return; // Solo en móvil/tablet
+            if (document.getElementById('pwa-profile-btn')) return; // Ya existe
+            
+            mostrarBotonPerfilPWA();
+        }
 
         // 🚀 PWA Initialization
         document.addEventListener('DOMContentLoaded', () => {
             checkPWAMode();
+            
+            // Mostrar botón de cuenta en móvil/tablet siempre
+            mostrarBotonCuentaMovil();
             
             if (PWA_CONFIG.enabled) {
                 registerServiceWorker();
@@ -4357,6 +4374,11 @@
                 console.log('⏸️ PWA Cresalia desactivada');
                 console.log('💡 Para activar: cambiar PWA_CONFIG.enabled = true');
             }
+        });
+        
+        // Mostrar botón de cuenta en móvil cuando cambia el tamaño de ventana
+        window.addEventListener('resize', () => {
+            mostrarBotonCuentaMovil();
         });
 
         // 📱 PWA Share API
@@ -4398,15 +4420,15 @@
                 /* Botón de perfil PWA - Responsive */
                 #pwa-profile-btn {
                     position: fixed;
-                    bottom: 100px;
+                    bottom: 140px;
                     right: 20px;
                     z-index: 9998;
                 }
                 
                 @media (max-width: 768px) {
                     #pwa-profile-btn {
-                        bottom: 80px;
-                        right: 15px;
+                        bottom: 140px !important;
+                        right: 15px !important;
                     }
                     #pwa-profile-btn button {
                         width: 50px !important;

@@ -104,10 +104,27 @@ class SistemaForoComunidades {
     }
     
     configurarEventListeners() {
-        // Botón crear post
+        // Botón crear post - con múltiples intentos y fallback onclick
         const btnCrearPost = document.getElementById('btn-crear-post');
         if (btnCrearPost) {
-            btnCrearPost.addEventListener('click', () => this.mostrarFormularioPost());
+            // Remover listeners previos para evitar duplicados
+            const newBtn = btnCrearPost.cloneNode(true);
+            btnCrearPost.parentNode.replaceChild(newBtn, btnCrearPost);
+            
+            // Agregar evento click
+            newBtn.addEventListener('click', (e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                this.mostrarFormularioPost();
+            });
+            
+            // Fallback: onclick directo
+            newBtn.setAttribute('onclick', `window.foroComunidad && window.foroComunidad.mostrarFormularioPost(); return false;`);
+            console.log('✅ Event listener configurado para btn-crear-post');
+        } else {
+            console.warn('⚠️ No se encontró btn-crear-post, reintentando...');
+            // Reintentar después de un delay
+            setTimeout(() => this.configurarEventListeners(), 500);
         }
         
         // Formulario de post
@@ -172,11 +189,24 @@ class SistemaForoComunidades {
         const modal = document.getElementById('modal-crear-post');
         if (modal) {
             modal.style.display = 'flex';
+            modal.style.position = 'fixed';
+            modal.style.top = '0';
+            modal.style.left = '0';
+            modal.style.width = '100%';
+            modal.style.height = '100%';
+            modal.style.zIndex = '10000';
+            modal.style.backgroundColor = 'rgba(0,0,0,0.5)';
+            modal.style.alignItems = 'center';
+            modal.style.justifyContent = 'center';
             
             // Si no tiene alias, pedirlo primero
             if (!this.autorAlias) {
                 this.pedirAlias();
             }
+            
+            console.log('✅ Modal de crear post mostrado');
+        } else {
+            console.error('❌ No se encontró el modal modal-crear-post');
         }
     }
     
