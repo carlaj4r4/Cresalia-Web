@@ -1,0 +1,69 @@
+name: Backup Manual de Supabase
+
+# Este workflow puede ejecutarse manualmente desde GitHub Actions
+# Útil para crear backups on-demand o para testing
+
+on:
+  workflow_dispatch:
+
+jobs:
+  backup:
+    name: Crear Backup Manual
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: 📥 Checkout del código
+        uses: actions/checkout@v4
+      
+      - name: 📦 Configurar Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+      
+      - name: 📚 Instalar dependencias
+        run: |
+          cd scripts
+          if [ ! -f "package.json" ]; then
+            cat > package.json << EOF
+          {
+            "name": "backup-supabase-script",
+            "version": "1.0.0",
+            "private": true,
+            "dependencies": {
+              "@supabase/supabase-js": "^2.39.0"
+            }
+          }
+          EOF
+          fi
+          npm install
+      
+      - name: 💾 Ejecutar Backup
+        working-directory: ./scripts
+        env:
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_SERVICE_KEY: ${{ secrets.SUPABASE_SERVICE_KEY }}
+        run: node backup-supabase.js
+      
+      - name: 📦 Comprimir backups
+        if: success()
+        run: |
+          cd backups
+          tar -czf ../backup-manual-$(date +%Y%m%d-%H%M%S).tar.gz *.json
+          cd ..
+      
+      - name: 📤 Subir backups como artefacto
+        if: success()
+        uses: actions/upload-artifact@v4
+        with:
+          name: supabase-backup-manual-${{ github.run_number }}
+          path: |
+            backups/*.json
+            backup-manual-*.tar.gz
+          retention-days: 90
+          if-no-files-found: warn
+      
+      - name: ✅ Backup completado
+        if: success()
+        run: |
+          echo "✅ Backup manual completado exitosamente"
+

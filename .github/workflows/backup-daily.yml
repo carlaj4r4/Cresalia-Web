@@ -1,0 +1,92 @@
+name: Backup Diario de Supabase
+
+on:
+  schedule:
+    # Ejecutar diariamente a las 2:00 AM UTC (ajusta según tu zona horaria)
+    # UTC-3 (Argentina): 2 AM UTC = 11 PM del día anterior
+    # Para cambiar hora, edita: cron: '0 2 * * *'
+    # Formato: minuto hora día mes día-semana
+    - cron: '0 2 * * *'
+  
+  # Permitir ejecución manual desde GitHub Actions
+  workflow_dispatch:
+  
+  # También ejecutar en push a main (opcional, para testing)
+  # Descomenta la siguiente línea si quieres probarlo con cada push:
+  # push:
+  #   branches:
+  #     - main
+
+jobs:
+  backup:
+    name: Crear Backup de Supabase
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: 📥 Checkout del código
+        uses: actions/checkout@v4
+      
+      - name: 📦 Configurar Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+          cache: 'npm'
+      
+      - name: 📚 Instalar dependencias
+        working-directory: ./scripts
+        run: |
+          if [ ! -f "package.json" ]; then
+            echo "Creando package.json para el script..."
+            cat > package.json << EOF
+          {
+            "name": "backup-supabase-script",
+            "version": "1.0.0",
+            "private": true,
+            "dependencies": {
+              "@supabase/supabase-js": "^2.39.0"
+            }
+          }
+          EOF
+          fi
+          npm install
+        # Alternativa: instalar desde la raíz si tienes package.json principal
+        # run: npm ci
+      
+      - name: 💾 Ejecutar Backup
+        working-directory: ./scripts
+        env:
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_SERVICE_KEY: ${{ secrets.SUPABASE_SERVICE_KEY }}
+        run: node backup-supabase.js
+      
+      - name: 📦 Comprimir backups
+        if: success()
+        run: |
+          cd backups
+          tar -czf ../backups-$(date +%Y%m%d-%H%M%S).tar.gz *.json
+          cd ..
+      
+      - name: 📤 Subir backups como artefacto
+        if: success()
+        uses: actions/upload-artifact@v4
+        with:
+          name: supabase-backup-${{ github.run_number }}
+          path: |
+            backups/*.json
+            backups-*.tar.gz
+          retention-days: 30
+          if-no-files-found: warn
+      
+      - name: 📧 Notificar éxito (opcional)
+        if: success()
+        run: |
+          echo "✅ Backup completado exitosamente"
+          echo "📁 Backups disponibles en la sección 'Artifacts' de este workflow"
+      
+      - name: ❌ Notificar error
+        if: failure()
+        run: |
+          echo "❌ ERROR: El backup falló"
+          echo "Por favor, revisa los logs y verifica las credenciales en GitHub Secrets"
+          exit 1
+
