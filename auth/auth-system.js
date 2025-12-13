@@ -69,19 +69,52 @@ async function registrarNuevoComprador(datos) {
         
         // 2. Crear registro en tabla de compradores
         // Nota: Si el email requiere confirmación, esto puede fallar hasta que se confirme
-        const { data: compradorData, error: compradorError } = await supabase
-            .from('compradores')
-            .insert([
-                {
-                    user_id: authData.user.id,
-                    nombre_completo: nombreCompleto,
-                    email: email,
-                    activo: true,
-                    fecha_registro: new Date().toISOString()
+        // Intentar con retry si hay problema de schema cache
+        let compradorData = null;
+        let compradorError = null;
+        let attempts = 0;
+        const maxAttempts = 3;
+        
+        while (attempts < maxAttempts) {
+            const result = await supabase
+                .from('compradores')
+                .insert([
+                    {
+                        user_id: authData.user.id,
+                        nombre_completo: nombreCompleto,
+                        email: email,
+                        activo: true,
+                        fecha_registro: new Date().toISOString()
+                    }
+                ])
+                .select()
+                .single();
+            
+            compradorData = result.data;
+            compradorError = result.error;
+            
+            // Si no hay error, salir del loop
+            if (!compradorError) {
+                break;
+            }
+            
+            // Si el error es de schema cache, esperar y reintentar
+            if (compradorError.message && (
+                compradorError.message.includes('Could not find the table') ||
+                compradorError.message.includes('schema cache')
+            )) {
+                attempts++;
+                if (attempts < maxAttempts) {
+                    console.log(`⏳ Problema de schema cache, reintentando... (intento ${attempts}/${maxAttempts})`);
+                    // Esperar un poco más cada vez
+                    await new Promise(resolve => setTimeout(resolve, 1000 * attempts));
+                    continue;
                 }
-            ])
-            .select()
-            .single();
+            } else {
+                // Si es otro tipo de error, salir del loop
+                break;
+            }
+        }
         
         if (compradorError) {
             console.error('❌ Error creando comprador:', compradorError);
@@ -233,21 +266,54 @@ async function registrarNuevoCliente(datos) {
         
         console.log('📝 Intentando crear registro en tabla tiendas...');
         
-        const { data: tiendaData, error: tiendaError } = await supabase
-            .from('tiendas')
-            .insert([
-                {
-                    user_id: authData.user.id,
-                    nombre_tienda: nombreTienda,
-                    email: email,
-                    plan: plan || 'basico',
-                    subdomain: subdomain,
-                    activa: true,
-                    fecha_creacion: new Date().toISOString()
+        // Intentar con retry si hay problema de schema cache
+        let tiendaData = null;
+        let tiendaError = null;
+        let attempts = 0;
+        const maxAttempts = 3;
+        
+        while (attempts < maxAttempts) {
+            const result = await supabase
+                .from('tiendas')
+                .insert([
+                    {
+                        user_id: authData.user.id,
+                        nombre_tienda: nombreTienda,
+                        email: email,
+                        plan: plan || 'basico',
+                        subdomain: subdomain,
+                        activa: true,
+                        fecha_creacion: new Date().toISOString()
+                    }
+                ])
+                .select()
+                .single();
+            
+            tiendaData = result.data;
+            tiendaError = result.error;
+            
+            // Si no hay error, salir del loop
+            if (!tiendaError) {
+                break;
+            }
+            
+            // Si el error es de schema cache, esperar y reintentar
+            if (tiendaError.message && (
+                tiendaError.message.includes('Could not find the table') ||
+                tiendaError.message.includes('schema cache')
+            )) {
+                attempts++;
+                if (attempts < maxAttempts) {
+                    console.log(`⏳ Problema de schema cache, reintentando... (intento ${attempts}/${maxAttempts})`);
+                    // Esperar un poco más cada vez
+                    await new Promise(resolve => setTimeout(resolve, 1000 * attempts));
+                    continue;
                 }
-            ])
-            .select()
-            .single();
+            } else {
+                // Si es otro tipo de error, salir del loop
+                break;
+            }
+        }
         
         if (tiendaError) {
             console.error('❌ Error creando tienda:', tiendaError);
@@ -791,25 +857,58 @@ async function registrarNuevoEmprendedor(datos) {
             .replace(/\s+/g, '-')
             .replace(/[^a-z0-9-]/g, '');
         
-        const { data: tiendaData, error: tiendaError } = await supabase
-            .from('tiendas')
-            .insert([
-                {
-                    user_id: authData.user.id,
-                    nombre_tienda: nombreServicio,
-                    email: email,
-                    plan: plan,
-                    subdomain: subdomain,
-                    activa: true,
-                    fecha_creacion: new Date().toISOString(),
-                    configuracion: {
-                        tipo: 'emprendedor',
-                        es_servicio: true
+        // Intentar con retry si hay problema de schema cache
+        let tiendaData = null;
+        let tiendaError = null;
+        let attempts = 0;
+        const maxAttempts = 3;
+        
+        while (attempts < maxAttempts) {
+            const result = await supabase
+                .from('tiendas')
+                .insert([
+                    {
+                        user_id: authData.user.id,
+                        nombre_tienda: nombreServicio,
+                        email: email,
+                        plan: plan,
+                        subdomain: subdomain,
+                        activa: true,
+                        fecha_creacion: new Date().toISOString(),
+                        configuracion: {
+                            tipo: 'emprendedor',
+                            es_servicio: true
+                        }
                     }
+                ])
+                .select()
+                .single();
+            
+            tiendaData = result.data;
+            tiendaError = result.error;
+            
+            // Si no hay error, salir del loop
+            if (!tiendaError) {
+                break;
+            }
+            
+            // Si el error es de schema cache, esperar y reintentar
+            if (tiendaError.message && (
+                tiendaError.message.includes('Could not find the table') ||
+                tiendaError.message.includes('schema cache')
+            )) {
+                attempts++;
+                if (attempts < maxAttempts) {
+                    console.log(`⏳ Problema de schema cache, reintentando... (intento ${attempts}/${maxAttempts})`);
+                    // Esperar un poco más cada vez
+                    await new Promise(resolve => setTimeout(resolve, 1000 * attempts));
+                    continue;
                 }
-            ])
-            .select()
-            .single();
+            } else {
+                // Si es otro tipo de error, salir del loop
+                break;
+            }
+        }
         
         if (tiendaError) {
             console.error('❌ Error creando emprendimiento:', tiendaError);
