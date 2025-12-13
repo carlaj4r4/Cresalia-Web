@@ -43,16 +43,6 @@ function initSupabase() {
                         throw new Error('El cliente de Supabase no se creó correctamente');
                     }
                     
-                    // Intentar refrescar el schema haciendo una consulta simple
-                    // Esto ayuda a que Supabase sincronice el schema cache
-                    try {
-                        // Hacer una consulta simple para refrescar el schema
-                        await supabase.from('compradores').select('id').limit(0).single();
-                    } catch (schemaError) {
-                        // Ignorar errores - solo estamos refrescando el cache
-                        console.log('ℹ️ Schema cache se refrescará cuando sea necesario');
-                    }
-                    
                     console.log('✅ Supabase inicializado correctamente');
                     console.log('🔍 Cliente validado - método from disponible:', typeof supabase.from);
                     
