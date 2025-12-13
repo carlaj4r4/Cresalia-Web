@@ -49,7 +49,15 @@ async function registrarNuevoComprador(datos) {
         
         console.log('✅ Usuario creado en Auth:', authData.user.id);
         
+        // Esperar un momento para que la sesión se establezca
+        if (authData.session) {
+            console.log('✅ Sesión establecida, continuando con registro en tabla compradores...');
+        } else {
+            console.log('⚠️ No hay sesión inmediata (normal si requiere confirmación de email)');
+        }
+        
         // 2. Crear registro en tabla de compradores
+        // Nota: Si el email requiere confirmación, esto puede fallar hasta que se confirme
         const { data: compradorData, error: compradorError } = await supabase
             .from('compradores')
             .insert([
@@ -66,9 +74,23 @@ async function registrarNuevoComprador(datos) {
         
         if (compradorError) {
             console.error('❌ Error creando comprador:', compradorError);
-            // Si falla la inserción en compradores, intentar eliminar el usuario de auth
-            await supabase.auth.admin.deleteUser(authData.user.id).catch(() => {});
-            throw compradorError;
+            console.error('📋 Detalles del error:', {
+                message: compradorError.message,
+                details: compradorError.details,
+                hint: compradorError.hint,
+                code: compradorError.code
+            });
+            
+            // Si el error es por RLS (no hay sesión), informar al usuario
+            if (compradorError.code === '42501' || compradorError.message.includes('permission denied') || compradorError.message.includes('new row violates row-level security')) {
+                throw new Error('Tu cuenta se creó, pero necesitas confirmar tu email primero. Revisa tu bandeja de entrada y haz clic en el enlace de confirmación.');
+            }
+            
+            // No intentar eliminar usuario desde el cliente (requiere admin)
+            // El usuario quedará en auth.users pero sin registro en compradores
+            // Se puede limpiar manualmente o con un trigger en Supabase
+            
+            throw new Error(`Error al crear perfil de comprador: ${compradorError.message}. ${compradorError.hint || ''}`);
         }
         
         console.log('✅ Comprador registrado exitosamente');
@@ -171,7 +193,23 @@ async function registrarNuevoCliente(datos) {
             .select()
             .single();
         
-        if (tiendaError) throw tiendaError;
+        if (tiendaError) {
+            console.error('❌ Error creando tienda:', tiendaError);
+            console.error('📋 Detalles del error:', {
+                message: tiendaError.message,
+                details: tiendaError.details,
+                hint: tiendaError.hint,
+                code: tiendaError.code
+            });
+            
+            // Si el error es por RLS (no hay sesión), informar al usuario
+            if (tiendaError.code === '42501' || tiendaError.message.includes('permission denied') || tiendaError.message.includes('new row violates row-level security')) {
+                throw new Error('Tu cuenta se creó, pero necesitas confirmar tu email primero. Revisa tu bandeja de entrada y haz clic en el enlace de confirmación.');
+            }
+            
+            // No intentar eliminar usuario desde el cliente (requiere admin)
+            throw new Error(`Error al crear perfil de tienda: ${tiendaError.message}. ${tiendaError.hint || ''}`);
+        }
         
         console.log('✅ Cliente registrado exitosamente');
         
