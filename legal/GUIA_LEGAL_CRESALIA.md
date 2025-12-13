@@ -131,7 +131,7 @@ Todos los documentos incluyen secciones específicas que:
 ```
 [TU DIRECCIÓN LEGAL] - Dirección fiscal de Cresalia
 [PAÍS DONDE OPERES] - Jurisdicción legal
-crisla965@gmail.com - Email de contacto legal
+cresalia25@gmail.com - Email de contacto legal
 +54 9 11 1234-5678 - Teléfono de contacto
 ```
 

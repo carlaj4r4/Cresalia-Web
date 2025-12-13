@@ -13,7 +13,7 @@ class HybridPaymentSystem {
         // Configuración de Cresalia (tu cuenta de Mercado Pago)
         this.cresaliaConfig = {
             name: 'Cresalia',
-            email: 'crisla965@gmail.com',
+            email: 'cresalia25@gmail.com',
             access_token: 'TU_ACCESS_TOKEN_CRESALIA', // Reemplazar con tu token real
             public_key: 'TU_PUBLIC_KEY_CRESALIA' // Reemplazar con tu key real
         };

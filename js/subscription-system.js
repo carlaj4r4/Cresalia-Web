@@ -484,7 +484,7 @@ class SubscriptionSystem {
         // Abrir chat de soporte o redirigir
         const subject = encodeURIComponent('Necesito ayuda con mi suscripción - Cresalia');
         const body = encodeURIComponent(`Hola,\n\nNecesito ayuda con mi suscripción.\n\nMi ID de tienda: ${tenantId}\n\nGracias.`);
-        window.location.href = `mailto:crisla965@gmail.com?subject=${subject}&body=${body}`;
+        window.location.href = `mailto:cresalia25@gmail.com?subject=${subject}&body=${body}`;
         
         this.closeRenewalWarning();
     }

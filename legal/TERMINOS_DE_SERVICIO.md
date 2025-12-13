@@ -175,7 +175,7 @@ Estos términos se rigen por las leyes de [PAÍS DONDE OPERES] y cualquier dispu
 ## 13. CONTACTO
 
 Para preguntas sobre estos términos:
-- Email: crisla965@gmail.com
+- Email: cresalia25@gmail.com
 - Soporte: A través de la plataforma
 - Dirección: [TU DIRECCIÓN LEGAL]
 
