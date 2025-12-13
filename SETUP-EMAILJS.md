@@ -1,5 +1,7 @@
 # 📧 **Guía de Configuración: EmailJS - Sistema de Notificaciones**
 
+> ⚠️ **NOTA:** Este servicio **NO se está usando actualmente**. Cresalia usa **Brevo** para el envío de emails. Esta guía se mantiene solo como documentación de referencia.
+
 ## 📋 **¿Qué es EmailJS?**
 
 EmailJS es un servicio **GRATUITO** que permite enviar emails desde tu aplicación web **sin necesidad de un servidor backend**.
@@ -20,7 +22,7 @@ EmailJS es un servicio **GRATUITO** que permite enviar emails desde tu aplicaci�
 1. Ve a: **https://www.emailjs.com/**
 2. Click en **"Sign Up" (Registrarse)**
 3. Completa:
-   - Email: `crisla965@gmail.com` (o el que uses para CRESALIA)
+   - Email: `cresalia25@gmail.com` (NOTA: Este servicio NO se está usando actualmente, se usa Brevo)
    - Contraseña: (crea una segura)
 4. Verifica tu email
 5. ¡Listo! Ya tienes cuenta

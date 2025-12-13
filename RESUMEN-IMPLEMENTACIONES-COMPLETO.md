@@ -363,7 +363,7 @@ ContactoDirectoCarla.crearBotonFlotante();
 ## 📞 **Soporte**
 
 ¿Dudas? ¿Problemas? ¿Ideas?
-- 📧 Email: crisla965@gmail.com
+- 📧 Email: cresalia25@gmail.com
 - 💬 Sistema de contacto directo: Botón "¿Necesitás hablar?"
 - 📚 Documentación: Todos los archivos GUIA-*.md
 

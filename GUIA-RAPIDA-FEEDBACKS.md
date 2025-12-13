@@ -174,7 +174,7 @@ FeedbackSystem.init('nombre-de-tu-tienda');
 ## 📞 Contacto
 
 ¿Necesitas ayuda?
-- 📧 **Email:** crisla965@gmail.com
+- 📧 **Email:** cresalia25@gmail.com
 - 💬 **Sistema de Soporte:** Usa el sistema de soporte integrado en Cresalia
 
 ---

@@ -7,7 +7,7 @@
 1. **Cresalia Jobs** ✅
    - **Estado**: Pagos habilitados con Mercado Pago
    - **Qué se paga**: Planes de suscripción ($29/mes Básico, $79/mes Pro, etc.)
-   - **A dónde va**: Tu cuenta de Mercado Pago (carla.crimi.95@gmail.com o crisla965@gmail.com)
+   - **A dónde va**: Tu cuenta de Mercado Pago (cresalia25@gmail.com)
    - **Archivos**: `cresalia-jobs/index.html`, `js/mercado-pago-integration.js`, `config-mercado-pago.js`
 
 ### ⚠️ Comunidades SIN Pagos Directos (solo para alias de usuarios)

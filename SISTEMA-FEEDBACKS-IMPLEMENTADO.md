@@ -284,7 +284,7 @@ El sistema calcula automáticamente:
 ## 📞 Soporte
 
 Para preguntas o problemas:
-- 📧 Email: crisla965@gmail.com
+- 📧 Email: cresalia25@gmail.com
 - 💬 Sistema de soporte Cresalia
 
 ---
