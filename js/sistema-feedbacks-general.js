@@ -108,27 +108,59 @@ const SistemaFeedbacksGeneral = {
             box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
             z-index: 9995; /* Debajo del widget de soporte (z-index: 9999) */
             transition: all 0.3s ease;
-            display: flex;
+            display: flex !important;
             align-items: center;
             justify-content: center;
+            visibility: visible !important;
+            opacity: 1 !important;
         `;
         
-        // Ajuste responsive para móviles - entre soporte y chatbot IA
-        if (window.innerWidth <= 768) {
-            boton.style.bottom = '140px'; // Entre soporte y chatbot IA en móvil
-            boton.style.right = '20px';
-            boton.style.width = '45px';
-            boton.style.height = '45px';
-            boton.style.fontSize = '18px';
-        }
+        // Ajuste responsive para móviles - entre soporte y widget de cuenta
+        const ajustarPosicionMobile = () => {
+            const width = window.innerWidth;
+            if (width <= 768) {
+                // Móvil: entre soporte y cuenta, manteniendo espacio
+                boton.style.bottom = '260px'; // 120px arriba del widget de cuenta (140px)
+                boton.style.right = '20px';
+                boton.style.width = '45px';
+                boton.style.height = '45px';
+                boton.style.fontSize = '18px';
+                boton.style.display = 'flex !important';
+                boton.style.visibility = 'visible !important';
+                boton.style.opacity = '1 !important';
+                boton.style.zIndex = '9995';
+            } else if (width > 768 && width <= 1024) {
+                // Tablet
+                boton.style.bottom = '280px';
+                boton.style.right = '20px';
+                boton.style.width = '50px';
+                boton.style.height = '50px';
+                boton.style.fontSize = '20px';
+                boton.style.display = 'flex !important';
+                boton.style.visibility = 'visible !important';
+                boton.style.opacity = '1 !important';
+            } else {
+                // Desktop - mantener posición original
+                boton.style.bottom = '260px';
+                boton.style.display = 'flex !important';
+                boton.style.visibility = 'visible !important';
+                boton.style.opacity = '1 !important';
+            }
+        };
         
-        // Ajuste para tablets - también entre soporte y chatbot IA
-        if (window.innerWidth > 768 && window.innerWidth <= 1024) {
-            boton.style.bottom = '160px'; // Entre soporte y chatbot IA en tablet
-            boton.style.right = '20px';
-            boton.style.width = '50px';
-            boton.style.height = '50px';
-        }
+        // Aplicar ajuste inicial
+        ajustarPosicionMobile();
+        
+        // Ajustar en resize
+        window.addEventListener('resize', ajustarPosicionMobile);
+        
+        // Asegurar visibilidad después de un pequeño delay (por si hay otros scripts que lo ocultan)
+        setTimeout(() => {
+            ajustarPosicionMobile();
+            boton.style.display = 'flex !important';
+            boton.style.visibility = 'visible !important';
+            boton.style.opacity = '1 !important';
+        }, 500);
 
         // Hover effect
         boton.addEventListener('mouseenter', () => {
