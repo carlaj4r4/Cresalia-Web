@@ -20,28 +20,66 @@ const SUPABASE_CONFIG = {
 // Inicializar cliente de Supabase
 let supabase = null;
 
-// Función para inicializar Supabase
+// Función para inicializar Supabase (con espera si es necesario)
 function initSupabase() {
     if (typeof supabase === 'undefined' || !supabase) {
         console.log('🔐 Inicializando Supabase...');
         
-        // Cargar librería de Supabase
-        if (typeof window.supabase !== 'undefined') {
-            supabase = window.supabase.createClient(
-                SUPABASE_CONFIG.url,
-                SUPABASE_CONFIG.anonKey,
-                { auth: SUPABASE_CONFIG.auth }
-            );
-            console.log('✅ Supabase inicializado');
-            window.SUPABASE_CLIENT = supabase;
-        } else {
-            console.error('❌ Librería de Supabase no cargada');
-        }
+        // Esperar a que la librería esté disponible (hasta 5 segundos)
+        let attempts = 0;
+        const maxAttempts = 50; // 50 intentos x 100ms = 5 segundos
+        
+        const tryInit = () => {
+            if (typeof window.supabase !== 'undefined' && window.supabase.createClient) {
+                try {
+                    supabase = window.supabase.createClient(
+                        SUPABASE_CONFIG.url,
+                        SUPABASE_CONFIG.anonKey,
+                        { auth: SUPABASE_CONFIG.auth }
+                    );
+                    console.log('✅ Supabase inicializado correctamente');
+                    if (typeof window !== 'undefined') {
+                        window.SUPABASE_CLIENT = supabase;
+                        window.SUPABASE_CONFIG = SUPABASE_CONFIG;
+                    }
+                    return supabase;
+                } catch (error) {
+                    console.error('❌ Error creando cliente de Supabase:', error);
+                    return null;
+                }
+            } else {
+                attempts++;
+                if (attempts < maxAttempts) {
+                    console.log(`⏳ Esperando SDK de Supabase... (intento ${attempts}/${maxAttempts})`);
+                    setTimeout(tryInit, 100);
+                    return null;
+                } else {
+                    console.error('❌ Librería de Supabase no se cargó después de 5 segundos');
+                    console.error('💡 Verifica que el script de Supabase esté cargado antes de este archivo');
+                    return null;
+                }
+            }
+        };
+        
+        return tryInit();
     }
+    
     if (typeof window !== 'undefined' && supabase) {
         window.SUPABASE_CLIENT = supabase;
+        window.SUPABASE_CONFIG = SUPABASE_CONFIG;
     }
     return supabase;
+}
+
+// Inicializar automáticamente cuando el DOM esté listo
+if (typeof document !== 'undefined') {
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', () => {
+            setTimeout(() => initSupabase(), 100);
+        });
+    } else {
+        setTimeout(() => initSupabase(), 100);
+    }
 }
 
 // Hacer la función disponible globalmente

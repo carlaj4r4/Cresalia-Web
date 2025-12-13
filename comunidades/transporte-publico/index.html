@@ -818,50 +818,81 @@
         let foroComunidad;
         let feedbacksComunidad;
         
-        document.addEventListener('DOMContentLoaded', () => {
-            // Inicializar sistema de transporte
-            if (typeof ComunidadTransportePublico !== 'undefined') {
-                comunidadTransporte = new ComunidadTransportePublico();
-                window.comunidadTransporte = comunidadTransporte;
-            }
-            
-            // Inicializar foro
-            foroComunidad = new SistemaForoComunidades('transporte-publico');
-            window.foroComunidad = foroComunidad;
-            
-            // Inicializar sistema de notificaciones de transporte
-            if (typeof NotificacionesAlertasTransporte !== 'undefined') {
+        // Función para inicializar sistemas con retry
+        function inicializarSistemas() {
+            try {
+                // Inicializar sistema de transporte
+                if (typeof ComunidadTransportePublico !== 'undefined') {
+                    comunidadTransporte = new ComunidadTransportePublico();
+                    window.comunidadTransporte = comunidadTransporte;
+                }
+                
+                // Verificar que SistemaForoComunidades esté disponible antes de inicializar
+                if (typeof SistemaForoComunidades === 'undefined') {
+                    console.warn('⏳ SistemaForoComunidades no disponible aún, reintentando...');
+                    setTimeout(inicializarSistemas, 200);
+                    return;
+                }
+                
+                // Inicializar foro
+                foroComunidad = new SistemaForoComunidades('transporte-publico');
+                window.foroComunidad = foroComunidad;
+                console.log('✅ SistemaForoComunidades inicializado');
+                
+                // Reconfigurar event listeners después de un delay para asegurar que el DOM esté listo
                 setTimeout(() => {
-                    window.notificacionesTransporte = new NotificacionesAlertasTransporte();
-                }, 3000);
+                    if (window.foroComunidad && typeof window.foroComunidad.configurarEventListeners === 'function') {
+                        window.foroComunidad.configurarEventListeners();
+                        console.log('✅ Event listeners del foro reconfigurados');
+                    }
+                }, 300);
+                
+                // Inicializar sistema de notificaciones de transporte
+                if (typeof NotificacionesAlertasTransporte !== 'undefined') {
+                    setTimeout(() => {
+                        window.notificacionesTransporte = new NotificacionesAlertasTransporte();
+                    }, 3000);
+                }
+                
+                // Configurar botón cancelar del modal
+                document.getElementById('cancelar-form-post')?.addEventListener('click', () => {
+                    if (foroComunidad) {
+                        foroComunidad.ocultarFormularioPost();
+                    }
+                });
+                
+                setTimeout(() => {
+                    // Inicializar sistema de feedbacks de comunidad
+                    if (typeof SistemaFeedbacksComunidades !== 'undefined') {
+                        feedbacksComunidad = new SistemaFeedbacksComunidades('transporte-publico');
+                        window.feedbacksComunidad = feedbacksComunidad;
+                    }
+                    
+                    // Inicializar sistema de alertas de emergencia global
+                    if (typeof SistemaAlertasEmergenciaGlobal !== 'undefined') {
+                        window.sistemaAlertasEmergenciaGlobal = new SistemaAlertasEmergenciaGlobal();
+                        window.sistemaAlertasEmergenciaGlobal.inicializar();
+                    }
+                    
+                    // Inicializar Sistema de Interconexiones
+                    if (typeof SistemaInterconexionesGlobal !== 'undefined') {
+                        window.interconexionesGlobal = new SistemaInterconexionesGlobal();
+                    }
+                }, 500);
+            } catch (error) {
+                console.error('❌ Error inicializando sistemas:', error);
+                // Reintentar después de un delay
+                setTimeout(inicializarSistemas, 500);
             }
-            
-            // Configurar botón cancelar del modal
-            document.getElementById('cancelar-form-post')?.addEventListener('click', () => {
-                if (foroComunidad) {
-                    foroComunidad.ocultarFormularioPost();
-                }
-            });
-            
-            setTimeout(() => {
-                // Inicializar sistema de feedbacks de comunidad
-                if (typeof SistemaFeedbacksComunidades !== 'undefined') {
-                    feedbacksComunidad = new SistemaFeedbacksComunidades('transporte-publico');
-                    window.feedbacksComunidad = feedbacksComunidad;
-                }
-                
-                // Inicializar sistema de alertas de emergencia global
-                if (typeof SistemaAlertasEmergenciaGlobal !== 'undefined') {
-                    window.sistemaAlertasEmergenciaGlobal = new SistemaAlertasEmergenciaGlobal();
-                    window.sistemaAlertasEmergenciaGlobal.inicializar();
-                }
-                
-                // Inicializar Sistema de Interconexiones
-                if (typeof SistemaInterconexionesGlobal !== 'undefined') {
-                    window.interconexionesGlobal = new SistemaInterconexionesGlobal();
-                }
-            }, 500);
-        });
+        }
+        
+        // Inicializar cuando el DOM esté listo
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', inicializarSistemas);
+        } else {
+            // DOM ya está listo
+            inicializarSistemas();
+        }
         
         // Funciones globales para tabs
         function cargarAlertas() {

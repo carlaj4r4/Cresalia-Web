@@ -790,26 +790,66 @@
         let validacionIdentidad;
         let alertasComunidad;
         let checkInSistema;
-        document.addEventListener('DOMContentLoaded', () => {
-            foroComunidad = new SistemaForoComunidades('estres');
-            window.foroComunidad = foroComunidad;
-            
-            // Inicializar sistema de check-in diario
-            checkInSistema = new SistemaCheckInComunidades('estres');
-            window.checkInSistema = checkInSistema;
-            
-            setTimeout(() => {
-                validacionIdentidad = new SistemaValidacionIdentidades('estres');
-                window.validacionIdentidad = validacionIdentidad;
+        // Función para inicializar sistemas con retry
+        function inicializarSistemas() {
+            try {
+                // Verificar que SistemaForoComunidades esté disponible
+                if (typeof SistemaForoComunidades === 'undefined') {
+                    console.warn('⏳ SistemaForoComunidades no disponible aún, reintentando...');
+                    setTimeout(inicializarSistemas, 200);
+                    return;
+                }
                 
-                alertasComunidad = new SistemaAlertasComunidades('estres');
-                window.alertasComunidad = alertasComunidad;
-            }, 500);
-            
-            document.getElementById('cancelar-form-post')?.addEventListener('click', () => {
-                foroComunidad.ocultarFormularioPost();
-            });
-        });
+                foroComunidad = new SistemaForoComunidades('estres');
+                window.foroComunidad = foroComunidad;
+                console.log('✅ SistemaForoComunidades inicializado');
+                
+                // Inicializar sistema de check-in diario
+                if (typeof SistemaCheckInComunidades !== 'undefined') {
+                    checkInSistema = new SistemaCheckInComunidades('estres');
+                    window.checkInSistema = checkInSistema;
+                }
+                
+                // Reconfigurar event listeners después de un delay para asegurar que el DOM esté listo
+                setTimeout(() => {
+                    if (window.foroComunidad && typeof window.foroComunidad.configurarEventListeners === 'function') {
+                        window.foroComunidad.configurarEventListeners();
+                        console.log('✅ Event listeners del foro reconfigurados');
+                    }
+                }, 300);
+                
+                setTimeout(() => {
+                    if (typeof SistemaValidacionIdentidades !== 'undefined') {
+                        validacionIdentidad = new SistemaValidacionIdentidades('estres');
+                        window.validacionIdentidad = validacionIdentidad;
+                    }
+                    
+                    if (typeof SistemaAlertasComunidades !== 'undefined') {
+                        alertasComunidad = new SistemaAlertasComunidades('estres');
+                        window.alertasComunidad = alertasComunidad;
+                    }
+                }, 500);
+                
+                // Botón cancelar
+                document.getElementById('cancelar-form-post')?.addEventListener('click', () => {
+                    if (foroComunidad) {
+                        foroComunidad.ocultarFormularioPost();
+                    }
+                });
+            } catch (error) {
+                console.error('❌ Error inicializando sistemas:', error);
+                // Reintentar después de un delay
+                setTimeout(inicializarSistemas, 500);
+            }
+        }
+        
+        // Inicializar cuando el DOM esté listo
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', inicializarSistemas);
+        } else {
+            // DOM ya está listo
+            inicializarSistemas();
+        }
         
         // Función para mostrar historial
         function mostrarHistorialEstres() {
