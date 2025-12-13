@@ -25,6 +25,10 @@ config.local.js
 *.bak
 *.backup
 *_backup.*
+backups/
+backups-*.tar.gz
+backup-*.tar.gz
+backup-manual-*.tar.gz
 
 # Archivos de caché
 .cache/
