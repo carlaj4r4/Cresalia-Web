@@ -7,15 +7,43 @@ const fs = require('fs');
 const path = require('path');
 
 // Configuración - Leer desde variables de entorno o archivo de config
-const SUPABASE_URL = process.env.SUPABASE_URL || '';
-const SUPABASE_SERVICE_KEY = process.env.SUPABASE_SERVICE_KEY || ''; // Necesitas service key (no anon key)
+const SUPABASE_URL = (process.env.SUPABASE_URL || '').trim();
+const SUPABASE_SERVICE_KEY = (process.env.SUPABASE_SERVICE_KEY || '').trim(); // Necesitas service key (no anon key)
 
-if (!SUPABASE_URL || !SUPABASE_SERVICE_KEY) {
-    console.error('❌ Error: Configura SUPABASE_URL y SUPABASE_SERVICE_KEY en variables de entorno');
-    console.log('💡 Ejemplo:');
-    console.log('   export SUPABASE_URL="https://tu-proyecto.supabase.co"');
-    console.log('   export SUPABASE_SERVICE_KEY="tu-service-key-aqui"');
+// Validación mejorada
+if (!SUPABASE_URL) {
+    console.error('❌ Error: SUPABASE_URL no está configurado');
+    console.error('💡 Verifica que hayas creado el secret "SUPABASE_URL" en GitHub:');
+    console.error('   1. Ve a Settings → Secrets and variables → Actions');
+    console.error('   2. Click en "New repository secret"');
+    console.error('   3. Name: SUPABASE_URL');
+    console.error('   4. Value: https://tu-proyecto.supabase.co');
     process.exit(1);
+}
+
+if (!SUPABASE_SERVICE_KEY) {
+    console.error('❌ Error: SUPABASE_SERVICE_KEY no está configurado');
+    console.error('💡 Verifica que hayas creado el secret "SUPABASE_SERVICE_KEY" en GitHub:');
+    console.error('   1. Ve a Settings → Secrets and variables → Actions');
+    console.error('   2. Click en "New repository secret"');
+    console.error('   3. Name: SUPABASE_SERVICE_KEY');
+    console.error('   4. Value: tu-service-role-key-aqui');
+    process.exit(1);
+}
+
+// Validar formato de URL
+if (!SUPABASE_URL.startsWith('http://') && !SUPABASE_URL.startsWith('https://')) {
+    console.error('❌ Error: SUPABASE_URL debe ser una URL válida (debe empezar con http:// o https://)');
+    console.error('💡 URL recibida:', SUPABASE_URL || '(vacío)');
+    console.error('💡 Ejemplo correcto: https://zbomxayytvwjbdzbegcw.supabase.co');
+    process.exit(1);
+}
+
+// Validar que la service key tenga el formato correcto
+if (SUPABASE_SERVICE_KEY.length < 100) {
+    console.warn('⚠️  Advertencia: SUPABASE_SERVICE_KEY parece ser muy corta');
+    console.warn('💡 Asegúrate de usar la service_role key (no la anon key)');
+    console.warn('💡 La service_role key es mucho más larga (generalmente más de 200 caracteres)');
 }
 
 const supabase = createClient(SUPABASE_URL, SUPABASE_SERVICE_KEY);

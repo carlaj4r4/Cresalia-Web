@@ -37,6 +37,28 @@ jobs:
           fi
           npm install
       
+      - name: 🔍 Verificar secrets (debug)
+        run: |
+          if [ -z "${{ secrets.SUPABASE_URL }}" ]; then
+            echo "❌ Error: SUPABASE_URL secret no está configurado"
+            echo "💡 Ve a Settings → Secrets and variables → Actions"
+            echo "💡 Crea un secret con name: SUPABASE_URL"
+            exit 1
+          else
+            echo "✅ SUPABASE_URL está configurado (longitud: ${#SUPABASE_URL} caracteres)"
+            # Mostrar solo los primeros caracteres para debug (sin exponer el secreto completo)
+            echo "   Primeros caracteres: $(echo '${{ secrets.SUPABASE_URL }}' | head -c 30)..."
+          fi
+          
+          if [ -z "${{ secrets.SUPABASE_SERVICE_KEY }}" ]; then
+            echo "❌ Error: SUPABASE_SERVICE_KEY secret no está configurado"
+            echo "💡 Ve a Settings → Secrets and variables → Actions"
+            echo "💡 Crea un secret con name: SUPABASE_SERVICE_KEY"
+            exit 1
+          else
+            echo "✅ SUPABASE_SERVICE_KEY está configurado (longitud: ${#SUPABASE_SERVICE_KEY} caracteres)"
+          fi
+      
       - name: 💾 Ejecutar Backup
         env:
           SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
