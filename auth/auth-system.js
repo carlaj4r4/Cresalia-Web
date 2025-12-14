@@ -367,13 +367,25 @@ async function registrarNuevoCliente(datos) {
                 code: tiendaError.code
             });
             
-            // Si el error es que no encuentra la tabla, puede ser problema de inicialización
-            if (tiendaError.message.includes('Could not find the table') || tiendaError.message.includes('schema cache')) {
-                console.error('❌ Error: Tabla no encontrada. Posibles causas:');
-                console.error('   1. El cliente de Supabase no está inicializado correctamente');
-                console.error('   2. La tabla "tiendas" no existe en Supabase');
-                console.error('   3. Problema de conexión con Supabase');
-                throw new Error('Error de conexión con la base de datos. Por favor, recarga la página e intenta nuevamente. Si el problema persiste, contacta al soporte.');
+            // Si el error es que no encuentra la tabla, dar instrucciones claras
+            if (tiendaError.message.includes('Could not find the table') || 
+                tiendaError.message.includes('schema cache') ||
+                tiendaError.message.includes('does not exist') ||
+                tiendaError.code === 'PGRST205') {
+                console.error('❌ Error: Tabla "tiendas" no encontrada en Supabase.');
+                console.error('');
+                console.error('📋 SOLUCIÓN:');
+                console.error('   1. Andá a tu proyecto en Supabase (https://supabase.com)');
+                console.error('   2. Click en "SQL Editor" en el menú lateral');
+                console.error('   3. Abrí el archivo: CREAR-TABLA-TIENDAS-SUPABASE.sql');
+                console.error('   4. Copiá y pegá TODO el código SQL');
+                console.error('   5. Click en "Run" (▶️)');
+                console.error('   6. Esperá a que termine (debería decir "Success")');
+                console.error('   7. Recargá esta página e intentá registrar de nuevo');
+                console.error('');
+                console.error('💡 Si no tenés el archivo SQL, buscá "CREAR-TABLA-TIENDAS-SUPABASE.sql" en el proyecto.');
+                
+                throw new Error('La tabla "tiendas" no existe en Supabase. Por favor, ejecutá el script SQL "CREAR-TABLA-TIENDAS-SUPABASE.sql" en Supabase SQL Editor. Ver la consola (F12) para instrucciones detalladas.');
             }
             
             // Si el error es por RLS (no hay sesión), informar al usuario
@@ -421,10 +433,17 @@ async function registrarNuevoCliente(datos) {
         
     } catch (error) {
         console.error('❌ Error en registro:', error);
+        
+        // Mensaje más amigable si es error de tabla no encontrada
+        let mensajeUsuario = error.message;
+        if (error.message.includes('tabla') || error.message.includes('table') || error.message.includes('tiendas')) {
+            mensajeUsuario = 'La tabla "tiendas" no existe en Supabase. Por favor, ejecutá el script SQL "CREAR-TABLA-TIENDAS-SUPABASE.sql" en Supabase. Abrí la consola (F12) para ver instrucciones detalladas.';
+        }
+        
         return {
             success: false,
             error: error.message,
-            mensaje: 'Error al registrar. ' + error.message
+            mensaje: 'Error al registrar. ' + mensajeUsuario
         };
     }
 }
@@ -1016,11 +1035,24 @@ window.enviarMensajeBienvenida = enviarMensajeBienvenida;
 
 console.log('✅ Sistema de autenticación Cresalia cargado correctamente');
 console.log('📋 Funciones disponibles:', {
+    registrarNuevoComprador: typeof registrarNuevoComprador,
     registrarNuevoCliente: typeof registrarNuevoCliente,
+    registrarNuevoEmprendedor: typeof registrarNuevoEmprendedor,
     loginCliente: typeof loginCliente,
     logoutCliente: typeof logoutCliente,
     verificarAccesoAdmin: typeof verificarAccesoAdmin
 });
+
+// Verificar que todas las funciones estén disponibles
+if (typeof registrarNuevoComprador === 'undefined') {
+    console.error('❌ registrarNuevoComprador no está definida');
+}
+if (typeof registrarNuevoCliente === 'undefined') {
+    console.error('❌ registrarNuevoCliente no está definida');
+}
+if (typeof registrarNuevoEmprendedor === 'undefined') {
+    console.error('❌ registrarNuevoEmprendedor no está definida');
+}
 
 // Exportar funciones
 if (typeof module !== 'undefined' && module.exports) {

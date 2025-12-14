@@ -463,17 +463,32 @@
                 // Intentar registro
                 console.log('🚀 Llamando a registrarNuevoCliente...');
                 console.log('📋 Función disponible:', typeof registrarNuevoCliente);
+                console.log('📋 Función en window:', typeof window.registrarNuevoCliente);
                 
-                const resultado = await registrarNuevoCliente({
-                    email,
-                    password,
-                    nombreTienda,
-                    plan
-                });
+                try {
+                    // Verificar que la función esté disponible (intentar ambas formas)
+                    let funcionRegistro = registrarNuevoCliente || window.registrarNuevoCliente;
+                    
+                    if (typeof funcionRegistro === 'undefined') {
+                        // Esperar un poco y reintentar
+                        await new Promise(resolve => setTimeout(resolve, 500));
+                        funcionRegistro = registrarNuevoCliente || window.registrarNuevoCliente;
+                        
+                        if (typeof funcionRegistro === 'undefined') {
+                            throw new Error('La función de registro no está disponible. Verifica que los scripts se hayan cargado correctamente. Recarga la página e intenta nuevamente.');
+                        }
+                    }
+                    
+                    const resultado = await funcionRegistro({
+                        email,
+                        password,
+                        nombreTienda,
+                        plan
+                    });
                 
                 console.log('📊 Resultado del registro:', resultado);
                 
-                if (resultado.success) {
+                if (resultado && resultado.success) {
                     mostrarNotificacion('✅ ¡Tienda creada exitosamente! ¡Bienvenido a Cresalia!', 'success');
                     
                     // Guardar información de sesión
@@ -506,9 +521,99 @@
                         window.location.href = adminUrl;
                     }, 2000);
                 } else {
-                    mostrarNotificacion(resultado.mensaje, 'error');
+                    const errorMsg = resultado?.error || resultado?.mensaje || 'Error desconocido al crear la tienda';
+                    
+                    // Mostrar mensaje más útil si es error de tabla
+                    if (errorMsg.includes('tabla') || errorMsg.includes('table') || errorMsg.includes('tiendas')) {
+                        mostrarNotificacion('⚠️ Error: Tabla no encontrada. Ver instrucciones abajo.', 'error');
+                        
+                        // Mostrar instrucciones detalladas en la página
+                        let instruccionesDiv = document.getElementById('instrucciones-error-tabla');
+                        if (!instruccionesDiv) {
+                            instruccionesDiv = document.createElement('div');
+                            instruccionesDiv.id = 'instrucciones-error-tabla';
+                            instruccionesDiv.style.cssText = 'background: #FEF2F2; border-left: 4px solid #EF4444; padding: 20px; border-radius: 10px; margin-top: 20px;';
+                            instruccionesDiv.innerHTML = `
+                                <h4 style="color: #DC2626; margin-bottom: 10px;">
+                                    <i class="fas fa-exclamation-triangle"></i> Solución: Crear Tabla en Supabase
+                                </h4>
+                                <p style="color: #991B1B; margin-bottom: 15px; line-height: 1.6;">
+                                    La tabla "tiendas" no existe en Supabase. Necesitás crearla ejecutando un script SQL.
+                                </p>
+                                <ol style="color: #991B1B; margin-left: 20px; line-height: 1.8; margin-bottom: 15px;">
+                                    <li>Andá a tu proyecto en <strong>Supabase</strong> (https://supabase.com)</li>
+                                    <li>Click en <strong>"SQL Editor"</strong> en el menú lateral</li>
+                                    <li>Abrí el archivo <strong>"CREAR-TABLA-TIENDAS-SUPABASE.sql"</strong> en este proyecto</li>
+                                    <li>Copiá y pegá <strong>TODO</strong> el código SQL</li>
+                                    <li>Click en <strong>"Run"</strong> (▶️) o presioná Ctrl+Enter</li>
+                                    <li>Esperá a que termine (debería decir "Success")</li>
+                                    <li><strong>Recargá esta página</strong> (F5) e intentá de nuevo</li>
+                                </ol>
+                                <p style="color: #991B1B; margin-top: 15px; font-size: 0.9rem;">
+                                    <strong>💡 Tip:</strong> Ver <strong>SOLUCION-ERROR-TABLA-TIENDAS.md</strong> para instrucciones detalladas paso a paso.
+                                </p>
+                            `;
+                            
+                            // Insertar después del formulario
+                            const form = document.getElementById('registroForm');
+                            if (form && form.parentNode) {
+                                form.parentNode.insertBefore(instruccionesDiv, form.nextSibling);
+                            }
+                        } else {
+                            instruccionesDiv.style.display = 'block';
+                        }
+                    } else {
+                        mostrarNotificacion('❌ ' + errorMsg, 'error');
+                    }
+                    
                     btnRegistro.disabled = false;
-                    btnRegistro.innerHTML = '<i class="fas fa-rocket"></i> Crear Mi Tienda';
+                    btnRegistro.innerHTML = '<i class="fas fa-store"></i> Crear Mi Tienda';
+                }
+                } catch (error) {
+                    console.error('❌ Error en registro:', error);
+                    
+                    // Mensaje más útil si es error de tabla
+                    let mensajeError = error.message || 'Error desconocido';
+                    if (mensajeError.includes('tabla') || mensajeError.includes('table') || mensajeError.includes('tiendas')) {
+                        mostrarNotificacion('⚠️ Error: Tabla no encontrada. Ver instrucciones abajo.', 'error');
+                        
+                        // Mostrar instrucciones
+                        let instruccionesDiv = document.getElementById('instrucciones-error-tabla');
+                        if (!instruccionesDiv) {
+                            instruccionesDiv = document.createElement('div');
+                            instruccionesDiv.id = 'instrucciones-error-tabla';
+                            instruccionesDiv.style.cssText = 'background: #FEF2F2; border-left: 4px solid #EF4444; padding: 20px; border-radius: 10px; margin-top: 20px;';
+                            instruccionesDiv.innerHTML = `
+                                <h4 style="color: #DC2626; margin-bottom: 10px;">
+                                    <i class="fas fa-exclamation-triangle"></i> Solución: Crear Tabla en Supabase
+                                </h4>
+                                <p style="color: #991B1B; margin-bottom: 15px; line-height: 1.6;">
+                                    La tabla "tiendas" no existe en Supabase. Necesitás crearla ejecutando un script SQL.
+                                </p>
+                                <ol style="color: #991B1B; margin-left: 20px; line-height: 1.8; margin-bottom: 15px;">
+                                    <li>Andá a tu proyecto en <strong>Supabase</strong></li>
+                                    <li>Click en <strong>"SQL Editor"</strong></li>
+                                    <li>Abrí <strong>"CREAR-TABLA-TIENDAS-SUPABASE.sql"</strong></li>
+                                    <li>Copiá y pegá TODO el código</li>
+                                    <li>Click en <strong>"Run"</strong> (▶️)</li>
+                                    <li>Recargá esta página e intentá de nuevo</li>
+                                </ol>
+                                <p style="color: #991B1B; margin-top: 15px; font-size: 0.9rem;">
+                                    <strong>💡 Ver:</strong> <strong>SOLUCION-ERROR-TABLA-TIENDAS.md</strong> para instrucciones detalladas.
+                                </p>
+                            `;
+                            
+                            const form = document.getElementById('registroForm');
+                            if (form && form.parentNode) {
+                                form.parentNode.insertBefore(instruccionesDiv, form.nextSibling);
+                            }
+                        }
+                    } else {
+                        mostrarNotificacion('Error al crear tienda: ' + mensajeError, 'error');
+                    }
+                    
+                    btnRegistro.disabled = false;
+                    btnRegistro.innerHTML = '<i class="fas fa-store"></i> Crear Mi Tienda';
                 }
             });
         });
