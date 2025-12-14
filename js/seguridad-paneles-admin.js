@@ -85,12 +85,82 @@ class SeguridadPanelesAdmin {
     }
     
     redirigirALogin() {
+        // Verificar si estamos en un panel de emergencias
+        const esPanelEmergencias = window.location.pathname.includes('panel-crear-campana') || 
+                                   window.location.pathname.includes('panel-verificacion');
+        
+        if (esPanelEmergencias) {
+            // Para paneles de emergencias, mostrar mensaje de verificación requerida
+            this.mostrarMensajeVerificacionEmergencias();
+            return;
+        }
+        
         // Guardar la URL actual para redirigir después del login
         const currentUrl = window.location.href;
         sessionStorage.setItem('redirectAfterLogin', currentUrl);
         
         // Redirigir a página de login
         window.location.href = 'admin-cresalia.html';
+    }
+    
+    mostrarMensajeVerificacionEmergencias() {
+        // Ocultar el contenido principal
+        const container = document.querySelector('.container-main');
+        if (container) {
+            container.style.display = 'none';
+        }
+        
+        // Crear mensaje de verificación requerida
+        const mensajeHTML = `
+            <div style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: linear-gradient(135deg, #EF4444 0%, #DC2626 50%, #B91C1C 100%); display: flex; align-items: center; justify-content: center; z-index: 999999; padding: 20px;">
+                <div style="background: white; border-radius: 20px; padding: 40px; max-width: 600px; width: 100%; box-shadow: 0 20px 60px rgba(0,0,0,0.3); text-align: center;">
+                    <div style="font-size: 4rem; margin-bottom: 20px;">🔒</div>
+                    <h1 style="color: #EF4444; margin-bottom: 20px; font-size: 2rem;">Verificación Requerida</h1>
+                    
+                    <div style="background: #FEF3C7; border-left: 4px solid #F59E0B; padding: 20px; border-radius: 10px; margin-bottom: 25px; text-align: left;">
+                        <p style="color: #92400E; margin: 0; line-height: 1.8; font-size: 1rem;">
+                            <strong>Disculpas por la inconveniencia.</strong>
+                        </p>
+                        <p style="color: #92400E; margin: 10px 0 0 0; line-height: 1.8; font-size: 1rem;">
+                            Los paneles de <strong>Cresalia Solidaria Emergencias</strong> requieren verificación de identidad por seguridad. 
+                            Esto es necesario porque:
+                        </p>
+                        <ul style="color: #92400E; margin: 15px 0 0 20px; line-height: 1.8; font-size: 0.95rem;">
+                            <li>🚨 Las campañas de emergencia afectan a personas en situaciones críticas</li>
+                            <li>🛡️ Necesitamos prevenir fraudes y campañas falsas</li>
+                            <li>✅ Solo personal autorizado puede crear y verificar campañas</li>
+                            <li>💜 Protegemos tanto a donantes como a beneficiarios</li>
+                        </ul>
+                    </div>
+                    
+                    <div style="background: #ECFDF5; border-left: 4px solid #10B981; padding: 20px; border-radius: 10px; margin-bottom: 25px; text-align: left;">
+                        <p style="color: #065F46; margin: 0; line-height: 1.8; font-size: 1rem;">
+                            <strong>¿Necesitás crear o verificar una campaña?</strong>
+                        </p>
+                        <p style="color: #065F46; margin: 10px 0 0 0; line-height: 1.8; font-size: 0.95rem;">
+                            Por favor, contactá a <strong>CRISLA</strong> para obtener acceso autorizado. 
+                            Este proceso de verificación nos ayuda a mantener la integridad del sistema y proteger a todos.
+                        </p>
+                    </div>
+                    
+                    <div style="display: flex; gap: 15px; justify-content: center; flex-wrap: wrap; margin-top: 30px;">
+                        <a href="index.html" style="background: linear-gradient(135deg, #10B981, #059669); color: white; padding: 15px 30px; border-radius: 10px; text-decoration: none; font-weight: 600; transition: all 0.3s;" onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 5px 20px rgba(16, 185, 129, 0.4)'" onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='none'">
+                            <i class="fas fa-arrow-left"></i> Volver a Emergencias
+                        </a>
+                        <a href="../index-cresalia.html" style="background: linear-gradient(135deg, #667eea, #764ba2); color: white; padding: 15px 30px; border-radius: 10px; text-decoration: none; font-weight: 600; transition: all 0.3s;" onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 5px 20px rgba(102, 126, 234, 0.4)'" onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='none'">
+                            <i class="fas fa-home"></i> Ir a Cresalia
+                        </a>
+                    </div>
+                    
+                    <p style="color: #6B7280; margin-top: 30px; font-size: 0.9rem; line-height: 1.6;">
+                        <i class="fas fa-shield-alt"></i> 
+                        <strong>Gracias por tu comprensión.</strong> Esta verificación es parte de nuestro compromiso con la transparencia y seguridad en situaciones de emergencia.
+                    </p>
+                </div>
+            </div>
+        `;
+        
+        document.body.insertAdjacentHTML('beforeend', mensajeHTML);
     }
     
     cerrarSesion() {

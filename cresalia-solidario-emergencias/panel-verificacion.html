@@ -385,13 +385,31 @@
         let campanaActual = null;
         
         document.addEventListener('DOMContentLoaded', () => {
+            // Inicializar sistema de emergencias sin verificación de autenticación estricta
             if (typeof SistemaCresaliaSolidarioEmergencias !== 'undefined') {
                 sistemaEmergencias = new SistemaCresaliaSolidarioEmergencias();
                 window.sistemaEmergencias = sistemaEmergencias;
+                console.log('✅ Sistema de emergencias inicializado');
+            } else {
+                console.error('❌ SistemaCresaliaSolidarioEmergencias no está disponible');
+                // Mostrar mensaje de error amigable
+                const container = document.querySelector('.container-main');
+                if (container) {
+                    container.innerHTML = `
+                        <div style="text-align: center; padding: 40px;">
+                            <h2 style="color: #ef4444; margin-bottom: 20px;">⚠️ Error al cargar el sistema</h2>
+                            <p style="color: #6b7280; margin-bottom: 20px;">No se pudo cargar el sistema de emergencias. Por favor, recarga la página.</p>
+                            <a href="index.html" style="display: inline-block; background: #10B981; color: white; padding: 12px 24px; border-radius: 10px; text-decoration: none; font-weight: 600;">Volver a Emergencias</a>
+                        </div>
+                    `;
+                    return;
+                }
             }
             
             // Cargar campañas
-            cargarCampanas();
+            if (sistemaEmergencias) {
+                cargarCampanas('pendientes');
+            }
             
             // Tabs
             document.querySelectorAll('.tab').forEach(tab => {

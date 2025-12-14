@@ -8,6 +8,31 @@ class SistemaForoComunidades {
         this.autorHash = null; // Hash del usuario actual para anonimato
         this.autorAlias = null; // Alias elegido por el usuario
         
+        // Comunidades de ayuda que requieren ubicación y buscan ONGs/campañas
+        this.comunidadesAyuda = [
+            'cresalia-solidario',
+            'cresalia-solidario-emergencias',
+            'cresalia-animales'
+        ];
+        
+        this.esComunidadAyuda = this.comunidadesAyuda.includes(comunidadSlug);
+        
+        // Sistema de registro de chats para seguridad
+        // IMPORTANTE: Guardamos TODOS los registros (sin límite)
+        // Esto permite revisar cualquier problema que pueda surgir
+        // 
+        // ¿Dónde se guardan?
+        // 1. localStorage: En el navegador del usuario (siempre funciona)
+        // 2. Supabase: En la nube (solo si está configurado)
+        //
+        // ¿Cómo revisarlos?
+        // Desde la consola: window.foroComunidad.mostrarRegistrosChats()
+        // O presioná Ctrl+Shift+R para mostrar el botón oculto
+        // Ver: COMO-REVISAR-REGISTROS-CHATS.md para más detalles
+        this.registroChats = JSON.parse(localStorage.getItem(`registro_chats_${comunidadSlug}`) || '[]');
+        
+        // Cargar registros desde Supabase si está disponible (se hace en init)
+        
         this.init();
     }
     
@@ -53,8 +78,14 @@ class SistemaForoComunidades {
         // Cargar alias guardado
         this.autorAlias = this.obtenerAliasGuardado();
         
-        // Cargar posts al inicializar
-        this.cargarPosts();
+        // Si es comunidad de ayuda, mostrar búsqueda de ONGs en lugar de posts
+        if (this.esComunidadAyuda) {
+            // Mostrar interfaz de búsqueda de ONGs
+            this.mostrarInterfazBusquedaONGs();
+        } else {
+            // Cargar posts normalmente
+            this.cargarPosts();
+        }
         
         // Configurar listeners
         this.configurarEventListeners();
@@ -63,6 +94,80 @@ class SistemaForoComunidades {
         if (typeof SistemaFeedbacksComunidades !== 'undefined') {
             window.feedbackComunidad = new SistemaFeedbacksComunidades(this.comunidadSlug);
         }
+        
+        // Inicializar sistema de logros si está disponible
+        if (typeof SistemaLogros !== 'undefined' && typeof window.initSistemaLogros === 'function') {
+            // Configurar logros para comunidades
+            const tenantConfig = {
+                tenant: { slug: this.comunidadSlug, nombre: this.comunidadSlug },
+                plan: 'comunidad',
+                metrics: this.obtenerMetricasComunidad()
+            };
+            window.initSistemaLogros(tenantConfig);
+        }
+        
+        // Cargar historiales adicionales para comunidades de solidario
+        const comunidadesConHistoriales = ['cresalia-solidario', 'cresalia-solidario-emergencias'];
+        if (comunidadesConHistoriales.includes(this.comunidadSlug)) {
+            setTimeout(() => {
+                this.cargarHistorialPersonasAyudadas();
+                this.cargarHistorialPublicacionesCerradas();
+            }, 2000);
+        }
+        
+        // Cargar registros de chats desde Supabase si está disponible
+        if (this.esComunidadAyuda && this.supabase) {
+            this.cargarRegistrosChatsDesdeSupabase();
+        }
+    }
+    
+    // Cargar registros de chats desde Supabase
+    async cargarRegistrosChatsDesdeSupabase() {
+        if (!this.supabase || !this.autorHash) return;
+        
+        try {
+            // Intentar cargar desde Supabase
+            // Nota: Esto requiere una tabla 'registro_chats_comunidades' en Supabase
+            // Por ahora, solo usamos localStorage pero dejamos preparado para Supabase
+            const { data, error } = await this.supabase
+                .from('registro_chats_comunidades')
+                .select('*')
+                .eq('usuario_hash', this.autorHash)
+                .eq('comunidad_slug', this.comunidadSlug)
+                .order('fecha', { ascending: false });
+            
+            if (!error && data) {
+                // Combinar con registros locales (evitar duplicados)
+                const idsExistentes = new Set(this.registroChats.map(r => r.id));
+                data.forEach(registro => {
+                    if (!idsExistentes.has(registro.id)) {
+                        this.registroChats.push(registro);
+                    }
+                });
+                
+                // Guardar combinado en localStorage
+                this.guardarRegistrosChats();
+            }
+        } catch (error) {
+            // Si la tabla no existe, no es problema, seguimos con localStorage
+            console.log('ℹ️ Tabla de registro_chats_comunidades no disponible, usando solo localStorage');
+        }
+    }
+    
+    // Obtener métricas de la comunidad para el sistema de logros
+    obtenerMetricasComunidad() {
+        // Obtener métricas desde localStorage o Supabase
+        const postsKey = `posts_${this.comunidadSlug}`;
+        const posts = JSON.parse(localStorage.getItem(postsKey) || '[]');
+        const misPosts = posts.filter(p => p.autor_hash === this.autorHash);
+        
+        return {
+            total_posts: misPosts.length,
+            total_comentarios: misPosts.reduce((sum, p) => sum + (p.num_comentarios || 0), 0),
+            total_reacciones: misPosts.reduce((sum, p) => sum + (p.num_reacciones || 0), 0),
+            tiene_posts: misPosts.length > 0,
+            primer_post: misPosts.length > 0
+        };
     }
     
     // Generar hash único para anonimato (no reversible)
@@ -142,8 +247,1005 @@ class SistemaForoComunidades {
             cerrarForm.addEventListener('click', () => this.ocultarFormularioPost());
         }
         
+        // Agregar filtros de búsqueda si es comunidad de ayuda
+        if (this.esComunidadAyuda) {
+            this.agregarFiltrosBusqueda();
+            
+            // Agregar botón para revisar registros de chats (solo visible para desarrollo/admin)
+            // Puedes acceder desde la consola: window.foroComunidad.mostrarRegistrosChats()
+            // O agregar un botón oculto que puedas activar cuando necesites
+            this.agregarBotonRevisarRegistros();
+        }
+        
         // Conectar tab "Mi Historial" si existe
         this.conectarTabHistorial();
+    }
+    
+    // Agregar botón oculto para revisar registros (solo para ti)
+    agregarBotonRevisarRegistros() {
+        // Crear botón oculto que puedas activar cuando necesites revisar
+        // Por defecto está oculto, pero puedes hacerlo visible desde la consola
+        const botonHTML = `
+            <button id="btn-revisar-registros-chats" onclick="if(window.foroComunidad) window.foroComunidad.mostrarRegistrosChats()" 
+                    style="position: fixed; bottom: 20px; left: 20px; background: #6B7280; color: white; border: none; padding: 10px 15px; border-radius: 8px; cursor: pointer; font-size: 0.85rem; z-index: 9998; display: none; opacity: 0.7;"
+                    title="Revisar registros de chats (solo para revisión)">
+                <i class="fas fa-clipboard-list"></i> Registros
+            </button>
+        `;
+        
+        document.body.insertAdjacentHTML('beforeend', botonHTML);
+        
+        // Hacerlo visible si presionas Ctrl+Shift+R (solo para ti)
+        document.addEventListener('keydown', (e) => {
+            if (e.ctrlKey && e.shiftKey && e.key === 'R') {
+                const boton = document.getElementById('btn-revisar-registros-chats');
+                if (boton) {
+                    boton.style.display = boton.style.display === 'none' ? 'block' : 'none';
+                }
+            }
+        });
+    }
+    
+    // Mostrar interfaz de búsqueda de ONGs
+    mostrarInterfazBusquedaONGs() {
+        const container = document.getElementById('posts-container');
+        if (!container) return;
+        
+        container.innerHTML = `
+            <div style="text-align: center; padding: 40px 20px; color: #6B7280;">
+                <div style="font-size: 4rem; margin-bottom: 20px;">🤝</div>
+                <h2 style="color: #374151; margin-bottom: 15px;">Buscar ONGs y Campañas Solidarias</h2>
+                <p style="font-size: 1.1rem; line-height: 1.8; max-width: 600px; margin: 0 auto 30px;">
+                    En esta comunidad, conectamos personas con <strong>organizaciones y campañas verificadas</strong> 
+                    que trabajan en diferentes zonas. Usá los filtros arriba para encontrar ayuda cerca de tu ubicación.
+                </p>
+                <p style="font-size: 0.95rem; color: #9CA3AF;">
+                    <i class="fas fa-shield-alt"></i> Todas las organizaciones están verificadas y consolidadas.
+                </p>
+            </div>
+        `;
+    }
+    
+    // Agregar filtros de búsqueda por ubicación para ONGs/Campañas
+    agregarFiltrosBusqueda() {
+        const container = document.getElementById('posts-container');
+        if (!container) return;
+        
+        // Verificar si ya existen los filtros
+        if (document.getElementById('filtros-ubicacion')) return;
+        
+        const filtrosHTML = `
+            <div id="filtros-ubicacion" style="background: white; padding: 20px; border-radius: 15px; margin-bottom: 20px; box-shadow: 0 2px 10px rgba(0,0,0,0.1);">
+                <div style="background: linear-gradient(135deg, #ECFDF5 0%, #D1FAE5 100%); border-left: 4px solid #10B981; padding: 15px; border-radius: 10px; margin-bottom: 20px;">
+                    <h3 style="color: #047857; margin: 0 0 10px 0; font-size: 1.1rem;">
+                        <i class="fas fa-hands-helping"></i> Buscar ONGs y Campañas Solidarias
+                    </h3>
+                    <p style="color: #065F46; margin: 0; line-height: 1.6; font-size: 0.95rem;">
+                        Buscá organizaciones y campañas consolidadas que trabajen en tu zona. 
+                        Estas organizaciones están verificadas y tienen experiencia en ayudar a quienes lo necesitan.
+                    </p>
+                </div>
+                <h3 style="color: #374151; margin: 0 0 15px 0; font-size: 1.2rem;">
+                    <i class="fas fa-filter"></i> Filtrar por ubicación
+                </h3>
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; margin-bottom: 15px;">
+                    <div>
+                        <label for="filtro-pais" style="display: block; margin-bottom: 5px; color: #6B7280; font-size: 0.9rem; font-weight: 600;">País</label>
+                        <select id="filtro-pais" style="width: 100%; padding: 10px; border: 2px solid #E5E7EB; border-radius: 8px; font-size: 1rem;">
+                            <option value="">Todos los países</option>
+                            <option value="Argentina">Argentina</option>
+                            <option value="Uruguay">Uruguay</option>
+                            <option value="Chile">Chile</option>
+                            <option value="Paraguay">Paraguay</option>
+                            <option value="Brasil">Brasil</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label for="filtro-provincia" style="display: block; margin-bottom: 5px; color: #6B7280; font-size: 0.9rem; font-weight: 600;">Provincia/Estado</label>
+                        <input type="text" id="filtro-provincia" placeholder="Ej: Buenos Aires" style="width: 100%; padding: 10px; border: 2px solid #E5E7EB; border-radius: 8px; font-size: 1rem;">
+                    </div>
+                    <div>
+                        <label for="filtro-zona" style="display: block; margin-bottom: 5px; color: #6B7280; font-size: 0.9rem; font-weight: 600;">Zona/Barrio</label>
+                        <input type="text" id="filtro-zona" placeholder="Ej: Zona Norte" style="width: 100%; padding: 10px; border: 2px solid #E5E7EB; border-radius: 8px; font-size: 1rem;">
+                    </div>
+                </div>
+                <div style="display: flex; gap: 10px;">
+                    <button onclick="if(window.foroComunidad) window.foroComunidad.buscarONGsCampañas()" style="background: linear-gradient(135deg, #10B981, #059669); color: white; border: none; padding: 10px 20px; border-radius: 8px; cursor: pointer; font-weight: 600;">
+                        <i class="fas fa-search"></i> Buscar ONGs/Campañas
+                    </button>
+                    <button onclick="if(window.foroComunidad) window.foroComunidad.limpiarFiltros()" style="background: #E5E7EB; color: #374151; border: none; padding: 10px 20px; border-radius: 8px; cursor: pointer; font-weight: 600;">
+                        <i class="fas fa-times"></i> Limpiar
+                    </button>
+                </div>
+            </div>
+        `;
+        
+        container.insertAdjacentHTML('beforebegin', filtrosHTML);
+    }
+    
+    // Buscar ONGs y Campañas por ubicación
+    async buscarONGsCampañas() {
+        const filtroPais = document.getElementById('filtro-pais')?.value || '';
+        const filtroProvincia = document.getElementById('filtro-provincia')?.value.toLowerCase() || '';
+        const filtroZona = document.getElementById('filtro-zona')?.value.toLowerCase() || '';
+        
+        const container = document.getElementById('posts-container');
+        if (container) {
+            container.innerHTML = '<div style="text-align: center; padding: 40px;"><div class="spinner" style="border: 4px solid #F3F4F6; border-top: 4px solid #10B981; border-radius: 50%; width: 50px; height: 50px; animation: spin 1s linear infinite; margin: 0 auto 20px;"></div><p>Cargando ONGs y campañas...</p></div>';
+        }
+        
+        try {
+            let ongsCampañas = [];
+            
+            // Buscar en campañas de emergencia
+            if (this.supabase) {
+                try {
+                    // Buscar campañas verificadas
+                    const { data: campanas, error } = await this.supabase
+                        .from('campañas_emergencia')
+                        .select('*')
+                        .eq('estado', 'activa')
+                        .eq('verificada', true);
+                    
+                    if (!error && campanas) {
+                        ongsCampañas = campanas.map(c => {
+                            // Parsear ubicación si existe
+                            let ubicacion = {};
+                            if (c.ubicacion) {
+                                try {
+                                    ubicacion = typeof c.ubicacion === 'string' ? JSON.parse(c.ubicacion) : c.ubicacion;
+                                } catch (e) {
+                                    // Si no se puede parsear, usar campos directos
+                                    ubicacion = {
+                                        pais: c.pais || '',
+                                        provincia: c.provincia || '',
+                                        zona: c.zona || c.ubicacion_zona || ''
+                                    };
+                                }
+                            } else {
+                                // Intentar obtener de campos directos
+                                ubicacion = {
+                                    pais: c.pais || '',
+                                    provincia: c.provincia || '',
+                                    zona: c.zona || c.ubicacion_zona || ''
+                                };
+                            }
+                            
+                            return {
+                                ...c,
+                                tipo: 'campaña',
+                                nombre: c.titulo || 'Campaña de Emergencia',
+                                organizacion: c.organizacion_responsable || c.organizacion || 'Organización Verificada',
+                                ubicacion: ubicacion,
+                                descripcion: c.descripcion || c.detalles || '',
+                                necesidades: Array.isArray(c.necesidades) ? c.necesidades : (c.necesidades ? [c.necesidades] : [])
+                            };
+                        });
+                    }
+                } catch (error) {
+                    console.warn('Error buscando campañas en Supabase:', error);
+                }
+            }
+            
+            // También buscar en localStorage (modo local)
+            try {
+                const campanasLocal = JSON.parse(localStorage.getItem('campañas_emergencia') || '[]')
+                    .filter(c => c.estado === 'activa' && c.verificada === true);
+                
+                const campanasLocalFormateadas = campanasLocal.map(c => {
+                    let ubicacion = {};
+                    if (c.ubicacion) {
+                        try {
+                            ubicacion = typeof c.ubicacion === 'string' ? JSON.parse(c.ubicacion) : c.ubicacion;
+                        } catch (e) {
+                            ubicacion = {
+                                pais: c.pais || '',
+                                provincia: c.provincia || '',
+                                zona: c.zona || ''
+                            };
+                        }
+                    } else {
+                        ubicacion = {
+                            pais: c.pais || '',
+                            provincia: c.provincia || '',
+                            zona: c.zona || ''
+                        };
+                    }
+                    
+                    return {
+                        ...c,
+                        tipo: 'campaña',
+                        nombre: c.titulo || 'Campaña de Emergencia',
+                        organizacion: c.organizacion_responsable || c.organizacion || 'Organización Verificada',
+                        ubicacion: ubicacion,
+                        descripcion: c.descripcion || c.detalles || '',
+                        necesidades: Array.isArray(c.necesidades) ? c.necesidades : (c.necesidades ? [c.necesidades] : [])
+                    };
+                });
+                
+                // Combinar resultados (evitar duplicados)
+                const idsExistentes = new Set(ongsCampañas.map(c => c.id));
+                campanasLocalFormateadas.forEach(c => {
+                    if (!idsExistentes.has(c.id)) {
+                        ongsCampañas.push(c);
+                    }
+                });
+            } catch (error) {
+                console.warn('Error buscando campañas en localStorage:', error);
+            }
+            
+            // Filtrar por ubicación
+            const filtradas = ongsCampañas.filter(item => {
+                const ubicacion = item.ubicacion || {};
+                const pais = (ubicacion.pais || '').toLowerCase();
+                const provincia = (ubicacion.provincia || '').toLowerCase();
+                const zona = (ubicacion.zona || '').toLowerCase();
+                
+                const coincidePais = !filtroPais || pais.includes(filtroPais.toLowerCase());
+                const coincideProvincia = !filtroProvincia || provincia.includes(filtroProvincia);
+                const coincideZona = !filtroZona || zona.includes(filtroZona);
+                
+                return coincidePais && coincideProvincia && coincideZona;
+            });
+            
+            this.mostrarONGsCampañas(filtradas);
+        } catch (error) {
+            console.error('Error buscando ONGs/Campañas:', error);
+            const container = document.getElementById('posts-container');
+            if (container) {
+                container.innerHTML = `
+                    <div style="text-align: center; padding: 40px; color: #6B7280;">
+                        <i class="fas fa-exclamation-triangle" style="font-size: 3rem; margin-bottom: 15px; color: #EF4444;"></i>
+                        <p style="font-size: 1.1rem;">Error al buscar ONGs y campañas.</p>
+                        <p>Por favor, intenta nuevamente.</p>
+                    </div>
+                `;
+            }
+        }
+    }
+    
+    // Mostrar ONGs y Campañas encontradas
+    mostrarONGsCampañas(ongsCampañas) {
+        const container = document.getElementById('posts-container');
+        if (!container) return;
+        
+        if (ongsCampañas.length === 0) {
+            container.innerHTML = `
+                <div style="text-align: center; padding: 60px 20px; color: #6B7280;">
+                    <i class="fas fa-search" style="font-size: 4rem; margin-bottom: 20px; opacity: 0.5;"></i>
+                    <h3 style="color: #374151; margin-bottom: 10px;">No se encontraron ONGs o campañas</h3>
+                    <p>No hay organizaciones o campañas activas en esa ubicación en este momento.</p>
+                    <p style="margin-top: 15px; font-size: 0.9rem;">Intentá con otros criterios de búsqueda o revisá más tarde.</p>
+                </div>
+            `;
+            return;
+        }
+        
+        container.innerHTML = ongsCampañas.map(item => {
+            const ubicacion = item.ubicacion ? (typeof item.ubicacion === 'string' ? JSON.parse(item.ubicacion) : item.ubicacion) : {};
+            const esCampaña = item.tipo === 'campaña';
+            
+            return `
+                <div class="ong-campana-card" style="background: white; border-radius: 15px; padding: 25px; margin-bottom: 20px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); border-left: 4px solid ${esCampaña ? '#EF4444' : '#10B981'};">
+                    <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 15px; flex-wrap: wrap; gap: 10px;">
+                        <div>
+                            <h3 style="color: #374151; margin: 0 0 5px 0; font-size: 1.3rem;">
+                                ${esCampaña ? '🚨' : '🤝'} ${this.escapeHtml(item.nombre || 'Organización')}
+                            </h3>
+                            <p style="color: #6B7280; margin: 0; font-size: 0.95rem;">
+                                <strong>Organización:</strong> ${this.escapeHtml(item.organizacion || 'Verificada')}
+                            </p>
+                            ${item.verificada ? `
+                                <span style="background: #10B981; color: white; padding: 4px 8px; border-radius: 5px; font-size: 0.85rem; margin-top: 5px; display: inline-block;">
+                                    <i class="fas fa-check-circle"></i> Verificada
+                                </span>
+                            ` : ''}
+                        </div>
+                    </div>
+                    
+                    ${item.descripcion ? `
+                        <div style="background: #F9FAFB; padding: 15px; border-radius: 10px; margin-bottom: 15px;">
+                            <p style="color: #374151; margin: 0; line-height: 1.6;">${this.escapeHtml(item.descripcion)}</p>
+                        </div>
+                    ` : ''}
+                    
+                    <div style="background: linear-gradient(135deg, #ECFDF5 0%, #D1FAE5 100%); border-left: 4px solid #10B981; padding: 15px; border-radius: 10px; margin-bottom: 15px;">
+                        <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 10px;">
+                            <i class="fas fa-map-marker-alt" style="color: #10B981; font-size: 1.2rem;"></i>
+                            <div>
+                                <strong style="color: #047857;">📍 Ubicación de trabajo:</strong>
+                                <p style="color: #065F46; margin: 5px 0 0 0;">
+                                    ${ubicacion.zona ? this.escapeHtml(ubicacion.zona) + ', ' : ''}
+                                    ${ubicacion.provincia ? this.escapeHtml(ubicacion.provincia) + ', ' : ''}
+                                    ${ubicacion.pais ? this.escapeHtml(ubicacion.pais) : 'No especificada'}
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    ${item.necesidades && Array.isArray(item.necesidades) && item.necesidades.length > 0 ? `
+                        <div style="margin-bottom: 15px;">
+                            <strong style="color: #374151;">Necesidades:</strong>
+                            <div style="display: flex; flex-wrap: wrap; gap: 8px; margin-top: 8px;">
+                                ${item.necesidades.map(n => `
+                                    <span style="background: #F3F4F6; color: #374151; padding: 5px 12px; border-radius: 15px; font-size: 0.85rem;">
+                                        ${this.escapeHtml(n)}
+                                    </span>
+                                `).join('')}
+                            </div>
+                        </div>
+                    ` : ''}
+                    
+                    <div style="display: flex; gap: 10px; margin-top: 20px; flex-wrap: wrap;">
+                        <button onclick="if(window.foroComunidad) window.foroComunidad.contactarONG('${item.id || item.titulo}', '${this.escapeHtml(item.organizacion || item.nombre)}', '${item.tipo || 'campaña'}')" style="background: linear-gradient(135deg, #10B981, #059669); color: white; border: none; padding: 12px 24px; border-radius: 8px; cursor: pointer; font-weight: 600; flex: 1; min-width: 150px;">
+                            <i class="fas fa-comments"></i> Contactar ONG
+                        </button>
+                        ${esCampaña ? `
+                            <button onclick="window.location.href='donar-materiales.html?campana=${item.id}'" style="background: linear-gradient(135deg, #EF4444, #DC2626); color: white; border: none; padding: 12px 24px; border-radius: 8px; cursor: pointer; font-weight: 600; flex: 1; min-width: 150px;">
+                                <i class="fas fa-heart"></i> Ver Campaña
+                            </button>
+                        ` : ''}
+                    </div>
+                </div>
+            `;
+        }).join('');
+    }
+    
+    // Aplicar filtros de búsqueda (para posts normales, no ONGs)
+    aplicarFiltros() {
+        const filtroPais = document.getElementById('filtro-pais')?.value.toLowerCase() || '';
+        const filtroProvincia = document.getElementById('filtro-provincia')?.value.toLowerCase() || '';
+        const filtroZona = document.getElementById('filtro-zona')?.value.toLowerCase() || '';
+        
+        const posts = document.querySelectorAll('.post');
+        let visibleCount = 0;
+        
+        posts.forEach(post => {
+            const pais = (post.getAttribute('data-pais') || '').toLowerCase();
+            const provincia = (post.getAttribute('data-provincia') || '').toLowerCase();
+            const zona = (post.getAttribute('data-zona') || '').toLowerCase();
+            
+            const coincidePais = !filtroPais || pais.includes(filtroPais);
+            const coincideProvincia = !filtroProvincia || provincia.includes(filtroProvincia);
+            const coincideZona = !filtroZona || zona.includes(filtroZona);
+            
+            if (coincidePais && coincideProvincia && coincideZona) {
+                post.style.display = 'block';
+                visibleCount++;
+            } else {
+                post.style.display = 'none';
+            }
+        });
+        
+        // Mostrar mensaje si no hay resultados
+        const container = document.getElementById('posts-container');
+        let mensajeNoResultados = document.getElementById('mensaje-no-resultados');
+        
+        if (visibleCount === 0) {
+            if (!mensajeNoResultados) {
+                mensajeNoResultados = document.createElement('div');
+                mensajeNoResultados.id = 'mensaje-no-resultados';
+                mensajeNoResultados.style.cssText = 'text-align: center; padding: 40px; color: #6B7280;';
+                mensajeNoResultados.innerHTML = `
+                    <i class="fas fa-search" style="font-size: 3rem; margin-bottom: 15px; opacity: 0.5;"></i>
+                    <p style="font-size: 1.1rem;">No se encontraron posts con esos filtros.</p>
+                    <p>Intentá con otros criterios de búsqueda.</p>
+                `;
+                container.appendChild(mensajeNoResultados);
+            }
+        } else {
+            if (mensajeNoResultados) {
+                mensajeNoResultados.remove();
+            }
+        }
+    }
+    
+    // Contactar ONG (con verificación de edad y registro)
+    contactarONG(ongId, nombreONG, tipo) {
+        // Verificar edad primero
+        this.verificarEdadParaContactar(() => {
+            this.abrirChatONG(ongId, nombreONG, tipo);
+        });
+    }
+    
+    // Verificar edad del usuario
+    verificarEdadParaContactar(callback) {
+        // Verificar si ya se verificó la edad en esta sesión
+        const edadVerificada = sessionStorage.getItem(`edad_verificada_${this.comunidadSlug}`);
+        
+        if (edadVerificada === 'true') {
+            callback();
+            return;
+        }
+        
+        // Mostrar modal de verificación de edad
+        const modalEdadHTML = `
+            <div id="modal-verificar-edad" style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); display: flex; align-items: center; justify-content: center; z-index: 999999; padding: 20px;">
+                <div style="background: white; border-radius: 20px; padding: 40px; max-width: 500px; width: 100%; box-shadow: 0 20px 60px rgba(0,0,0,0.3); text-align: center;">
+                    <div style="font-size: 4rem; margin-bottom: 20px;">🔒</div>
+                    <h2 style="color: #374151; margin-bottom: 20px; font-size: 1.8rem;">Verificación de Edad</h2>
+                    
+                    <div style="background: #FEF3C7; border-left: 4px solid #F59E0B; padding: 20px; border-radius: 10px; margin-bottom: 25px; text-align: left;">
+                        <p style="color: #92400E; margin: 0; line-height: 1.8; font-size: 1rem;">
+                            Para contactar ONGs y organizaciones, necesitamos confirmar que sos mayor de edad (18 años o más).
+                        </p>
+                    </div>
+                    
+                    <div style="margin-bottom: 25px;">
+                        <label for="fecha-nacimiento" style="display: block; margin-bottom: 10px; color: #374151; font-weight: 600; text-align: left;">Fecha de nacimiento:</label>
+                        <input type="date" id="fecha-nacimiento" max="${new Date().toISOString().split('T')[0]}" style="width: 100%; padding: 12px; border: 2px solid #E5E7EB; border-radius: 8px; font-size: 1rem;">
+                    </div>
+                    
+                    <div style="display: flex; gap: 15px; justify-content: center;">
+                        <button onclick="if(window.foroComunidad) window.foroComunidad.validarEdad()" style="background: linear-gradient(135deg, #10B981, #059669); color: white; padding: 15px 30px; border: none; border-radius: 10px; cursor: pointer; font-weight: 600; transition: all 0.3s;" onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 5px 20px rgba(16, 185, 129, 0.4)'" onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='none'">
+                            <i class="fas fa-check"></i> Verificar
+                        </button>
+                        <button onclick="document.getElementById('modal-verificar-edad').remove()" style="background: #E5E7EB; color: #374151; padding: 15px 30px; border: none; border-radius: 10px; cursor: pointer; font-weight: 600;">
+                            Cancelar
+                        </button>
+                    </div>
+                </div>
+            </div>
+        `;
+        
+        document.body.insertAdjacentHTML('beforeend', modalEdadHTML);
+        
+        // Guardar callback para ejecutar después de verificar
+        this.callbackDespuesEdad = callback;
+    }
+    
+    // Validar edad del usuario
+    validarEdad() {
+        const fechaInput = document.getElementById('fecha-nacimiento');
+        if (!fechaInput || !fechaInput.value) {
+            alert('Por favor, ingresá tu fecha de nacimiento.');
+            return;
+        }
+        
+        const fechaNacimiento = new Date(fechaInput.value);
+        const hoy = new Date();
+        const edad = hoy.getFullYear() - fechaNacimiento.getFullYear();
+        const mes = hoy.getMonth() - fechaNacimiento.getMonth();
+        
+        const edadReal = mes < 0 || (mes === 0 && hoy.getDate() < fechaNacimiento.getDate()) ? edad - 1 : edad;
+        
+        if (edadReal < 18) {
+            alert('⚠️ Lo sentimos, debés ser mayor de 18 años para contactar ONGs y organizaciones.');
+            document.getElementById('modal-verificar-edad').remove();
+            return;
+        }
+        
+        // Guardar verificación en sesión
+        sessionStorage.setItem(`edad_verificada_${this.comunidadSlug}`, 'true');
+        
+        // Cerrar modal y ejecutar callback
+        document.getElementById('modal-verificar-edad').remove();
+        
+        if (this.callbackDespuesEdad) {
+            this.callbackDespuesEdad();
+            this.callbackDespuesEdad = null;
+        }
+    }
+    
+    // Abrir chat con ONG (con registro)
+    abrirChatONG(ongId, nombreONG, tipo) {
+        // Registrar inicio de chat
+        this.registrarChat({
+            ongId: ongId,
+            nombreONG: nombreONG,
+            tipo: tipo,
+            accion: 'inicio_chat',
+            timestamp: new Date().toISOString(),
+            usuarioHash: this.autorHash
+        });
+        
+        // Mostrar advertencias adaptadas para ONGs
+        const advertenciasHTML = `
+            <div id="modal-advertencias-chat-ong" style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); display: flex; align-items: center; justify-content: center; z-index: 999999; padding: 20px;">
+                <div style="background: white; border-radius: 20px; padding: 40px; max-width: 600px; width: 100%; box-shadow: 0 20px 60px rgba(0,0,0,0.3); text-align: left;">
+                    <div style="font-size: 3rem; margin-bottom: 20px; text-align: center;">🤝</div>
+                    <h2 style="color: #10B981; margin-bottom: 20px; font-size: 1.8rem; text-align: center;">Contactar con ${this.escapeHtml(nombreONG)}</h2>
+                    
+                    <div style="background: #ECFDF5; border-left: 4px solid #10B981; padding: 20px; border-radius: 10px; margin-bottom: 25px;">
+                        <h4 style="color: #065F46; margin: 0 0 10px 0; font-size: 1rem;">
+                            <i class="fas fa-info-circle"></i> Sobre esta organización:
+                        </h4>
+                        <p style="color: #065F46; margin: 0; line-height: 1.8; font-size: 0.95rem;">
+                            Esta es una organización verificada y consolidada. Sin embargo, siempre es importante:
+                        </p>
+                        <ul style="color: #065F46; margin: 10px 0 0 20px; line-height: 1.8; font-size: 0.95rem;">
+                            <li>Verificar la identidad de la organización</li>
+                            <li>No compartir información personal sensible</li>
+                            <li>Coordinar encuentros en lugares públicos</li>
+                            <li>Informar a alguien de confianza sobre el contacto</li>
+                        </ul>
+                    </div>
+                    
+                    <div style="background: #FEF3C7; border-left: 4px solid #F59E0B; padding: 20px; border-radius: 10px; margin-bottom: 25px;">
+                        <h4 style="color: #92400E; margin: 0 0 10px 0; font-size: 1rem;">
+                            <i class="fas fa-info-circle"></i> Sobre pagos y comisiones:
+                        </h4>
+                        <p style="color: #92400E; margin: 0; line-height: 1.8; font-size: 0.95rem;">
+                            <strong>Cresalia NO se encarga de los pagos ni recibe comisiones</strong> (a menos que alguien quiera donar, pero no es obligación). 
+                            Solo ofrecemos este espacio para conectar personas con organizaciones verificadas. Los acuerdos y pagos se realizan directamente entre las partes.
+                        </p>
+                    </div>
+                    
+                    <div style="display: flex; gap: 15px; justify-content: center; margin-top: 30px;">
+                        <button onclick="document.getElementById('modal-advertencias-chat-ong').remove(); if(window.foroComunidad) window.foroComunidad.iniciarChatONG('${ongId}', '${this.escapeHtml(nombreONG)}')" style="background: linear-gradient(135deg, #10B981, #059669); color: white; padding: 15px 30px; border: none; border-radius: 10px; cursor: pointer; font-weight: 600; transition: all 0.3s;" onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 5px 20px rgba(16, 185, 129, 0.4)'" onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='none'">
+                            <i class="fas fa-check"></i> Entiendo, continuar
+                        </button>
+                        <button onclick="document.getElementById('modal-advertencias-chat-ong').remove()" style="background: #E5E7EB; color: #374151; padding: 15px 30px; border: none; border-radius: 10px; cursor: pointer; font-weight: 600;">
+                            Cancelar
+                        </button>
+                    </div>
+                </div>
+            </div>
+        `;
+        
+        document.body.insertAdjacentHTML('beforeend', advertenciasHTML);
+    }
+    
+    // Registrar actividad de chat (para seguridad)
+    // IMPORTANTE: Guardamos TODOS los registros para poder revisar problemas
+    async registrarChat(datos) {
+        const registro = {
+            id: `chat_${Date.now()}_${Math.random().toString(36).substring(7)}`,
+            ...datos,
+            comunidad: this.comunidadSlug,
+            fecha: new Date().toISOString(),
+            timestamp: Date.now()
+        };
+        
+        this.registroChats.push(registro);
+        
+        // Guardar en localStorage (SIN límite - guardamos todo para revisión)
+        this.guardarRegistrosChats();
+        
+        // También intentar guardar en Supabase si está disponible
+        if (this.supabase) {
+            try {
+                // Intentar guardar en Supabase
+                const { error } = await this.supabase
+                    .from('registro_chats_comunidades')
+                    .insert([{
+                        id: registro.id,
+                        usuario_hash: this.autorHash,
+                        comunidad_slug: this.comunidadSlug,
+                        ong_id: registro.ongId || null,
+                        nombre_ong: registro.nombreONG || null,
+                        tipo: registro.tipo || null,
+                        accion: registro.accion || null,
+                        mensaje_preview: registro.mensaje || null,
+                        fecha: registro.fecha,
+                        metadata: JSON.stringify(registro)
+                    }]);
+                
+                if (error) {
+                    // Si falla, solo loguear - no es crítico, tenemos localStorage
+                    console.warn('⚠️ No se pudo guardar registro en Supabase (puede que la tabla no exista):', error);
+                } else {
+                    console.log('✅ Registro guardado en Supabase');
+                }
+            } catch (error) {
+                // Si la tabla no existe, no es problema
+                console.log('ℹ️ Tabla registro_chats_comunidades no disponible, usando solo localStorage');
+            }
+        }
+        
+        console.log('📝 Registro de chat guardado:', registro);
+    }
+    
+    // Guardar registros en localStorage
+    guardarRegistrosChats() {
+        try {
+            localStorage.setItem(`registro_chats_${this.comunidadSlug}`, JSON.stringify(this.registroChats));
+        } catch (error) {
+            // Si localStorage está lleno, intentar limpiar registros muy antiguos (más de 1 año)
+            if (error.name === 'QuotaExceededError') {
+                const unAñoAtras = Date.now() - (365 * 24 * 60 * 60 * 1000);
+                this.registroChats = this.registroChats.filter(r => {
+                    const fechaRegistro = new Date(r.fecha || r.timestamp).getTime();
+                    return fechaRegistro > unAñoAtras;
+                });
+                
+                try {
+                    localStorage.setItem(`registro_chats_${this.comunidadSlug}`, JSON.stringify(this.registroChats));
+                    console.warn('⚠️ Se limpiaron registros antiguos (>1 año) por falta de espacio');
+                } catch (e) {
+                    console.error('❌ Error crítico: No se puede guardar registros de chat', e);
+                }
+            }
+        }
+    }
+    
+    // Método para que puedas revisar los registros de chats
+    // Puedes llamarlo desde la consola: window.foroComunidad.mostrarRegistrosChats()
+    mostrarRegistrosChats() {
+        if (this.registroChats.length === 0) {
+            alert('No hay registros de chats aún.');
+            return;
+        }
+        
+        // Crear modal para mostrar registros
+        const modalHTML = `
+            <div id="modal-registros-chats" style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); display: flex; align-items: center; justify-content: center; z-index: 999999; padding: 20px;">
+                <div style="background: white; border-radius: 20px; padding: 30px; max-width: 900px; width: 100%; max-height: 90vh; overflow-y: auto; box-shadow: 0 20px 60px rgba(0,0,0,0.3);">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px; border-bottom: 2px solid #E5E7EB; padding-bottom: 15px;">
+                        <h2 style="color: #374151; margin: 0; font-size: 1.8rem;">
+                            <i class="fas fa-clipboard-list"></i> Registros de Chats
+                        </h2>
+                        <button onclick="document.getElementById('modal-registros-chats').remove()" style="background: #E5E7EB; border: none; width: 35px; height: 35px; border-radius: 50%; cursor: pointer; font-size: 20px; color: #374151;">&times;</button>
+                    </div>
+                    
+                    <div style="background: #FEF3C7; border-left: 4px solid #F59E0B; padding: 15px; border-radius: 10px; margin-bottom: 20px;">
+                        <p style="color: #92400E; margin: 0; line-height: 1.6; font-size: 0.95rem;">
+                            <strong>Total de registros:</strong> ${this.registroChats.length}<br>
+                            <strong>Comunidad:</strong> ${this.comunidadSlug}<br>
+                            <strong>Estos registros se guardan para seguridad y revisión.</strong>
+                        </p>
+                    </div>
+                    
+                    <div style="margin-bottom: 20px;">
+                        <button onclick="if(window.foroComunidad) window.foroComunidad.exportarRegistrosChats()" style="background: linear-gradient(135deg, #10B981, #059669); color: white; border: none; padding: 10px 20px; border-radius: 8px; cursor: pointer; font-weight: 600; margin-right: 10px;">
+                            <i class="fas fa-download"></i> Exportar a JSON
+                        </button>
+                        <button onclick="if(window.foroComunidad) window.foroComunidad.limpiarRegistrosChats()" style="background: #EF4444; color: white; border: none; padding: 10px 20px; border-radius: 8px; cursor: pointer; font-weight: 600;">
+                            <i class="fas fa-trash"></i> Limpiar Registros
+                        </button>
+                    </div>
+                    
+                    <div style="max-height: 500px; overflow-y: auto;">
+                        ${this.registroChats.map((registro, index) => {
+                            const fecha = new Date(registro.fecha || registro.timestamp).toLocaleString('es-AR');
+                            const accionIconos = {
+                                'inicio_chat': '💬',
+                                'chat_iniciado': '💬',
+                                'mensaje_enviado': '📤',
+                                'contacto_ong': '🤝'
+                            };
+                            
+                            return `
+                                <div style="background: #F9FAFB; border-left: 4px solid #10B981; padding: 15px; border-radius: 10px; margin-bottom: 15px;">
+                                    <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 10px; flex-wrap: wrap; gap: 10px;">
+                                        <div>
+                                            <strong style="color: #374151; font-size: 1.1rem;">
+                                                ${accionIconos[registro.accion] || '📝'} ${this.escapeHtml(registro.accion || 'Acción')}
+                                            </strong>
+                                            ${registro.nombreONG ? `
+                                                <p style="color: #6B7280; margin: 5px 0 0 0; font-size: 0.95rem;">
+                                                    <strong>ONG:</strong> ${this.escapeHtml(registro.nombreONG)}
+                                                </p>
+                                            ` : ''}
+                                        </div>
+                                        <span style="color: #9CA3AF; font-size: 0.85rem;">${fecha}</span>
+                                    </div>
+                                    
+                                    ${registro.mensaje ? `
+                                        <div style="background: white; padding: 10px; border-radius: 8px; margin-top: 10px;">
+                                            <p style="color: #374151; margin: 0; font-size: 0.9rem;">
+                                                <strong>Mensaje:</strong> ${this.escapeHtml(registro.mensaje)}
+                                            </p>
+                                        </div>
+                                    ` : ''}
+                                    
+                                    <div style="margin-top: 10px; font-size: 0.8rem; color: #9CA3AF;">
+                                        <strong>ID:</strong> ${registro.id || 'N/A'} | 
+                                        <strong>Tipo:</strong> ${registro.tipo || 'N/A'}
+                                    </div>
+                                </div>
+                            `;
+                        }).join('')}
+                    </div>
+                </div>
+            </div>
+        `;
+        
+        document.body.insertAdjacentHTML('beforeend', modalHTML);
+    }
+    
+    // Exportar registros a JSON para revisión
+    exportarRegistrosChats() {
+        const datos = {
+            comunidad: this.comunidadSlug,
+            fecha_exportacion: new Date().toISOString(),
+            total_registros: this.registroChats.length,
+            registros: this.registroChats
+        };
+        
+        const json = JSON.stringify(datos, null, 2);
+        const blob = new Blob([json], { type: 'application/json' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `registros_chats_${this.comunidadSlug}_${new Date().toISOString().split('T')[0]}.json`;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+        
+        alert(`✅ Registros exportados. Total: ${this.registroChats.length} registros.`);
+    }
+    
+    // Limpiar registros (con confirmación)
+    limpiarRegistrosChats() {
+        if (!confirm(`¿Estás seguro de que querés eliminar TODOS los ${this.registroChats.length} registros de chats?\n\nEsta acción no se puede deshacer.`)) {
+            return;
+        }
+        
+        this.registroChats = [];
+        this.guardarRegistrosChats();
+        
+        // También limpiar en Supabase si está disponible
+        if (this.supabase && this.autorHash) {
+            this.supabase
+                .from('registro_chats_comunidades')
+                .delete()
+                .eq('usuario_hash', this.autorHash)
+                .eq('comunidad_slug', this.comunidadSlug)
+                .then(() => {
+                    console.log('✅ Registros eliminados de Supabase');
+                })
+                .catch(error => {
+                    console.warn('⚠️ No se pudieron eliminar registros de Supabase:', error);
+                });
+        }
+        
+        alert('✅ Registros eliminados.');
+        document.getElementById('modal-registros-chats')?.remove();
+    }
+    
+    // Iniciar chat con ONG
+    iniciarChatONG(ongId, nombreONG) {
+        // Registrar inicio de chat
+        this.registrarChat({
+            ongId: ongId,
+            nombreONG: nombreONG,
+            accion: 'chat_iniciado',
+            timestamp: new Date().toISOString(),
+            usuarioHash: this.autorHash
+        });
+        
+        const chatHTML = `
+            <div id="chat-ong-${ongId}" style="position: fixed; bottom: 20px; right: 20px; width: 400px; max-height: 600px; background: white; border-radius: 15px; box-shadow: 0 10px 40px rgba(0,0,0,0.3); z-index: 10000; display: flex; flex-direction: column;">
+                <div style="background: linear-gradient(135deg, #10B981, #059669); color: white; padding: 20px; border-radius: 15px 15px 0 0; display: flex; justify-content: space-between; align-items: center;">
+                    <div>
+                        <h3 style="margin: 0; font-size: 1.2rem;">🤝 ${this.escapeHtml(nombreONG)}</h3>
+                        <p style="margin: 5px 0 0 0; font-size: 0.85rem; opacity: 0.9;">
+                            <i class="fas fa-lock"></i> Mensaje privado
+                        </p>
+                    </div>
+                    <button onclick="document.getElementById('chat-ong-${ongId}').remove()" style="background: rgba(255,255,255,0.2); border: none; color: white; width: 30px; height: 30px; border-radius: 50%; cursor: pointer; font-size: 18px;">&times;</button>
+                </div>
+                <div id="mensajes-chat-ong-${ongId}" style="flex: 1; padding: 20px; overflow-y: auto; max-height: 400px; background: #F9FAFB;">
+                    <div style="background: #ECFDF5; border-left: 4px solid #10B981; padding: 15px; border-radius: 8px; margin-bottom: 15px;">
+                        <p style="margin: 0; color: #065F46; font-size: 0.9rem; line-height: 1.6;">
+                            <strong>🔒 Conversación PRIVADA con ${this.escapeHtml(nombreONG)}.</strong> 
+                            Los mensajes solo los verán tú y la organización. Esta conversación queda registrada por seguridad.
+                        </p>
+                    </div>
+                    <div style="background: white; padding: 15px; border-radius: 10px; margin-bottom: 10px;">
+                        <p style="margin: 0; color: #374151;">Hola, me gustaría coordinar con ustedes para ayudar en su zona.</p>
+                        <span style="font-size: 0.75rem; color: #9CA3AF; margin-top: 5px; display: block;">${new Date().toLocaleTimeString('es-AR')}</span>
+                    </div>
+                </div>
+                <div style="padding: 15px; border-top: 1px solid #E5E7EB; display: flex; gap: 10px;">
+                    <input type="text" id="input-mensaje-ong-${ongId}" placeholder="Escribe tu mensaje..." style="flex: 1; padding: 10px; border: 2px solid #E5E7EB; border-radius: 8px; font-size: 0.95rem;" onkeypress="if(event.key === 'Enter' && window.foroComunidad) window.foroComunidad.enviarMensajeONG('${ongId}', '${this.escapeHtml(nombreONG)}')">
+                    <button onclick="if(window.foroComunidad) window.foroComunidad.enviarMensajeONG('${ongId}', '${this.escapeHtml(nombreONG)}')" style="background: linear-gradient(135deg, #10B981, #059669); color: white; border: none; padding: 10px 20px; border-radius: 8px; cursor: pointer; font-weight: 600;">
+                        <i class="fas fa-paper-plane"></i>
+                    </button>
+                </div>
+            </div>
+        `;
+        
+        document.body.insertAdjacentHTML('beforeend', chatHTML);
+        
+        // Focus en el input
+        setTimeout(() => {
+            const input = document.getElementById(`input-mensaje-ong-${ongId}`);
+            if (input) input.focus();
+        }, 100);
+    }
+    
+    // Enviar mensaje a ONG (con registro)
+    enviarMensajeONG(ongId, nombreONG) {
+        const input = document.getElementById(`input-mensaje-ong-${ongId}`);
+        const mensajesContainer = document.getElementById(`mensajes-chat-ong-${ongId}`);
+        
+        if (!input || !input.value.trim() || !mensajesContainer) return;
+        
+        const mensaje = input.value.trim();
+        const hora = new Date().toLocaleTimeString('es-AR');
+        
+        // Registrar mensaje enviado
+        this.registrarChat({
+            ongId: ongId,
+            nombreONG: nombreONG,
+            accion: 'mensaje_enviado',
+            mensaje: mensaje.substring(0, 100), // Solo primeros 100 caracteres para registro
+            timestamp: new Date().toISOString(),
+            usuarioHash: this.autorHash
+        });
+        
+        // Mostrar mensaje localmente
+        const mensajeHTML = `
+            <div style="background: white; padding: 15px; border-radius: 10px; margin-bottom: 10px; margin-left: 20px;">
+                <p style="margin: 0; color: #374151;">${this.escapeHtml(mensaje)}</p>
+                <span style="font-size: 0.75rem; color: #9CA3AF; margin-top: 5px; display: block;">${hora}</span>
+            </div>
+        `;
+        
+        mensajesContainer.insertAdjacentHTML('beforeend', mensajeHTML);
+        input.value = '';
+        
+        // Scroll al final
+        mensajesContainer.scrollTop = mensajesContainer.scrollHeight;
+        
+        // TODO: Integrar con sistema de mensajería PRIVADA de Cresalia
+        // Este mensaje debe enviarse PRIVADAMENTE a la ONG
+        console.log(`💬 Mensaje PRIVADO enviado a ONG ${nombreONG} (${ongId}):`, mensaje);
+    }
+    
+    // Limpiar filtros
+    limpiarFiltros() {
+        const filtroPais = document.getElementById('filtro-pais');
+        const filtroProvincia = document.getElementById('filtro-provincia');
+        const filtroZona = document.getElementById('filtro-zona');
+        
+        if (filtroPais) filtroPais.value = '';
+        if (filtroProvincia) filtroProvincia.value = '';
+        if (filtroZona) filtroZona.value = '';
+        
+        // Si hay posts, mostrarlos todos
+        const posts = document.querySelectorAll('.post');
+        posts.forEach(post => {
+            post.style.display = 'block';
+        });
+        
+        // Si hay cards de ONGs, recargar todas
+        const ongCards = document.querySelectorAll('.ong-campana-card');
+        if (ongCards.length > 0) {
+            // Recargar búsqueda sin filtros
+            this.buscarONGsCampañas();
+        }
+        
+        const mensajeNoResultados = document.getElementById('mensaje-no-resultados');
+        if (mensajeNoResultados) {
+            mensajeNoResultados.remove();
+        }
+    }
+    
+    // Abrir chat de ubicación con advertencias de seguridad
+    abrirChatUbicacion(postId, autorAlias) {
+        // Mostrar advertencias de seguridad primero
+        const advertenciasHTML = `
+            <div id="modal-advertencias-chat" style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); display: flex; align-items: center; justify-content: center; z-index: 999999; padding: 20px;">
+                <div style="background: white; border-radius: 20px; padding: 40px; max-width: 600px; width: 100%; box-shadow: 0 20px 60px rgba(0,0,0,0.3); text-align: left;">
+                    <div style="font-size: 3rem; margin-bottom: 20px; text-align: center;">🛡️</div>
+                    <h2 style="color: #EF4444; margin-bottom: 20px; font-size: 1.8rem; text-align: center;">Advertencias de Seguridad</h2>
+                    
+                    <div style="background: #FEF2F2; border-left: 4px solid #EF4444; padding: 20px; border-radius: 10px; margin-bottom: 25px;">
+                        <h4 style="color: #991B1B; margin: 0 0 15px 0; font-size: 1.1rem;">
+                            <i class="fas fa-exclamation-triangle"></i> Importante sobre tu seguridad:
+                        </h4>
+                        <ul style="color: #991B1B; margin: 0; padding-left: 20px; line-height: 1.8; font-size: 0.95rem;">
+                            <li><strong>NO compartas tu dirección exacta</strong> en el chat</li>
+                            <li><strong>NO compartas tu nombre completo</strong> ni datos personales sensibles</li>
+                            <li>Usá solo información general (zona, barrio, puntos de referencia públicos)</li>
+                            <li>Quedate en lugares públicos para encuentros</li>
+                            <li>Informá a alguien de confianza si vas a encontrarte con alguien</li>
+                        </ul>
+                    </div>
+                    
+                    <div style="background: #ECFDF5; border-left: 4px solid #10B981; padding: 20px; border-radius: 10px; margin-bottom: 25px;">
+                        <h4 style="color: #065F46; margin: 0 0 10px 0; font-size: 1rem;">
+                            <i class="fas fa-info-circle"></i> Sobre pagos y comisiones:
+                        </h4>
+                        <p style="color: #065F46; margin: 0; line-height: 1.8; font-size: 0.95rem;">
+                            <strong>Cresalia NO se encarga de los pagos ni recibe comisiones</strong> (a menos que alguien quiera donar, pero no es obligación). 
+                            Solo ofrecemos este espacio para conectar personas. Los acuerdos y pagos se realizan directamente entre las partes.
+                        </p>
+                    </div>
+                    
+                    <div style="display: flex; gap: 15px; justify-content: center; margin-top: 30px;">
+                        <button onclick="document.getElementById('modal-advertencias-chat').remove(); if(window.foroComunidad) window.foroComunidad.iniciarChatUbicacion('${postId}', '${this.escapeHtml(autorAlias)}')" style="background: linear-gradient(135deg, #10B981, #059669); color: white; padding: 15px 30px; border: none; border-radius: 10px; cursor: pointer; font-weight: 600; transition: all 0.3s;" onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 5px 20px rgba(16, 185, 129, 0.4)'" onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='none'">
+                            <i class="fas fa-check"></i> Entiendo, continuar
+                        </button>
+                        <button onclick="document.getElementById('modal-advertencias-chat').remove()" style="background: #E5E7EB; color: #374151; padding: 15px 30px; border: none; border-radius: 10px; cursor: pointer; font-weight: 600;">
+                            Cancelar
+                        </button>
+                    </div>
+                </div>
+            </div>
+        `;
+        
+        document.body.insertAdjacentHTML('beforeend', advertenciasHTML);
+    }
+    
+    // Iniciar chat de ubicación (MENSAJERÍA PRIVADA)
+    iniciarChatUbicacion(postId, autorAlias) {
+        // Este es un chat PRIVADO de mensajería entre dos personas
+        // NO se publica nada en el foro, es comunicación directa y privada
+        // Aquí se integraría con el sistema de chat existente de Cresalia para mensajería en tiempo real
+        
+        const chatHTML = `
+            <div id="chat-ubicacion-${postId}" style="position: fixed; bottom: 20px; right: 20px; width: 400px; max-height: 600px; background: white; border-radius: 15px; box-shadow: 0 10px 40px rgba(0,0,0,0.3); z-index: 10000; display: flex; flex-direction: column;">
+                <div style="background: linear-gradient(135deg, #10B981, #059669); color: white; padding: 20px; border-radius: 15px 15px 0 0; display: flex; justify-content: space-between; align-items: center;">
+                    <div>
+                        <h3 style="margin: 0; font-size: 1.2rem;">💬 Mensaje privado a ${this.escapeHtml(autorAlias)}</h3>
+                        <p style="margin: 5px 0 0 0; font-size: 0.85rem; opacity: 0.9;">
+                            <i class="fas fa-lock"></i> Conversación privada
+                        </p>
+                    </div>
+                    <button onclick="document.getElementById('chat-ubicacion-${postId}').remove()" style="background: rgba(255,255,255,0.2); border: none; color: white; width: 30px; height: 30px; border-radius: 50%; cursor: pointer; font-size: 18px;">&times;</button>
+                </div>
+                <div id="mensajes-chat-${postId}" style="flex: 1; padding: 20px; overflow-y: auto; max-height: 400px; background: #F9FAFB;">
+                    <div style="background: #ECFDF5; border-left: 4px solid #10B981; padding: 15px; border-radius: 8px; margin-bottom: 15px;">
+                        <p style="margin: 0; color: #065F46; font-size: 0.9rem; line-height: 1.6;">
+                            <strong>🔒 Esta es una conversación PRIVADA.</strong> Los mensajes solo los verán tú y ${this.escapeHtml(autorAlias)}. 
+                            <strong>NO compartas dirección exacta ni nombre completo.</strong> Solo información general para coordinar.
+                        </p>
+                    </div>
+                    <div style="background: white; padding: 15px; border-radius: 10px; margin-bottom: 10px;">
+                        <p style="margin: 0; color: #374151;">Hola, estoy cerca de tu zona. ¿Podemos coordinar por mensaje privado?</p>
+                        <span style="font-size: 0.75rem; color: #9CA3AF; margin-top: 5px; display: block;">${new Date().toLocaleTimeString('es-AR')}</span>
+                    </div>
+                </div>
+                <div style="padding: 15px; border-top: 1px solid #E5E7EB; display: flex; gap: 10px;">
+                    <input type="text" id="input-mensaje-${postId}" placeholder="Escribe tu mensaje privado..." style="flex: 1; padding: 10px; border: 2px solid #E5E7EB; border-radius: 8px; font-size: 0.95rem;" onkeypress="if(event.key === 'Enter' && window.foroComunidad) window.foroComunidad.enviarMensajeChat('${postId}')">
+                    <button onclick="if(window.foroComunidad) window.foroComunidad.enviarMensajeChat('${postId}')" style="background: linear-gradient(135deg, #10B981, #059669); color: white; border: none; padding: 10px 20px; border-radius: 8px; cursor: pointer; font-weight: 600;">
+                        <i class="fas fa-paper-plane"></i>
+                    </button>
+                </div>
+            </div>
+        `;
+        
+        document.body.insertAdjacentHTML('beforeend', chatHTML);
+        
+        // Focus en el input
+        setTimeout(() => {
+            const input = document.getElementById(`input-mensaje-${postId}`);
+            if (input) input.focus();
+        }, 100);
+        
+        // TODO: Integrar con sistema de mensajería real de Cresalia
+        // Los mensajes deben ser PRIVADOS y solo visibles para los dos participantes
+        console.log(`💬 Iniciando chat privado con ${autorAlias} para post ${postId}`);
+    }
+    
+    // Enviar mensaje en el chat PRIVADO
+    enviarMensajeChat(postId) {
+        const input = document.getElementById(`input-mensaje-${postId}`);
+        const mensajesContainer = document.getElementById(`mensajes-chat-${postId}`);
+        
+        if (!input || !input.value.trim() || !mensajesContainer) return;
+        
+        const mensaje = input.value.trim();
+        const hora = new Date().toLocaleTimeString('es-AR');
+        
+        // Mostrar mensaje localmente (solo para UI)
+        const mensajeHTML = `
+            <div style="background: white; padding: 15px; border-radius: 10px; margin-bottom: 10px; margin-left: 20px;">
+                <p style="margin: 0; color: #374151;">${this.escapeHtml(mensaje)}</p>
+                <span style="font-size: 0.75rem; color: #9CA3AF; margin-top: 5px; display: block;">${hora}</span>
+            </div>
+        `;
+        
+        mensajesContainer.insertAdjacentHTML('beforeend', mensajeHTML);
+        input.value = '';
+        
+        // Scroll al final
+        mensajesContainer.scrollTop = mensajesContainer.scrollHeight;
+        
+        // TODO: Integrar con sistema de mensajería PRIVADA de Cresalia
+        // Este mensaje debe enviarse PRIVADAMENTE al otro usuario, NO publicarse en el foro
+        // Debe usar el sistema de chat/mensajería existente de Cresalia
+        console.log(`💬 Mensaje PRIVADO enviado para post ${postId}:`, mensaje);
+        
+        // Aquí debería llamarse a una función del sistema de mensajería real:
+        // if (typeof SistemaMensajeria !== 'undefined') {
+        //     SistemaMensajeria.enviarMensajePrivado(postId, mensaje, this.autorHash);
+        // }
     }
     
     conectarTabHistorial() {
@@ -185,19 +1287,79 @@ class SistemaForoComunidades {
         });
     }
     
+    // Verificar si la comunidad permite crear posts
+    puedeCrearPost() {
+        // Comunidades de emergencias y solidario solo permiten agradecer cuando se complete el monto
+        const comunidadesRestringidas = ['cresalia-solidario', 'cresalia-solidario-emergencias'];
+        
+        if (comunidadesRestringidas.includes(this.comunidadSlug)) {
+            // Solo permitir si hay una campaña completada para agradecer
+            return this.tieneCampañaCompletadaParaAgradecer();
+        }
+        
+        return true; // Otras comunidades permiten crear posts normalmente
+    }
+    
+    // Verificar si hay campaña completada para agradecer
+    tieneCampañaCompletadaParaAgradecer() {
+        // Verificar en localStorage o Supabase si hay campañas completadas
+        // donde el usuario aún no haya agradecido
+        try {
+            const campañasCompletadas = JSON.parse(localStorage.getItem(`campañas_completadas_${this.comunidadSlug}`) || '[]');
+            const yaAgradecidas = JSON.parse(localStorage.getItem(`campañas_agradecidas_${this.autorHash}`) || '[]');
+            
+            // Verificar si hay alguna campaña completada sin agradecer
+            return campañasCompletadas.some(c => !yaAgradecidas.includes(c.id));
+        } catch (e) {
+            return false;
+        }
+    }
+    
     mostrarFormularioPost() {
+        // Verificar restricciones de escritura
+        if (!this.puedeCrearPost()) {
+            this.mostrarMensajeRestriccionEscritura();
+            return;
+        }
+        
         const modal = document.getElementById('modal-crear-post');
         if (modal) {
-            modal.style.display = 'flex';
-            modal.style.position = 'fixed';
-            modal.style.top = '0';
-            modal.style.left = '0';
-            modal.style.width = '100%';
-            modal.style.height = '100%';
-            modal.style.zIndex = '10000';
-            modal.style.backgroundColor = 'rgba(0,0,0,0.5)';
-            modal.style.alignItems = 'center';
-            modal.style.justifyContent = 'center';
+            // Aplicar estilos inline con !important para sobrescribir CSS
+            modal.style.cssText = `
+                position: fixed !important;
+                top: 0 !important;
+                left: 0 !important;
+                width: 100% !important;
+                height: 100% !important;
+                background: rgba(0,0,0,0.7) !important;
+                display: flex !important;
+                align-items: center !important;
+                justify-content: center !important;
+                z-index: 10000 !important;
+                opacity: 1 !important;
+                visibility: visible !important;
+            `;
+            
+            // Asegurar que el modal-content también esté visible
+            const modalContent = modal.querySelector('.modal-content');
+            if (modalContent) {
+                modalContent.style.cssText = `
+                    background: white !important;
+                    border-radius: 20px !important;
+                    padding: 30px !important;
+                    max-width: 700px !important;
+                    width: 90% !important;
+                    max-height: 90vh !important;
+                    overflow-y: auto !important;
+                    box-shadow: 0 20px 60px rgba(0,0,0,0.3) !important;
+                    position: relative !important;
+                    z-index: 10001 !important;
+                `;
+            }
+            
+            // Remover clases que puedan ocultar el modal
+            modal.classList.remove('hidden');
+            modal.classList.add('show');
             
             // Si no tiene alias, pedirlo primero
             if (!this.autorAlias) {
@@ -207,13 +1369,149 @@ class SistemaForoComunidades {
             console.log('✅ Modal de crear post mostrado');
         } else {
             console.error('❌ No se encontró el modal modal-crear-post');
+            // Intentar crear el modal si no existe
+            this.crearModalSiNoExiste();
         }
+    }
+    
+    crearModalSiNoExiste() {
+        // Crear el modal si no existe en el HTML
+        const modalHTML = `
+            <div id="modal-crear-post" class="modal" style="display: none;">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h3>💜 Crear Nuevo Post</h3>
+                        <button class="close-btn" id="cerrar-form-post" onclick="if(window.foroComunidad) window.foroComunidad.ocultarFormularioPost()">&times;</button>
+                    </div>
+                    <form id="form-crear-post">
+                        <div class="form-group">
+                            <label for="autor-alias">Tu nombre o alias (opcional)</label>
+                            <input type="text" id="autor-alias" placeholder="Ej: Anónimo, María, etc.">
+                        </div>
+                        <div class="form-group">
+                            <label for="post-titulo">Título (opcional)</label>
+                            <input type="text" id="post-titulo" placeholder="Un título breve para tu post">
+                        </div>
+                        <div class="form-group">
+                            <label for="post-contenido">Contenido *</label>
+                            <textarea id="post-contenido" rows="8" required placeholder="Comparte tu experiencia, pregunta o reflexión..."></textarea>
+                        </div>
+                        ${this.esComunidadAyuda ? `
+                        <!-- Campos de ubicación para comunidades de ayuda -->
+                        <div style="background: linear-gradient(135deg, #ECFDF5 0%, #D1FAE5 100%); border-left: 4px solid #10B981; padding: 20px; border-radius: 10px; margin: 20px 0;">
+                            <h4 style="color: #047857; margin: 0 0 15px 0; font-size: 1.1rem;">
+                                <i class="fas fa-map-marker-alt"></i> Ubicación (para facilitar la ayuda)
+                            </h4>
+                            <div class="form-group">
+                                <label for="post-pais">País *</label>
+                                <select id="post-pais" required style="width: 100%; padding: 10px; border: 2px solid #E5E7EB; border-radius: 8px; font-size: 1rem;">
+                                    <option value="">Seleccionar país...</option>
+                                    <option value="Argentina">Argentina</option>
+                                    <option value="Uruguay">Uruguay</option>
+                                    <option value="Chile">Chile</option>
+                                    <option value="Paraguay">Paraguay</option>
+                                    <option value="Brasil">Brasil</option>
+                                    <option value="Otro">Otro</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label for="post-provincia">Provincia/Estado *</label>
+                                <input type="text" id="post-provincia" required placeholder="Ej: Buenos Aires, Córdoba, etc." style="width: 100%; padding: 10px; border: 2px solid #E5E7EB; border-radius: 8px; font-size: 1rem;">
+                            </div>
+                            <div class="form-group">
+                                <label for="post-zona">Zona/Barrio (no dirección exacta) *</label>
+                                <input type="text" id="post-zona" required placeholder="Ej: Zona Norte, Centro, Barrio X, etc." style="width: 100%; padding: 10px; border: 2px solid #E5E7EB; border-radius: 8px; font-size: 1rem;">
+                                <small style="color: #6B7280; font-size: 0.85rem; display: block; margin-top: 5px;">
+                                    <i class="fas fa-shield-alt"></i> Por seguridad, no incluyas dirección exacta. Solo zona o barrio general.
+                                </small>
+                            </div>
+                        </div>
+                        
+                        <!-- Aclaración sobre pagos y comisiones -->
+                        <div style="background: linear-gradient(135deg, #FEF3C7 0%, #FDE68A 100%); border-left: 4px solid #F59E0B; padding: 20px; border-radius: 10px; margin: 20px 0;">
+                            <h4 style="color: #92400E; margin: 0 0 10px 0; font-size: 1rem;">
+                                <i class="fas fa-info-circle"></i> Importante sobre pagos y comisiones
+                            </h4>
+                            <p style="color: #92400E; margin: 0; line-height: 1.8; font-size: 0.95rem;">
+                                <strong>Cresalia NO se encarga de los pagos ni recibe comisiones</strong> (a menos que alguien quiera donar, pero no es obligación). 
+                                Solo ofrecemos este espacio para conectar personas. Los acuerdos y pagos se realizan directamente entre las partes.
+                            </p>
+                        </div>
+                        ` : ''}
+                        <div style="display: flex; gap: 10px; margin-top: 20px;">
+                            <button type="submit" class="btn-primary" style="flex: 1;">
+                                <i class="fas fa-paper-plane"></i> Publicar
+                            </button>
+                            <button type="button" class="btn-secondary" onclick="if(window.foroComunidad) window.foroComunidad.ocultarFormularioPost()">
+                                Cancelar
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        `;
+        
+        document.body.insertAdjacentHTML('beforeend', modalHTML);
+        
+        // Configurar el formulario
+        const formPost = document.getElementById('form-crear-post');
+        if (formPost) {
+            formPost.addEventListener('submit', (e) => {
+                e.preventDefault();
+                this.crearPost();
+            });
+        }
+        
+        // Mostrar el modal después de crearlo
+        setTimeout(() => {
+            this.mostrarFormularioPost();
+        }, 100);
+    }
+    
+    mostrarMensajeRestriccionEscritura() {
+        const mensajeHTML = `
+            <div id="modal-restriccion-escritura" style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); display: flex; align-items: center; justify-content: center; z-index: 999999; padding: 20px;">
+                <div style="background: white; border-radius: 20px; padding: 40px; max-width: 600px; width: 100%; box-shadow: 0 20px 60px rgba(0,0,0,0.3); text-align: center;">
+                    <div style="font-size: 4rem; margin-bottom: 20px;">🔒</div>
+                    <h2 style="color: #EF4444; margin-bottom: 20px; font-size: 1.8rem;">Escritura Restringida</h2>
+                    
+                    <div style="background: #FEF3C7; border-left: 4px solid #F59E0B; padding: 20px; border-radius: 10px; margin-bottom: 25px; text-align: left;">
+                        <p style="color: #92400E; margin: 0; line-height: 1.8; font-size: 1rem;">
+                            <strong>Esta comunidad tiene restricciones de escritura.</strong>
+                        </p>
+                        <p style="color: #92400E; margin: 10px 0 0 0; line-height: 1.8; font-size: 1rem;">
+                            En <strong>Cresalia Solidario</strong> y <strong>Cresalia Solidario Emergencias</strong>, 
+                            solo podés escribir para <strong>agradecer</strong> una vez que una campaña haya alcanzado su monto objetivo.
+                        </p>
+                        <p style="color: #92400E; margin: 10px 0 0 0; line-height: 1.8; font-size: 0.95rem;">
+                            Esto ayuda a mantener el foco en las campañas activas y prevenir spam.
+                        </p>
+                    </div>
+                    
+                    <button onclick="document.getElementById('modal-restriccion-escritura').remove()" style="background: linear-gradient(135deg, #10B981, #059669); color: white; padding: 15px 30px; border: none; border-radius: 10px; cursor: pointer; font-weight: 600; transition: all 0.3s;" onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 5px 20px rgba(16, 185, 129, 0.4)'" onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='none'">
+                        <i class="fas fa-check"></i> Entendido
+                    </button>
+                </div>
+            </div>
+        `;
+        
+        document.body.insertAdjacentHTML('beforeend', mensajeHTML);
     }
     
     ocultarFormularioPost() {
         const modal = document.getElementById('modal-crear-post');
         if (modal) {
             modal.style.display = 'none';
+            modal.style.opacity = '0';
+            modal.style.visibility = 'hidden';
+            modal.classList.remove('show');
+            modal.classList.add('hidden');
+            
+            // Limpiar formulario
+            const form = document.getElementById('form-crear-post');
+            if (form) {
+                form.reset();
+            }
         }
     }
     
@@ -278,6 +1576,34 @@ class SistemaForoComunidades {
         const contenido = contenidoInput.value.trim();
         const alias = aliasInput.value.trim() || 'Anónimo';
         
+        // Obtener datos de ubicación si es comunidad de ayuda
+        let ubicacion = null;
+        if (this.esComunidadAyuda) {
+            const paisInput = document.getElementById('post-pais');
+            const provinciaInput = document.getElementById('post-provincia');
+            const zonaInput = document.getElementById('post-zona');
+            
+            if (!paisInput || !provinciaInput || !zonaInput) {
+                alert('Error: Campos de ubicación no encontrados');
+                return;
+            }
+            
+            const pais = paisInput.value.trim();
+            const provincia = provinciaInput.value.trim();
+            const zona = zonaInput.value.trim();
+            
+            if (!pais || !provincia || !zona) {
+                alert('Por favor, completá todos los campos de ubicación.');
+                return;
+            }
+            
+            ubicacion = {
+                pais: pais,
+                provincia: provincia,
+                zona: zona
+            };
+        }
+        
         if (!contenido || contenido.length < 10) {
             alert('Por favor, escribí al menos 10 caracteres en tu mensaje.');
             return;
@@ -293,7 +1619,8 @@ class SistemaForoComunidades {
             autor_alias: alias,
             titulo: titulo || null,
             contenido: contenido,
-            estado: 'publicado'
+            estado: 'publicado',
+            ubicacion: ubicacion ? JSON.stringify(ubicacion) : null
         };
         
         try {
@@ -311,6 +1638,11 @@ class SistemaForoComunidades {
                 this.mostrarMensaje('Post creado exitosamente', 'success');
                 this.cargarPosts();
                 this.ocultarFormularioPost();
+                
+                // Mostrar mensaje de espera después de crear el post
+                setTimeout(() => {
+                    this.mostrarMensajeEsperaInicial();
+                }, 500);
                 
                 // Limpiar formulario
                 tituloInput.value = '';
@@ -342,6 +1674,11 @@ class SistemaForoComunidades {
                 this.cargarPosts();
                 this.ocultarFormularioPost();
                 
+                // Mostrar mensaje de espera después de crear el post
+                setTimeout(() => {
+                    this.mostrarMensajeEsperaInicial();
+                }, 500);
+                
                 tituloInput.value = '';
                 contenidoInput.value = '';
             }
@@ -349,6 +1686,54 @@ class SistemaForoComunidades {
             console.error('❌ Error al crear post:', error);
             this.mostrarMensaje('Error al crear el post. Por favor intentá de nuevo.', 'error');
         }
+    }
+    
+    // Mostrar mensaje de espera inicial después de crear un post
+    mostrarMensajeEsperaInicial() {
+        const mensajeHTML = `
+            <div id="mensaje-espera-inicial" style="position: fixed; top: 20px; right: 20px; background: linear-gradient(135deg, #FEF3C7 0%, #FDE68A 100%); border-left: 4px solid #F59E0B; padding: 20px; border-radius: 12px; box-shadow: 0 10px 30px rgba(0,0,0,0.2); max-width: 400px; z-index: 10001; animation: slideInRight 0.5s ease;">
+                <div style="display: flex; align-items: start; gap: 15px;">
+                    <div style="font-size: 2rem;">⏳</div>
+                    <div style="flex: 1;">
+                        <h4 style="color: #92400E; margin: 0 0 10px 0; font-size: 1.1rem;">
+                            <i class="fas fa-clock"></i> Tu post fue publicado
+                        </h4>
+                        <p style="color: #92400E; margin: 0 0 10px 0; line-height: 1.6; font-size: 0.9rem;">
+                            <strong>Queremos ayudar a todos, pero no podemos con el tiempo.</strong> 
+                            Por favor, tené paciencia. Intentamos responder lo más pronto posible.
+                        </p>
+                        <p style="color: #92400E; margin: 0; line-height: 1.6; font-size: 0.9rem;">
+                            <strong>Si pasan 7 días sin respuesta:</strong> Contactá a 
+                            <strong>CRISLA</strong> o escribinos a nuestro correo.
+                        </p>
+                    </div>
+                    <button onclick="document.getElementById('mensaje-espera-inicial').remove()" style="background: none; border: none; font-size: 20px; color: #92400E; cursor: pointer; padding: 0; width: 24px; height: 24px; display: flex; align-items: center; justify-content: center;">&times;</button>
+                </div>
+                <style>
+                    @keyframes slideInRight {
+                        from {
+                            transform: translateX(400px);
+                            opacity: 0;
+                        }
+                        to {
+                            transform: translateX(0);
+                            opacity: 1;
+                        }
+                    }
+                </style>
+            </div>
+        `;
+        
+        document.body.insertAdjacentHTML('beforeend', mensajeHTML);
+        
+        // Auto-cerrar después de 15 segundos
+        setTimeout(() => {
+            const mensaje = document.getElementById('mensaje-espera-inicial');
+            if (mensaje) {
+                mensaje.style.animation = 'slideOutRight 0.5s ease';
+                setTimeout(() => mensaje.remove(), 500);
+            }
+        }, 15000);
     }
     
     async cargarPosts() {
@@ -441,6 +1826,12 @@ class SistemaForoComunidades {
             minute: '2-digit'
         });
         
+        // Verificar si el post tiene más de 7 días sin respuesta
+        const fechaCreacion = new Date(post.created_at);
+        const ahora = new Date();
+        const diasSinRespuesta = (ahora - fechaCreacion) / (1000 * 60 * 60 * 24);
+        const necesitaMensajeEspera = diasSinRespuesta >= 7 && (post.num_comentarios || 0) === 0;
+        
         const esAutor = post.autor_hash === this.autorHash;
         const botonesAutor = esAutor ? `
             <button class="btn-editar" onclick="foroComunidad.editarPost('${post.id}')" title="Editar">
@@ -460,8 +1851,38 @@ class SistemaForoComunidades {
             }
         }
         
+        // Mensaje de espera si es necesario
+        const mensajeEspera = necesitaMensajeEspera ? this.obtenerMensajeEspera() : '';
+        
+        // Parsear ubicación si existe
+        let ubicacionInfo = null;
+        if (post.ubicacion) {
+            try {
+                ubicacionInfo = typeof post.ubicacion === 'string' ? JSON.parse(post.ubicacion) : post.ubicacion;
+            } catch (e) {
+                console.warn('Error parseando ubicación:', e);
+            }
+        }
+        
+        // El botón "Estoy cerca" ya no se usa para posts individuales
+        // Ahora se usa para contactar ONGs desde la búsqueda de ONGs/Campañas
+        const botonEstoyCerca = ''; // Removido - ahora se usa contactarONG()
+        
+        // Información de ubicación
+        const infoUbicacion = this.esComunidadAyuda && ubicacionInfo ? `
+            <div style="background: linear-gradient(135deg, #ECFDF5 0%, #D1FAE5 100%); border-left: 4px solid #10B981; padding: 15px; border-radius: 10px; margin: 15px 0; display: flex; align-items: center; gap: 10px;">
+                <i class="fas fa-map-marker-alt" style="color: #10B981; font-size: 1.5rem;"></i>
+                <div>
+                    <strong style="color: #047857;">📍 Ubicación:</strong>
+                    <span style="color: #374151; margin-left: 5px;">
+                        ${this.escapeHtml(ubicacionInfo.zona)}, ${this.escapeHtml(ubicacionInfo.provincia)}, ${this.escapeHtml(ubicacionInfo.pais)}
+                    </span>
+                </div>
+            </div>
+        ` : '';
+        
         return `
-            <div class="post" data-post-id="${post.id}">
+            <div class="post" data-post-id="${post.id}" data-pais="${ubicacionInfo ? this.escapeHtml(ubicacionInfo.pais) : ''}" data-provincia="${ubicacionInfo ? this.escapeHtml(ubicacionInfo.provincia) : ''}" data-zona="${ubicacionInfo ? this.escapeHtml(ubicacionInfo.zona) : ''}">
                 <div class="post-header">
                     <div class="post-autor">
                         <strong>${this.escapeHtml(post.autor_alias || 'Anónimo')}${badgeVerificado}</strong>
@@ -473,24 +1894,53 @@ class SistemaForoComunidades {
                 </div>
                 ${post.titulo ? `<h3 class="post-titulo">${this.escapeHtml(post.titulo)}</h3>` : ''}
                 <div class="post-contenido">${this.formatearTexto(post.contenido)}</div>
+                ${infoUbicacion}
+                ${mensajeEspera}
                 <div class="post-footer">
                     <button class="btn-comentar" onclick="foroComunidad.mostrarFormularioComentario('${post.id}')">
                         <i class="fas fa-comment"></i> Comentar (${post.num_comentarios || 0})
                     </button>
+                    ${botonEstoyCerca}
                     <div class="reacciones-container" style="display: inline-flex; gap: 5px; align-items: center;">
                         <button class="btn-reaccionar" onclick="foroComunidad.mostrarMenuReacciones('${post.id}')" title="Reaccionar">
                             <i class="fas fa-smile"></i> Reaccionar
                         </button>
-                        <div class="reacciones-contadores" style="display: inline-flex; gap: 8px; margin-left: 5px;">
+                        <div class="reacciones-contadores" style="display: inline-flex; gap: 8px; margin-left: 5px; flex-wrap: wrap;">
                             ${(post.reacciones?.apoyo || 0) > 0 ? `<span style="color: #EF4444; font-size: 0.85rem;"><i class="fas fa-heart"></i> ${post.reacciones.apoyo}</span>` : ''}
                             ${(post.reacciones?.entristece || 0) > 0 ? `<span style="color: #3B82F6; font-size: 0.85rem;"><i class="fas fa-sad-tear"></i> ${post.reacciones.entristece}</span>` : ''}
                             ${(post.reacciones?.me_identifico || 0) > 0 ? `<span style="color: #8B5CF6; font-size: 0.85rem;"><i class="fas fa-hand-paper"></i> ${post.reacciones.me_identifico}</span>` : ''}
                             ${(post.reacciones?.gracias || 0) > 0 ? `<span style="color: #10B981; font-size: 0.85rem;"><i class="fas fa-hands-clapping"></i> ${post.reacciones.gracias}</span>` : ''}
+                            ${(post.reacciones?.felicidades || 0) > 0 ? `<span style="color: #F59E0B; font-size: 0.85rem;">🎉 ${post.reacciones.felicidades}</span>` : ''}
+                            ${(post.reacciones?.rezo || 0) > 0 ? `<span style="color: #8B5CF6; font-size: 0.85rem;">🙏 ${post.reacciones.rezo}</span>` : ''}
                         </div>
                     </div>
                 </div>
                 <div class="comentarios-container" id="comentarios-${post.id}">
                     <!-- Comentarios se cargarán aquí -->
+                </div>
+            </div>
+        `;
+    }
+    
+    // Obtener mensaje de espera
+    obtenerMensajeEspera() {
+        return `
+            <div style="background: linear-gradient(135deg, #FEF3C7 0%, #FDE68A 100%); border-left: 4px solid #F59E0B; padding: 20px; border-radius: 10px; margin: 20px 0; text-align: left;">
+                <div style="display: flex; align-items: start; gap: 15px;">
+                    <div style="font-size: 2rem;">⏳</div>
+                    <div style="flex: 1;">
+                        <h4 style="color: #92400E; margin: 0 0 10px 0; font-size: 1.1rem;">
+                            <i class="fas fa-clock"></i> Mensaje de Espera
+                        </h4>
+                        <p style="color: #92400E; margin: 0 0 10px 0; line-height: 1.8; font-size: 0.95rem;">
+                            <strong>Queremos ayudar a todos, pero no podemos con el tiempo.</strong> 
+                            Por favor, tené paciencia. Intentamos responder lo más pronto posible.
+                        </p>
+                        <p style="color: #92400E; margin: 0; line-height: 1.8; font-size: 0.95rem;">
+                            <strong>Si han pasado más de 7 días sin respuesta:</strong> Por favor, contactá a 
+                            <strong>CRISLA</strong> o escribinos a nuestro correo. Estamos trabajando para atender todas las solicitudes.
+                        </p>
+                    </div>
                 </div>
             </div>
         `;
@@ -1051,8 +2501,61 @@ class SistemaForoComunidades {
         }
     }
     
+    // Obtener un post por ID
+    async obtenerPost(postId) {
+        try {
+            if (this.supabase) {
+                const { data, error } = await this.supabase
+                    .from('posts_comunidades')
+                    .select('*')
+                    .eq('id', postId)
+                    .single();
+                
+                if (error) throw error;
+                return data;
+            } else {
+                const postsKey = `posts_${this.comunidadSlug}`;
+                const posts = JSON.parse(localStorage.getItem(postsKey) || '[]');
+                return posts.find(p => p.id === postId) || null;
+            }
+        } catch (error) {
+            console.error('Error obteniendo post:', error);
+            return null;
+        }
+    }
+    
+    // Verificar si un post tiene avances
+    verificarAvancesPost(post) {
+        if (!post) return false;
+        
+        // Verificar si hay comentarios de CRISLA o administradores
+        // Verificar si el estado cambió (de pendiente a en_proceso, etc.)
+        // Verificar si hay actualizaciones recientes
+        const estadosConAvance = ['en_proceso', 'revisado', 'completado', 'resuelto'];
+        if (estadosConAvance.includes(post.estado)) {
+            return true;
+        }
+        
+        // Verificar si hay comentarios recientes (menos de 7 días)
+        if (post.ultima_actividad) {
+            const ultimaActividad = new Date(post.ultima_actividad);
+            const ahora = new Date();
+            const diasDiferencia = (ahora - ultimaActividad) / (1000 * 60 * 60 * 24);
+            if (diasDiferencia <= 7 && post.num_comentarios > 0) {
+                return true;
+            }
+        }
+        
+        // Verificar si hay actualizaciones en el contenido (metadata)
+        if (post.metadata && post.metadata.actualizaciones && post.metadata.actualizaciones.length > 0) {
+            return true;
+        }
+        
+        return false;
+    }
+    
     // Mostrar menú de reacciones
-    mostrarMenuReacciones(postId) {
+    async mostrarMenuReacciones(postId) {
         // Eliminar menú existente si hay
         const menuExistente = document.getElementById(`menu-reacciones-${postId}`);
         if (menuExistente) {
@@ -1075,11 +2578,21 @@ class SistemaForoComunidades {
             border: 2px solid #E5E7EB;
         `;
         
+        // Obtener el post para verificar si hay avances
+        const post = await this.obtenerPost(postId);
+        const tieneAvances = this.verificarAvancesPost(post);
+        
         const reacciones = [
             { tipo: 'apoyo', icono: '❤️', texto: 'Apoyo', color: '#EF4444' },
             { tipo: 'entristece', icono: '😢', texto: 'Me entristece', color: '#3B82F6' },
             { tipo: 'me_identifico', icono: '✋', texto: 'Me identifico', color: '#8B5CF6' },
-            { tipo: 'gracias', icono: '👏', texto: 'Gracias', color: '#10B981' }
+            { tipo: 'gracias', icono: '👏', texto: 'Gracias', color: '#10B981' },
+            // Reacciones especiales según avances
+            ...(tieneAvances ? [
+                { tipo: 'felicidades', icono: '🎉', texto: '¡Felicidades!', color: '#F59E0B' }
+            ] : [
+                { tipo: 'rezo', icono: '🙏', texto: 'Rezo por ti', color: '#8B5CF6' }
+            ])
         ];
         
         reacciones.forEach(reaccion => {
@@ -1167,7 +2680,9 @@ class SistemaForoComunidades {
                     apoyo: 0,
                     entristece: 0,
                     me_identifico: 0,
-                    gracias: 0
+                    gracias: 0,
+                    felicidades: 0,
+                    rezo: 0
                 };
             }
             
@@ -1181,7 +2696,9 @@ class SistemaForoComunidades {
                 'apoyo': '💜 Gracias por tu apoyo',
                 'entristece': '💙 Entendemos tu sentimiento',
                 'me_identifico': '💜 Me alegra que te identifiques',
-                'gracias': '💚 Gracias por compartir'
+                'gracias': '💚 Gracias por compartir',
+                'felicidades': '🎉 ¡Qué alegría saber que hay avances!',
+                'rezo': '🙏 Tu apoyo espiritual es muy valioso'
             };
             
             if (this.supabase) {
@@ -1330,7 +2847,7 @@ class SistemaForoComunidades {
         }
         
         try {
-            // Cargar TODOS los posts del usuario (incluyendo pausados, ocultos, etc.)
+            // Cargar TODOS los posts del usuario (incluyendo pausados, ocultos, cerrados, etc.)
             const { data, error } = await this.supabase
                 .from('posts_comunidades')
                 .select('*')
@@ -1354,6 +2871,212 @@ class SistemaForoComunidades {
                 `;
             }
         }
+    }
+    
+    // ===== CARGAR HISTORIAL DE PERSONAS AYUDADAS =====
+    async cargarHistorialPersonasAyudadas() {
+        // Solo para comunidades de solidario y emergencias
+        const comunidadesConAyuda = ['cresalia-solidario', 'cresalia-solidario-emergencias'];
+        if (!comunidadesConAyuda.includes(this.comunidadSlug)) {
+            return;
+        }
+        
+        if (!this.supabase || !this.autorHash) {
+            return;
+        }
+        
+        try {
+            // Buscar donaciones realizadas por el usuario
+            // Esto requiere una tabla de donaciones o relacionar con campañas
+            const { data: donaciones, error } = await this.supabase
+                .from('donaciones_campanas')
+                .select(`
+                    *,
+                    campanas:campana_id (
+                        id,
+                        titulo,
+                        monto_objetivo,
+                        monto_recaudado,
+                        estado
+                    )
+                `)
+                .eq('donante_hash', this.autorHash)
+                .order('created_at', { ascending: false });
+            
+            if (error && error.code !== 'PGRST116') { // PGRST116 = tabla no existe
+                console.warn('Tabla de donaciones no encontrada, usando modo local');
+            }
+            
+            // Si no hay tabla, usar localStorage
+            const donacionesLocales = JSON.parse(localStorage.getItem(`donaciones_${this.autorHash}`) || '[]');
+            this.mostrarHistorialPersonasAyudadas(donaciones || donacionesLocales);
+        } catch (error) {
+            console.error('Error cargando historial de personas ayudadas:', error);
+            // Intentar con localStorage
+            const donacionesLocales = JSON.parse(localStorage.getItem(`donaciones_${this.autorHash}`) || '[]');
+            this.mostrarHistorialPersonasAyudadas(donacionesLocales);
+        }
+    }
+    
+    // ===== MOSTRAR HISTORIAL DE PERSONAS AYUDADAS =====
+    mostrarHistorialPersonasAyudadas(donaciones) {
+        const container = document.getElementById('historial-personas-ayudadas');
+        if (!container) {
+            // Intentar crear el contenedor si no existe
+            const historialContainer = document.getElementById('mi-historial-foro-lista');
+            if (historialContainer) {
+                const nuevoContainer = document.createElement('div');
+                nuevoContainer.id = 'historial-personas-ayudadas';
+                historialContainer.parentNode.insertBefore(nuevoContainer, historialContainer.nextSibling);
+            } else {
+                return;
+            }
+        }
+        
+        if (!donaciones || donaciones.length === 0) {
+            container.innerHTML = `
+                <div class="sin-posts" style="text-align: center; padding: 40px;">
+                    <h3>💜 Aún no has ayudado a nadie</h3>
+                    <p>Cuando hagas una donación, aparecerá aquí.</p>
+                </div>
+            `;
+            return;
+        }
+        
+        container.innerHTML = donaciones.map(donacion => {
+            const fecha = new Date(donacion.created_at || donacion.fecha).toLocaleString('es-AR');
+            const campana = donacion.campanas || donacion.campana || {};
+            
+            return `
+                <div class="post-card" style="margin-bottom: 20px; background: linear-gradient(135deg, #ECFDF5 0%, #FFFFFF 100%); padding: 20px; border-radius: 15px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); border-left: 4px solid #10B981;">
+                    <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 15px; flex-wrap: wrap; gap: 10px;">
+                        <div>
+                            <h3 style="color: #374151; margin: 0 0 5px 0;">
+                                <i class="fas fa-heart" style="color: #10B981;"></i> 
+                                ${this.escapeHtml(campana.titulo || 'Campaña de ayuda')}
+                            </h3>
+                            <span style="background: #10B981; color: white; padding: 4px 8px; border-radius: 5px; font-size: 0.85rem;">
+                                ✅ Ayuda proporcionada
+                            </span>
+                        </div>
+                        <span style="color: #6b7280; font-size: 0.9rem;">${fecha}</span>
+                    </div>
+                    
+                    <div style="background: white; padding: 15px; border-radius: 10px; margin-bottom: 15px;">
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+                            <span style="color: #374151; font-weight: 600;">Monto donado:</span>
+                            <span style="color: #10B981; font-size: 1.2rem; font-weight: 700;">$${parseFloat(donacion.monto || 0).toLocaleString('es-AR', {minimumFractionDigits: 2})}</span>
+                        </div>
+                        ${campana.monto_objetivo ? `
+                            <div style="background: #E5E7EB; height: 8px; border-radius: 4px; overflow: hidden; margin-top: 10px;">
+                                <div style="background: #10B981; height: 100%; width: ${Math.min(100, (campana.monto_recaudado || 0) / campana.monto_objetivo * 100)}%; transition: width 0.3s;"></div>
+                            </div>
+                            <p style="color: #6b7280; font-size: 0.85rem; margin-top: 5px; text-align: right;">
+                                ${((campana.monto_recaudado || 0) / campana.monto_objetivo * 100).toFixed(1)}% del objetivo alcanzado
+                            </p>
+                        ` : ''}
+                    </div>
+                    
+                    ${donacion.mensaje ? `
+                        <div style="background: #F9FAFB; padding: 15px; border-radius: 10px; margin-bottom: 15px;">
+                            <p style="color: #374151; margin: 0; line-height: 1.6; font-style: italic;">
+                                "${this.escapeHtml(donacion.mensaje)}"
+                            </p>
+                        </div>
+                    ` : ''}
+                </div>
+            `;
+        }).join('');
+    }
+    
+    // ===== CARGAR HISTORIAL DE PUBLICACIONES CERRADAS =====
+    async cargarHistorialPublicacionesCerradas() {
+        if (!this.supabase || !this.autorHash) {
+            return;
+        }
+        
+        try {
+            // Cargar posts cerrados/completados
+            const { data, error } = await this.supabase
+                .from('posts_comunidades')
+                .select('*')
+                .eq('comunidad_slug', this.comunidadSlug)
+                .eq('autor_hash', this.autorHash)
+                .in('estado', ['cerrado', 'completado', 'finalizado'])
+                .order('created_at', { ascending: false });
+            
+            if (error) throw error;
+            
+            this.mostrarHistorialPublicacionesCerradas(data || []);
+        } catch (error) {
+            console.error('Error cargando publicaciones cerradas:', error);
+            // Intentar con localStorage
+            const postsKey = `posts_${this.comunidadSlug}`;
+            const todosLosPosts = JSON.parse(localStorage.getItem(postsKey) || '[]');
+            const postsCerrados = todosLosPosts.filter(p => 
+                p.autor_hash === this.autorHash && 
+                ['cerrado', 'completado', 'finalizado'].includes(p.estado)
+            );
+            this.mostrarHistorialPublicacionesCerradas(postsCerrados);
+        }
+    }
+    
+    // ===== MOSTRAR HISTORIAL DE PUBLICACIONES CERRADAS =====
+    mostrarHistorialPublicacionesCerradas(posts) {
+        const container = document.getElementById('historial-publicaciones-cerradas');
+        if (!container) {
+            // Intentar crear el contenedor si no existe
+            const historialContainer = document.getElementById('mi-historial-foro-lista');
+            if (historialContainer) {
+                const nuevoContainer = document.createElement('div');
+                nuevoContainer.id = 'historial-publicaciones-cerradas';
+                historialContainer.parentNode.insertBefore(nuevoContainer, historialContainer.nextSibling);
+            } else {
+                return;
+            }
+        }
+        
+        if (!posts || posts.length === 0) {
+            container.innerHTML = `
+                <div class="sin-posts" style="text-align: center; padding: 40px;">
+                    <h3>📋 No hay publicaciones cerradas</h3>
+                    <p>Las publicaciones completadas o cerradas aparecerán aquí.</p>
+                </div>
+            `;
+            return;
+        }
+        
+        container.innerHTML = posts.map(post => {
+            const fecha = new Date(post.created_at).toLocaleString('es-AR');
+            const fechaCierre = post.fecha_cierre ? new Date(post.fecha_cierre).toLocaleString('es-AR') : 'N/A';
+            
+            return `
+                <div class="post-card" style="margin-bottom: 20px; background: linear-gradient(135deg, #FEF3C7 0%, #FFFFFF 100%); padding: 20px; border-radius: 15px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); border-left: 4px solid #F59E0B; opacity: 0.9;">
+                    <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 15px; flex-wrap: wrap; gap: 10px;">
+                        <div>
+                            ${post.titulo ? `<h3 style="color: #374151; margin: 0 0 5px 0;">${this.escapeHtml(post.titulo)}</h3>` : ''}
+                            <span style="background: #F59E0B; color: white; padding: 4px 8px; border-radius: 5px; font-size: 0.85rem;">
+                                ${post.estado === 'completado' ? '✅ Completado' : post.estado === 'finalizado' ? '🏁 Finalizado' : '🔒 Cerrado'}
+                            </span>
+                        </div>
+                        <div style="text-align: right;">
+                            <div style="color: #6b7280; font-size: 0.85rem;">Creado: ${fecha}</div>
+                            <div style="color: #6b7280; font-size: 0.85rem;">Cerrado: ${fechaCierre}</div>
+                        </div>
+                    </div>
+                    
+                    <div style="background: #F9FAFB; padding: 15px; border-radius: 10px; margin-bottom: 15px;">
+                        <p style="color: #374151; margin: 0; line-height: 1.6;">${this.escapeHtml(post.contenido.substring(0, 200))}${post.contenido.length > 200 ? '...' : ''}</p>
+                    </div>
+                    
+                    <div style="display: flex; gap: 10px; flex-wrap: wrap; font-size: 0.85rem; color: #6b7280;">
+                        <span><i class="fas fa-comments"></i> ${post.num_comentarios || 0} comentarios</span>
+                        <span><i class="fas fa-heart"></i> ${post.num_reacciones || 0} reacciones</span>
+                        ${post.motivo_cierre ? `<span><i class="fas fa-info-circle"></i> ${this.escapeHtml(post.motivo_cierre)}</span>` : ''}
+                    </div>
+                </div>
+            `;
+        }).join('');
     }
     
     // ===== MOSTRAR MI HISTORIAL =====
@@ -1495,6 +3218,201 @@ class SistemaForoComunidades {
             this.mostrarMensaje('Error al eliminar el post. Por favor, intenta nuevamente.', 'error');
         }
     }
+    
+    // ===== REGISTRAR POSTS VISTOS =====
+    registrarPostVisto(postId) {
+        if (!this.autorHash) return;
+        
+        const key = `posts_vistos_${this.comunidadSlug}_${this.autorHash}`;
+        let postsVistos = JSON.parse(localStorage.getItem(key) || '[]');
+        
+        if (!postsVistos.includes(postId)) {
+            postsVistos.push(postId);
+            // Mantener solo los últimos 100
+            if (postsVistos.length > 100) {
+                postsVistos = postsVistos.slice(-100);
+            }
+            localStorage.setItem(key, JSON.stringify(postsVistos));
+        }
+    }
+    
+    // ===== CAMBIAR TAB DEL HISTORIAL =====
+    cambiarTabHistorial(tab) {
+        // Ocultar todos los contenidos
+        document.querySelectorAll('.contenido-tab-historial').forEach(div => {
+            div.style.display = 'none';
+        });
+        
+        // Desactivar todos los botones
+        document.querySelectorAll('.tab-historial').forEach(btn => {
+            btn.style.background = '#e5e7eb';
+            btn.style.color = '#374151';
+        });
+        
+        // Mostrar el contenido seleccionado
+        const contenido = document.getElementById(`contenido-${tab}`);
+        if (contenido) {
+            contenido.style.display = 'block';
+        }
+        
+        // Activar el botón seleccionado
+        const boton = document.querySelector(`[data-tab-historial="${tab}"]`);
+        if (boton) {
+            boton.style.background = '#8b5cf6';
+            boton.style.color = 'white';
+        }
+        
+        // Cargar contenido si es necesario
+        if (tab === 'vistos') {
+            this.cargarPostsVistos();
+        } else if (tab === 'respuestas') {
+            this.cargarPostsConRespuestas();
+        }
+    }
+    
+    // ===== CARGAR POSTS VISTOS =====
+    async cargarPostsVistos() {
+        if (!this.autorHash) return;
+        
+        const container = document.getElementById('posts-vistos-lista');
+        if (!container) return;
+        
+        const key = `posts_vistos_${this.comunidadSlug}_${this.autorHash}`;
+        const postsVistosIds = JSON.parse(localStorage.getItem(key) || '[]');
+        
+        if (postsVistosIds.length === 0) {
+            container.innerHTML = `
+                <div class="empty-state">
+                    <i class="fas fa-info-circle"></i>
+                    <p>Los posts que veas aparecerán aquí</p>
+                </div>
+            `;
+            return;
+        }
+        
+        try {
+            let posts = [];
+            
+            if (this.supabase) {
+                const { data, error } = await this.supabase
+                    .from('posts_comunidades')
+                    .select('*')
+                    .in('id', postsVistosIds)
+                    .eq('comunidad_slug', this.comunidadSlug)
+                    .order('created_at', { ascending: false });
+                
+                if (error) throw error;
+                posts = data || [];
+            } else {
+                const postsKey = `posts_${this.comunidadSlug}`;
+                const allPosts = JSON.parse(localStorage.getItem(postsKey) || '[]');
+                posts = allPosts.filter(p => postsVistosIds.includes(p.id))
+                    .sort((a, b) => new Date(b.created_at || b.fecha) - new Date(a.created_at || a.fecha));
+            }
+            
+            if (posts.length === 0) {
+                container.innerHTML = `
+                    <div class="empty-state">
+                        <i class="fas fa-info-circle"></i>
+                        <p>No hay posts vistos aún</p>
+                    </div>
+                `;
+                return;
+            }
+            
+            const postsHTML = await Promise.all(posts.map(async post => await this.renderizarPost(post)));
+            container.innerHTML = postsHTML.join('');
+            
+            // Cargar comentarios
+            posts.forEach(post => {
+                this.cargarComentarios(post.id);
+            });
+        } catch (error) {
+            console.error('Error cargando posts vistos:', error);
+            container.innerHTML = `
+                <div class="empty-state">
+                    <i class="fas fa-exclamation-triangle"></i>
+                    <p>Error al cargar posts vistos</p>
+                </div>
+            `;
+        }
+    }
+    
+    // ===== CARGAR POSTS CON RESPUESTAS =====
+    async cargarPostsConRespuestas() {
+        if (!this.autorHash) return;
+        
+        const container = document.getElementById('posts-respuestas-lista');
+        if (!container) return;
+        
+        try {
+            let postsConRespuestas = [];
+            
+            if (this.supabase) {
+                // Obtener comentarios del usuario
+                const { data: comentarios, error: comentariosError } = await this.supabase
+                    .from('comentarios_comunidades')
+                    .select('post_id')
+                    .eq('autor_hash', this.autorHash)
+                    .eq('comunidad_slug', this.comunidadSlug);
+                
+                if (comentariosError) throw comentariosError;
+                
+                const postIds = [...new Set(comentarios.map(c => c.post_id))];
+                
+                if (postIds.length > 0) {
+                    const { data: posts, error: postsError } = await this.supabase
+                        .from('posts_comunidades')
+                        .select('*')
+                        .in('id', postIds)
+                        .eq('comunidad_slug', this.comunidadSlug)
+                        .order('created_at', { ascending: false });
+                    
+                    if (postsError) throw postsError;
+                    postsConRespuestas = posts || [];
+                }
+            } else {
+                // Modo local
+                const comentariosKey = `comentarios_${this.comunidadSlug}`;
+                const allComentarios = JSON.parse(localStorage.getItem(comentariosKey) || '[]');
+                const misComentarios = allComentarios.filter(c => c.autor_hash === this.autorHash);
+                const postIds = [...new Set(misComentarios.map(c => c.post_id))];
+                
+                if (postIds.length > 0) {
+                    const postsKey = `posts_${this.comunidadSlug}`;
+                    const allPosts = JSON.parse(localStorage.getItem(postsKey) || '[]');
+                    postsConRespuestas = allPosts.filter(p => postIds.includes(p.id))
+                        .sort((a, b) => new Date(b.created_at || b.fecha) - new Date(a.created_at || a.fecha));
+                }
+            }
+            
+            if (postsConRespuestas.length === 0) {
+                container.innerHTML = `
+                    <div class="empty-state">
+                        <i class="fas fa-info-circle"></i>
+                        <p>Los posts donde hayas comentado aparecerán aquí</p>
+                    </div>
+                `;
+                return;
+            }
+            
+            const postsHTML = await Promise.all(postsConRespuestas.map(async post => await this.renderizarPost(post)));
+            container.innerHTML = postsHTML.join('');
+            
+            // Cargar comentarios
+            postsConRespuestas.forEach(post => {
+                this.cargarComentarios(post.id);
+            });
+        } catch (error) {
+            console.error('Error cargando posts con respuestas:', error);
+            container.innerHTML = `
+                <div class="empty-state">
+                    <i class="fas fa-exclamation-triangle"></i>
+                    <p>Error al cargar posts con respuestas</p>
+                </div>
+            `;
+        }
+    }
 }
 
 // Funciones globales para historial
@@ -1515,201 +3433,6 @@ window.eliminarPostForo = function(postId) {
         window.foroComunidad.eliminarPost(postId);
     }
 };
-
-// ===== REGISTRAR POSTS VISTOS =====
-registrarPostVisto(postId) {
-    if (!this.autorHash) return;
-    
-    const key = `posts_vistos_${this.comunidadSlug}_${this.autorHash}`;
-    let postsVistos = JSON.parse(localStorage.getItem(key) || '[]');
-    
-    if (!postsVistos.includes(postId)) {
-        postsVistos.push(postId);
-        // Mantener solo los últimos 100
-        if (postsVistos.length > 100) {
-            postsVistos = postsVistos.slice(-100);
-        }
-        localStorage.setItem(key, JSON.stringify(postsVistos));
-    }
-}
-
-// ===== CAMBIAR TAB DEL HISTORIAL =====
-cambiarTabHistorial(tab) {
-    // Ocultar todos los contenidos
-    document.querySelectorAll('.contenido-tab-historial').forEach(div => {
-        div.style.display = 'none';
-    });
-    
-    // Desactivar todos los botones
-    document.querySelectorAll('.tab-historial').forEach(btn => {
-        btn.style.background = '#e5e7eb';
-        btn.style.color = '#374151';
-    });
-    
-    // Mostrar el contenido seleccionado
-    const contenido = document.getElementById(`contenido-${tab}`);
-    if (contenido) {
-        contenido.style.display = 'block';
-    }
-    
-    // Activar el botón seleccionado
-    const boton = document.querySelector(`[data-tab-historial="${tab}"]`);
-    if (boton) {
-        boton.style.background = '#8b5cf6';
-        boton.style.color = 'white';
-    }
-    
-    // Cargar contenido si es necesario
-    if (tab === 'vistos') {
-        this.cargarPostsVistos();
-    } else if (tab === 'respuestas') {
-        this.cargarPostsConRespuestas();
-    }
-}
-
-// ===== CARGAR POSTS VISTOS =====
-async cargarPostsVistos() {
-    if (!this.autorHash) return;
-    
-    const container = document.getElementById('posts-vistos-lista');
-    if (!container) return;
-    
-    const key = `posts_vistos_${this.comunidadSlug}_${this.autorHash}`;
-    const postsVistosIds = JSON.parse(localStorage.getItem(key) || '[]');
-    
-    if (postsVistosIds.length === 0) {
-        container.innerHTML = `
-            <div class="empty-state">
-                <i class="fas fa-info-circle"></i>
-                <p>Los posts que veas aparecerán aquí</p>
-            </div>
-        `;
-        return;
-    }
-    
-    try {
-        let posts = [];
-        
-        if (this.supabase) {
-            const { data, error } = await this.supabase
-                .from('posts_comunidades')
-                .select('*')
-                .in('id', postsVistosIds)
-                .eq('comunidad_slug', this.comunidadSlug)
-                .order('created_at', { ascending: false });
-            
-            if (error) throw error;
-            posts = data || [];
-        } else {
-            const postsKey = `posts_${this.comunidadSlug}`;
-            const allPosts = JSON.parse(localStorage.getItem(postsKey) || '[]');
-            posts = allPosts.filter(p => postsVistosIds.includes(p.id))
-                .sort((a, b) => new Date(b.created_at || b.fecha) - new Date(a.created_at || a.fecha));
-        }
-        
-        if (posts.length === 0) {
-            container.innerHTML = `
-                <div class="empty-state">
-                    <i class="fas fa-info-circle"></i>
-                    <p>No hay posts vistos aún</p>
-                </div>
-            `;
-            return;
-        }
-        
-        const postsHTML = await Promise.all(posts.map(async post => await this.renderizarPost(post)));
-        container.innerHTML = postsHTML.join('');
-        
-        // Cargar comentarios
-        posts.forEach(post => {
-            this.cargarComentarios(post.id);
-        });
-    } catch (error) {
-        console.error('Error cargando posts vistos:', error);
-        container.innerHTML = `
-            <div class="empty-state">
-                <i class="fas fa-exclamation-triangle"></i>
-                <p>Error al cargar posts vistos</p>
-            </div>
-        `;
-    }
-}
-
-// ===== CARGAR POSTS CON RESPUESTAS =====
-async cargarPostsConRespuestas() {
-    if (!this.autorHash) return;
-    
-    const container = document.getElementById('posts-respuestas-lista');
-    if (!container) return;
-    
-    try {
-        let postsConRespuestas = [];
-        
-        if (this.supabase) {
-            // Obtener comentarios del usuario
-            const { data: comentarios, error: comentariosError } = await this.supabase
-                .from('comentarios_comunidades')
-                .select('post_id')
-                .eq('autor_hash', this.autorHash)
-                .eq('comunidad_slug', this.comunidadSlug);
-            
-            if (comentariosError) throw comentariosError;
-            
-            const postIds = [...new Set(comentarios.map(c => c.post_id))];
-            
-            if (postIds.length > 0) {
-                const { data: posts, error: postsError } = await this.supabase
-                    .from('posts_comunidades')
-                    .select('*')
-                    .in('id', postIds)
-                    .eq('comunidad_slug', this.comunidadSlug)
-                    .order('created_at', { ascending: false });
-                
-                if (postsError) throw postsError;
-                postsConRespuestas = posts || [];
-            }
-        } else {
-            // Modo local
-            const comentariosKey = `comentarios_${this.comunidadSlug}`;
-            const allComentarios = JSON.parse(localStorage.getItem(comentariosKey) || '[]');
-            const misComentarios = allComentarios.filter(c => c.autor_hash === this.autorHash);
-            const postIds = [...new Set(misComentarios.map(c => c.post_id))];
-            
-            if (postIds.length > 0) {
-                const postsKey = `posts_${this.comunidadSlug}`;
-                const allPosts = JSON.parse(localStorage.getItem(postsKey) || '[]');
-                postsConRespuestas = allPosts.filter(p => postIds.includes(p.id))
-                    .sort((a, b) => new Date(b.created_at || b.fecha) - new Date(a.created_at || a.fecha));
-            }
-        }
-        
-        if (postsConRespuestas.length === 0) {
-            container.innerHTML = `
-                <div class="empty-state">
-                    <i class="fas fa-info-circle"></i>
-                    <p>Los posts donde hayas comentado aparecerán aquí</p>
-                </div>
-            `;
-            return;
-        }
-        
-        const postsHTML = await Promise.all(postsConRespuestas.map(async post => await this.renderizarPost(post)));
-        container.innerHTML = postsHTML.join('');
-        
-        // Cargar comentarios
-        postsConRespuestas.forEach(post => {
-            this.cargarComentarios(post.id);
-        });
-    } catch (error) {
-        console.error('Error cargando posts con respuestas:', error);
-        container.innerHTML = `
-            <div class="empty-state">
-                <i class="fas fa-exclamation-triangle"></i>
-                <p>Error al cargar posts con respuestas</p>
-            </div>
-        `;
-    }
-}
 
 // Hacer disponible globalmente
 window.SistemaForoComunidades = SistemaForoComunidades;

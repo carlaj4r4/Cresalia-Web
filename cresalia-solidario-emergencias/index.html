@@ -354,8 +354,8 @@
         <div class="nav-menu">
             <a href="../index-cresalia.html">🏠 Inicio Cresalia</a>
             <a href="donar-materiales.html">📦 Donar Materiales</a>
-            <a href="panel-crear-campana.html" style="background: linear-gradient(135deg, #10B981 0%, #059669 100%);">➕ Crear Campaña</a>
-            <a href="panel-verificacion.html" style="background: linear-gradient(135deg, #F59E0B 0%, #D97706 100%);">🔍 Verificar Campañas</a>
+            <a href="panel-crear-campana.html" style="background: linear-gradient(135deg, #10B981 0%, #059669 100%);" onclick="return verificarAccesoPanel(event, 'panel-crear-campana.html')">➕ Crear Campaña</a>
+            <a href="panel-verificacion.html" style="background: linear-gradient(135deg, #F59E0B 0%, #D97706 100%);" onclick="return verificarAccesoPanel(event, 'panel-verificacion.html')">🔍 Verificar Campañas</a>
         </div>
         
         <!-- Estadísticas -->
@@ -501,6 +501,92 @@
         
         function donarACampana(campanaId) {
             window.location.href = `donar-materiales.html?campana=${campanaId}`;
+        }
+        
+        // Función para verificar acceso a paneles (requieren autenticación)
+        function verificarAccesoPanel(event, panelUrl) {
+            event.preventDefault();
+            
+            // Verificar si hay sesión de admin
+            const sessionData = localStorage.getItem('adminSession');
+            let tieneAcceso = false;
+            
+            if (sessionData) {
+                try {
+                    const session = JSON.parse(sessionData);
+                    if (session.authenticated && session.timestamp) {
+                        const tiempoTranscurrido = Date.now() - session.timestamp;
+                        // Sesión válida si tiene menos de 30 minutos
+                        if (tiempoTranscurrido < 30 * 60 * 1000) {
+                            tieneAcceso = true;
+                        }
+                    }
+                } catch (e) {
+                    console.error('Error verificando sesión:', e);
+                }
+            }
+            
+            if (tieneAcceso) {
+                // Si tiene acceso, permitir navegación
+                window.location.href = panelUrl;
+            } else {
+                // Si no tiene acceso, mostrar mensaje explicativo
+                mostrarMensajeVerificacionRequerida(panelUrl);
+            }
+            
+            return false;
+        }
+        
+        function mostrarMensajeVerificacionRequerida(panelUrl) {
+            const mensajeHTML = `
+                <div id="modal-verificacion-requerida" style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); display: flex; align-items: center; justify-content: center; z-index: 999999; padding: 20px;">
+                    <div style="background: white; border-radius: 20px; padding: 40px; max-width: 600px; width: 100%; box-shadow: 0 20px 60px rgba(0,0,0,0.3); text-align: center; position: relative;">
+                        <button onclick="document.getElementById('modal-verificacion-requerida').remove()" style="position: absolute; top: 15px; right: 15px; background: #ef4444; color: white; border: none; width: 35px; height: 35px; border-radius: 50%; cursor: pointer; font-size: 20px;">&times;</button>
+                        
+                        <div style="font-size: 4rem; margin-bottom: 20px;">🔒</div>
+                        <h1 style="color: #EF4444; margin-bottom: 20px; font-size: 2rem;">Verificación Requerida</h1>
+                        
+                        <div style="background: #FEF3C7; border-left: 4px solid #F59E0B; padding: 20px; border-radius: 10px; margin-bottom: 25px; text-align: left;">
+                            <p style="color: #92400E; margin: 0; line-height: 1.8; font-size: 1rem;">
+                                <strong>Disculpas por la inconveniencia.</strong>
+                            </p>
+                            <p style="color: #92400E; margin: 10px 0 0 0; line-height: 1.8; font-size: 1rem;">
+                                Los paneles de <strong>Cresalia Solidaria Emergencias</strong> requieren verificación de identidad por seguridad. 
+                                Esto es necesario porque:
+                            </p>
+                            <ul style="color: #92400E; margin: 15px 0 0 20px; line-height: 1.8; font-size: 0.95rem;">
+                                <li>🚨 Las campañas de emergencia afectan a personas en situaciones críticas</li>
+                                <li>🛡️ Necesitamos prevenir fraudes y campañas falsas</li>
+                                <li>✅ Solo personal autorizado puede crear y verificar campañas</li>
+                                <li>💜 Protegemos tanto a donantes como a beneficiarios</li>
+                            </ul>
+                        </div>
+                        
+                        <div style="background: #ECFDF5; border-left: 4px solid #10B981; padding: 20px; border-radius: 10px; margin-bottom: 25px; text-align: left;">
+                            <p style="color: #065F46; margin: 0; line-height: 1.8; font-size: 1rem;">
+                                <strong>¿Necesitás crear o verificar una campaña?</strong>
+                            </p>
+                            <p style="color: #065F46; margin: 10px 0 0 0; line-height: 1.8; font-size: 0.95rem;">
+                                Por favor, contactá a <strong>CRISLA</strong> para obtener acceso autorizado. 
+                                Este proceso de verificación nos ayuda a mantener la integridad del sistema y proteger a todos.
+                            </p>
+                        </div>
+                        
+                        <div style="display: flex; gap: 15px; justify-content: center; flex-wrap: wrap; margin-top: 30px;">
+                            <button onclick="document.getElementById('modal-verificacion-requerida').remove()" style="background: linear-gradient(135deg, #10B981, #059669); color: white; padding: 15px 30px; border: none; border-radius: 10px; cursor: pointer; font-weight: 600; transition: all 0.3s;" onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 5px 20px rgba(16, 185, 129, 0.4)'" onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='none'">
+                                <i class="fas fa-check"></i> Entendido
+                            </button>
+                        </div>
+                        
+                        <p style="color: #6B7280; margin-top: 30px; font-size: 0.9rem; line-height: 1.6;">
+                            <i class="fas fa-shield-alt"></i> 
+                            <strong>Gracias por tu comprensión.</strong> Esta verificación es parte de nuestro compromiso con la transparencia y seguridad en situaciones de emergencia.
+                        </p>
+                    </div>
+                </div>
+            `;
+            
+            document.body.insertAdjacentHTML('beforeend', mensajeHTML);
         }
         
         console.log('%c🚨 Bienvenido/a a Cresalia Solidario Emergencias', 'color: #EF4444; font-size: 18px; font-weight: bold;');

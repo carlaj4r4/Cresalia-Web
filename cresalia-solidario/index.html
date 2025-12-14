@@ -213,6 +213,136 @@
             max-width: 600px;
             margin: 0 auto;
         }
+        
+        /* Estilos para el sistema de foro */
+        .modal {
+            position: fixed !important;
+            top: 0 !important;
+            left: 0 !important;
+            width: 100% !important;
+            height: 100% !important;
+            background: rgba(0,0,0,0.7) !important;
+            display: none !important;
+            align-items: center !important;
+            justify-content: center !important;
+            z-index: 10000 !important;
+            padding: 20px !important;
+            box-sizing: border-box !important;
+        }
+        
+        .modal.show {
+            display: flex !important;
+        }
+        
+        .post {
+            background: white;
+            border-radius: 15px;
+            padding: 20px;
+            margin-bottom: 15px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            border-left: 4px solid #10B981;
+        }
+        
+        .post-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+        
+        .post-autor {
+            font-weight: 600;
+            color: #10B981;
+        }
+        
+        .post-fecha {
+            color: #6b7280;
+            font-size: 0.85rem;
+            margin-left: 10px;
+        }
+        
+        .post-titulo {
+            color: #374151;
+            margin-bottom: 10px;
+        }
+        
+        .post-contenido {
+            color: #374151;
+            line-height: 1.6;
+            margin-bottom: 15px;
+        }
+        
+        .post-footer {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+        
+        .btn-comentar, .btn-reaccionar {
+            background: #f3f4f6;
+            color: #374151;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            transition: all 0.3s;
+        }
+        
+        .btn-comentar:hover, .btn-reaccionar:hover {
+            background: #10B981;
+            color: white;
+        }
+        
+        .comentarios-container {
+            margin-top: 15px;
+            padding-top: 15px;
+            border-top: 1px solid #e5e7eb;
+        }
+        
+        .comentario {
+            background: #f9fafb;
+            padding: 12px;
+            border-radius: 8px;
+            margin-bottom: 10px;
+        }
+        
+        .comentario-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 8px;
+        }
+        
+        .comentario-contenido {
+            color: #374151;
+            line-height: 1.5;
+        }
+        
+        .cargando {
+            text-align: center;
+            padding: 40px;
+            color: #6b7280;
+        }
+        
+        .sin-posts {
+            text-align: center;
+            padding: 60px 20px;
+            color: #6b7280;
+        }
+        
+        .sin-posts h3 {
+            color: #10B981;
+            margin-bottom: 15px;
+        }
+        
+        .error {
+            background: #fee2e2;
+            color: #991b1b;
+            padding: 15px;
+            border-radius: 10px;
+            border-left: 4px solid #ef4444;
+        }
     </style>
 </head>
 <body>
@@ -292,6 +422,145 @@
             </div>
         </div>
         
+        <!-- Sistema de Foro de la Comunidad -->
+        <div class="card" style="margin-top: 30px;">
+            <div class="foro-header" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px; flex-wrap: wrap; gap: 10px;">
+                <h2 style="color: #10B981; margin: 0;">💜 Foro de Cresalia Solidario</h2>
+                <div style="display: flex; gap: 10px; align-items: center;">
+                    <button class="btn-primary" onclick="if(window.foroComunidad) window.foroComunidad.cargarMiHistorial(); document.getElementById('mi-historial-foro').style.display = 'block'; document.getElementById('posts-container').style.display = 'none';" style="background: linear-gradient(135deg, #8b5cf6, #a78bfa); color: white; border: none; padding: 12px 24px; border-radius: 10px; cursor: pointer; font-weight: 600;">
+                        <i class="fas fa-history"></i> Mi Historial
+                    </button>
+                    <button class="btn-primary" onclick="document.getElementById('mi-historial-foro').style.display = 'none'; document.getElementById('posts-container').style.display = 'block';" style="background: linear-gradient(135deg, #10B981, #059669); color: white; border: none; padding: 12px 24px; border-radius: 10px; cursor: pointer; font-weight: 600;">
+                        <i class="fas fa-comments"></i> Ver Foro
+                    </button>
+                    <button class="btn-primary" id="btn-crear-post" style="background: linear-gradient(135deg, #10B981, #059669); color: white; border: none; padding: 12px 24px; border-radius: 10px; cursor: pointer; font-weight: 600;">
+                        <i class="fas fa-plus"></i> Crear Post
+                    </button>
+                </div>
+            </div>
+            <div id="posts-container"></div>
+            <div id="mi-historial-foro" style="display: none;">
+                <div class="info-box" style="background: linear-gradient(135deg, rgba(16, 185, 129, 0.1), rgba(5, 150, 105, 0.1)); border-left-color: #10B981; margin-bottom: 20px; padding: 20px; border-radius: 12px;">
+                    <h3 style="color: #047857; margin-bottom: 10px;">📝 Mis Historiales</h3>
+                    <p style="margin: 0; line-height: 1.8; color: #374151;">
+                        Aquí podés ver tus posts, las personas a quienes has ayudado y las publicaciones cerradas.
+                    </p>
+                </div>
+                
+                <!-- Tabs para diferentes historiales -->
+                <div style="display: flex; gap: 10px; margin-bottom: 20px; flex-wrap: wrap; border-bottom: 2px solid #E5E7EB; padding-bottom: 10px;">
+                    <button class="tab-historial active" data-tab="posts" onclick="cambiarTabHistorial('posts')" style="background: linear-gradient(135deg, #8b5cf6, #a78bfa); color: white; border: none; padding: 10px 20px; border-radius: 8px; cursor: pointer; font-weight: 600;">
+                        <i class="fas fa-comments"></i> Mis Posts
+                    </button>
+                    <button class="tab-historial" data-tab="ayudados" onclick="cambiarTabHistorial('ayudados')" style="background: #E5E7EB; color: #374151; border: none; padding: 10px 20px; border-radius: 8px; cursor: pointer; font-weight: 600;">
+                        <i class="fas fa-heart"></i> Personas Ayudadas
+                    </button>
+                    <button class="tab-historial" data-tab="cerradas" onclick="cambiarTabHistorial('cerradas')" style="background: #E5E7EB; color: #374151; border: none; padding: 10px 20px; border-radius: 8px; cursor: pointer; font-weight: 600;">
+                        <i class="fas fa-lock"></i> Publicaciones Cerradas
+                    </button>
+                </div>
+                
+                <!-- Contenedor de posts -->
+                <div id="historial-tab-posts" class="historial-tab-content">
+                    <div id="mi-historial-foro-lista"></div>
+                </div>
+                
+                <!-- Contenedor de personas ayudadas -->
+                <div id="historial-tab-ayudados" class="historial-tab-content" style="display: none;">
+                    <div id="historial-personas-ayudadas"></div>
+                </div>
+                
+                <!-- Contenedor de publicaciones cerradas -->
+                <div id="historial-tab-cerradas" class="historial-tab-content" style="display: none;">
+                    <div id="historial-publicaciones-cerradas"></div>
+                </div>
+            </div>
+            
+            <script>
+                function cambiarTabHistorial(tab) {
+                    // Ocultar todos los contenidos
+                    document.querySelectorAll('.historial-tab-content').forEach(content => {
+                        content.style.display = 'none';
+                    });
+                    
+                    // Remover clase active de todos los tabs
+                    document.querySelectorAll('.tab-historial').forEach(btn => {
+                        btn.classList.remove('active');
+                        btn.style.background = '#E5E7EB';
+                        btn.style.color = '#374151';
+                    });
+                    
+                    // Mostrar el contenido seleccionado
+                    const contentId = `historial-tab-${tab}`;
+                    const content = document.getElementById(contentId);
+                    if (content) {
+                        content.style.display = 'block';
+                    }
+                    
+                    // Activar el tab seleccionado
+                    const activeTab = document.querySelector(`[data-tab="${tab}"]`);
+                    if (activeTab) {
+                        activeTab.classList.add('active');
+                        activeTab.style.background = 'linear-gradient(135deg, #8b5cf6, #a78bfa)';
+                        activeTab.style.color = 'white';
+                    }
+                    
+                    // Cargar datos según el tab
+                    if (window.foroComunidad) {
+                        if (tab === 'posts') {
+                            window.foroComunidad.cargarMiHistorial();
+                        } else if (tab === 'ayudados') {
+                            window.foroComunidad.cargarHistorialPersonasAyudadas();
+                        } else if (tab === 'cerradas') {
+                            window.foroComunidad.cargarHistorialPublicacionesCerradas();
+                        }
+                    }
+                }
+            </script>
+
+            <div class="reglas" style="margin-top: 30px; padding: 20px; background: linear-gradient(135deg, rgba(16, 185, 129, 0.05), rgba(5, 150, 105, 0.05)); border-radius: 12px;">
+                <h3 style="color: #10B981; margin-bottom: 12px;">Reglas imprescindibles</h3>
+                <ul style="list-style: none; padding: 0;">
+                    <li style="margin-bottom: 8px; color: #374151;">💜 Respeta todas las experiencias y situaciones de necesidad.</li>
+                    <li style="margin-bottom: 8px; color: #374151;">🛑 No se permiten juicios o desvalorizaciones.</li>
+                    <li style="margin-bottom: 8px; color: #374151;">🤝 Este es un espacio seguro para compartir sin juicios.</li>
+                    <li style="margin-bottom: 8px; color: #374151;">💚 La solidaridad y el apoyo mutuo son nuestros valores principales.</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Modal crear post -->
+        <div class="modal" id="modal-crear-post" style="display: none;">
+            <div class="modal-content" style="max-width: 700px; background: white; border-radius: 20px; padding: 30px;">
+                <div class="modal-header" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; padding-bottom: 15px; border-bottom: 2px solid #e5e7eb;">
+                    <h3 style="margin: 0; color: #10B981;">💜 Crear Nuevo Post</h3>
+                    <button class="close-btn" id="cerrar-form-post" onclick="if(window.foroComunidad) window.foroComunidad.ocultarFormularioPost()" style="background: #ef4444; color: white; border: none; width: 35px; height: 35px; border-radius: 50%; cursor: pointer; font-size: 20px;">&times;</button>
+                </div>
+                <form id="form-crear-post">
+                    <div class="form-group" style="margin-bottom: 20px;">
+                        <label for="autor-alias" style="display: block; margin-bottom: 8px; font-weight: 600; color: #374151;">Tu nombre o alias (opcional)</label>
+                        <input type="text" id="autor-alias" placeholder="Ej: Anónimo, María, etc." style="width: 100%; padding: 12px 15px; border: 2px solid #e5e7eb; border-radius: 10px; font-size: 1rem;">
+                    </div>
+                    <div class="form-group" style="margin-bottom: 20px;">
+                        <label for="post-titulo" style="display: block; margin-bottom: 8px; font-weight: 600; color: #374151;">Título (opcional)</label>
+                        <input type="text" id="post-titulo" placeholder="Un título breve para tu post" style="width: 100%; padding: 12px 15px; border: 2px solid #e5e7eb; border-radius: 10px; font-size: 1rem;">
+                    </div>
+                    <div class="form-group" style="margin-bottom: 20px;">
+                        <label for="post-contenido" style="display: block; margin-bottom: 8px; font-weight: 600; color: #374151;">Contenido *</label>
+                        <textarea id="post-contenido" rows="8" required placeholder="Comparte tu experiencia, pregunta o reflexión..." style="width: 100%; padding: 12px 15px; border: 2px solid #e5e7eb; border-radius: 10px; font-size: 1rem; resize: vertical;"></textarea>
+                    </div>
+                    <div style="display: flex; gap: 10px; margin-top: 20px;">
+                        <button type="submit" class="btn-primary" style="flex: 1; background: linear-gradient(135deg, #10B981, #059669); color: white; border: none; padding: 14px 28px; border-radius: 10px; cursor: pointer; font-weight: 600; font-size: 1rem;">
+                            <i class="fas fa-paper-plane"></i> Publicar
+                        </button>
+                        <button type="button" class="btn-secondary" onclick="if(window.foroComunidad) window.foroComunidad.ocultarFormularioPost()" style="background: #e5e7eb; color: #374151; border: none; padding: 14px 28px; border-radius: 10px; cursor: pointer; font-weight: 600; font-size: 1rem;">
+                            Cancelar
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+        
         <div class="card">
             <h2>🔗 Otros Sistemas de Ayuda</h2>
             <p>Mientras tanto, podés:</p>
@@ -315,12 +584,24 @@
         </div>
     </div>
     
+    <!-- Sistema de Foro para Comunidades -->
+    <script src="../js/sistema-foro-comunidades.js"></script>
+    
+    <!-- Sistema de Logros y Gamificación -->
+    <script src="../core/sistema-logros-gamificacion.js"></script>
+    
     <!-- Sistema de Alias/CVU/CBU para Donaciones -->
     <script src="../js/sistema-alias-donaciones.js"></script>
     
     <script>
         // Inicializar sistema de alertas
         document.addEventListener('DOMContentLoaded', () => {
+            // Inicializar sistema de foro
+            if (typeof SistemaForoComunidades !== 'undefined') {
+                window.foroComunidad = new SistemaForoComunidades('cresalia-solidario');
+                console.log('✅ Sistema de foro inicializado para Cresalia Solidario');
+            }
+            
             setTimeout(() => {
                 if (typeof SistemaAlertasComunidades !== 'undefined') {
                     window.alertasSolidario = new SistemaAlertasComunidades('cresalia-solidario');
