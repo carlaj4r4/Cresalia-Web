@@ -11,17 +11,18 @@ class SimplePaymentSystem {
         };
 
         // Información de Cresalia (DEBE cargarse desde variables de entorno - OBLIGATORIO)
+        // Las variables se inyectan desde Vercel a través de window
         this.cresaliaInfo = {
             name: 'Cresalia',
-            email: (typeof window !== 'undefined' && window.CRESALIA_PAYMENT_EMAIL) || process.env.CRESALIA_PAYMENT_EMAIL || null,
-            alias: (typeof window !== 'undefined' && window.CRESALIA_MP_ALIAS) || process.env.CRESALIA_MP_ALIAS || null,
-            phone: (typeof window !== 'undefined' && window.CRESALIA_PAYMENT_PHONE) || process.env.CRESALIA_PAYMENT_PHONE || '',
+            email: (typeof window !== 'undefined' && (window.CRESALIA_PAYMENT_EMAIL || window.__CRESALIA_PAYMENT_EMAIL__)) || null,
+            alias: (typeof window !== 'undefined' && (window.CRESALIA_MP_ALIAS || window.__CRESALIA_MP_ALIAS__)) || null,
+            phone: (typeof window !== 'undefined' && (window.CRESALIA_PAYMENT_PHONE || window.__CRESALIA_PAYMENT_PHONE__)) || '',
             description: 'Suscripción Cresalia'
         };
         
-        // Validar que el email esté configurado
+        // Validar que el email esté configurado (solo warning, no error)
         if (!this.cresaliaInfo.email) {
-            console.error('❌ CRESALIA_PAYMENT_EMAIL no está configurado. Configurá esta variable de entorno en Vercel.');
+            console.warn('⚠️ CRESALIA_PAYMENT_EMAIL no está configurado. Esto es normal en desarrollo. Configurá esta variable de entorno en Vercel para producción.');
         }
 
         this.init();

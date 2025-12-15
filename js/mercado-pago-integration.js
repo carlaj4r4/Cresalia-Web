@@ -35,8 +35,8 @@ const MERCADO_PAGO_SETTINGS = (() => {
     }
 
     const fallbackConfig = {
-        publicKey: window.MERCADOPAGO_PUBLIC_KEY || 'CONFIGURAR_EN_VERCEL',
-        accessToken: window.MERCADOPAGO_ACCESS_TOKEN || 'CONFIGURAR_EN_VERCEL',
+        publicKey: (typeof window !== 'undefined' && (window.__MERCADOPAGO_PUBLIC_KEY__ || window.MERCADOPAGO_PUBLIC_KEY || window.MERCADOPAGO_PUBLIC_KEY)) || 'CONFIGURAR_EN_VERCEL',
+        accessToken: (typeof window !== 'undefined' && (window.__MERCADOPAGO_ACCESS_TOKEN__ || window.MERCADOPAGO_ACCESS_TOKEN || window.MERCADOPAGO_ACCESS_TOKEN)) || 'CONFIGURAR_EN_VERCEL',
         sandbox: false,
         currency: 'ARS',
         statement_descriptor: 'Cresalia',
@@ -155,6 +155,19 @@ function inicializarMercadoPago() {
     }
     
     try {
+        // Verificar que la clave pública esté disponible
+        if (!MERCADO_PAGO_SETTINGS.publicKey || MERCADO_PAGO_SETTINGS.publicKey === 'CONFIGURAR_EN_VERCEL') {
+            console.warn('⚠️ MERCADOPAGO_PUBLIC_KEY no está configurada. Configurá esta variable de entorno en Vercel.');
+            console.warn('ℹ️ Las variables de entorno en Vercel deben tener el prefijo NEXT_PUBLIC_ para estar disponibles en el cliente.');
+            return false;
+        }
+        
+        // Verificar que MercadoPago esté disponible
+        if (typeof MercadoPago === 'undefined') {
+            console.warn('⚠️ MercadoPago SDK no está cargado. Esperando a que se cargue...');
+            return false;
+        }
+        
         // Inicializar Mercado Pago con las credenciales REALES de producción
         const mp = new MercadoPago(MERCADO_PAGO_SETTINGS.publicKey, {
             locale: 'es-AR'
@@ -167,6 +180,7 @@ function inicializarMercadoPago() {
         return mp;
     } catch (error) {
         console.error('❌ Error inicializando Mercado Pago:', error);
+        console.warn('💡 Asegurate de que las variables MERCADOPAGO_PUBLIC_KEY y MERCADOPAGO_ACCESS_TOKEN estén configuradas en Vercel con el prefijo NEXT_PUBLIC_');
         return false;
     }
 }

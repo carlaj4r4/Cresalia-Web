@@ -45,6 +45,16 @@
         // Inyectar variables de Mercado Pago
         window.__MERCADOPAGO_PUBLIC_KEY__ = getEnvVar('MERCADOPAGO_PUBLIC_KEY', null);
         window.__MERCADOPAGO_ACCESS_TOKEN__ = getEnvVar('MERCADOPAGO_ACCESS_TOKEN', null);
+        window.MERCADOPAGO_PUBLIC_KEY = window.__MERCADOPAGO_PUBLIC_KEY__;
+        window.MERCADOPAGO_ACCESS_TOKEN = window.__MERCADOPAGO_ACCESS_TOKEN__;
+        
+        // Inyectar variables de Cresalia Payment
+        window.__CRESALIA_PAYMENT_EMAIL__ = getEnvVar('CRESALIA_PAYMENT_EMAIL', null);
+        window.__CRESALIA_MP_ALIAS__ = getEnvVar('CRESALIA_MP_ALIAS', null);
+        window.__CRESALIA_PAYMENT_PHONE__ = getEnvVar('CRESALIA_PAYMENT_PHONE', null);
+        window.CRESALIA_PAYMENT_EMAIL = window.__CRESALIA_PAYMENT_EMAIL__;
+        window.CRESALIA_MP_ALIAS = window.__CRESALIA_MP_ALIAS__;
+        window.CRESALIA_PAYMENT_PHONE = window.__CRESALIA_PAYMENT_PHONE__;
         
         console.log('✅ Variables de entorno inyectadas');
     }
