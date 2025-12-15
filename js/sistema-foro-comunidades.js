@@ -1815,8 +1815,15 @@ class SistemaForoComunidades {
     }
     
     async renderizarPost(post) {
-        // Registrar que el usuario vio este post
+        // Verificar si estamos en panel de verificación
+        const esPanelVerificacion = window.location.pathname.includes('panel-verificacion') || 
+                                     window.location.pathname.includes('panel-crear-campana');
+        
+        // Registrar que el usuario vio este post (esto también detecta si es admin)
         this.registrarPostVisto(post.id);
+        
+        // Verificar si fue leído por admin (para paneles de verificación)
+        const fueLeidoPorAdmin = this.esPostLeidoPorAdmin(post.id);
         
         const fecha = new Date(post.created_at).toLocaleDateString('es-AR', {
             year: 'numeric',
@@ -1881,11 +1888,17 @@ class SistemaForoComunidades {
             </div>
         ` : '';
         
+        // Badge de "leído por admin" (solo en paneles de verificación)
+        const badgeLeidoAdmin = esPanelVerificacion ? (fueLeidoPorAdmin ? 
+            '<span style="background: #10B981; color: white; padding: 4px 10px; border-radius: 15px; font-size: 0.75rem; margin-left: 8px; font-weight: 600;"><i class="fas fa-check-circle"></i> Leído</span>' : 
+            '<span style="background: #F59E0B; color: white; padding: 4px 10px; border-radius: 15px; font-size: 0.75rem; margin-left: 8px; font-weight: 600;"><i class="fas fa-circle"></i> No leído</span>'
+        ) : '';
+        
         return `
             <div class="post" data-post-id="${post.id}" data-pais="${ubicacionInfo ? this.escapeHtml(ubicacionInfo.pais) : ''}" data-provincia="${ubicacionInfo ? this.escapeHtml(ubicacionInfo.provincia) : ''}" data-zona="${ubicacionInfo ? this.escapeHtml(ubicacionInfo.zona) : ''}">
                 <div class="post-header">
                     <div class="post-autor">
-                        <strong>${this.escapeHtml(post.autor_alias || 'Anónimo')}${badgeVerificado}</strong>
+                        <strong>${this.escapeHtml(post.autor_alias || 'Anónimo')}${badgeVerificado}${badgeLeidoAdmin}</strong>
                         <span class="post-fecha">${fecha}</span>
                     </div>
                     <div class="post-acciones">
@@ -3221,19 +3234,126 @@ class SistemaForoComunidades {
     
     // ===== REGISTRAR POSTS VISTOS =====
     registrarPostVisto(postId) {
-        if (!this.autorHash) return;
-        
-        const key = `posts_vistos_${this.comunidadSlug}_${this.autorHash}`;
-        let postsVistos = JSON.parse(localStorage.getItem(key) || '[]');
-        
-        if (!postsVistos.includes(postId)) {
-            postsVistos.push(postId);
-            // Mantener solo los últimos 100
-            if (postsVistos.length > 100) {
-                postsVistos = postsVistos.slice(-100);
+        // Registrar vista normal del usuario
+        if (this.autorHash) {
+            const key = `posts_vistos_${this.comunidadSlug}_${this.autorHash}`;
+            let postsVistos = JSON.parse(localStorage.getItem(key) || '[]');
+            
+            if (!postsVistos.includes(postId)) {
+                postsVistos.push(postId);
+                // Mantener solo los últimos 100
+                if (postsVistos.length > 100) {
+                    postsVistos = postsVistos.slice(-100);
+                }
+                localStorage.setItem(key, JSON.stringify(postsVistos));
             }
-            localStorage.setItem(key, JSON.stringify(postsVistos));
         }
+        
+        // Detectar si estamos en un panel de verificación (admin)
+        const esPanelVerificacion = window.location.pathname.includes('panel-verificacion') || 
+                                     window.location.pathname.includes('panel-crear-campana');
+        
+        if (esPanelVerificacion) {
+            // Verificar si hay sesión de admin
+            const sessionData = localStorage.getItem('adminSession');
+            if (sessionData) {
+                try {
+                    const session = JSON.parse(sessionData);
+                    if (session.authenticated) {
+                        // Registrar que un admin vio este post
+                        this.registrarPostLeidoPorAdmin(postId);
+                    }
+                } catch (e) {
+                    console.error('Error verificando sesión admin:', e);
+                }
+            }
+        }
+    }
+    
+    // ===== REGISTRAR POST LEÍDO POR ADMIN =====
+    registrarPostLeidoPorAdmin(postId) {
+        const key = `posts_leidos_admin_${this.comunidadSlug}`;
+        let postsLeidos = JSON.parse(localStorage.getItem(key) || '[]');
+        
+        const registro = {
+            postId: postId,
+            fecha: new Date().toISOString(),
+            adminHash: this.obtenerHashAdmin() || 'admin'
+        };
+        
+        // Verificar si ya está registrado
+        const yaRegistrado = postsLeidos.some(r => r.postId === postId);
+        if (!yaRegistrado) {
+            postsLeidos.push(registro);
+            // Mantener solo los últimos 500 registros
+            if (postsLeidos.length > 500) {
+                postsLeidos = postsLeidos.slice(-500);
+            }
+            localStorage.setItem(key, JSON.stringify(postsLeidos));
+            
+            // Intentar guardar en Supabase si está disponible
+            this.guardarPostLeidoEnSupabase(registro);
+        }
+    }
+    
+    // ===== OBTENER HASH DEL ADMIN =====
+    obtenerHashAdmin() {
+        try {
+            const sessionData = localStorage.getItem('adminSession');
+            if (sessionData) {
+                const session = JSON.parse(sessionData);
+                // Crear un hash simple del email o ID del admin
+                if (session.email || session.userId) {
+                    return this.crearHashSimple(session.email || session.userId);
+                }
+            }
+        } catch (e) {
+            console.error('Error obteniendo hash admin:', e);
+        }
+        return null;
+    }
+    
+    // ===== CREAR HASH SIMPLE =====
+    crearHashSimple(texto) {
+        let hash = 0;
+        for (let i = 0; i < texto.length; i++) {
+            const char = texto.charCodeAt(i);
+            hash = ((hash << 5) - hash) + char;
+            hash = hash & hash; // Convertir a entero de 32 bits
+        }
+        return Math.abs(hash).toString(16);
+    }
+    
+    // ===== GUARDAR POST LEÍDO EN SUPABASE =====
+    async guardarPostLeidoEnSupabase(registro) {
+        if (!this.supabase) return;
+        
+        try {
+            // Intentar guardar en una tabla de posts leídos (si existe)
+            const { error } = await this.supabase
+                .from('posts_leidos_admin')
+                .insert([{
+                    post_id: registro.postId,
+                    comunidad_slug: this.comunidadSlug,
+                    admin_hash: registro.adminHash,
+                    fecha: registro.fecha,
+                    created_at: registro.fecha
+                }])
+                .select();
+            
+            if (error && error.code !== 'PGRST116') { // PGRST116 = tabla no existe
+                console.log('ℹ️ No se pudo guardar en Supabase (tabla puede no existir):', error.message);
+            }
+        } catch (e) {
+            // Silenciar errores - es opcional
+        }
+    }
+    
+    // ===== VERIFICAR SI POST FUE LEÍDO POR ADMIN =====
+    esPostLeidoPorAdmin(postId) {
+        const key = `posts_leidos_admin_${this.comunidadSlug}`;
+        const postsLeidos = JSON.parse(localStorage.getItem(key) || '[]');
+        return postsLeidos.some(r => r.postId === postId);
     }
     
     // ===== CAMBIAR TAB DEL HISTORIAL =====

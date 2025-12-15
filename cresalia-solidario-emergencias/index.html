@@ -35,6 +35,12 @@
     <!-- Sistema Cresalia Solidario Emergencias -->
     <script src="../js/sistema-cresalia-solidario-emergencias.js"></script>
     
+    <!-- Sistema de Foro para Comunidades -->
+    <script src="../js/sistema-foro-comunidades.js"></script>
+    
+    <!-- Sistema de Logros y Gamificación -->
+    <script src="../core/sistema-logros-gamificacion.js"></script>
+    
     <!-- Sistema de Alias/CVU/CBU para Donaciones -->
     <script src="../js/sistema-alias-donaciones.js"></script>
     
@@ -328,6 +334,92 @@
             color: #6B7280;
             font-size: 0.9rem;
         }
+        
+        /* Estilos para el sistema de foro */
+        .modal {
+            position: fixed !important;
+            top: 0 !important;
+            left: 0 !important;
+            width: 100% !important;
+            height: 100% !important;
+            background: rgba(0,0,0,0.7) !important;
+            display: none !important;
+            align-items: center !important;
+            justify-content: center !important;
+            z-index: 10000 !important;
+            padding: 20px !important;
+            box-sizing: border-box !important;
+        }
+        
+        .modal.show {
+            display: flex !important;
+        }
+        
+        .post {
+            background: white;
+            border-radius: 15px;
+            padding: 20px;
+            margin-bottom: 15px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            border-left: 4px solid #EF4444;
+        }
+        
+        .post-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+        
+        .post-autor {
+            font-weight: 600;
+            color: #EF4444;
+        }
+        
+        .post-fecha {
+            color: #6b7280;
+            font-size: 0.85rem;
+            margin-left: 10px;
+        }
+        
+        .post-titulo {
+            color: #374151;
+            margin-bottom: 10px;
+        }
+        
+        .post-contenido {
+            color: #374151;
+            line-height: 1.6;
+            margin-bottom: 15px;
+        }
+        
+        .post-footer {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+        
+        .btn-comentar, .btn-reaccionar {
+            background: #f3f4f6;
+            color: #374151;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            transition: all 0.3s;
+        }
+        
+        .btn-comentar:hover, .btn-reaccionar:hover {
+            background: #EF4444;
+            color: white;
+        }
+        
+        .comentarios-container {
+            margin-top: 15px;
+            padding-top: 15px;
+            border-top: 1px solid #e5e7eb;
+        }
     </style>
 </head>
 <body>
@@ -372,6 +464,27 @@
                 <div class="stat-number" id="totalDonantes">-</div>
                 <div class="stat-label">Donantes</div>
             </div>
+        </div>
+        
+        <!-- Sistema de Foro -->
+        <div id="foro-container" style="margin-top: 30px;">
+            <div style="display: flex; gap: 15px; margin-bottom: 20px; flex-wrap: wrap;">
+                <button id="btn-crear-post" class="btn-donar" style="flex: 1; min-width: 150px;">
+                    <i class="fas fa-plus"></i> Crear Post
+                </button>
+                <button id="btn-ver-foro" class="btn-donar" style="flex: 1; min-width: 150px; background: linear-gradient(135deg, #3B82F6 0%, #2563EB 100%);">
+                    <i class="fas fa-comments"></i> Ver Foro
+                </button>
+                <button id="btn-mi-historial" class="btn-donar" style="flex: 1; min-width: 150px; background: linear-gradient(135deg, #8B5CF6 0%, #7C3AED 100%);">
+                    <i class="fas fa-history"></i> Mi Historial
+                </button>
+            </div>
+            
+            <!-- Contenedor de posts -->
+            <div id="posts-container"></div>
+            
+            <!-- Contenedor de historial -->
+            <div id="historial-container" style="display: none;"></div>
         </div>
         
         <!-- Campañas Activas -->
@@ -588,6 +701,14 @@
             
             document.body.insertAdjacentHTML('beforeend', mensajeHTML);
         }
+        
+        // Inicializar sistema de foro
+        document.addEventListener('DOMContentLoaded', () => {
+            if (typeof SistemaForoComunidades !== 'undefined') {
+                window.foroComunidad = new SistemaForoComunidades('cresalia-solidario-emergencias');
+                console.log('✅ Sistema de foro inicializado para Cresalia Solidario Emergencias');
+            }
+        });
         
         console.log('%c🚨 Bienvenido/a a Cresalia Solidario Emergencias', 'color: #EF4444; font-size: 18px; font-weight: bold;');
         console.log('%c💜 Solo desastres naturales verificados', 'font-size: 14px;');
