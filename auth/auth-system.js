@@ -147,20 +147,26 @@ async function registrarNuevoComprador(datos) {
                 code: compradorError.code
             });
             
-            // Si el error es que no encuentra la tabla, puede ser problema de schema cache
-            if (compradorError.message.includes('Could not find the table') || compradorError.message.includes('schema cache')) {
-                console.error('❌ Error: Tabla compradores no encontrada. Posibles causas:');
-                console.error('   1. La tabla no existe en Supabase');
-                console.error('   2. Problema de caché de schema en Supabase');
-                console.error('   3. El trigger SQL no está ejecutado');
-                // El trigger SQL creará el perfil después de confirmar email, así que esto no es fatal
-                return {
-                    success: true,
-                    user: authData.user,
-                    comprador: null,
-                    mensaje: '¡Registro exitoso! Revisa tu email para verificar tu cuenta. Tu perfil se creará automáticamente después de confirmar tu email.',
-                    requiereConfirmacion: true
-                };
+            // Si el error es que no encuentra la tabla, dar instrucciones claras
+            if (compradorError.message.includes('Could not find the table') || 
+                compradorError.message.includes('schema cache') ||
+                compradorError.message.includes('does not exist') ||
+                compradorError.code === 'PGRST205') {
+                console.error('❌ Error: Tabla "compradores" no encontrada en Supabase.');
+                console.error('');
+                console.error('📋 SOLUCIÓN:');
+                console.error('   1. Andá a tu proyecto en Supabase (https://supabase.com)');
+                console.error('   2. Click en "SQL Editor" en el menú lateral');
+                console.error('   3. Abrí el archivo: CREAR-TABLA-COMPRADORES-SUPABASE.sql');
+                console.error('   4. Copiá y pegá TODO el código SQL');
+                console.error('   5. Click en "Run" (▶️)');
+                console.error('   6. Esperá a que termine (debería decir "Success")');
+                console.error('   7. Recargá esta página e intentá registrar de nuevo');
+                console.error('');
+                console.error('💡 Si no tenés el archivo SQL, buscá "CREAR-TABLA-COMPRADORES-SUPABASE.sql" en el proyecto.');
+                console.error('💡 O ejecutá "CREAR-TABLAS-COMPLETAS-SUPABASE.sql" para crear todas las tablas de una vez.');
+                
+                throw new Error('La tabla "compradores" no existe en Supabase. Por favor, ejecutá el script SQL "CREAR-TABLA-COMPRADORES-SUPABASE.sql" en Supabase SQL Editor. Ver la consola (F12) para instrucciones detalladas.');
             }
             
             // Si el error es por RLS (no hay sesión), informar al usuario
@@ -208,10 +214,17 @@ async function registrarNuevoComprador(datos) {
         
     } catch (error) {
         console.error('❌ Error en registro de comprador:', error);
+        
+        // Mensaje más amigable si es error de tabla no encontrada
+        let mensajeUsuario = error.message;
+        if (error.message.includes('tabla') || error.message.includes('table') || error.message.includes('compradores')) {
+            mensajeUsuario = 'La tabla "compradores" no existe en Supabase. Por favor, ejecutá el script SQL "CREAR-TABLA-COMPRADORES-SUPABASE.sql" en Supabase. Abrí la consola (F12) para ver instrucciones detalladas.';
+        }
+        
         return {
             success: false,
             error: error.message,
-            mensaje: 'Error al registrar. ' + error.message
+            mensaje: 'Error al registrar. ' + mensajeUsuario
         };
     }
 }

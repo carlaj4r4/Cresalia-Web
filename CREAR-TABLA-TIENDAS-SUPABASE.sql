@@ -8,6 +8,9 @@
 -- 4. Click en "Run" (▶️)
 -- 5. Esperá a que termine
 -- 6. Intentá registrar de nuevo
+--
+-- ⚠️ IMPORTANTE: Este script se puede ejecutar múltiples veces sin problemas
+--    Usa "IF NOT EXISTS" para evitar errores si la tabla ya existe
 
 -- ===== CREAR TABLA TIENDAS =====
 CREATE TABLE IF NOT EXISTS tiendas (
