@@ -1,6 +1,12 @@
 /**
  * 🔔 Webhook de Mercado Pago - CheckoutAPI
  * Recibe notificaciones de pagos desde Mercado Pago
+ * 
+ * 🔐 SEGURIDAD: ACCESS_TOKEN solo se usa en el servidor para verificar pagos
+ * 
+ * Configuración en MercadoPago:
+ * - URL del webhook: https://tu-dominio.vercel.app/api/webhook-mercadopago
+ * - Eventos: payment, merchant_order
  */
 
 const { createClient } = require('@supabase/supabase-js');

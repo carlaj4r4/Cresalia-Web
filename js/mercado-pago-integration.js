@@ -224,7 +224,7 @@ async function crearPreferenciaPago(planId, datosUsuario) {
                 pending: `${window.location.origin}/pago-pendiente.html`
             },
             auto_return: 'approved',
-            notification_url: `${window.location.origin}/api/notificaciones-pago`,
+            notification_url: `${window.location.origin}/api/webhook-mercadopago`,
             external_reference: `cresalia_${planId}_${Date.now()}`,
             metadata: {
                 plan: planId,
@@ -234,8 +234,9 @@ async function crearPreferenciaPago(planId, datosUsuario) {
         };
         
         // Llamar al backend para crear la preferencia (requiere ACCESS_TOKEN)
-        const apiUrl = MERCADO_PAGO_SETTINGS.apiUrl || 'https://cresalia-backend.vercel.app/api';
-        const response = await fetch(`${apiUrl}/mercadopago/crear-preferencia`, {
+        // El endpoint está en /api/mercadopago-preference (Vercel convierte api/archivo.js en /api/archivo)
+        const apiUrl = MERCADO_PAGO_SETTINGS.apiUrl || (typeof window !== 'undefined' ? window.location.origin : 'https://cresalia-web.vercel.app');
+        const response = await fetch(`${apiUrl}/api/mercadopago-preference`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'

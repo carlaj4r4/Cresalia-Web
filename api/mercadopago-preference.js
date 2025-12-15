@@ -2,6 +2,12 @@
  * 💳 API Endpoint: Crear Preferencia de Pago - Mercado Pago CheckoutAPI
  * Este endpoint crea una preferencia de pago usando el Access Token de Mercado Pago
  * Permite procesar múltiples métodos de pago (tarjetas, efectivo, transferencias)
+ * 
+ * 🔐 SEGURIDAD: ACCESS_TOKEN solo se usa en el servidor, nunca en el cliente
+ * 
+ * Rutas disponibles:
+ * - /api/mercadopago-preference (principal)
+ * - /api/mercadopago/crear-preferencia (alias para compatibilidad)
  */
 
 const { createClient } = require('@supabase/supabase-js');
