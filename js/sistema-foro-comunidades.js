@@ -1891,7 +1891,6 @@ class SistemaForoComunidades {
         // Badge de "leído por admin" - mostrar para:
         // 1. Admins en paneles de verificación
         // 2. Autores de los posts (para que sepan si su post fue revisado)
-        const esAutor = post.autor_hash === this.autorHash;
         const mostrarBadgeLeido = esPanelVerificacion || esAutor;
         
         let badgeLeidoAdmin = '';
