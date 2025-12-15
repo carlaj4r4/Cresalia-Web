@@ -1888,11 +1888,20 @@ class SistemaForoComunidades {
             </div>
         ` : '';
         
-        // Badge de "leído por admin" (solo en paneles de verificación)
-        const badgeLeidoAdmin = esPanelVerificacion ? (fueLeidoPorAdmin ? 
-            '<span style="background: #10B981; color: white; padding: 4px 10px; border-radius: 15px; font-size: 0.75rem; margin-left: 8px; font-weight: 600;"><i class="fas fa-check-circle"></i> Leído</span>' : 
-            '<span style="background: #F59E0B; color: white; padding: 4px 10px; border-radius: 15px; font-size: 0.75rem; margin-left: 8px; font-weight: 600;"><i class="fas fa-circle"></i> No leído</span>'
-        ) : '';
+        // Badge de "leído por admin" - mostrar para:
+        // 1. Admins en paneles de verificación
+        // 2. Autores de los posts (para que sepan si su post fue revisado)
+        const esAutor = post.autor_hash === this.autorHash;
+        const mostrarBadgeLeido = esPanelVerificacion || esAutor;
+        
+        let badgeLeidoAdmin = '';
+        if (mostrarBadgeLeido) {
+            if (fueLeidoPorAdmin) {
+                badgeLeidoAdmin = '<span style="background: #10B981; color: white; padding: 4px 10px; border-radius: 15px; font-size: 0.75rem; margin-left: 8px; font-weight: 600;" title="Tu post ha sido revisado por un administrador"><i class="fas fa-check-circle"></i> Revisado</span>';
+            } else {
+                badgeLeidoAdmin = '<span style="background: #F59E0B; color: white; padding: 4px 10px; border-radius: 15px; font-size: 0.75rem; margin-left: 8px; font-weight: 600;" title="Tu post aún no ha sido revisado por un administrador"><i class="fas fa-clock"></i> Pendiente</span>';
+            }
+        }
         
         return `
             <div class="post" data-post-id="${post.id}" data-pais="${ubicacionInfo ? this.escapeHtml(ubicacionInfo.pais) : ''}" data-provincia="${ubicacionInfo ? this.escapeHtml(ubicacionInfo.provincia) : ''}" data-zona="${ubicacionInfo ? this.escapeHtml(ubicacionInfo.zona) : ''}">
