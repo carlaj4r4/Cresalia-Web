@@ -35,12 +35,19 @@ const MERCADO_PAGO_SETTINGS = (() => {
     }
 
     const fallbackConfig = {
-        publicKey: (typeof window !== 'undefined' && (window.__MERCADOPAGO_PUBLIC_KEY__ || window.MERCADOPAGO_PUBLIC_KEY || window.MERCADOPAGO_PUBLIC_KEY)) || 'CONFIGURAR_EN_VERCEL',
-        accessToken: (typeof window !== 'undefined' && (window.__MERCADOPAGO_ACCESS_TOKEN__ || window.MERCADOPAGO_ACCESS_TOKEN || window.MERCADOPAGO_ACCESS_TOKEN)) || 'CONFIGURAR_EN_VERCEL',
+        // Solo PUBLIC_KEY en el cliente (es segura de exponer)
+        publicKey: (typeof window !== 'undefined' && (window.__MERCADOPAGO_PUBLIC_KEY__ || window.MERCADOPAGO_PUBLIC_KEY)) || 'CONFIGURAR_EN_VERCEL',
+        // ⚠️ ACCESS_TOKEN NO debe estar en el cliente - se usa solo en el backend/API
+        // Las operaciones que requieren ACCESS_TOKEN deben hacerse desde el backend
+        accessToken: null, // No se usa en el cliente por seguridad
         sandbox: false,
         currency: 'ARS',
         statement_descriptor: 'Cresalia',
-        enabled: true
+        enabled: true,
+        // URL del backend para operaciones que requieren ACCESS_TOKEN
+        apiUrl: typeof window !== 'undefined' && window.location.hostname.includes('vercel.app')
+            ? 'https://cresalia-backend.vercel.app/api'
+            : 'http://localhost:3001/api'
     };
 
     window.MERCADO_PAGO_CONFIG = fallbackConfig;
@@ -180,12 +187,14 @@ function inicializarMercadoPago() {
         return mp;
     } catch (error) {
         console.error('❌ Error inicializando Mercado Pago:', error);
-        console.warn('💡 Asegurate de que las variables MERCADOPAGO_PUBLIC_KEY y MERCADOPAGO_ACCESS_TOKEN estén configuradas en Vercel con el prefijo NEXT_PUBLIC_');
+        console.warn('💡 Asegurate de que la variable MERCADOPAGO_PUBLIC_KEY esté configurada en Vercel con el prefijo NEXT_PUBLIC_');
+        console.warn('⚠️ IMPORTANTE: MERCADOPAGO_ACCESS_TOKEN NO debe estar en el cliente. Solo se usa en el backend.');
         return false;
     }
 }
 
 // Función para crear preferencia de pago
+// ⚠️ SEGURIDAD: Esta función llama al backend porque requiere ACCESS_TOKEN
 async function crearPreferenciaPago(planId, datosUsuario) {
     console.log('💰 Creando preferencia de pago para plan:', planId);
     
@@ -194,13 +203,8 @@ async function crearPreferenciaPago(planId, datosUsuario) {
         throw new Error('Plan no válido');
     }
     
-    const mp = inicializarMercadoPago();
-    if (!mp) {
-        throw new Error('Mercado Pago no inicializado');
-    }
-    
     try {
-        const preferencia = {
+        const preferenciaData = {
             items: [
                 {
                     title: `Suscripción Cresalia - ${plan.nombre}`,
@@ -211,11 +215,9 @@ async function crearPreferenciaPago(planId, datosUsuario) {
                 }
             ],
             payer: {
-                // Solo email para verificación interna de Mercado Pago
-                // El nombre comercial será "Cresalia" (configurado en statement_descriptor)
                 email: datosUsuario.email
             },
-            statement_descriptor: 'Cresalia', // Lo que verá el cliente en su resumen de cuenta
+            statement_descriptor: 'Cresalia',
             back_urls: {
                 success: `${window.location.origin}/pago-exitoso.html`,
                 failure: `${window.location.origin}/pago-fallido.html`,
@@ -226,18 +228,37 @@ async function crearPreferenciaPago(planId, datosUsuario) {
             external_reference: `cresalia_${planId}_${Date.now()}`,
             metadata: {
                 plan: planId,
-                // NO incluir datos personales en metadata
                 plataforma: 'cresalia',
                 tipo: 'suscripcion'
             }
         };
         
-        const response = await mp.preferences.create(preferencia);
-        console.log('✅ Preferencia creada:', response.body.id);
+        // Llamar al backend para crear la preferencia (requiere ACCESS_TOKEN)
+        const apiUrl = MERCADO_PAGO_SETTINGS.apiUrl || 'https://cresalia-backend.vercel.app/api';
+        const response = await fetch(`${apiUrl}/mercadopago/crear-preferencia`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(preferenciaData)
+        });
         
-        return response.body;
+        if (!response.ok) {
+            const errorData = await response.json().catch(() => ({ error: 'Error desconocido' }));
+            throw new Error(errorData.error || `Error del servidor: ${response.status}`);
+        }
+        
+        const preferencia = await response.json();
+        console.log('✅ Preferencia creada:', preferencia.id);
+        
+        return preferencia;
     } catch (error) {
         console.error('❌ Error creando preferencia:', error);
+        // Si el endpoint no existe, mostrar mensaje útil
+        if (error.message.includes('404') || error.message.includes('Not Found')) {
+            console.error('⚠️ El endpoint /api/mercadopago/crear-preferencia no existe. Necesitás crearlo en el backend.');
+            throw new Error('El sistema de pagos no está completamente configurado. Contacta a soporte.');
+        }
         throw error;
     }
 }

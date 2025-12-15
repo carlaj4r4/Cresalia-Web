@@ -43,10 +43,10 @@
         window.__SUPABASE_SERVICE_ROLE_KEY__ = getEnvVar('SUPABASE_SERVICE_ROLE_KEY', null);
         
         // Inyectar variables de Mercado Pago
+        // ⚠️ IMPORTANTE: Solo PUBLIC_KEY en el cliente (ACCESS_TOKEN es privado y va en el servidor)
         window.__MERCADOPAGO_PUBLIC_KEY__ = getEnvVar('MERCADOPAGO_PUBLIC_KEY', null);
-        window.__MERCADOPAGO_ACCESS_TOKEN__ = getEnvVar('MERCADOPAGO_ACCESS_TOKEN', null);
         window.MERCADOPAGO_PUBLIC_KEY = window.__MERCADOPAGO_PUBLIC_KEY__;
-        window.MERCADOPAGO_ACCESS_TOKEN = window.__MERCADOPAGO_ACCESS_TOKEN__;
+        // ACCESS_TOKEN NO se expone en el cliente - se usa solo en el backend/API
         
         // Inyectar variables de Cresalia Payment
         window.__CRESALIA_PAYMENT_EMAIL__ = getEnvVar('CRESALIA_PAYMENT_EMAIL', null);
