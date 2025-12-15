@@ -21,36 +21,55 @@
 /* En móviles, apilar verticalmente */
 @media (max-width: 768px) {
     .ai-chatbot-container {
-        right: 20px;
-        bottom: 58px; /* 20px (soporte) + 38px (1 cm de espacio) */
+        right: 20px !important;
+        bottom: 58px !important; /* 20px (soporte) + 38px (1 cm de espacio) */
     }
     
     .chatbot-container {
-        right: 20px;
-        bottom: 90px;
+        right: 20px !important;
+        bottom: 90px !important;
     }
     
     .floating-cart {
-        left: 20px;
-        bottom: 20px;
+        left: 20px !important;
+        bottom: 20px !important;
+    }
+    
+    /* Asegurar que los botones sean visibles */
+    .ai-chatbot-toggle, .chatbot-toggle {
+        display: flex !important;
+        visibility: visible !important;
+        opacity: 1 !important;
     }
 }
 
 /* En pantallas muy pequeñas */
 @media (max-width: 480px) {
     .ai-chatbot-container {
-        right: 10px;
-        bottom: 48px; /* 10px (soporte) + 38px (1 cm de espacio) */
+        right: 10px !important;
+        bottom: 48px !important; /* 10px (soporte) + 38px (1 cm de espacio) */
     }
     
     .chatbot-container {
-        right: 10px;
-        bottom: 80px;
+        right: 10px !important;
+        bottom: 80px !important;
     }
     
     .floating-cart {
-        left: 10px;
-        bottom: 10px;
+        left: 10px !important;
+        bottom: 10px !important;
+    }
+    
+    /* Asegurar que los botones sean visibles */
+    .ai-chatbot-toggle, .chatbot-toggle {
+        display: flex !important;
+        visibility: visible !important;
+        opacity: 1 !important;
+        padding: 12px 16px !important;
+    }
+    
+    .ai-toggle-text, .chatbot-toggle-text {
+        font-size: 12px !important;
     }
 }
 
@@ -118,7 +137,7 @@
     border-radius: 20px;
     box-shadow: 0 20px 60px rgba(0,0,0,0.3);
     z-index: 10001;
-    display: none;
+    display: none !important;
     width: 380px;
     height: 500px;
     flex-direction: column;
@@ -128,7 +147,9 @@
     transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-.ai-chatbot-modal.active, .chatbot-modal.active {
+.ai-chatbot-modal.active, .chatbot-modal.active,
+.ai-chatbot-modal[style*="flex"], .chatbot-modal[style*="flex"] {
+    display: flex !important;
     transform: scale(1) translateY(0);
     opacity: 1;
 }
@@ -370,11 +391,12 @@
 
 @media (max-width: 768px) {
     .ai-chatbot-modal, .chatbot-modal {
-        width: calc(100vw - 40px);
-        height: 60vh;
-        right: 20px;
-        left: 20px;
-        bottom: 100px;
+        width: calc(100vw - 40px) !important;
+        height: 60vh !important;
+        right: 20px !important;
+        left: 20px !important;
+        bottom: 100px !important;
+        max-width: none !important;
     }
     
     /* Botones de cierre más grandes en móvil */
@@ -388,18 +410,19 @@
 
 @media (max-width: 480px) {
     .ai-chatbot-modal, .chatbot-modal {
-        width: calc(100vw - 20px);
-        right: 10px;
-        left: 10px;
-        bottom: 90px;
+        width: calc(100vw - 20px) !important;
+        right: 10px !important;
+        left: 10px !important;
+        bottom: 90px !important;
+        max-width: none !important;
     }
     
     .ai-chatbot-toggle, .chatbot-toggle {
-        padding: 12px 16px;
+        padding: 12px 16px !important;
     }
     
     .ai-toggle-text, .chatbot-toggle-text {
-        font-size: 12px;
+        font-size: 12px !important;
     }
     
     /* Botones de cierre aún más grandes en móviles pequeños */

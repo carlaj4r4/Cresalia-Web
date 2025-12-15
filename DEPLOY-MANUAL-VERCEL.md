@@ -132,3 +132,6 @@ Una vez que el deploy esté completo, tu sitio estará disponible en:
 - `https://tu-proyecto.vercel.app`
 - O en tu dominio personalizado si lo configuraste
 
+
+
+

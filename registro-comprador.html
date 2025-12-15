@@ -393,14 +393,23 @@
                 try {
                     console.log('🚀 Llamando a registrarNuevoComprador...');
                     console.log('📋 Función disponible:', typeof registrarNuevoComprador);
+                    console.log('📋 Función en window:', typeof window.registrarNuevoComprador);
                     
-                    // Verificar que la función esté disponible
-                    if (typeof registrarNuevoComprador === 'undefined') {
-                        throw new Error('La función de registro no está disponible. Verifica que los scripts se hayan cargado correctamente.');
+                    // Verificar que la función esté disponible (intentar ambas formas)
+                    let funcionRegistro = registrarNuevoComprador || window.registrarNuevoComprador;
+                    
+                    if (typeof funcionRegistro === 'undefined') {
+                        // Esperar un poco y reintentar
+                        await new Promise(resolve => setTimeout(resolve, 500));
+                        funcionRegistro = registrarNuevoComprador || window.registrarNuevoComprador;
+                        
+                        if (typeof funcionRegistro === 'undefined') {
+                            throw new Error('La función de registro no está disponible. Verifica que los scripts se hayan cargado correctamente. Recarga la página e intenta nuevamente.');
+                        }
                     }
                     
                     // Usar la función específica para compradores
-                    const resultado = await registrarNuevoComprador({
+                    const resultado = await funcionRegistro({
                         email: email,
                         password: password,
                         nombreCompleto: nombre

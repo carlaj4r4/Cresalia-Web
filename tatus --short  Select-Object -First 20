@@ -1,0 +1,43 @@
+warning: in the working copy of 'api/admin.js', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'api/aniversarios.js', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'api/comunidades-api.js', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'api/jobs.js', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'api/mantenimiento.js', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'api/reportes.js', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'css/chatbots-mejorados.css', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'js/historias-corazon-cresalia.js', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'js/historias-corazon-tienda.js', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'js/simple-payment-system.js', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'js/sistema-alertas-emergencia-global.js', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'package.json', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'styles-cresalia.css', LF will be replaced by CRLF the next time Git touches it
+ DEPLOY-AHORA-MISMO.md                   |  1 [32m+[m
+ DEPLOY-MANUAL-VERCEL.md                 |  1 [32m+[m
+ DEPLOY-POR-PARTES.md                    |  1 [32m+[m
+ DEPLOY-RAPIDO.md                        |  1 [32m+[m
+ DIFERENCIAS-PWA-APK-APP-STORE.md        |  1 [32m+[m
+ FORZAR-DEPLOY-COMMIT-17CE68D.md         |  1 [32m+[m
+ FORZAR-DEPLOY-COMMIT-RECIENTE.md        |  1 [32m+[m
+ GUIA-DEPLOY-ACTUALIZADA.md              |  1 [32m+[m
+ GUIA-PWA-COMPATIBILIDAD.md              |  1 [32m+[m
+ PLAN-CONSOLIDACION-FUNCIONES.md         |  1 [32m+[m
+ RECONECTAR-VERCEL-GITHUB.md             |  1 [32m+[m
+ SOLUCION-DEPLOY-NO-FUNCIONA.md          |  1 [32m+[m
+ SOLUCION-DEPLOY-PRODUCTION-ANTIGUO.md   |  1 [32m+[m
+ SOLUCION-DEPLOYS-CANCELADOS.md          |  1 [32m+[m
+ SOLUCION-ERROR-DEPLOY-VERCEL.md         |  1 [32m+[m
+ SOLUCION-LIMITE-FUNCIONES.md            |  1 [32m+[m
+ SOLUCION-PREVIEW-VS-PRODUCTION.md       |  1 [32m+[m
+ SOLUCION-PRODUCTION-SIN-CAMBIOS.md      |  1 [32m+[m
+ SOLUCION-VERCEL-NO-APARECE-NADA.md      |  1 [32m+[m
+ SOLUCION-WIDGET-BREVO-VERCEL.md         |  1 [32m+[m
+ css/chatbots-mejorados.css              | 73 [32m++++++++++++++++++++++[m[31m-----------[m
+ deploy-vercel-ahora.bat                 |  1 [32m+[m
+ deploy-vercel-cli.bat                   |  1 [32m+[m
+ js/historias-corazon-cresalia.js        | 14 [32m+++++[m[31m--[m
+ js/simple-payment-system.js             | 10 [32m++[m[31m---[m
+ js/sistema-alertas-emergencia-global.js | 42 [32m++++++++++++++++++[m[31m-[m
+ scripts/verificar-pre-deploy.js         |  1 [32m+[m
+ styles-cresalia.css                     |  8 [32m++[m[31m--[m
+ verificar-deploy-production.md          |  1 [32m+[m
+ 29 files changed, 133 insertions(+), 38 deletions(-)

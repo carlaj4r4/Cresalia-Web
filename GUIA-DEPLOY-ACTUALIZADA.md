@@ -185,3 +185,6 @@ Si tienes problemas:
 3. Revisa que todas las variables de entorno estén configuradas
 4. Verifica que los archivos estén en las rutas correctas
 
+
+
+

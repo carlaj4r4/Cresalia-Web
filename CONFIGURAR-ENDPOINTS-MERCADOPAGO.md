@@ -6,9 +6,7 @@ Ya tenés estos endpoints creados en la carpeta `api/`:
 
 ### 1. Crear Preferencia de Pago
 - **Archivo:** `api/mercadopago-preference.js`
-- **Rutas disponibles:**
-  - `/api/mercadopago-preference` (principal)
-  - `/api/mercadopago/crear-preferencia` (alias para compatibilidad)
+- **Ruta:** `/api/mercadopago-preference`
 
 ### 2. Webhook de Notificaciones
 - **Archivo:** `api/webhook-mercadopago.js`

@@ -235,11 +235,16 @@ function aplicarFiltros() {
     
     // Filtrar productos
     resultadosFiltros = productos.filter(producto => {
+        // EXCLUIR productos eliminados u ocultos
+        if (producto.eliminado === true || producto.oculto === true || producto.visible === false) {
+            return false;
+        }
+        
         // Búsqueda por texto
         const coincideBusqueda = !busqueda || 
             producto.nombre.toLowerCase().includes(busqueda) ||
             producto.descripcion.toLowerCase().includes(busqueda) ||
-            producto.tags.some(tag => tag.toLowerCase().includes(busqueda));
+            (producto.tags && producto.tags.some(tag => tag.toLowerCase().includes(busqueda)));
         
         // Categoría
         const coincideCategoria = !categoria || producto.categoria === categoria;

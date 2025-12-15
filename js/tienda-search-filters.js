@@ -94,7 +94,11 @@ class TiendaSearchSystem {
 
     // ===== APLICAR FILTROS =====
     aplicarFiltros() {
-        let productosFiltrados = [...this.productos];
+        // Primero filtrar productos eliminados u ocultos
+        let productosFiltrados = this.productos.filter(producto => {
+            // EXCLUIR productos eliminados u ocultos
+            return !(producto.eliminado === true || producto.oculto === true || producto.visible === false);
+        });
 
         // Filtro de búsqueda
         if (this.filtrosActivos.busqueda) {

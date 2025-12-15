@@ -16,15 +16,23 @@ const HistoriasCorazon = {
                 url += `&donde_mostrar=${dondeMostrar}`;
             }
             
-            const response = await fetch(url);
-            if (!response.ok) throw new Error('Error cargando historias');
+            const response = await fetch(url).catch(err => {
+                console.warn('⚠️ No se pudo conectar con la API de historias (esto es normal si la API no está disponible)');
+                return null;
+            });
+            
+            if (!response || !response.ok) {
+                console.warn('⚠️ API de historias no disponible, usando modo sin historias');
+                this.mostrarSinHistorias();
+                return;
+            }
             
             const data = await response.json();
             this.historias = data.historias || [];
             
             this.renderizarHistorias();
         } catch (error) {
-            console.error('❌ Error cargando historias:', error);
+            console.warn('⚠️ Error cargando historias (esto es normal si la API no está disponible):', error.message);
             this.mostrarSinHistorias();
         }
     },

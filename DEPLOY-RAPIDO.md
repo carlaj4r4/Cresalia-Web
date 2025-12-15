@@ -65,3 +65,6 @@ SUPABASE_ANON_KEY=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
 
 Una vez que veas "Ready" en Vercel, tu sitio está en producción! 🚀
 
+
+
+

@@ -419,9 +419,23 @@
                 // Intentar registro
                 console.log('🚀 Llamando a registrarNuevoEmprendedor...');
                 console.log('📋 Función disponible:', typeof registrarNuevoEmprendedor);
+                console.log('📋 Función en window:', typeof window.registrarNuevoEmprendedor);
                 
                 try {
-                    const resultado = await registrarNuevoEmprendedor({
+                    // Verificar que la función esté disponible (intentar ambas formas)
+                    let funcionRegistro = registrarNuevoEmprendedor || window.registrarNuevoEmprendedor;
+                    
+                    if (typeof funcionRegistro === 'undefined') {
+                        // Esperar un poco y reintentar
+                        await new Promise(resolve => setTimeout(resolve, 500));
+                        funcionRegistro = registrarNuevoEmprendedor || window.registrarNuevoEmprendedor;
+                        
+                        if (typeof funcionRegistro === 'undefined') {
+                            throw new Error('La función de registro no está disponible. Verifica que los scripts se hayan cargado correctamente. Recarga la página e intenta nuevamente.');
+                        }
+                    }
+                    
+                    const resultado = await funcionRegistro({
                         email,
                         password,
                         nombreServicio,

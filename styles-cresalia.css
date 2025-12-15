@@ -7298,13 +7298,13 @@ body {
     
     /* Chatbots responsive */
     .chatbot-container {
-        bottom: 15px !important;
-        right: 15px !important;
+        bottom: 90px !important;
+        right: 20px !important;
     }
     
     .ai-chatbot-container {
-        bottom: 15px !important;
-        right: 80px !important;
+        bottom: 58px !important;
+        right: 20px !important;
     }
     
     .chatbot-toggle, .ai-chatbot-toggle {

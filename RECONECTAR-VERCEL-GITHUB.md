@@ -80,3 +80,6 @@ El favicon ahora usa directamente el logo PNG de Cresalia. Si necesitás un `.ic
 2. Guardalo como `favicon.ico` en la raíz del proyecto
 3. El HTML ya está configurado para usar el PNG, pero podés agregar también el `.ico` como fallback
 
+
+
+

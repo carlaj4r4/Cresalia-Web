@@ -336,4 +336,3 @@ npx cap open android
 ---
 
 *Creado con amor para Cresalia 💜*
-
