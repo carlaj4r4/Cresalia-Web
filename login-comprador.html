@@ -289,13 +289,61 @@
         document.addEventListener('DOMContentLoaded', async function() {
             supabase = initSupabase();
             
+            // Verificar si viene de confirmación de email
+            const hashParams = new URLSearchParams(window.location.hash.substring(1));
+            const accessToken = hashParams.get('access_token');
+            const type = hashParams.get('type');
+            
+            if (type === 'signup' && accessToken) {
+                console.log('✅ Confirmación de email detectada');
+                mostrarNotificacion('✅ ¡Email confirmado! Tu perfil se está creando...', 'success');
+                
+                // Intercambiar el token por una sesión
+                try {
+                    const { data, error } = await supabase.auth.setSession({
+                        access_token: accessToken,
+                        refresh_token: hashParams.get('refresh_token') || ''
+                    });
+                    
+                    if (error) throw error;
+                    
+                    if (data.session) {
+                        console.log('✅ Sesión establecida después de confirmar email');
+                        mostrarNotificacion('✅ ¡Cuenta confirmada! Redirigiendo...', 'success');
+                        
+                        // Esperar un momento para que el trigger SQL cree el perfil
+                        setTimeout(async () => {
+                            // Verificar que el perfil se haya creado
+                            const { data: perfilData } = await supabase
+                                .from('compradores')
+                                .select('*')
+                                .eq('user_id', data.user.id)
+                                .single();
+                            
+                            if (perfilData) {
+                                console.log('✅ Perfil de comprador creado correctamente');
+                            } else {
+                                console.log('ℹ️ Perfil aún no creado, el trigger SQL lo creará en breve');
+                            }
+                            
+                            // Redirigir al index
+                            window.location.replace('index-cresalia.html');
+                        }, 2000);
+                        return;
+                    }
+                } catch (error) {
+                    console.error('❌ Error al establecer sesión:', error);
+                    mostrarNotificacion('⚠️ Hubo un problema al confirmar tu email. Intenta iniciar sesión manualmente.', 'error');
+                }
+            }
+            
             // Pre-llenar email si viene de registro
             const registroExitoso = localStorage.getItem('registro_exitoso');
             const emailRegistro = localStorage.getItem('email_registro');
             
             if (registroExitoso === 'true' && emailRegistro) {
                 document.getElementById('email').value = emailRegistro;
-                mostrarNotificacion('✅ Registro exitoso. Ahora inicia sesión', 'success');
+                mostrarNotificacion('✅ Registro exitoso. Revisa tu email para confirmar tu cuenta', 'success');
                 localStorage.removeItem('registro_exitoso');
                 localStorage.removeItem('email_registro');
             }

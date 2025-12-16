@@ -34,7 +34,7 @@ async function registrarNuevoComprador(datos) {
                 emailRedirectTo: redirectUrl,
                 data: {
                     nombre_completo: nombreCompleto,
-                    tipo_usuario: 'comprador'
+                    tipo_usuario: 'comprador' // IMPORTANTE: El trigger SQL busca este campo para crear el perfil
                 }
             }
         });
@@ -68,37 +68,41 @@ async function registrarNuevoComprador(datos) {
         }
         
         // 2. Crear registro en tabla de compradores
-        // Nota: Si el email requiere confirmación, esto puede fallar hasta que se confirme
-        // Intentar con retry si hay problema de schema cache
+        // IMPORTANTE: Si no hay sesión (requiere confirmación de email), el trigger SQL creará el perfil automáticamente
+        // Solo intentar crear el registro si hay sesión inmediata
         let compradorData = null;
         let compradorError = null;
-        let attempts = 0;
-        const maxAttempts = 5; // Aumentar a 5 intentos
         
-        while (attempts < maxAttempts) {
-            try {
-                // Intentar insertar
-                const result = await supabase
-                    .from('compradores')
-                    .insert([
-                        {
-                            user_id: authData.user.id,
-                            nombre_completo: nombreCompleto,
-                            email: email,
-                            activo: true,
-                            fecha_registro: new Date().toISOString()
-                        }
-                    ])
-                    .select()
-                    .single();
-                
-                compradorData = result.data;
-                compradorError = result.error;
-                
-                // Si no hay error, salir del loop
-                if (!compradorError) {
-                    break;
-                }
+        // Si hay sesión, intentar crear el registro inmediatamente
+        if (authData.session) {
+            let attempts = 0;
+            const maxAttempts = 8; // Aumentar a 8 intentos
+            
+            while (attempts < maxAttempts) {
+                try {
+                    // Intentar insertar
+                    const result = await supabase
+                        .from('compradores')
+                        .insert([
+                            {
+                                user_id: authData.user.id,
+                                nombre_completo: nombreCompleto,
+                                email: email,
+                                activo: true,
+                                fecha_registro: new Date().toISOString()
+                            }
+                        ])
+                        .select()
+                        .single();
+                    
+                    compradorData = result.data;
+                    compradorError = result.error;
+                    
+                    // Si no hay error, salir del loop
+                    if (!compradorError) {
+                        console.log('✅ Perfil de comprador creado inmediatamente');
+                        break;
+                    }
                 
                 // Si el error es de schema cache, intentar refrescar y esperar
                 if (compradorError.message && (
@@ -192,15 +196,25 @@ async function registrarNuevoComprador(datos) {
                 console.error('      c) Recargá esta página e intentá de nuevo');
                 console.error('');
                 console.error('💡 Archivos SQL disponibles:');
-                console.error('   - VERIFICAR-Y-REPARAR-TABLAS-SUPABASE.sql (recomendado - verifica y crea)');
+                console.error('   - LIMPIAR-POLITICAS-DUPLICADAS-SUPABASE.sql (IMPORTANTE - limpia políticas duplicadas)');
+                console.error('   - VERIFICAR-Y-REPARAR-TABLAS-SUPABASE.sql (verifica y crea tablas)');
                 console.error('   - CREAR-TABLAS-COMPLETAS-SUPABASE.sql (crea todas las tablas)');
-                console.error('   - CREAR-TABLA-COMPRADORES-SUPABASE.sql (solo compradores)');
+                console.error('');
+                console.error('⚠️ NOTA IMPORTANTE:');
+                console.error('   Si las tablas YA existen en Supabase pero sigue el error:');
+                console.error('   1. Ejecutá LIMPIAR-POLITICAS-DUPLICADAS-SUPABASE.sql primero');
+                console.error('   2. Esperá 2-3 minutos (el schema cache puede tardar)');
+                console.error('   3. Recargá esta página e intentá de nuevo');
+                console.error('   4. Si sigue fallando, puede ser que necesites usar SERVICE_ROLE_KEY en el servidor');
                 
-                throw new Error('La tabla "compradores" no existe en Supabase. Por favor, ejecutá el script SQL "VERIFICAR-Y-REPARAR-TABLAS-SUPABASE.sql" en Supabase SQL Editor. Ver la consola (F12) para instrucciones detalladas.');
+                throw new Error('La tabla "compradores" no existe en Supabase o hay problema con el schema cache. Por favor, ejecutá el script SQL "LIMPIAR-POLITICAS-DUPLICADAS-SUPABASE.sql" primero, luego esperá 2-3 minutos y recargá esta página. Ver la consola (F12) para instrucciones detalladas.');
             }
             
             // Si el error es por RLS (no hay sesión), informar al usuario
-            if (compradorError.code === '42501' || compradorError.message.includes('permission denied') || compradorError.message.includes('new row violates row-level security')) {
+            if (compradorError.code === '42501' || 
+                compradorError.message.includes('permission denied') || 
+                compradorError.message.includes('new row violates row-level security') ||
+                compradorError.message.includes('row-level security')) {
                 console.log('ℹ️ Error por RLS - el trigger SQL creará el perfil después de confirmar email');
                 // No es un error fatal - el trigger SQL creará el perfil después de la confirmación
                 return {
