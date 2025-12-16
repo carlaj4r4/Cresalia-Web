@@ -722,29 +722,47 @@ async function enviarMensajeBienvenida(email, nombre, tipoUsuario) {
     console.log(`📧 Enviando mensaje de bienvenida a ${tipoUsuario}:`, email);
     
     try {
-        let mensajeBienvenida;
-        
-        if (tipoUsuario === 'vendedor') {
-            mensajeBienvenida = generarMensajeBienvenidaVendedor(nombre);
-        } else if (tipoUsuario === 'comprador') {
-            mensajeBienvenida = generarMensajeBienvenidaComprador(nombre);
+        // Intentar usar el sistema de emails automáticos si está disponible
+        if (window.sistemaEmailsCresalia && typeof window.sistemaEmailsCresalia.enviarBienvenida === 'function') {
+            console.log('📧 Usando sistema de emails automáticos para enviar bienvenida');
+            await window.sistemaEmailsCresalia.enviarBienvenida({
+                id: 'temp-' + Date.now(), // ID temporal si no tenemos el ID real
+                email: email,
+                nombre: nombre,
+                tipo: tipoUsuario
+            });
+            console.log(`✅ Email de bienvenida enviado a ${tipoUsuario}:`, email);
+            return;
         }
         
-        // Crear y descargar el mensaje de bienvenida
-        const blob = new Blob([mensajeBienvenida], { type: 'text/html' });
-        const url = URL.createObjectURL(blob);
-        const a = document.createElement('a');
-        a.href = url;
-        a.download = `bienvenida-${tipoUsuario}-${nombre}-${new Date().toISOString().split('T')[0]}.html`;
-        document.body.appendChild(a);
-        a.click();
-        document.body.removeChild(a);
-        URL.revokeObjectURL(url);
+        // Si no hay sistema de emails, mostrar notificación en la página
+        console.log('ℹ️ Sistema de emails no disponible, mostrando notificación');
         
-        console.log(`✅ Mensaje de bienvenida enviado a ${tipoUsuario}:`, email);
+        // Mostrar notificación de bienvenida en la página
+        if (typeof mostrarNotificacion === 'function') {
+            mostrarNotificacion(`¡Bienvenido a Cresalia, ${nombre}! 🎉`, 'success');
+        } else if (typeof showNotification === 'function') {
+            showNotification(`¡Bienvenido a Cresalia, ${nombre}! 🎉`, 'success');
+        } else {
+            // Fallback: alert simple
+            console.log(`✅ ¡Bienvenido a Cresalia, ${nombre}! 🎉`);
+        }
+        
+        console.log(`✅ Mensaje de bienvenida mostrado para ${tipoUsuario}:`, email);
         
     } catch (error) {
         console.error('❌ Error enviando mensaje de bienvenida:', error);
+        
+        // Si falla, al menos mostrar notificación
+        try {
+            if (typeof mostrarNotificacion === 'function') {
+                mostrarNotificacion(`¡Bienvenido a Cresalia, ${nombre}! 🎉`, 'success');
+            } else if (typeof showNotification === 'function') {
+                showNotification(`¡Bienvenido a Cresalia, ${nombre}! 🎉`, 'success');
+            }
+        } catch (notifError) {
+            console.error('❌ Error mostrando notificación:', notifError);
+        }
     }
 }
 
