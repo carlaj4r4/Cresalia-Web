@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Demo - Interfaz de Compradores</title>
+    <title>Interfaz de Compradores</title>
     
     <!-- Meta Security -->
     <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' cdnjs.cloudflare.com cdn.jsdelivr.net https://conversations-widget.brevo.com; script-src-elem 'self' 'unsafe-inline' cdnjs.cloudflare.com cdn.jsdelivr.net https://conversations-widget.brevo.com; style-src 'self' 'unsafe-inline' fonts.googleapis.com cdnjs.cloudflare.com cdn.jsdelivr.net; style-src-elem 'self' 'unsafe-inline' fonts.googleapis.com cdnjs.cloudflare.com cdn.jsdelivr.net; font-src 'self' fonts.gstatic.com cdnjs.cloudflare.com https:; img-src 'self' data: https:; connect-src 'self' https: https://conversations-widget.brevo.com https://api.brevo.com; frame-src 'self' https: https://conversations-widget.brevo.com; object-src 'none'; base-uri 'self'; form-action 'self';">
@@ -968,15 +968,8 @@
 </head>
 <body>
     <div class="demo-header">
-        <h1><i class="fas fa-shopping-cart"></i> Demo - Interfaz de Compradores</h1>
-        <p>Vista previa de la nueva interfaz para compradores</p>
-    </div>
-    
-    <div class="demo-info">
-        <p><strong>🛍️ Interfaz completamente rediseñada</strong> • <strong>📱 Responsive</strong> • <strong>⚡ Animaciones suaves</strong> • <strong>🎯 Mejor experiencia de compra</strong></p>
-        <button class="btn btn-primary" onclick="window.open('index-cresalia.html', '_blank')">
-            <i class="fas fa-external-link-alt"></i> Abrir Tienda Real
-        </button>
+        <h1><i class="fas fa-shopping-cart"></i> Interfaz de Compradores</h1>
+        <p>Panel para navegación y compras de clientes</p>
     </div>
     
     <!-- Filtros de Búsqueda Inteligente (Ocultos por defecto) -->
@@ -1027,8 +1020,6 @@
     <nav class="demo-nav">
         <ul>
             <li><a href="#productos">Productos</a></li>
-            <li><a href="#servicios">Servicios</a></li>
-            <li><a href="#tiendas">Tiendas</a></li>
             <li><a href="#ofertas">Ofertas</a></li>
             <li><a href="#combos">Combos</a></li>
             <li><a href="/panel-comunidad-compradores.html" target="_blank" style="color: #EC4899; font-weight: 600;">
@@ -1216,156 +1207,7 @@
         </div>
     </section>
 
-    <!-- Servicios Section -->
-    <section id="servicios" class="servicios-section">
-        <div class="container">
-            <div class="section-header">
-                <h2><i class="fas fa-cogs"></i> Servicios Disponibles</h2>
-                <p>Reserva turnos para servicios profesionales de nuestras tiendas</p>
-            </div>
-            
-            <div class="servicios-grid">
-                <div class="servicio-card">
-                    <div class="servicio-icon">
-                        <i class="fas fa-cut" style="color: #EC4899;"></i>
-                    </div>
-                    <div class="servicio-content">
-                        <h3 class="servicio-title">Corte de Cabello</h3>
-                        <p class="servicio-description">Servicio profesional de peluquería con estilistas experimentados</p>
-                        <div class="servicio-details">
-                            <span class="servicio-precio">$25.00</span>
-                            <span class="servicio-duracion">1 hora</span>
-                        </div>
-                        <div class="servicio-actions">
-                            <button class="btn btn-primary" onclick="reservarServicio(1)">
-                                <i class="fas fa-calendar-plus"></i> Reservar Turno
-                            </button>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="servicio-card">
-                    <div class="servicio-icon">
-                        <i class="fas fa-car" style="color: #10B981;"></i>
-                    </div>
-                    <div class="servicio-content">
-                        <h3 class="servicio-title">Transporte Local</h3>
-                        <p class="servicio-description">Servicio de transporte seguro y confiable por la ciudad</p>
-                        <div class="servicio-details">
-                            <span class="servicio-precio">$15.00</span>
-                            <span class="servicio-duracion">30 min</span>
-                        </div>
-                        <div class="servicio-actions">
-                            <button class="btn btn-primary" onclick="reservarServicio(2)">
-                                <i class="fas fa-calendar-plus"></i> Reservar Turno
-                            </button>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="servicio-card">
-                    <div class="servicio-icon">
-                        <i class="fas fa-laptop-code" style="color: #8B5CF6;"></i>
-                    </div>
-                    <div class="servicio-content">
-                        <h3 class="servicio-title">Consultoría Técnica</h3>
-                        <p class="servicio-description">Asesoramiento profesional en tecnología y desarrollo</p>
-                        <div class="servicio-details">
-                            <span class="servicio-precio">$50.00</span>
-                            <span class="servicio-duracion">2 horas</span>
-                        </div>
-                        <div class="servicio-actions">
-                            <button class="btn btn-primary" onclick="reservarServicio(3)">
-                                <i class="fas fa-calendar-plus"></i> Reservar Turno
-                            </button>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="servicio-card">
-                    <div class="servicio-icon">
-                        <i class="fas fa-paint-brush" style="color: #F59E0B;"></i>
-                    </div>
-                    <div class="servicio-content">
-                        <h3 class="servicio-title">Diseño Gráfico</h3>
-                        <p class="servicio-description">Creación de logos, banners y material gráfico profesional</p>
-                        <div class="servicio-details">
-                            <span class="servicio-precio">$75.00</span>
-                            <span class="servicio-duracion">1 día</span>
-                        </div>
-                        <div class="servicio-actions">
-                            <button class="btn btn-primary" onclick="reservarServicio(4)">
-                                <i class="fas fa-calendar-plus"></i> Reservar Turno
-                            </button>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- Tiendas Section -->
-    <section id="tiendas" class="tiendas-section">
-        <div class="container">
-            <div class="section-header">
-                <h2><i class="fas fa-store"></i> Tiendas Destacadas</h2>
-                <p>Descubre las mejores tiendas creadas con Cresalia</p>
-            </div>
-            
-            <div class="tiendas-grid">
-                <div class="tienda-card">
-                    <div class="tienda-image">
-                        <i class="fas fa-laptop fa-3x" style="color: #D1D5DB;"></i>
-                    </div>
-                    <div class="store-badge badge-pro">Pro</div>
-                    <div class="tienda-content">
-                        <h3 class="tienda-title">TechStore Argentina</h3>
-                        <p class="tienda-description">Especialistas en tecnología y electrónicos. Los mejores precios en laptops, smartphones y accesorios.</p>
-                        <div class="tienda-actions">
-                            <button class="btn-view-store" onclick="demoAction('Visitando TechStore')">
-                                <i class="fas fa-external-link-alt"></i>
-                                Visitar Tienda
-                            </button>
-                        </div>
-                    </div>
-                </div>
-                
-                <div class="tienda-card">
-                    <div class="tienda-image">
-                        <i class="fas fa-tshirt fa-3x" style="color: #D1D5DB;"></i>
-                    </div>
-                    <div class="store-badge badge-pro">Pro</div>
-                    <div class="tienda-content">
-                        <h3 class="tienda-title">Fashion Boutique</h3>
-                        <p class="tienda-description">Moda y estilo para toda la familia. Ropa de calidad con diseños únicos y tendencias actuales.</p>
-                        <div class="tienda-actions">
-                            <button class="btn-view-store" onclick="demoAction('Visitando Fashion Boutique')">
-                                <i class="fas fa-external-link-alt"></i>
-                                Visitar Tienda
-                            </button>
-                        </div>
-                    </div>
-                </div>
-                
-                <div class="tienda-card">
-                    <div class="tienda-image">
-                        <i class="fas fa-home fa-3x" style="color: #D1D5DB;"></i>
-                    </div>
-                    <div class="store-badge badge-featured">Destacada</div>
-                    <div class="tienda-content">
-                        <h3 class="tienda-title">Hogar & Deco</h3>
-                        <p class="tienda-description">Todo para tu hogar. Muebles, decoración y artículos para hacer de tu casa un hogar único.</p>
-                        <div class="tienda-actions">
-                            <button class="btn-view-store" onclick="demoAction('Visitando Hogar & Deco')">
-                                <i class="fas fa-external-link-alt"></i>
-                                Visitar Tienda
-                            </button>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section>
+    <!-- Secciones de servicios y tiendas ocultadas porque no hay datos reales -->
 
     <!-- Ofertas Section -->
     <section id="ofertas" class="ofertas-section">
