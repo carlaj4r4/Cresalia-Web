@@ -45,62 +45,93 @@ module.exports = async (req, res) => {
         });
     }
     
-    try {
-        const { type, data } = req.body;
-        
-        // Obtener headers de Mercado Pago
-        const xSignature = req.headers['x-signature'] || req.headers['x-signature'] || null;
-        const xRequestId = req.headers['x-request-id'] || req.headers['x-request-id'] || null;
-        
-        console.log('🔔 Webhook recibido:', type, data?.id);
-        console.log('📋 Headers:', { xSignature: xSignature ? 'presente' : 'ausente', xRequestId });
-        
-        // Verificar que viene de Mercado Pago (validación básica)
-        if (!xRequestId) {
-            console.warn('⚠️ Webhook sin x-request-id, puede no ser de Mercado Pago');
-            // Continuar de todas formas, pero loguear
-        }
-        
-        // Procesar según el tipo de notificación
-        if (type === 'payment') {
-            const paymentId = data?.id;
+    // ⚡ IMPORTANTE: Responder rápido para evitar 429 (Too Many Requests)
+    // Responder 200 OK inmediatamente y procesar después
+    res.status(200).json({
+        success: true,
+        message: 'Webhook recibido correctamente',
+        received_at: new Date().toISOString()
+    });
+    
+    // Procesar de forma asíncrona (no bloquear la respuesta)
+    setImmediate(async () => {
+        try {
+            const { type, data, action, api_version, date_created, id, live_mode, user_id } = req.body;
             
-            if (!paymentId) {
-                return res.status(400).json({
-                    success: false,
-                    message: 'ID de pago no proporcionado'
-                });
+            // Obtener headers de Mercado Pago
+            const xSignature = req.headers['x-signature'] || req.headers['x-signature'] || null;
+            const xRequestId = req.headers['x-request-id'] || req.headers['x-request-id'] || null;
+            
+            console.log('🔔 Webhook recibido:', type || action, data?.id || id);
+            console.log('📋 Headers:', { xSignature: xSignature ? 'presente' : 'ausente', xRequestId });
+            
+            // Verificar que viene de Mercado Pago (validación básica)
+            if (!xRequestId && !id) {
+                console.warn('⚠️ Webhook sin identificadores, puede no ser de Mercado Pago');
+                // Continuar de todas formas, pero loguear
             }
+        
+            // Procesar según el tipo de notificación
+            // Manejar diferentes formatos de webhook de MercadoPago
+            const notificationType = type || action;
             
-            // Obtener detalles del pago desde Mercado Pago
-            const accessToken = getMercadoPagoAccessToken();
-            
-            if (!accessToken) {
-                console.error('❌ MERCADOPAGO_ACCESS_TOKEN no configurado');
-                return res.status(500).json({
-                    success: false,
-                    message: 'Error de configuración del servidor'
-                });
-            }
-            
-            // Consultar el pago en Mercado Pago
-            const mpResponse = await fetch(`https://api.mercadopago.com/v1/payments/${paymentId}`, {
-                method: 'GET',
-                headers: {
-                    'Authorization': `Bearer ${accessToken}`,
-                    'Content-Type': 'application/json'
+            if (notificationType === 'payment' || notificationType === 'payment.created' || notificationType === 'payment.updated') {
+                const paymentId = data?.id || id;
+                
+                if (!paymentId) {
+                    console.warn('⚠️ Webhook de pago sin ID');
+                    return; // Ya respondimos 200, solo loguear
                 }
-            });
             
-            if (!mpResponse.ok) {
-                console.error('❌ Error consultando pago en Mercado Pago:', mpResponse.status);
-                return res.status(500).json({
-                    success: false,
-                    message: 'Error al consultar el pago'
-                });
-            }
-            
-            const payment = await mpResponse.json();
+                // Obtener detalles del pago desde Mercado Pago
+                const accessToken = getMercadoPagoAccessToken();
+                
+                if (!accessToken) {
+                    console.error('❌ MERCADOPAGO_ACCESS_TOKEN no configurado');
+                    return; // Ya respondimos 200, solo loguear
+                }
+                
+                // Consultar el pago en Mercado Pago
+                let payment;
+                try {
+                    const mpResponse = await fetch(`https://api.mercadopago.com/v1/payments/${paymentId}`, {
+                        method: 'GET',
+                        headers: {
+                            'Authorization': `Bearer ${accessToken}`,
+                            'Content-Type': 'application/json'
+                        }
+                    });
+                    
+                    if (!mpResponse.ok) {
+                        console.error('❌ Error consultando pago en Mercado Pago:', mpResponse.status);
+                        // Si es 429, esperar un poco y reintentar
+                        if (mpResponse.status === 429) {
+                            console.warn('⚠️ Rate limit de MercadoPago, esperando 2 segundos...');
+                            await new Promise(resolve => setTimeout(resolve, 2000));
+                            // Reintentar una vez
+                            const retryResponse = await fetch(`https://api.mercadopago.com/v1/payments/${paymentId}`, {
+                                method: 'GET',
+                                headers: {
+                                    'Authorization': `Bearer ${accessToken}`,
+                                    'Content-Type': 'application/json'
+                                }
+                            });
+                            if (retryResponse.ok) {
+                                payment = await retryResponse.json();
+                            } else {
+                                console.error('❌ Error en reintento:', retryResponse.status);
+                                return;
+                            }
+                        } else {
+                            return; // Ya respondimos 200, solo loguear
+                        }
+                    } else {
+                        payment = await mpResponse.json();
+                    }
+                } catch (fetchError) {
+                    console.error('❌ Error de red consultando pago:', fetchError.message);
+                    return; // Ya respondimos 200, solo loguear
+                }
             
             console.log('💳 Pago recibido:', {
                 id: payment.id,
@@ -159,47 +190,37 @@ module.exports = async (req, res) => {
                 // Continuar aunque falle Supabase
             }
             
-            // Retornar éxito
-            return res.status(200).json({
-                success: true,
-                message: 'Webhook procesado correctamente',
-                payment_id: payment.id,
-                status: payment.status
-            });
+                console.log('✅ Pago procesado correctamente:', payment.id);
+                
+            } else if (notificationType === 'merchant_order' || notificationType === 'merchant_order.created' || notificationType === 'merchant_order.updated') {
+                // Procesar orden de comercio
+                const orderId = data?.id || id;
+                
+                console.log('📦 Orden recibida:', orderId);
+                
+                // Aquí podrías procesar la orden
+                // Por ahora, solo loguear
+                
+            } else if (notificationType === 'mp-connect' || notificationType === 'application.authorized') {
+                // Webhook de MP Connect (cuando se autoriza una aplicación)
+                console.log('🔗 MP Connect - Aplicación autorizada:', {
+                    user_id: user_id,
+                    action: action,
+                    live_mode: live_mode
+                });
+                
+                // No necesitamos hacer nada especial, solo loguear
+                
+            } else {
+                console.warn('⚠️ Tipo de webhook desconocido:', notificationType, 'Datos:', req.body);
+                
+                // Aún así, loguear para debugging
+            }
             
-        } else if (type === 'merchant_order') {
-            // Procesar orden de comercio
-            const orderId = data?.id;
-            
-            console.log('📦 Orden recibida:', orderId);
-            
-            // Aquí podrías procesar la orden
-            // Por ahora, solo retornamos éxito
-            
-            return res.status(200).json({
-                success: true,
-                message: 'Webhook de orden procesado correctamente',
-                order_id: orderId
-            });
-            
-        } else {
-            console.warn('⚠️ Tipo de webhook desconocido:', type);
-            
-            return res.status(200).json({
-                success: true,
-                message: 'Webhook recibido pero no procesado',
-                type: type
-            });
+        } catch (error) {
+            // Ya respondimos 200, solo loguear el error
+            console.error('❌ Error procesando webhook (asíncrono):', error.message);
+            console.error('Stack:', error.stack);
         }
-        
-    } catch (error) {
-        console.error('❌ Error procesando webhook:', error.message);
-        console.error('Stack:', error.stack);
-        
-        return res.status(500).json({
-            success: false,
-            message: 'Error interno del servidor al procesar el webhook',
-            error: error.message
-        });
-    }
+    });
 };
