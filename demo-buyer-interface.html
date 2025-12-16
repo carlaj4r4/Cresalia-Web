@@ -2264,6 +2264,7 @@
 
     <!-- Script de Soporte -->
     <script src="/js/crisla-support-integration.js"></script>
+    <script src="/js/support-client.js"></script>
 
     <!-- Scripts de Chatbot -->
     <script>
@@ -2316,7 +2317,7 @@
         }
 
         // Función para enviar mensaje AI
-        function sendAIMessage(message = null) {
+        async function sendAIMessage(message = null) {
             const input = document.getElementById('aiChatInput');
             const messagesContainer = document.getElementById('aiChatbotMessages');
             
@@ -2336,8 +2337,25 @@
             // Limpiar input
             if (!message) input.value = '';
             
-            // Simular respuesta del AI (después de un delay)
-            setTimeout(() => {
+            // Llamar IA real (si plan lo permite) con fallback local
+            try {
+                const plan = window.CresaliaSupport?.getCurrentPlan() || 'free';
+                const reply = await window.CresaliaSupport.enviarConsultaAI({
+                    mensaje: messageText,
+                    plan,
+                    history: []
+                });
+                
+                const botMessage = document.createElement('div');
+                botMessage.className = 'ai-message ai-bot';
+                botMessage.innerHTML = `
+                    <div class="ai-message-content">
+                        <p>${reply}</p>
+                    </div>
+                `;
+                messagesContainer.appendChild(botMessage);
+            } catch (error) {
+                console.warn('⚠️ IA real no disponible, usando respuesta local:', error.message);
                 const aiResponse = getAIResponse(messageText);
                 const botMessage = document.createElement('div');
                 botMessage.className = 'ai-message ai-bot';
@@ -2347,14 +2365,13 @@
                     </div>
                 `;
                 messagesContainer.appendChild(botMessage);
-                messagesContainer.scrollTop = messagesContainer.scrollHeight;
-            }, 1000);
+            }
             
             messagesContainer.scrollTop = messagesContainer.scrollHeight;
         }
 
         // Función para enviar mensaje de soporte
-        function sendMessage(message = null) {
+        async function sendMessage(message = null) {
             const input = document.getElementById('chatInput');
             const messagesContainer = document.getElementById('chatbotMessages');
             
@@ -2374,8 +2391,29 @@
             // Limpiar input
             if (!message) input.value = '';
             
-            // Simular respuesta del soporte (después de un delay)
-            setTimeout(() => {
+            // Enviar ticket al backend (con fallback local)
+            try {
+                const plan = window.CresaliaSupport?.getCurrentPlan() || 'free';
+                const email = (typeof localStorage !== 'undefined' && localStorage.getItem('userEmail')) || null;
+                await window.CresaliaSupport.enviarTicketSoporte({
+                    email,
+                    nombre: null,
+                    mensaje: messageText,
+                    plan,
+                    tipo: 'chatbot',
+                    metadata: { origen: 'demo-buyer-interface' }
+                });
+                
+                const botMessage = document.createElement('div');
+                botMessage.className = 'chat-message bot';
+                botMessage.innerHTML = `
+                    <div class="message-content">
+                        <p>¡Listo! Registré tu consulta en soporte. Te responderemos pronto.</p>
+                    </div>
+                `;
+                messagesContainer.appendChild(botMessage);
+            } catch (error) {
+                console.warn('⚠️ Soporte real no disponible, usando respuesta local:', error.message);
                 const supportResponse = getSupportResponse(messageText);
                 const botMessage = document.createElement('div');
                 botMessage.className = 'chat-message bot';
@@ -2385,8 +2423,7 @@
                     </div>
                 `;
                 messagesContainer.appendChild(botMessage);
-                messagesContainer.scrollTop = messagesContainer.scrollHeight;
-            }, 1500);
+            }
             
             messagesContainer.scrollTop = messagesContainer.scrollHeight;
         }
