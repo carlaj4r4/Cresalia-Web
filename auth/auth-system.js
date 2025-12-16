@@ -296,11 +296,10 @@ async function registrarNuevoCliente(datos) {
         console.log('✅ Cliente de Supabase inicializado correctamente:', !!supabase);
         console.log('🔍 Tipo de supabase:', typeof supabase, 'Método from:', typeof supabase?.from);
         
-        // Determinar URL de redirección según el entorno
-        const isProduction = window.location.hostname !== 'localhost' && window.location.hostname !== '127.0.0.1';
-        const redirectUrl = isProduction 
-            ? 'https://cresalia-web.vercel.app/login-tienda.html'
-            : `${window.location.origin}/login-tienda.html`;
+        // Siempre usar URL de producción para emails (los emails de confirmación deben ir a producción)
+        // Esto evita que los emails redirijan a localhost
+        const redirectUrl = 'https://cresalia-web.vercel.app/login-tienda.html';
+        console.log('🔗 URL de redirección para email:', redirectUrl);
 
         const { data: authData, error: authError } = await supabase.auth.signUp({
             email: email,
@@ -350,7 +349,7 @@ async function registrarNuevoCliente(datos) {
         let tiendaData = null;
         let tiendaError = null;
         let attempts = 0;
-        const maxAttempts = 5; // Aumentar a 5 intentos
+        const maxAttempts = 8; // Aumentar a 8 intentos (igual que compradores)
         
         while (attempts < maxAttempts) {
             try {
@@ -375,6 +374,7 @@ async function registrarNuevoCliente(datos) {
                 
                 // Si no hay error, salir del loop
                 if (!tiendaError) {
+                    console.log('✅ Perfil de tienda creado inmediatamente');
                     break;
                 }
                 
@@ -382,22 +382,38 @@ async function registrarNuevoCliente(datos) {
                 if (tiendaError.message && (
                     tiendaError.message.includes('Could not find the table') ||
                     tiendaError.message.includes('schema cache') ||
-                    tiendaError.message.includes('does not exist')
+                    tiendaError.message.includes('does not exist') ||
+                    tiendaError.code === 'PGRST205'
                 )) {
                     attempts++;
                     if (attempts < maxAttempts) {
                         console.log(`⏳ Problema de schema cache (intento ${attempts}/${maxAttempts}), esperando y reintentando...`);
                         
-                        // Intentar refrescar el schema haciendo una consulta SELECT simple
+                        // Intentar múltiples métodos para refrescar el schema cache
                         try {
+                            // Método 1: Query simple
                             await supabase.from('tiendas').select('id').limit(1);
-                            console.log('✅ Schema cache refrescado');
-                        } catch (refreshError) {
-                            console.log('ℹ️ No se pudo refrescar el schema, continuando...');
+                        } catch (e1) {
+                            // Método 2: Query con rpc (si existe)
+                            try {
+                                await supabase.rpc('version');
+                            } catch (e2) {
+                                // Método 3: Query a otra tabla conocida
+                                try {
+                                    await supabase.from('compradores').select('id').limit(1);
+                                } catch (e3) {
+                                    // Ignorar errores de refresh
+                                }
+                            }
                         }
                         
-                        // Esperar más tiempo - el schema cache puede tardar
-                        await new Promise(resolve => setTimeout(resolve, 2000 * attempts));
+                        console.log('✅ Schema cache refrescado');
+                        
+                        // Esperar más tiempo - el schema cache puede tardar mucho
+                        // Aumentar el tiempo de espera progresivamente
+                        const waitTime = Math.min(3000 * attempts, 15000); // Máximo 15 segundos
+                        console.log(`⏳ Esperando ${waitTime/1000} segundos antes de reintentar...`);
+                        await new Promise(resolve => setTimeout(resolve, waitTime));
                         continue;
                     }
                 } else {

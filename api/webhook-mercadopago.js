@@ -80,20 +80,27 @@ module.exports = async (req, res) => {
     // El procesamiento debe ser completamente asíncrono
     
     // Log inmediato (antes del procesamiento asíncrono) para que aparezca en Vercel
+    // Estos logs aparecerán SIEMPRE en Vercel, incluso si el procesamiento es asíncrono
+    const timestamp = new Date().toISOString();
+    const webhookType = req.body?.type || req.body?.action || 'desconocido';
+    const webhookId = req.body?.data?.id || req.body?.id || 'sin ID';
+    
     console.log('🔔 [WEBHOOK] ========================================');
     console.log('🔔 [WEBHOOK] Webhook recibido de MercadoPago');
-    console.log('🔔 [WEBHOOK] Timestamp:', new Date().toISOString());
-    console.log('🔔 [WEBHOOK] Método:', req.method);
-    console.log('🔔 [WEBHOOK] Headers:', {
-        'content-type': req.headers['content-type'],
+    console.log('🔔 [WEBHOOK] Timestamp:', timestamp);
+    console.log('🔔 [WEBHOOK] Método HTTP:', req.method);
+    console.log('🔔 [WEBHOOK] URL:', req.url);
+    console.log('🔔 [WEBHOOK] Tipo de notificación:', webhookType);
+    console.log('🔔 [WEBHOOK] ID de notificación:', webhookId);
+    console.log('🔔 [WEBHOOK] Headers importantes:', {
+        'content-type': req.headers['content-type'] || 'ausente',
         'x-signature': req.headers['x-signature'] ? 'presente' : 'ausente',
         'x-request-id': req.headers['x-request-id'] || 'ausente',
         'user-agent': req.headers['user-agent']?.substring(0, 50) || 'ausente'
     });
-    console.log('🔔 [WEBHOOK] Body keys:', Object.keys(req.body || {}));
-    console.log('🔔 [WEBHOOK] Tipo:', req.body?.type || req.body?.action || 'desconocido');
-    console.log('🔔 [WEBHOOK] ID:', req.body?.data?.id || req.body?.id || 'sin ID');
+    console.log('🔔 [WEBHOOK] Body tiene keys:', req.body ? Object.keys(req.body).join(', ') : 'body vacío');
     console.log('🔔 [WEBHOOK] ========================================');
+    console.log('🔔 [WEBHOOK] NOTA: Si no ves más logs después de esto, el webhook se procesó correctamente de forma asíncrona.');
     
     // Procesar de forma asíncrona (después de que la respuesta se envió)
     // Usar process.nextTick para asegurar que la respuesta se envió primero
