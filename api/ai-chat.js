@@ -3,7 +3,8 @@
  * Proxy a proveedor de IA (OpenAI por defecto). Parametrizable por ENV.
  */
 
-const ALLOWED_PLANS = ['pro', 'enterprise'];
+// Planes habilitados para IA real (ahora todos)
+const ALLOWED_PLANS = ['free', 'basic', 'starter', 'pro', 'enterprise'];
 const OPENAI_API_KEY = process.env.OPENAI_API_KEY || null;
 const OPENAI_MODEL = process.env.OPENAI_MODEL || 'gpt-3.5-turbo';
 const AI_API_URL = process.env.AI_API_URL || 'https://api.openai.com/v1/chat/completions';
@@ -29,7 +30,7 @@ module.exports = async (req, res) => {
         return res.status(400).json({ success: false, error: 'JSON inválido' });
     }
 
-    const { message, plan = 'free', history = [], userEmail = null } = body;
+    const { message, plan = 'free', history = [], userEmail = null, context = '' } = body;
 
     if (!message) {
         return res.status(400).json({ success: false, error: 'Falta el campo message' });
@@ -39,7 +40,7 @@ module.exports = async (req, res) => {
     if (!ALLOWED_PLANS.includes(planLower)) {
         return res.status(403).json({
             success: false,
-            error: 'Tu plan no incluye IA real. Actualiza a PRO o Enterprise.'
+            error: 'Plan no reconocido para IA.'
         });
     }
 
@@ -51,13 +52,28 @@ module.exports = async (req, res) => {
     }
 
     try {
+        // Prompt base por plan (personalizable)
+        const PLAN_PROMPTS = {
+            free: 'Eres Cresalia AI. Ayuda en e-commerce con respuestas breves y claras. No prometas features premium. Mantén tono general.',
+            basic: 'Eres Cresalia AI. Ayuda en e-commerce con respuestas claras. Usa tono cordial. Sin personalización avanzada.',
+            starter: 'Eres Cresalia AI para una tienda con personalización básica. Mantén tono cordial y orienta sobre productos/servicios visibles.',
+            pro: 'Eres Cresalia AI para clientes PRO. Usa tono profesional y breve. Personaliza según branding indicado y responde sobre catálogo.',
+            enterprise: 'Eres Cresalia AI para clientes Enterprise. Tono premium, conciso. Sigue branding y responde sobre catálogo/servicios.'
+        };
+
+        const planPrompt = PLAN_PROMPTS[planLower] || PLAN_PROMPTS.free;
+
         const payload = {
             model: OPENAI_MODEL,
             messages: [
                 {
                     role: 'system',
-                    content: 'Eres Cresalia AI, un asistente de e-commerce que ayuda a compradores y vendedores con pedidos, pagos y soporte general. Sé breve y claro.'
+                    content: planPrompt
                 },
+                ...(context ? [{
+                    role: 'system',
+                    content: `Contexto de productos/servicios (responde solo basándote en esto si aplica): ${context}`
+                }] : []),
                 ...history.map(msg => ({
                     role: msg.role === 'assistant' ? 'assistant' : 'user',
                     content: msg.content

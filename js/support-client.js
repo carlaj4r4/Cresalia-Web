@@ -4,7 +4,9 @@
 (function() {
     const SUPPORT_ENDPOINT = '/api/support';
     const AI_ENDPOINT = '/api/ai-chat';
-    const ALLOWED_AI_PLANS = ['pro', 'enterprise'];
+    // IA permitida para todos los planes; se personaliza en backend según plan
+    const ALLOWED_AI_PLANS = ['free', 'basic', 'starter', 'pro', 'enterprise'];
+    let contextBuilder = null; // función opcional para armar contexto (productos/servicios visibles)
 
     function getCurrentPlan() {
         try {
@@ -43,9 +45,7 @@
     }
 
     async function enviarConsultaAI({ mensaje, plan, history = [], userEmail = null }) {
-        if (!planPermiteIA(plan)) {
-            throw new Error('Tu plan no incluye IA real (solo PRO / Enterprise).');
-        }
+        const contextText = typeof contextBuilder === 'function' ? (contextBuilder() || '') : '';
 
         const resp = await fetch(AI_ENDPOINT, {
             method: 'POST',
@@ -54,7 +54,8 @@
                 message: mensaje,
                 plan: plan || getCurrentPlan(),
                 history,
-                userEmail
+                userEmail,
+                context: contextText
             })
         });
 
@@ -70,6 +71,7 @@
         enviarTicketSoporte,
         enviarConsultaAI,
         planPermiteIA,
-        getCurrentPlan
+        getCurrentPlan,
+        setAIContextBuilder: fn => { contextBuilder = fn; }
     };
 })();

@@ -2316,6 +2316,35 @@
             }
         }
 
+        // Construir contexto simple desde la página (productos/servicios visibles)
+        function buildAIContext() {
+            try {
+                const parts = [];
+                document.querySelectorAll('[data-product-name]').forEach(el => {
+                    const name = el.getAttribute('data-product-name');
+                    const desc = el.getAttribute('data-product-desc') || '';
+                    const price = el.getAttribute('data-product-price') || '';
+                    if (name) parts.push(`Producto: ${name} ${price ? 'Precio: ' + price : ''} ${desc ? 'Desc: ' + desc : ''}`);
+                });
+                // Si no hay data-attrs, tomar algunos textos de tarjetas genéricas
+                if (parts.length === 0) {
+                    document.querySelectorAll('.product-card, .producto-card, .combo-card').forEach(el => {
+                        const title = el.querySelector('h3, h4, .title, .producto-titulo')?.textContent?.trim() || '';
+                        const desc = el.querySelector('p')?.textContent?.trim() || '';
+                        if (title) parts.push(`Item: ${title}${desc ? ' - ' + desc : ''}`);
+                    });
+                }
+                return parts.slice(0, 8).join(' | ');
+            } catch (e) {
+                return '';
+            }
+        }
+
+        // Registrar builder de contexto en el cliente
+        if (window.CresaliaSupport && typeof window.CresaliaSupport.setAIContextBuilder === 'function') {
+            window.CresaliaSupport.setAIContextBuilder(buildAIContext);
+        }
+
         // Función para enviar mensaje AI
         async function sendAIMessage(message = null) {
             const input = document.getElementById('aiChatInput');
