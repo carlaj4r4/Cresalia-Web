@@ -86,10 +86,15 @@ module.exports = async function handler(req, res) {
             console.log('ℹ️ [DEBUG] No se pudo decodificar el JWT (normal si es legacy)');
         }
         
-        // Validar formato de la key (puede ser JWT o legacy)
+        // Validar formato de la key
+        // Supabase tiene dos formatos:
+        // 1. Keys modernas (publishable): empiezan con "sb_" (nuevo formato)
+        // 2. Keys legacy (JWT): empiezan con "eyJ" (formato JWT tradicional)
         const keyParts = cleanKey.split('.');
         const isValidJWTFormat = keyParts.length === 3 && keyParts[0].length > 0 && keyParts[1].length > 0 && keyParts[2].length > 0;
-        const isLegacyFormat = cleanKey.length > 0 && !isValidJWTFormat && cleanKey.includes('eyJ'); // Legacy keys pueden tener formato diferente
+        const isModernFormat = cleanKey.startsWith('sb_'); // Keys modernas (publishable)
+        const isLegacyJWTFormat = cleanKey.startsWith('eyJ') && isValidJWTFormat; // Keys legacy (JWT)
+        const isLegacyFormat = !isModernFormat && !isLegacyJWTFormat; // Otros formatos legacy
         
         console.log('🔍 [DEBUG] Creando cliente Supabase...');
         console.log('🔍 [DEBUG] URL completa:', cleanUrl);
@@ -97,8 +102,11 @@ module.exports = async function handler(req, res) {
         console.log('🔍 [DEBUG] Key (primeros 20 chars):', cleanKey.substring(0, 20) + '...');
         console.log('🔍 [DEBUG] Key (últimos 20 chars):', '...' + cleanKey.substring(cleanKey.length - 20));
         console.log('🔍 [DEBUG] Key length:', cleanKey.length);
+        console.log('🔍 [DEBUG] Key empieza con:', cleanKey.substring(0, 5));
+        console.log('🔍 [DEBUG] Key formato Moderno (sb_):', isModernFormat);
+        console.log('🔍 [DEBUG] Key formato Legacy JWT (eyJ):', isLegacyJWTFormat);
+        console.log('🔍 [DEBUG] Key formato Legacy otro:', isLegacyFormat);
         console.log('🔍 [DEBUG] Key formato JWT válido:', isValidJWTFormat);
-        console.log('🔍 [DEBUG] Key formato Legacy:', isLegacyFormat);
         if (keyProjectId) {
             console.log('🔍 [DEBUG] Project ID de Key:', keyProjectId);
             console.log('🔍 [DEBUG] Tipo de Key:', keyType || 'desconocido');
@@ -132,25 +140,37 @@ module.exports = async function handler(req, res) {
             console.warn('⚠️ No se pudo extraer el Project ID de la key. Verificá manualmente que la URL y la key sean del mismo proyecto.');
         }
         
-        // Intentar crear el cliente con diferentes opciones
+        // Intentar crear el cliente con diferentes opciones según el formato
         let supabase;
         let clientError = null;
         
         try {
-            // Opción 1: Crear cliente estándar
-            supabase = createClient(cleanUrl, cleanKey, {
+            // Opción 1: Crear cliente estándar (funciona con ambos formatos)
+            const clientOptions = {
                 auth: {
                     persistSession: false,
                     autoRefreshToken: false
                 }
-            });
+            };
+            
+            // Si es key moderna (sb_), puede necesitar configuración adicional
+            if (isModernFormat) {
+                console.log('ℹ️ [DEBUG] Detectada key moderna (sb_), usando configuración estándar');
+                // Las keys modernas (sb_) funcionan con createClient estándar
+            } else if (isLegacyJWTFormat) {
+                console.log('ℹ️ [DEBUG] Detectada key legacy JWT (eyJ), usando configuración estándar');
+                // Las keys legacy JWT también funcionan con createClient estándar
+            }
+            
+            supabase = createClient(cleanUrl, cleanKey, clientOptions);
             console.log('✅ [DEBUG] Cliente Supabase creado');
         } catch (err) {
             clientError = err;
             console.error('❌ Error creando cliente Supabase:', err.message);
             
-            // Opción 2: Intentar con opciones adicionales para legacy keys
+            // Opción 2: Intentar con opciones adicionales para keys legacy
             try {
+                console.log('🔍 [DEBUG] Intentando con opciones adicionales para keys legacy...');
                 supabase = createClient(cleanUrl, cleanKey, {
                     auth: {
                         persistSession: false,
@@ -171,8 +191,10 @@ module.exports = async function handler(req, res) {
                     debug: {
                         error: err2.message,
                         urlLength: cleanUrl.length,
-                        keyLength: cleanKey.length
-                    }
+                        keyLength: cleanKey.length,
+                        keyFormat: isModernFormat ? 'moderna (sb_)' : isLegacyJWTFormat ? 'legacy JWT (eyJ)' : 'legacy otro'
+                    },
+                    solution: 'Verificá que la key sea correcta. Las keys modernas empiezan con "sb_", las legacy con "eyJ". Ambas deberían funcionar.'
                 });
             }
         }
@@ -251,21 +273,25 @@ module.exports = async function handler(req, res) {
             // Error específico de API key inválido
             if (testError.code === 'PGRST301' || testError.message?.includes('Invalid API key') || testError.status === 401) {
                 console.error('❌ API key inválido. Diagnóstico:');
-                console.error('   - Key length:', cleanKey.length, '(esperado: ~200-250 caracteres)');
-                console.error('   - Key formato JWT:', isValidJWTFormat ? '✅' : '❌');
-                console.error('   - Key empieza con:', cleanKey.substring(0, 20));
+                console.error('   - Key length:', cleanKey.length);
+                console.error('   - Key empieza con:', cleanKey.substring(0, 10));
+                console.error('   - Key formato Moderno (sb_):', isModernFormat ? '✅' : '❌');
+                console.error('   - Key formato Legacy JWT (eyJ):', isLegacyJWTFormat ? '✅' : '❌');
                 console.error('   - Key termina con:', cleanKey.substring(cleanKey.length - 20));
                 console.error('   - Usando SERVICE_ROLE_KEY:', hasServiceKey);
                 console.error('   - Usando ANON_KEY:', !hasServiceKey && hasAnonKey);
                 console.error('');
                 console.error('🔧 SOLUCIÓN:');
                 console.error('   1. Ve a Supabase Dashboard → Settings → API');
-                console.error('   2. Si usás SERVICE_ROLE_KEY: copiá la key de "service_role" (secreta)');
-                console.error('   3. Si usás ANON_KEY: copiá la key de "anon public"');
-                console.error('   4. Verificá que la key no tenga espacios al inicio o final');
-                console.error('   5. Pegala en Vercel → Settings → Environment Variables');
-                console.error('   6. Asegurate de que esté en "Production"');
-                console.error('   7. Hacé un nuevo deploy');
+                console.error('   2. Probá con AMBAS secciones:');
+                console.error('      a) "Project API keys" (publishable) - keys que empiezan con "sb_"');
+                console.error('      b) "Legacy keys" - keys que empiezan con "eyJ"');
+                console.error('   3. Si usás SERVICE_ROLE_KEY: copiá la key de "service_role"');
+                console.error('   4. Si usás ANON_KEY: copiá la key de "anon"');
+                console.error('   5. Verificá que la key no tenga espacios al inicio o final');
+                console.error('   6. Pegala en Vercel → Settings → Environment Variables');
+                console.error('   7. Asegurate de que esté en "Production"');
+                console.error('   8. Hacé un nuevo deploy');
                 
                 return res.status(500).json({ 
                     error: 'API key de Supabase inválido. Verificá en Vercel que SUPABASE_SERVICE_ROLE_KEY o SUPABASE_ANON_KEY estén correctamente configuradas.',
