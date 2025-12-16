@@ -48,52 +48,132 @@ module.exports = async function handler(req, res) {
         const cleanUrl = supabaseUrl.trim();
         const cleanKey = supabaseKey.trim();
         
-        // Validar formato de la key (debe ser un JWT válido)
+        // Validar formato de la key (puede ser JWT o legacy)
         const keyParts = cleanKey.split('.');
         const isValidJWTFormat = keyParts.length === 3 && keyParts[0].length > 0 && keyParts[1].length > 0 && keyParts[2].length > 0;
+        const isLegacyFormat = cleanKey.length > 0 && !isValidJWTFormat && cleanKey.includes('eyJ'); // Legacy keys pueden tener formato diferente
         
         console.log('🔍 [DEBUG] Creando cliente Supabase...');
         console.log('🔍 [DEBUG] URL (primeros 30 chars):', cleanUrl.substring(0, 30));
-        console.log('🔍 [DEBUG] Key (primeros 10 chars):', cleanKey.substring(0, 10) + '...');
-        console.log('🔍 [DEBUG] Key (últimos 10 chars):', '...' + cleanKey.substring(cleanKey.length - 10));
+        console.log('🔍 [DEBUG] Key (primeros 20 chars):', cleanKey.substring(0, 20) + '...');
+        console.log('🔍 [DEBUG] Key (últimos 20 chars):', '...' + cleanKey.substring(cleanKey.length - 20));
         console.log('🔍 [DEBUG] Key length:', cleanKey.length);
         console.log('🔍 [DEBUG] Key formato JWT válido:', isValidJWTFormat);
+        console.log('🔍 [DEBUG] Key formato Legacy:', isLegacyFormat);
         console.log('🔍 [DEBUG] Usando SERVICE_ROLE_KEY:', hasServiceKey);
         console.log('🔍 [DEBUG] Usando ANON_KEY (fallback):', !hasServiceKey && hasAnonKey);
         
-        if (!isValidJWTFormat) {
-            console.error('❌ La API key no tiene formato JWT válido (debe tener 3 partes separadas por puntos)');
-            return res.status(500).json({ 
-                error: 'API key de Supabase con formato inválido. Debe ser un JWT válido. Verificá que copiaste la key completa desde Supabase Dashboard.',
-                debug: {
-                    keyLength: cleanKey.length,
-                    keyParts: keyParts.length,
-                    keyPreview: cleanKey.substring(0, 50) + '...'
+        // Verificar que la URL termine correctamente
+        if (!cleanUrl.includes('supabase.co') && !cleanUrl.includes('supabase.in')) {
+            console.warn('⚠️ La URL no parece ser de Supabase:', cleanUrl);
+        }
+        
+        // Intentar crear el cliente con diferentes opciones
+        let supabase;
+        let clientError = null;
+        
+        try {
+            // Opción 1: Crear cliente estándar
+            supabase = createClient(cleanUrl, cleanKey, {
+                auth: {
+                    persistSession: false,
+                    autoRefreshToken: false
                 }
             });
+            console.log('✅ [DEBUG] Cliente Supabase creado');
+        } catch (err) {
+            clientError = err;
+            console.error('❌ Error creando cliente Supabase:', err.message);
+            
+            // Opción 2: Intentar con opciones adicionales para legacy keys
+            try {
+                supabase = createClient(cleanUrl, cleanKey, {
+                    auth: {
+                        persistSession: false,
+                        autoRefreshToken: false,
+                        detectSessionInUrl: false
+                    },
+                    global: {
+                        headers: {
+                            'apikey': cleanKey
+                        }
+                    }
+                });
+                console.log('✅ [DEBUG] Cliente Supabase creado con opciones legacy');
+            } catch (err2) {
+                console.error('❌ Error creando cliente con opciones legacy:', err2.message);
+                return res.status(500).json({ 
+                    error: 'Error creando cliente de Supabase. Verificá que la URL y la key sean correctas.',
+                    debug: {
+                        error: err2.message,
+                        urlLength: cleanUrl.length,
+                        keyLength: cleanKey.length
+                    }
+                });
+            }
         }
         
-        const supabase = createClient(cleanUrl, cleanKey);
-        
-        // Verificar conexión con Supabase usando una query simple
+        // Verificar conexión con Supabase usando múltiples métodos
         console.log('🔍 [DEBUG] Probando conexión con Supabase...');
         
-        // Primero intentar una query simple a auth.users para verificar la key
+        // Método 1: Probar con una query simple a una tabla
+        let testError = null;
+        let testData = null;
+        
         try {
-            const { data: authTest, error: authError } = await supabase.auth.admin.listUsers({ page: 1, perPage: 1 });
-            if (authError && authError.message?.includes('Invalid API key')) {
-                console.error('❌ Error verificando con auth.admin.listUsers:', authError.message);
-            } else {
-                console.log('✅ [DEBUG] SERVICE_ROLE_KEY válida (puede usar auth.admin)');
+            const result = await supabase
+                .from('historias_corazon_cresalia')
+                .select('id')
+                .limit(1);
+            
+            testData = result.data;
+            testError = result.error;
+            
+            if (!testError) {
+                console.log('✅ [DEBUG] Query a tabla exitosa');
             }
-        } catch (authErr) {
-            console.log('ℹ️ [DEBUG] No se pudo verificar con auth.admin (normal si es ANON_KEY)');
+        } catch (err) {
+            testError = { message: err.message, code: err.code };
+            console.error('❌ Error en query a tabla:', err.message);
         }
         
-        const { data: testData, error: testError } = await supabase
-            .from('historias_corazon_cresalia')
-            .select('id')
-            .limit(1);
+        // Método 2: Si es SERVICE_ROLE_KEY, probar con auth.admin
+        if (hasServiceKey && testError) {
+            console.log('🔍 [DEBUG] Probando con auth.admin (SERVICE_ROLE_KEY)...');
+            try {
+                const { data: authTest, error: authError } = await supabase.auth.admin.listUsers({ page: 1, perPage: 1 });
+                if (authError) {
+                    console.error('❌ Error con auth.admin:', authError.message);
+                    // Si auth.admin falla pero la key existe, puede ser un problema de permisos
+                    if (authError.message?.includes('Invalid API key')) {
+                        testError = authError; // Usar este error como principal
+                    }
+                } else {
+                    console.log('✅ [DEBUG] SERVICE_ROLE_KEY válida (auth.admin funciona)');
+                    // Si auth.admin funciona, la key es válida pero puede haber problema con RLS
+                    testError = null; // Resetear el error porque la key es válida
+                }
+            } catch (authErr) {
+                console.log('ℹ️ [DEBUG] No se pudo verificar con auth.admin:', authErr.message);
+            }
+        }
+        
+        // Método 3: Probar con una query más simple (sin RLS)
+        if (testError && testError.message?.includes('Invalid API key')) {
+            console.log('🔍 [DEBUG] Probando con query directa a auth...');
+            try {
+                // Intentar una query que no requiere RLS
+                const { data: directTest, error: directError } = await supabase
+                    .rpc('version'); // Esta función debería existir en Supabase
+                
+                if (directError && !directError.message?.includes('Invalid API key')) {
+                    console.log('ℹ️ [DEBUG] La key parece válida pero hay problema con RLS o tabla');
+                    // La key puede ser válida pero hay otro problema
+                }
+            } catch (directErr) {
+                console.log('ℹ️ [DEBUG] No se pudo probar con RPC:', directErr.message);
+            }
+        }
         
         if (testError) {
             console.error('❌ Error de Supabase:', {
