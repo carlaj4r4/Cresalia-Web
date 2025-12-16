@@ -14,35 +14,88 @@ module.exports = async function handler(req, res) {
     try {
         const { createClient } = require('@supabase/supabase-js');
         
+        // Logging detallado para debugging
+        console.log('🔍 [DEBUG] Verificando variables de entorno...');
         const supabaseUrl = process.env.SUPABASE_URL;
+        const hasServiceKey = !!process.env.SUPABASE_SERVICE_ROLE_KEY;
+        const hasAnonKey = !!process.env.SUPABASE_ANON_KEY;
+        
+        console.log('🔍 [DEBUG] Variables encontradas:', {
+            hasUrl: !!supabaseUrl,
+            urlLength: supabaseUrl ? supabaseUrl.length : 0,
+            urlPreview: supabaseUrl ? `${supabaseUrl.substring(0, 30)}...` : 'no existe',
+            hasServiceKey: hasServiceKey,
+            serviceKeyLength: process.env.SUPABASE_SERVICE_ROLE_KEY ? process.env.SUPABASE_SERVICE_ROLE_KEY.length : 0,
+            hasAnonKey: hasAnonKey,
+            anonKeyLength: process.env.SUPABASE_ANON_KEY ? process.env.SUPABASE_ANON_KEY.length : 0
+        });
+        
         // Usar SERVICE_ROLE_KEY como fallback (más permisos) o ANON_KEY
         const supabaseKey = process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.SUPABASE_ANON_KEY;
         
         if (!supabaseUrl || !supabaseKey) {
             console.error('❌ Supabase no configurado:', {
                 hasUrl: !!supabaseUrl,
-                hasServiceKey: !!process.env.SUPABASE_SERVICE_ROLE_KEY,
-                hasAnonKey: !!process.env.SUPABASE_ANON_KEY
+                hasServiceKey: hasServiceKey,
+                hasAnonKey: hasAnonKey
             });
             return res.status(500).json({ 
                 error: 'Supabase no configurado. Verificá las variables SUPABASE_URL y SUPABASE_SERVICE_ROLE_KEY (o SUPABASE_ANON_KEY) en Vercel.' 
             });
         }
         
-        const supabase = createClient(supabaseUrl, supabaseKey);
+        // Verificar que la URL y key no tengan espacios extra
+        const cleanUrl = supabaseUrl.trim();
+        const cleanKey = supabaseKey.trim();
         
-        // Verificar conexión con Supabase
+        console.log('🔍 [DEBUG] Creando cliente Supabase...');
+        console.log('🔍 [DEBUG] URL (primeros 30 chars):', cleanUrl.substring(0, 30));
+        console.log('🔍 [DEBUG] Key (primeros 10 chars):', cleanKey.substring(0, 10) + '...');
+        console.log('🔍 [DEBUG] Key (últimos 10 chars):', '...' + cleanKey.substring(cleanKey.length - 10));
+        
+        const supabase = createClient(cleanUrl, cleanKey);
+        
+        // Verificar conexión con Supabase usando una query simple
+        console.log('🔍 [DEBUG] Probando conexión con Supabase...');
         const { data: testData, error: testError } = await supabase
             .from('historias_corazon_cresalia')
             .select('id')
             .limit(1);
         
-        if (testError && testError.code === 'PGRST301') {
-            console.error('❌ API key inválido de Supabase:', testError.message);
+        if (testError) {
+            console.error('❌ Error de Supabase:', {
+                code: testError.code,
+                message: testError.message,
+                hint: testError.hint,
+                details: testError.details
+            });
+            
+            // Error específico de API key inválido
+            if (testError.code === 'PGRST301' || testError.message?.includes('Invalid API key')) {
+                console.error('❌ API key inválido. Verificá:');
+                console.error('   - Que la key no tenga espacios al inicio o final');
+                console.error('   - Que la key sea la correcta desde Supabase Dashboard');
+                console.error('   - Que la variable esté en el entorno correcto (Production)');
+                console.error('   - Que hayas hecho un nuevo deploy después de agregar la variable');
+                
+                return res.status(500).json({ 
+                    error: 'API key de Supabase inválido. Verificá en Vercel que SUPABASE_SERVICE_ROLE_KEY o SUPABASE_ANON_KEY estén correctamente configuradas (sin espacios, en Production, y con un nuevo deploy).',
+                    debug: {
+                        hasServiceKey: hasServiceKey,
+                        hasAnonKey: hasAnonKey,
+                        keyLength: cleanKey.length
+                    }
+                });
+            }
+            
+            // Otro tipo de error
             return res.status(500).json({ 
-                error: 'API key de Supabase inválido. Verificá que SUPABASE_SERVICE_ROLE_KEY o SUPABASE_ANON_KEY estén correctamente configuradas en Vercel.' 
+                error: testError.message || 'Error de conexión con Supabase',
+                code: testError.code
             });
         }
+        
+        console.log('✅ [DEBUG] Conexión con Supabase exitosa');
         
         // GET: Obtener historias públicas
         if (req.method === 'GET') {

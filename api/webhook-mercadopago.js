@@ -32,17 +32,31 @@ function verificarFirmaWebhook(data, signature, secret) {
 }
 
 module.exports = async (req, res) => {
+    // Log INMEDIATO al inicio para verificar que el endpoint se está ejecutando
+    console.log('🔔 [WEBHOOK] ========== INICIO WEBHOOK ==========');
+    console.log('🔔 [WEBHOOK] Endpoint llamado:', new Date().toISOString());
+    console.log('🔔 [WEBHOOK] Método HTTP:', req.method);
+    console.log('🔔 [WEBHOOK] URL:', req.url);
+    
     applyCors(res);
     
     if (req.method === 'OPTIONS') {
+        console.log('🔔 [WEBHOOK] OPTIONS request - retornando 200');
         return res.status(200).end();
     }
     
     if (req.method !== 'POST') {
+        console.log('🔔 [WEBHOOK] Método no permitido:', req.method);
         return res.status(405).json({
             success: false,
             message: 'Método no permitido. Solo se aceptan POST requests.'
         });
+    }
+    
+    // Verificar que hay body
+    if (!req.body || Object.keys(req.body).length === 0) {
+        console.warn('⚠️ [WEBHOOK] Body vacío o no parseado');
+        console.warn('⚠️ [WEBHOOK] Content-Type:', req.headers['content-type']);
     }
     
     // ⚡ CRÍTICO: Responder INMEDIATAMENTE para evitar 429
@@ -66,9 +80,20 @@ module.exports = async (req, res) => {
     // El procesamiento debe ser completamente asíncrono
     
     // Log inmediato (antes del procesamiento asíncrono) para que aparezca en Vercel
+    console.log('🔔 [WEBHOOK] ========================================');
     console.log('🔔 [WEBHOOK] Webhook recibido de MercadoPago');
+    console.log('🔔 [WEBHOOK] Timestamp:', new Date().toISOString());
+    console.log('🔔 [WEBHOOK] Método:', req.method);
+    console.log('🔔 [WEBHOOK] Headers:', {
+        'content-type': req.headers['content-type'],
+        'x-signature': req.headers['x-signature'] ? 'presente' : 'ausente',
+        'x-request-id': req.headers['x-request-id'] || 'ausente',
+        'user-agent': req.headers['user-agent']?.substring(0, 50) || 'ausente'
+    });
+    console.log('🔔 [WEBHOOK] Body keys:', Object.keys(req.body || {}));
     console.log('🔔 [WEBHOOK] Tipo:', req.body?.type || req.body?.action || 'desconocido');
     console.log('🔔 [WEBHOOK] ID:', req.body?.data?.id || req.body?.id || 'sin ID');
+    console.log('🔔 [WEBHOOK] ========================================');
     
     // Procesar de forma asíncrona (después de que la respuesta se envió)
     // Usar process.nextTick para asegurar que la respuesta se envió primero
