@@ -48,15 +48,48 @@ module.exports = async function handler(req, res) {
         const cleanUrl = supabaseUrl.trim();
         const cleanKey = supabaseKey.trim();
         
+        // Validar formato de la key (debe ser un JWT válido)
+        const keyParts = cleanKey.split('.');
+        const isValidJWTFormat = keyParts.length === 3 && keyParts[0].length > 0 && keyParts[1].length > 0 && keyParts[2].length > 0;
+        
         console.log('🔍 [DEBUG] Creando cliente Supabase...');
         console.log('🔍 [DEBUG] URL (primeros 30 chars):', cleanUrl.substring(0, 30));
         console.log('🔍 [DEBUG] Key (primeros 10 chars):', cleanKey.substring(0, 10) + '...');
         console.log('🔍 [DEBUG] Key (últimos 10 chars):', '...' + cleanKey.substring(cleanKey.length - 10));
+        console.log('🔍 [DEBUG] Key length:', cleanKey.length);
+        console.log('🔍 [DEBUG] Key formato JWT válido:', isValidJWTFormat);
+        console.log('🔍 [DEBUG] Usando SERVICE_ROLE_KEY:', hasServiceKey);
+        console.log('🔍 [DEBUG] Usando ANON_KEY (fallback):', !hasServiceKey && hasAnonKey);
+        
+        if (!isValidJWTFormat) {
+            console.error('❌ La API key no tiene formato JWT válido (debe tener 3 partes separadas por puntos)');
+            return res.status(500).json({ 
+                error: 'API key de Supabase con formato inválido. Debe ser un JWT válido. Verificá que copiaste la key completa desde Supabase Dashboard.',
+                debug: {
+                    keyLength: cleanKey.length,
+                    keyParts: keyParts.length,
+                    keyPreview: cleanKey.substring(0, 50) + '...'
+                }
+            });
+        }
         
         const supabase = createClient(cleanUrl, cleanKey);
         
         // Verificar conexión con Supabase usando una query simple
         console.log('🔍 [DEBUG] Probando conexión con Supabase...');
+        
+        // Primero intentar una query simple a auth.users para verificar la key
+        try {
+            const { data: authTest, error: authError } = await supabase.auth.admin.listUsers({ page: 1, perPage: 1 });
+            if (authError && authError.message?.includes('Invalid API key')) {
+                console.error('❌ Error verificando con auth.admin.listUsers:', authError.message);
+            } else {
+                console.log('✅ [DEBUG] SERVICE_ROLE_KEY válida (puede usar auth.admin)');
+            }
+        } catch (authErr) {
+            console.log('ℹ️ [DEBUG] No se pudo verificar con auth.admin (normal si es ANON_KEY)');
+        }
+        
         const { data: testData, error: testError } = await supabase
             .from('historias_corazon_cresalia')
             .select('id')
@@ -67,31 +100,47 @@ module.exports = async function handler(req, res) {
                 code: testError.code,
                 message: testError.message,
                 hint: testError.hint,
-                details: testError.details
+                details: testError.details,
+                status: testError.status
             });
             
             // Error específico de API key inválido
-            if (testError.code === 'PGRST301' || testError.message?.includes('Invalid API key')) {
-                console.error('❌ API key inválido. Verificá:');
-                console.error('   - Que la key no tenga espacios al inicio o final');
-                console.error('   - Que la key sea la correcta desde Supabase Dashboard');
-                console.error('   - Que la variable esté en el entorno correcto (Production)');
-                console.error('   - Que hayas hecho un nuevo deploy después de agregar la variable');
+            if (testError.code === 'PGRST301' || testError.message?.includes('Invalid API key') || testError.status === 401) {
+                console.error('❌ API key inválido. Diagnóstico:');
+                console.error('   - Key length:', cleanKey.length, '(esperado: ~200-250 caracteres)');
+                console.error('   - Key formato JWT:', isValidJWTFormat ? '✅' : '❌');
+                console.error('   - Key empieza con:', cleanKey.substring(0, 20));
+                console.error('   - Key termina con:', cleanKey.substring(cleanKey.length - 20));
+                console.error('   - Usando SERVICE_ROLE_KEY:', hasServiceKey);
+                console.error('   - Usando ANON_KEY:', !hasServiceKey && hasAnonKey);
+                console.error('');
+                console.error('🔧 SOLUCIÓN:');
+                console.error('   1. Ve a Supabase Dashboard → Settings → API');
+                console.error('   2. Si usás SERVICE_ROLE_KEY: copiá la key de "service_role" (secreta)');
+                console.error('   3. Si usás ANON_KEY: copiá la key de "anon public"');
+                console.error('   4. Verificá que la key no tenga espacios al inicio o final');
+                console.error('   5. Pegala en Vercel → Settings → Environment Variables');
+                console.error('   6. Asegurate de que esté en "Production"');
+                console.error('   7. Hacé un nuevo deploy');
                 
                 return res.status(500).json({ 
-                    error: 'API key de Supabase inválido. Verificá en Vercel que SUPABASE_SERVICE_ROLE_KEY o SUPABASE_ANON_KEY estén correctamente configuradas (sin espacios, en Production, y con un nuevo deploy).',
+                    error: 'API key de Supabase inválido. Verificá en Vercel que SUPABASE_SERVICE_ROLE_KEY o SUPABASE_ANON_KEY estén correctamente configuradas.',
                     debug: {
                         hasServiceKey: hasServiceKey,
                         hasAnonKey: hasAnonKey,
-                        keyLength: cleanKey.length
-                    }
+                        keyLength: cleanKey.length,
+                        isValidJWTFormat: isValidJWTFormat,
+                        keyPreview: cleanKey.substring(0, 30) + '...' + cleanKey.substring(cleanKey.length - 10)
+                    },
+                    solution: 'Ve a Supabase Dashboard → Settings → API y copiá la key correcta (service_role o anon public). Verificá que no tenga espacios y que esté en Production en Vercel.'
                 });
             }
             
             // Otro tipo de error
             return res.status(500).json({ 
                 error: testError.message || 'Error de conexión con Supabase',
-                code: testError.code
+                code: testError.code,
+                status: testError.status
             });
         }
         
