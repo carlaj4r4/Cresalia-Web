@@ -154,19 +154,33 @@ async function registrarNuevoComprador(datos) {
                 compradorError.code === 'PGRST205') {
                 console.error('❌ Error: Tabla "compradores" no encontrada en Supabase.');
                 console.error('');
-                console.error('📋 SOLUCIÓN:');
-                console.error('   1. Andá a tu proyecto en Supabase (https://supabase.com)');
-                console.error('   2. Click en "SQL Editor" en el menú lateral');
-                console.error('   3. Abrí el archivo: CREAR-TABLA-COMPRADORES-SUPABASE.sql');
-                console.error('   4. Copiá y pegá TODO el código SQL');
-                console.error('   5. Click en "Run" (▶️)');
-                console.error('   6. Esperá a que termine (debería decir "Success")');
-                console.error('   7. Recargá esta página e intentá registrar de nuevo');
+                console.error('🔍 DIAGNÓSTICO:');
+                console.error('   - El error puede ser por:');
+                console.error('     1. La tabla no existe en el schema "public"');
+                console.error('     2. Problema con el schema cache de Supabase');
+                console.error('     3. La tabla está en otro schema');
+                console.error('     4. Problema con permisos RLS');
                 console.error('');
-                console.error('💡 Si no tenés el archivo SQL, buscá "CREAR-TABLA-COMPRADORES-SUPABASE.sql" en el proyecto.');
-                console.error('💡 O ejecutá "CREAR-TABLAS-COMPLETAS-SUPABASE.sql" para crear todas las tablas de una vez.');
+                console.error('📋 SOLUCIÓN PASO A PASO:');
+                console.error('   1. Andá a tu proyecto en Supabase Dashboard');
+                console.error('   2. Click en "SQL Editor" en el menú lateral');
+                console.error('   3. Ejecutá el script: VERIFICAR-Y-REPARAR-TABLAS-SUPABASE.sql');
+                console.error('      (Este script verifica y crea las tablas si no existen)');
+                console.error('   4. Si el script muestra que las tablas existen pero sigue el error:');
+                console.error('      a) Esperá 1-2 minutos (el schema cache puede tardar)');
+                console.error('      b) Recargá esta página');
+                console.error('      c) Intentá registrar de nuevo');
+                console.error('   5. Si el script muestra que las tablas NO existen:');
+                console.error('      a) El script las creará automáticamente');
+                console.error('      b) Esperá a que termine');
+                console.error('      c) Recargá esta página e intentá de nuevo');
+                console.error('');
+                console.error('💡 Archivos SQL disponibles:');
+                console.error('   - VERIFICAR-Y-REPARAR-TABLAS-SUPABASE.sql (recomendado - verifica y crea)');
+                console.error('   - CREAR-TABLAS-COMPLETAS-SUPABASE.sql (crea todas las tablas)');
+                console.error('   - CREAR-TABLA-COMPRADORES-SUPABASE.sql (solo compradores)');
                 
-                throw new Error('La tabla "compradores" no existe en Supabase. Por favor, ejecutá el script SQL "CREAR-TABLA-COMPRADORES-SUPABASE.sql" en Supabase SQL Editor. Ver la consola (F12) para instrucciones detalladas.');
+                throw new Error('La tabla "compradores" no existe en Supabase. Por favor, ejecutá el script SQL "VERIFICAR-Y-REPARAR-TABLAS-SUPABASE.sql" en Supabase SQL Editor. Ver la consola (F12) para instrucciones detalladas.');
             }
             
             // Si el error es por RLS (no hay sesión), informar al usuario
