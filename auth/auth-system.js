@@ -103,58 +103,59 @@ async function registrarNuevoComprador(datos) {
                         console.log('✅ Perfil de comprador creado inmediatamente');
                         break;
                     }
-                
-                // Si el error es de schema cache, intentar refrescar y esperar
-                if (compradorError.message && (
-                    compradorError.message.includes('Could not find the table') ||
-                    compradorError.message.includes('schema cache') ||
-                    compradorError.message.includes('does not exist') ||
-                    compradorError.code === 'PGRST205'
-                )) {
-                    attempts++;
-                    if (attempts < maxAttempts) {
-                        console.log(`⏳ Problema de schema cache (intento ${attempts}/${maxAttempts}), esperando y reintentando...`);
-                        
-                        // Intentar múltiples métodos para refrescar el schema cache
-                        try {
-                            // Método 1: Query simple
-                            await supabase.from('compradores').select('id').limit(1);
-                        } catch (e1) {
-                            // Método 2: Query con rpc (si existe)
+                    
+                    // Si el error es de schema cache, intentar refrescar y esperar
+                    if (compradorError.message && (
+                        compradorError.message.includes('Could not find the table') ||
+                        compradorError.message.includes('schema cache') ||
+                        compradorError.message.includes('does not exist') ||
+                        compradorError.code === 'PGRST205'
+                    )) {
+                        attempts++;
+                        if (attempts < maxAttempts) {
+                            console.log(`⏳ Problema de schema cache (intento ${attempts}/${maxAttempts}), esperando y reintentando...`);
+                            
+                            // Intentar múltiples métodos para refrescar el schema cache
                             try {
-                                await supabase.rpc('version');
-                            } catch (e2) {
-                                // Método 3: Query a otra tabla conocida
+                                // Método 1: Query simple
+                                await supabase.from('compradores').select('id').limit(1);
+                            } catch (e1) {
+                                // Método 2: Query con rpc (si existe)
                                 try {
-                                    await supabase.from('tiendas').select('id').limit(1);
-                                } catch (e3) {
-                                    // Ignorar errores de refresh
+                                    await supabase.rpc('version');
+                                } catch (e2) {
+                                    // Método 3: Query a otra tabla conocida
+                                    try {
+                                        await supabase.from('tiendas').select('id').limit(1);
+                                    } catch (e3) {
+                                        // Ignorar errores de refresh
+                                    }
                                 }
                             }
+                            
+                            console.log('✅ Schema cache refrescado');
+                            
+                            // Esperar más tiempo - el schema cache puede tardar mucho
+                            // Aumentar el tiempo de espera progresivamente
+                            const waitTime = Math.min(3000 * attempts, 15000); // Máximo 15 segundos
+                            console.log(`⏳ Esperando ${waitTime/1000} segundos antes de reintentar...`);
+                            await new Promise(resolve => setTimeout(resolve, waitTime));
+                            continue;
                         }
-                        
-                        console.log('✅ Schema cache refrescado');
-                        
-                        // Esperar más tiempo - el schema cache puede tardar mucho
-                        // Aumentar el tiempo de espera progresivamente
-                        const waitTime = Math.min(3000 * attempts, 15000); // Máximo 15 segundos
-                        console.log(`⏳ Esperando ${waitTime/1000} segundos antes de reintentar...`);
-                        await new Promise(resolve => setTimeout(resolve, waitTime));
+                    } else {
+                        // Si es otro tipo de error, salir del loop
+                        break;
+                    }
+                } catch (err) {
+                    compradorError = err;
+                    attempts++;
+                    if (attempts < maxAttempts) {
+                        console.log(`⏳ Error inesperado (intento ${attempts}/${maxAttempts}), reintentando...`);
+                        await new Promise(resolve => setTimeout(resolve, 2000 * attempts));
                         continue;
                     }
-                } else {
-                    // Si es otro tipo de error, salir del loop
                     break;
                 }
-            } catch (err) {
-                compradorError = err;
-                attempts++;
-                if (attempts < maxAttempts) {
-                    console.log(`⏳ Error inesperado (intento ${attempts}/${maxAttempts}), reintentando...`);
-                    await new Promise(resolve => setTimeout(resolve, 2000 * attempts));
-                    continue;
-                }
-                break;
             }
         }
         
