@@ -45,16 +45,29 @@ module.exports = async (req, res) => {
         });
     }
     
-    // ⚡ IMPORTANTE: Responder rápido para evitar 429 (Too Many Requests)
-    // Responder 200 OK inmediatamente y procesar después
-    res.status(200).json({
+    // ⚡ CRÍTICO: Responder INMEDIATAMENTE para evitar 429
+    // Vercel Hobby plan tiene límites estrictos de rate limiting
+    // Si el webhook tarda > 1 segundo en responder, puede dar 429
+    // Responder 200 OK ANTES de cualquier procesamiento pesado
+    
+    // Enviar respuesta inmediatamente
+    res.writeHead(200, {
+        'Content-Type': 'application/json',
+        'X-Webhook-Status': 'received'
+    });
+    
+    res.end(JSON.stringify({
         success: true,
         message: 'Webhook recibido correctamente',
         received_at: new Date().toISOString()
-    });
+    }));
     
-    // Procesar de forma asíncrona (no bloquear la respuesta)
-    setImmediate(async () => {
+    // IMPORTANTE: No hacer nada más después de res.end()
+    // El procesamiento debe ser completamente asíncrono
+    
+    // Procesar de forma asíncrona (después de que la respuesta se envió)
+    // Usar process.nextTick para asegurar que la respuesta se envió primero
+    process.nextTick(async () => {
         try {
             const { type, data, action, api_version, date_created, id, live_mode, user_id } = req.body;
             
