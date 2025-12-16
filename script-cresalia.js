@@ -5275,7 +5275,15 @@ function irAPerfil(tipo) {
 
 // Ver mis compras
 function verMisCompras() {
-    window.location.href = 'mis-compras.html';
+    // Intentar usar el sistema de historiales si está disponible
+    if (window.mostrarHistorialCompras && typeof window.mostrarHistorialCompras === 'function') {
+        window.mostrarHistorialCompras();
+    } else if (window.historySystem && typeof window.historySystem.showHistoryModal === 'function') {
+        window.historySystem.showHistoryModal('comprador');
+    } else {
+        // Fallback: redirigir a la página dedicada
+        window.location.href = 'mis-compras.html';
+    }
 }
 
 // Cerrar sesión

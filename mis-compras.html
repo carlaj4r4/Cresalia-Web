@@ -1,0 +1,611 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mis Compras - Cresalia</title>
+    
+    <!-- Supabase Client Library -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #f0f9ff 0%, #e0e7ff 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        .header {
+            background: white;
+            border-radius: 20px;
+            padding: 30px;
+            margin-bottom: 30px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 20px;
+        }
+        
+        .header h1 {
+            color: #1F2937;
+            font-size: 2rem;
+        }
+        
+        .btn-volver {
+            background: linear-gradient(135deg, #EF4444 0%, #F43F5E 100%);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 10px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 600;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.3s;
+        }
+        
+        .btn-volver:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(239, 68, 68, 0.3);
+        }
+        
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+        
+        .stat-card {
+            background: white;
+            border-radius: 15px;
+            padding: 25px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            text-align: center;
+        }
+        
+        .stat-card h3 {
+            color: #6B7280;
+            font-size: 0.9rem;
+            margin-bottom: 10px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        
+        .stat-card .value {
+            font-size: 2.5rem;
+            font-weight: bold;
+            color: #1F2937;
+        }
+        
+        .stat-card.total {
+            border-left: 4px solid #10B981;
+        }
+        
+        .stat-card.mes {
+            border-left: 4px solid #3B82F6;
+        }
+        
+        .stat-card.pendientes {
+            border-left: 4px solid #F59E0B;
+        }
+        
+        .compras-section {
+            background: white;
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+        }
+        
+        .compras-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+        
+        .compras-header h2 {
+            color: #1F2937;
+            font-size: 1.5rem;
+        }
+        
+        .filtros {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+        
+        .filtro-btn {
+            padding: 8px 16px;
+            border: 2px solid #E5E7EB;
+            background: white;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: all 0.3s;
+        }
+        
+        .filtro-btn.active {
+            border-color: #EF4444;
+            background: #EF4444;
+            color: white;
+        }
+        
+        .compras-list {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+        
+        .compra-card {
+            border: 2px solid #E5E7EB;
+            border-radius: 15px;
+            padding: 20px;
+            transition: all 0.3s;
+            background: #F9FAFB;
+        }
+        
+        .compra-card:hover {
+            border-color: #EF4444;
+            box-shadow: 0 5px 15px rgba(239, 68, 68, 0.1);
+            transform: translateY(-2px);
+        }
+        
+        .compra-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: start;
+            margin-bottom: 15px;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+        
+        .compra-info h3 {
+            color: #1F2937;
+            margin-bottom: 5px;
+            font-size: 1.1rem;
+        }
+        
+        .compra-info p {
+            color: #6B7280;
+            font-size: 0.9rem;
+            margin: 3px 0;
+        }
+        
+        .compra-total {
+            text-align: right;
+        }
+        
+        .compra-total .precio {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: #10B981;
+            margin-bottom: 5px;
+        }
+        
+        .compra-total .fecha {
+            color: #6B7280;
+            font-size: 0.85rem;
+        }
+        
+        .compra-productos {
+            margin-top: 15px;
+            padding-top: 15px;
+            border-top: 1px solid #E5E7EB;
+        }
+        
+        .producto-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 0;
+            border-bottom: 1px solid #F3F4F6;
+        }
+        
+        .producto-item:last-child {
+            border-bottom: none;
+        }
+        
+        .producto-nombre {
+            font-weight: 600;
+            color: #1F2937;
+        }
+        
+        .producto-cantidad {
+            color: #6B7280;
+            font-size: 0.9rem;
+        }
+        
+        .producto-precio {
+            color: #10B981;
+            font-weight: 600;
+        }
+        
+        .estado-badge {
+            display: inline-block;
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            margin-top: 10px;
+        }
+        
+        .estado-completado {
+            background: #D1FAE5;
+            color: #065F46;
+        }
+        
+        .estado-enviado {
+            background: #DBEAFE;
+            color: #1E40AF;
+        }
+        
+        .estado-pendiente {
+            background: #FEF3C7;
+            color: #92400E;
+        }
+        
+        .estado-cancelado {
+            background: #FEE2E2;
+            color: #991B1B;
+        }
+        
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            color: #6B7280;
+        }
+        
+        .empty-state i {
+            font-size: 4rem;
+            margin-bottom: 20px;
+            color: #D1D5DB;
+        }
+        
+        .empty-state h3 {
+            color: #374151;
+            margin-bottom: 10px;
+        }
+        
+        .loading {
+            text-align: center;
+            padding: 40px;
+            color: #6B7280;
+        }
+        
+        .loading i {
+            font-size: 2rem;
+            animation: spin 1s linear infinite;
+        }
+        
+        @keyframes spin {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+        
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 1.5rem;
+            }
+            
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .compra-header {
+                flex-direction: column;
+            }
+            
+            .compra-total {
+                text-align: left;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1><i class="fas fa-shopping-bag"></i> Mis Compras</h1>
+            <a href="index-cresalia.html" class="btn-volver">
+                <i class="fas fa-arrow-left"></i> Volver al Inicio
+            </a>
+        </div>
+        
+        <div class="stats-grid" id="statsGrid">
+            <div class="stat-card total">
+                <h3>Total de Compras</h3>
+                <div class="value" id="totalCompras">0</div>
+            </div>
+            <div class="stat-card mes">
+                <h3>Compras Este Mes</h3>
+                <div class="value" id="comprasMes">0</div>
+            </div>
+            <div class="stat-card pendientes">
+                <h3>Total Gastado</h3>
+                <div class="value" id="totalGastado">$0</div>
+            </div>
+        </div>
+        
+        <div class="compras-section">
+            <div class="compras-header">
+                <h2>Historial de Compras</h2>
+                <div class="filtros">
+                    <button class="filtro-btn active" onclick="filtrarCompras('todas')">Todas</button>
+                    <button class="filtro-btn" onclick="filtrarCompras('completado')">Completadas</button>
+                    <button class="filtro-btn" onclick="filtrarCompras('enviado')">Enviadas</button>
+                    <button class="filtro-btn" onclick="filtrarCompras('pendiente')">Pendientes</button>
+                </div>
+            </div>
+            
+            <div id="comprasList" class="compras-list">
+                <div class="loading">
+                    <i class="fas fa-spinner"></i>
+                    <p>Cargando tus compras...</p>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Scripts -->
+    <script src="auth/supabase-config.js"></script>
+    <script src="js/historiales-sistema.js"></script>
+    
+    <script>
+        let supabase;
+        let todasLasCompras = [];
+        let filtroActual = 'todas';
+        
+        document.addEventListener('DOMContentLoaded', async function() {
+            supabase = initSupabase();
+            
+            if (!supabase) {
+                mostrarError('No se pudo conectar con la base de datos. Por favor, recarga la página.');
+                return;
+            }
+            
+            // Verificar si el usuario está logueado
+            const { data: { session } } = await supabase.auth.getSession();
+            
+            if (!session || !session.user) {
+                mostrarError('Debes iniciar sesión para ver tus compras.');
+                setTimeout(() => {
+                    window.location.href = 'login-comprador.html';
+                }, 2000);
+                return;
+            }
+            
+            // Cargar compras
+            await cargarCompras();
+        });
+        
+        async function cargarCompras() {
+            try {
+                const { data: { user } } = await supabase.auth.getUser();
+                
+                if (!user || !user.email) {
+                    mostrarError('No se pudo obtener tu información de usuario.');
+                    return;
+                }
+                
+                // Cargar compras desde Supabase
+                const { data: compras, error } = await supabase
+                    .from('historial_compras')
+                    .select('*')
+                    .eq('comprador_email', user.email)
+                    .order('fecha_compra', { ascending: false });
+                
+                if (error) {
+                    console.error('❌ Error cargando compras:', error);
+                    
+                    // Fallback: cargar desde localStorage
+                    const comprasLocal = JSON.parse(localStorage.getItem('historial_compras') || '[]');
+                    todasLasCompras = comprasLocal.filter(c => c.comprador_email === user.email);
+                } else {
+                    todasLasCompras = compras || [];
+                }
+                
+                // Actualizar estadísticas
+                actualizarEstadisticas();
+                
+                // Mostrar compras
+                mostrarCompras(todasLasCompras);
+                
+            } catch (error) {
+                console.error('❌ Error:', error);
+                mostrarError('Error al cargar tus compras. Por favor, intenta de nuevo.');
+            }
+        }
+        
+        function actualizarEstadisticas() {
+            const totalCompras = todasLasCompras.length;
+            const ahora = new Date();
+            const comprasEsteMes = todasLasCompras.filter(c => {
+                const fecha = new Date(c.fecha_compra || c.fecha);
+                return fecha.getMonth() === ahora.getMonth() && 
+                       fecha.getFullYear() === ahora.getFullYear();
+            }).length;
+            
+            const totalGastado = todasLasCompras.reduce((sum, compra) => {
+                return sum + (parseFloat(compra.total_pagado || compra.precio || 0));
+            }, 0);
+            
+            document.getElementById('totalCompras').textContent = totalCompras;
+            document.getElementById('comprasMes').textContent = comprasEsteMes;
+            document.getElementById('totalGastado').textContent = '$' + totalGastado.toFixed(2);
+        }
+        
+        function mostrarCompras(compras) {
+            const comprasList = document.getElementById('comprasList');
+            
+            if (compras.length === 0) {
+                comprasList.innerHTML = `
+                    <div class="empty-state">
+                        <i class="fas fa-shopping-cart"></i>
+                        <h3>No tienes compras aún</h3>
+                        <p>Cuando realices tu primera compra, aparecerá aquí</p>
+                        <a href="index-cresalia.html" class="btn-volver" style="margin-top: 20px;">
+                            <i class="fas fa-shopping-bag"></i> Comenzar a Comprar
+                        </a>
+                    </div>
+                `;
+                return;
+            }
+            
+            // Agrupar compras por fecha/orden
+            const comprasAgrupadas = agruparCompras(compras);
+            
+            comprasList.innerHTML = comprasAgrupadas.map(grupo => `
+                <div class="compra-card">
+                    <div class="compra-header">
+                        <div class="compra-info">
+                            <h3>Compra #${grupo.id || 'N/A'}</h3>
+                            <p><i class="fas fa-store"></i> ${grupo.tienda_nombre || grupo.tienda || 'Tienda'}</p>
+                            <p><i class="fas fa-calendar"></i> ${formatearFecha(grupo.fecha_compra || grupo.fecha)}</p>
+                            ${grupo.metodo_pago ? `<p><i class="fas fa-credit-card"></i> ${grupo.metodo_pago}</p>` : ''}
+                        </div>
+                        <div class="compra-total">
+                            <div class="precio">$${parseFloat(grupo.total_pagado || grupo.total || 0).toFixed(2)}</div>
+                            <div class="fecha">${formatearFecha(grupo.fecha_compra || grupo.fecha)}</div>
+                            <span class="estado-badge estado-${(grupo.estado || 'completado').toLowerCase()}">
+                                ${grupo.estado || 'Completado'}
+                            </span>
+                        </div>
+                    </div>
+                    
+                    ${grupo.productos && grupo.productos.length > 0 ? `
+                        <div class="compra-productos">
+                            <h4 style="margin-bottom: 10px; color: #374151;">Productos:</h4>
+                            ${grupo.productos.map(producto => `
+                                <div class="producto-item">
+                                    <div>
+                                        <div class="producto-nombre">${producto.nombre || producto.producto_nombre || 'Producto'}</div>
+                                        <div class="producto-cantidad">Cantidad: ${producto.cantidad || 1}</div>
+                                    </div>
+                                    <div class="producto-precio">$${parseFloat(producto.precio || 0).toFixed(2)}</div>
+                                </div>
+                            `).join('')}
+                        </div>
+                    ` : ''}
+                    
+                    ${grupo.direccion_entrega ? `
+                        <div style="margin-top: 15px; padding-top: 15px; border-top: 1px solid #E5E7EB;">
+                            <p style="color: #6B7280; font-size: 0.9rem;">
+                                <i class="fas fa-map-marker-alt"></i> 
+                                <strong>Dirección:</strong> ${grupo.direccion_entrega}
+                            </p>
+                        </div>
+                    ` : ''}
+                </div>
+            `).join('');
+        }
+        
+        function agruparCompras(compras) {
+            // Agrupar por fecha_compra y tienda_id (compras del mismo día en la misma tienda)
+            const grupos = {};
+            
+            compras.forEach(compra => {
+                const fecha = compra.fecha_compra || compra.fecha;
+                const tienda = compra.tienda_id || 'general';
+                const key = `${fecha}_${tienda}`;
+                
+                if (!grupos[key]) {
+                    grupos[key] = {
+                        id: compra.id || Date.now(),
+                        fecha_compra: fecha,
+                        fecha: fecha,
+                        tienda_id: tienda,
+                        tienda_nombre: compra.tienda_nombre || compra.tienda || 'Tienda',
+                        metodo_pago: compra.metodo_pago,
+                        estado: compra.estado || 'completado',
+                        direccion_entrega: compra.direccion_entrega,
+                        productos: [],
+                        total_pagado: 0,
+                        total: 0
+                    };
+                }
+                
+                grupos[key].productos.push({
+                    nombre: compra.producto_nombre || compra.producto,
+                    cantidad: compra.cantidad || 1,
+                    precio: compra.precio || 0
+                });
+                
+                grupos[key].total_pagado += parseFloat(compra.total_pagado || compra.precio || 0);
+                grupos[key].total = grupos[key].total_pagado;
+            });
+            
+            return Object.values(grupos).sort((a, b) => {
+                return new Date(b.fecha_compra) - new Date(a.fecha_compra);
+            });
+        }
+        
+        function filtrarCompras(filtro) {
+            filtroActual = filtro;
+            
+            // Actualizar botones
+            document.querySelectorAll('.filtro-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            event.target.classList.add('active');
+            
+            // Filtrar compras
+            let comprasFiltradas = todasLasCompras;
+            
+            if (filtro !== 'todas') {
+                comprasFiltradas = todasLasCompras.filter(c => {
+                    const estado = (c.estado || 'completado').toLowerCase();
+                    return estado === filtro;
+                });
+            }
+            
+            mostrarCompras(comprasFiltradas);
+        }
+        
+        function formatearFecha(fecha) {
+            if (!fecha) return 'Fecha no disponible';
+            
+            const date = new Date(fecha);
+            return date.toLocaleDateString('es-ES', {
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric',
+                hour: '2-digit',
+                minute: '2-digit'
+            });
+        }
+        
+        function mostrarError(mensaje) {
+            const comprasList = document.getElementById('comprasList');
+            comprasList.innerHTML = `
+                <div class="empty-state">
+                    <i class="fas fa-exclamation-triangle"></i>
+                    <h3>Error</h3>
+                    <p>${mensaje}</p>
+                </div>
+            `;
+        }
+    </script>
+</body>
+</html>
