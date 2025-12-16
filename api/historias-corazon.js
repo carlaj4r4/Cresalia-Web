@@ -14,9 +14,6 @@ module.exports = async function handler(req, res) {
     try {
         const { createClient } = require('@supabase/supabase-js');
         
-        // Logging detallado para debugging
-        console.log('🔍 [DEBUG] Verificando variables de entorno...');
-        
         // Buscar URL en diferentes nombres posibles
         const supabaseUrl = process.env.SUPABASE_URL || 
                            process.env.NEXT_PUBLIC_SUPABASE_URL || 
@@ -26,27 +23,21 @@ module.exports = async function handler(req, res) {
         const hasServiceKey = !!process.env.SUPABASE_SERVICE_ROLE_KEY;
         const hasAnonKey = !!process.env.SUPABASE_ANON_KEY;
         
-        // Verificar todas las variables posibles para debugging
+        // Verificar todas las variables posibles para debugging (solo si hay error)
         const allEnvVars = Object.keys(process.env).filter(key => 
             key.includes('SUPABASE') || key.includes('supabase')
         );
         
-        console.log('🔍 [DEBUG] Variables encontradas:', {
-            hasUrl: !!supabaseUrl,
-            urlLength: supabaseUrl ? supabaseUrl.length : 0,
-            urlPreview: supabaseUrl ? `${supabaseUrl.substring(0, 30)}...` : 'no existe',
-            hasServiceKey: hasServiceKey,
-            serviceKeyLength: process.env.SUPABASE_SERVICE_ROLE_KEY ? process.env.SUPABASE_SERVICE_ROLE_KEY.length : 0,
-            hasAnonKey: hasAnonKey,
-            anonKeyLength: process.env.SUPABASE_ANON_KEY ? process.env.SUPABASE_ANON_KEY.length : 0,
-            todasLasVariablesSupabase: allEnvVars
-        });
-        
-        // Si no hay URL, mostrar ayuda
-        if (!supabaseUrl) {
-            console.error('❌ SUPABASE_URL no encontrada. Variables disponibles con "SUPABASE":', allEnvVars);
-            console.error('🔧 Verificá en Vercel que la variable se llame exactamente: SUPABASE_URL');
-            console.error('   (sin NEXT_PUBLIC_ para variables de servidor)');
+        // Logging reducido (solo lo esencial)
+        if (!supabaseUrl || !hasServiceKey && !hasAnonKey) {
+            console.error('❌ Supabase no configurado correctamente');
+            console.error('   Variables disponibles:', allEnvVars);
+            if (!supabaseUrl) {
+                console.error('   ❌ SUPABASE_URL no encontrada');
+            }
+            if (!hasServiceKey && !hasAnonKey) {
+                console.error('   ❌ SUPABASE_SERVICE_ROLE_KEY o SUPABASE_ANON_KEY no encontradas');
+            }
         }
         
         // Usar SERVICE_ROLE_KEY como fallback (más permisos) o ANON_KEY
@@ -153,17 +144,7 @@ module.exports = async function handler(req, res) {
                 }
             };
             
-            // Si es key moderna (sb_), puede necesitar configuración adicional
-            if (isModernFormat) {
-                console.log('ℹ️ [DEBUG] Detectada key moderna (sb_), usando configuración estándar');
-                // Las keys modernas (sb_) funcionan con createClient estándar
-            } else if (isLegacyJWTFormat) {
-                console.log('ℹ️ [DEBUG] Detectada key legacy JWT (eyJ), usando configuración estándar');
-                // Las keys legacy JWT también funcionan con createClient estándar
-            }
-            
             supabase = createClient(cleanUrl, cleanKey, clientOptions);
-            console.log('✅ [DEBUG] Cliente Supabase creado');
         } catch (err) {
             clientError = err;
             console.error('❌ Error creando cliente Supabase:', err.message);
@@ -199,10 +180,7 @@ module.exports = async function handler(req, res) {
             }
         }
         
-        // Verificar conexión con Supabase usando múltiples métodos
-        console.log('🔍 [DEBUG] Probando conexión con Supabase...');
-        
-        // Método 1: Probar con una query simple a una tabla
+        // Verificar conexión con Supabase (solo si hay error, mostrar logs detallados)
         let testError = null;
         let testData = null;
         
@@ -214,50 +192,22 @@ module.exports = async function handler(req, res) {
             
             testData = result.data;
             testError = result.error;
-            
-            if (!testError) {
-                console.log('✅ [DEBUG] Query a tabla exitosa');
-            }
         } catch (err) {
             testError = { message: err.message, code: err.code };
-            console.error('❌ Error en query a tabla:', err.message);
         }
         
-        // Método 2: Si es SERVICE_ROLE_KEY, probar con auth.admin
-        if (hasServiceKey && testError) {
-            console.log('🔍 [DEBUG] Probando con auth.admin (SERVICE_ROLE_KEY)...');
+        // Si hay error, probar con auth.admin (solo para SERVICE_ROLE_KEY)
+        if (hasServiceKey && testError && testError.message?.includes('Invalid API key')) {
             try {
-                const { data: authTest, error: authError } = await supabase.auth.admin.listUsers({ page: 1, perPage: 1 });
-                if (authError) {
-                    console.error('❌ Error con auth.admin:', authError.message);
-                    // Si auth.admin falla pero la key existe, puede ser un problema de permisos
-                    if (authError.message?.includes('Invalid API key')) {
-                        testError = authError; // Usar este error como principal
-                    }
-                } else {
-                    console.log('✅ [DEBUG] SERVICE_ROLE_KEY válida (auth.admin funciona)');
-                    // Si auth.admin funciona, la key es válida pero puede haber problema con RLS
-                    testError = null; // Resetear el error porque la key es válida
+                const { error: authError } = await supabase.auth.admin.listUsers({ page: 1, perPage: 1 });
+                if (authError && authError.message?.includes('Invalid API key')) {
+                    testError = authError;
+                } else if (!authError) {
+                    // Si auth.admin funciona, la key es válida
+                    testError = null;
                 }
             } catch (authErr) {
-                console.log('ℹ️ [DEBUG] No se pudo verificar con auth.admin:', authErr.message);
-            }
-        }
-        
-        // Método 3: Probar con una query más simple (sin RLS)
-        if (testError && testError.message?.includes('Invalid API key')) {
-            console.log('🔍 [DEBUG] Probando con query directa a auth...');
-            try {
-                // Intentar una query que no requiere RLS
-                const { data: directTest, error: directError } = await supabase
-                    .rpc('version'); // Esta función debería existir en Supabase
-                
-                if (directError && !directError.message?.includes('Invalid API key')) {
-                    console.log('ℹ️ [DEBUG] La key parece válida pero hay problema con RLS o tabla');
-                    // La key puede ser válida pero hay otro problema
-                }
-            } catch (directErr) {
-                console.log('ℹ️ [DEBUG] No se pudo probar con RPC:', directErr.message);
+                // Ignorar errores de auth.admin
             }
         }
         
