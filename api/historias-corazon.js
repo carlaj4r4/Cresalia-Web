@@ -48,24 +48,69 @@ module.exports = async function handler(req, res) {
         const cleanUrl = supabaseUrl.trim();
         const cleanKey = supabaseKey.trim();
         
+        // Extraer Project ID de la URL para verificación
+        const urlMatch = cleanUrl.match(/https?:\/\/([^.]+)\.supabase\.(co|in)/);
+        const projectIdFromUrl = urlMatch ? urlMatch[1] : null;
+        
+        // Intentar decodificar el JWT para extraer información (solo el header y payload, sin verificar firma)
+        let keyProjectId = null;
+        let keyType = null;
+        try {
+            const keyParts = cleanKey.split('.');
+            if (keyParts.length >= 2) {
+                // Decodificar el payload del JWT (base64url)
+                const payload = JSON.parse(Buffer.from(keyParts[1].replace(/-/g, '+').replace(/_/g, '/'), 'base64').toString());
+                keyProjectId = payload.iss?.match(/https?:\/\/([^.]+)\.supabase\.(co|in)/)?.[1] || null;
+                keyType = payload.role || payload.aud || null;
+            }
+        } catch (err) {
+            console.log('ℹ️ [DEBUG] No se pudo decodificar el JWT (normal si es legacy)');
+        }
+        
         // Validar formato de la key (puede ser JWT o legacy)
         const keyParts = cleanKey.split('.');
         const isValidJWTFormat = keyParts.length === 3 && keyParts[0].length > 0 && keyParts[1].length > 0 && keyParts[2].length > 0;
         const isLegacyFormat = cleanKey.length > 0 && !isValidJWTFormat && cleanKey.includes('eyJ'); // Legacy keys pueden tener formato diferente
         
         console.log('🔍 [DEBUG] Creando cliente Supabase...');
-        console.log('🔍 [DEBUG] URL (primeros 30 chars):', cleanUrl.substring(0, 30));
+        console.log('🔍 [DEBUG] URL completa:', cleanUrl);
+        console.log('🔍 [DEBUG] Project ID de URL:', projectIdFromUrl || 'no detectado');
         console.log('🔍 [DEBUG] Key (primeros 20 chars):', cleanKey.substring(0, 20) + '...');
         console.log('🔍 [DEBUG] Key (últimos 20 chars):', '...' + cleanKey.substring(cleanKey.length - 20));
         console.log('🔍 [DEBUG] Key length:', cleanKey.length);
         console.log('🔍 [DEBUG] Key formato JWT válido:', isValidJWTFormat);
         console.log('🔍 [DEBUG] Key formato Legacy:', isLegacyFormat);
+        if (keyProjectId) {
+            console.log('🔍 [DEBUG] Project ID de Key:', keyProjectId);
+            console.log('🔍 [DEBUG] Tipo de Key:', keyType || 'desconocido');
+        }
         console.log('🔍 [DEBUG] Usando SERVICE_ROLE_KEY:', hasServiceKey);
         console.log('🔍 [DEBUG] Usando ANON_KEY (fallback):', !hasServiceKey && hasAnonKey);
+        
+        // Verificar que la URL y la key sean del mismo proyecto
+        if (projectIdFromUrl && keyProjectId && projectIdFromUrl !== keyProjectId) {
+            console.error('❌ ERROR CRÍTICO: La URL y la Key son de proyectos diferentes!');
+            console.error('   - Project ID de URL:', projectIdFromUrl);
+            console.error('   - Project ID de Key:', keyProjectId);
+            return res.status(500).json({ 
+                error: 'La URL y la API key son de proyectos diferentes de Supabase. Verificá que ambas sean del mismo proyecto.',
+                debug: {
+                    urlProjectId: projectIdFromUrl,
+                    keyProjectId: keyProjectId,
+                    url: cleanUrl.substring(0, 50) + '...'
+                },
+                solution: 'Ve a Supabase Dashboard y verificá que la URL (Settings → API → Project URL) y la key (Settings → API → Project API keys) sean del mismo proyecto.'
+            });
+        }
         
         // Verificar que la URL termine correctamente
         if (!cleanUrl.includes('supabase.co') && !cleanUrl.includes('supabase.in')) {
             console.warn('⚠️ La URL no parece ser de Supabase:', cleanUrl);
+        }
+        
+        // Si no se pudo extraer el project ID de la key, mostrar advertencia
+        if (!keyProjectId && isValidJWTFormat) {
+            console.warn('⚠️ No se pudo extraer el Project ID de la key. Verificá manualmente que la URL y la key sean del mismo proyecto.');
         }
         
         // Intentar crear el cliente con diferentes opciones
