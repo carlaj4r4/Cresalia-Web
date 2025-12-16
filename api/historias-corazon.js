@@ -16,9 +16,20 @@ module.exports = async function handler(req, res) {
         
         // Logging detallado para debugging
         console.log('🔍 [DEBUG] Verificando variables de entorno...');
-        const supabaseUrl = process.env.SUPABASE_URL;
+        
+        // Buscar URL en diferentes nombres posibles
+        const supabaseUrl = process.env.SUPABASE_URL || 
+                           process.env.NEXT_PUBLIC_SUPABASE_URL || 
+                           process.env.VERCEL_SUPABASE_URL ||
+                           null;
+        
         const hasServiceKey = !!process.env.SUPABASE_SERVICE_ROLE_KEY;
         const hasAnonKey = !!process.env.SUPABASE_ANON_KEY;
+        
+        // Verificar todas las variables posibles para debugging
+        const allEnvVars = Object.keys(process.env).filter(key => 
+            key.includes('SUPABASE') || key.includes('supabase')
+        );
         
         console.log('🔍 [DEBUG] Variables encontradas:', {
             hasUrl: !!supabaseUrl,
@@ -27,8 +38,16 @@ module.exports = async function handler(req, res) {
             hasServiceKey: hasServiceKey,
             serviceKeyLength: process.env.SUPABASE_SERVICE_ROLE_KEY ? process.env.SUPABASE_SERVICE_ROLE_KEY.length : 0,
             hasAnonKey: hasAnonKey,
-            anonKeyLength: process.env.SUPABASE_ANON_KEY ? process.env.SUPABASE_ANON_KEY.length : 0
+            anonKeyLength: process.env.SUPABASE_ANON_KEY ? process.env.SUPABASE_ANON_KEY.length : 0,
+            todasLasVariablesSupabase: allEnvVars
         });
+        
+        // Si no hay URL, mostrar ayuda
+        if (!supabaseUrl) {
+            console.error('❌ SUPABASE_URL no encontrada. Variables disponibles con "SUPABASE":', allEnvVars);
+            console.error('🔧 Verificá en Vercel que la variable se llame exactamente: SUPABASE_URL');
+            console.error('   (sin NEXT_PUBLIC_ para variables de servidor)');
+        }
         
         // Usar SERVICE_ROLE_KEY como fallback (más permisos) o ANON_KEY
         const supabaseKey = process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.SUPABASE_ANON_KEY;
