@@ -15,13 +15,34 @@ module.exports = async function handler(req, res) {
         const { createClient } = require('@supabase/supabase-js');
         
         const supabaseUrl = process.env.SUPABASE_URL;
-        const supabaseKey = process.env.SUPABASE_ANON_KEY;
+        // Usar SERVICE_ROLE_KEY como fallback (más permisos) o ANON_KEY
+        const supabaseKey = process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.SUPABASE_ANON_KEY;
         
         if (!supabaseUrl || !supabaseKey) {
-            return res.status(500).json({ error: 'Supabase no configurado' });
+            console.error('❌ Supabase no configurado:', {
+                hasUrl: !!supabaseUrl,
+                hasServiceKey: !!process.env.SUPABASE_SERVICE_ROLE_KEY,
+                hasAnonKey: !!process.env.SUPABASE_ANON_KEY
+            });
+            return res.status(500).json({ 
+                error: 'Supabase no configurado. Verificá las variables SUPABASE_URL y SUPABASE_SERVICE_ROLE_KEY (o SUPABASE_ANON_KEY) en Vercel.' 
+            });
         }
         
         const supabase = createClient(supabaseUrl, supabaseKey);
+        
+        // Verificar conexión con Supabase
+        const { data: testData, error: testError } = await supabase
+            .from('historias_corazon_cresalia')
+            .select('id')
+            .limit(1);
+        
+        if (testError && testError.code === 'PGRST301') {
+            console.error('❌ API key inválido de Supabase:', testError.message);
+            return res.status(500).json({ 
+                error: 'API key de Supabase inválido. Verificá que SUPABASE_SERVICE_ROLE_KEY o SUPABASE_ANON_KEY estén correctamente configuradas en Vercel.' 
+            });
+        }
         
         // GET: Obtener historias públicas
         if (req.method === 'GET') {

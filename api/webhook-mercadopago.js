@@ -65,18 +65,34 @@ module.exports = async (req, res) => {
     // IMPORTANTE: No hacer nada más después de res.end()
     // El procesamiento debe ser completamente asíncrono
     
+    // Log inmediato (antes del procesamiento asíncrono) para que aparezca en Vercel
+    console.log('🔔 [WEBHOOK] Webhook recibido de MercadoPago');
+    console.log('🔔 [WEBHOOK] Tipo:', req.body?.type || req.body?.action || 'desconocido');
+    console.log('🔔 [WEBHOOK] ID:', req.body?.data?.id || req.body?.id || 'sin ID');
+    
     // Procesar de forma asíncrona (después de que la respuesta se envió)
     // Usar process.nextTick para asegurar que la respuesta se envió primero
     process.nextTick(async () => {
         try {
+            // Log inmediato para que aparezca en Vercel
+            console.log('🔔 [WEBHOOK] Iniciando procesamiento asíncrono');
+            console.log('🔔 [WEBHOOK] Body recibido:', JSON.stringify(req.body).substring(0, 200));
+            
             const { type, data, action, api_version, date_created, id, live_mode, user_id } = req.body;
             
             // Obtener headers de Mercado Pago
             const xSignature = req.headers['x-signature'] || req.headers['x-signature'] || null;
             const xRequestId = req.headers['x-request-id'] || req.headers['x-request-id'] || null;
             
-            console.log('🔔 Webhook recibido:', type || action, data?.id || id);
-            console.log('📋 Headers:', { xSignature: xSignature ? 'presente' : 'ausente', xRequestId });
+            const notificationType = type || action;
+            const notificationId = data?.id || id;
+            
+            console.log('🔔 [WEBHOOK] Tipo:', notificationType);
+            console.log('🔔 [WEBHOOK] ID:', notificationId);
+            console.log('🔔 [WEBHOOK] Headers:', { 
+                xSignature: xSignature ? 'presente' : 'ausente', 
+                xRequestId: xRequestId || 'ausente' 
+            });
             
             // Verificar que viene de Mercado Pago (validación básica)
             if (!xRequestId && !id) {
