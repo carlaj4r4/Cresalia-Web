@@ -1,0 +1,25 @@
+name: Cron - Limpiar Datos Antiguos
+
+on:
+  schedule:
+    - cron: '0 4 * * 0' # 4 AM todos los domingos (UTC)
+  workflow_dispatch: # Permitir ejecución manual
+
+jobs:
+  limpiar-datos:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout código
+        uses: actions/checkout@v4
+
+      - name: Limpiar celebraciones antiguas
+        run: |
+          curl -X POST "${{ secrets.SUPABASE_URL }}/rest/v1/rpc/limpiar_celebraciones_antiguas" \
+            -H "apikey: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}" \
+            -H "Authorization: Bearer ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}" \
+            -H "Content-Type: application/json" \
+            -d '{}'
+
+      - name: Notificar resultado
+        run: echo "🧹 Limpieza completada correctamente"

@@ -1,0 +1,33 @@
+name: Cron - Actualizar Celebraciones
+
+on:
+  schedule:
+    - cron: '0 3 * * *' # 3 AM todos los días (UTC)
+  workflow_dispatch: # Permitir ejecución manual
+
+jobs:
+  actualizar-celebraciones:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout código
+        uses: actions/checkout@v4
+
+      - name: Calcular aniversarios de tiendas
+        run: |
+          curl -X POST "${{ secrets.SUPABASE_URL }}/rest/v1/rpc/calcular_aniversarios_tiendas_uuid" \
+            -H "apikey: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}" \
+            -H "Authorization: Bearer ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}" \
+            -H "Content-Type: application/json" \
+            -d '{}'
+
+      - name: Calcular aniversarios de servicios
+        run: |
+          curl -X POST "${{ secrets.SUPABASE_URL }}/rest/v1/rpc/calcular_aniversarios_servicios" \
+            -H "apikey: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}" \
+            -H "Authorization: Bearer ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}" \
+            -H "Content-Type: application/json" \
+            -d '{}'
+
+      - name: Notificar resultado
+        run: echo "✅ Celebraciones actualizadas correctamente"
