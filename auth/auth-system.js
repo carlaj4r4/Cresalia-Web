@@ -335,6 +335,18 @@ async function registrarNuevoCliente(datos) {
         
         console.log('✅ Usuario creado en Auth:', authData.user.id);
         
+        // Si no hay sesión inmediata (email por confirmar), no intentar insertar en RLS desde el cliente.
+        // El trigger en auth.users creará la tienda al confirmarse el email.
+        if (!authData.session) {
+            return {
+                success: true,
+                user: authData.user,
+                tienda: null,
+                mensaje: '¡Registro creado! Revisa tu email y confirma la cuenta para que se genere la tienda automáticamente.',
+                requiereConfirmacion: true
+            };
+        }
+        
         // 2. Crear registro en tabla de tiendas
         // Nota: Si el usuario no ha confirmado su email, RLS puede bloquear esto
         // En ese caso, el trigger SQL creará el perfil automáticamente después de la confirmación
