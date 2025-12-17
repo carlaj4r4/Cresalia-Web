@@ -3,11 +3,15 @@
 
 // CONFIGURACIÓN SEGURA - NO EXPONER CLAVES REALES
 const SUPABASE_CONFIG = {
-    // 🔗 URL de tu proyecto (desde Supabase Dashboard → Settings → API)
-    url: 'https://zbomxayytvwjbdzbegcw.supabase.co',
+    // 🔗 URL de tu proyecto (se puede inyectar vía env en Vercel)
+    url: (typeof window !== 'undefined' && window.__SUPABASE_URL__) ||
+         (typeof process !== 'undefined' && process.env && process.env.SUPABASE_URL) ||
+         'https://lvdgklwcgrmfbqwghxhl.supabase.co',
     
-    // 🔑 Clave anónima (pública) - Usa la misma que config-supabase-seguro.js
-    anonKey: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inpib214YXl5dHZ3amJkemJlZ2N3Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjIwODczMDMsImV4cCI6MjA3NzY2MzMwM30.ZYpckr8rPaN1vAemdjHxPSe6QvF6R1Ylic6JoNKnsBA',
+    // 🔑 Clave anónima (pública). Se espera que venga de env; este valor es placeholder.
+    anonKey: (typeof window !== 'undefined' && window.__SUPABASE_ANON_KEY__) ||
+             (typeof process !== 'undefined' && process.env && process.env.SUPABASE_ANON_KEY) ||
+             'REEMPLAZAR_CON_SUPABASE_ANON_KEY',
     
     // Configuración de autenticación
     auth: {
