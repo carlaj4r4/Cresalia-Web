@@ -17,12 +17,12 @@ const SUPABASE_CONFIG = {
     }
 };
 
-// Inicializar cliente de Supabase
-let supabase = null;
+// Inicializar cliente de Supabase (usamos nombre distinto para no chocar con el SDK global)
+let supabaseClient = null;
 
 // Función para inicializar Supabase (con espera si es necesario)
 function initSupabase() {
-    if (typeof supabase === 'undefined' || !supabase) {
+    if (typeof supabaseClient === 'undefined' || !supabaseClient) {
         console.log('🔐 Inicializando Supabase...');
         
         // Esperar a que la librería esté disponible (hasta 5 segundos)
@@ -32,25 +32,25 @@ function initSupabase() {
         const tryInit = () => {
             if (typeof window.supabase !== 'undefined' && window.supabase.createClient) {
                 try {
-                    supabase = window.supabase.createClient(
+                    supabaseClient = window.supabase.createClient(
                         SUPABASE_CONFIG.url,
                         SUPABASE_CONFIG.anonKey,
                         { auth: SUPABASE_CONFIG.auth }
                     );
                     
                     // Validar que el cliente se creó correctamente
-                    if (!supabase || typeof supabase.from !== 'function') {
+                    if (!supabaseClient || typeof supabaseClient.from !== 'function') {
                         throw new Error('El cliente de Supabase no se creó correctamente');
                     }
                     
                     console.log('✅ Supabase inicializado correctamente');
-                    console.log('🔍 Cliente validado - método from disponible:', typeof supabase.from);
+                    console.log('🔍 Cliente validado - método from disponible:', typeof supabaseClient.from);
                     
                     if (typeof window !== 'undefined') {
-                        window.SUPABASE_CLIENT = supabase;
+                        window.SUPABASE_CLIENT = supabaseClient;
                         window.SUPABASE_CONFIG = SUPABASE_CONFIG;
                     }
-                    return supabase;
+                    return supabaseClient;
                 } catch (error) {
                     console.error('❌ Error creando cliente de Supabase:', error);
                     attempts++;
@@ -79,11 +79,11 @@ function initSupabase() {
         return tryInit();
     }
     
-    if (typeof window !== 'undefined' && supabase) {
-        window.SUPABASE_CLIENT = supabase;
+    if (typeof window !== 'undefined' && supabaseClient) {
+        window.SUPABASE_CLIENT = supabaseClient;
         window.SUPABASE_CONFIG = SUPABASE_CONFIG;
     }
-    return supabase;
+    return supabaseClient;
 }
 
 // Inicializar automáticamente cuando el DOM esté listo
@@ -102,8 +102,8 @@ window.initSupabase = initSupabase;
 
 // Función para verificar si el usuario está autenticado
 async function verificarSesion() {
-    const supabase = initSupabase();
-    const { data: { session }, error } = await supabase.auth.getSession();
+    const client = initSupabase();
+    const { data: { session }, error } = await client.auth.getSession();
     
     if (error) {
         console.error('Error verificando sesión:', error);
@@ -115,8 +115,8 @@ async function verificarSesion() {
 
 // Función para obtener datos del usuario actual
 async function obtenerUsuarioActual() {
-    const supabase = initSupabase();
-    const { data: { user }, error } = await supabase.auth.getUser();
+    const client = initSupabase();
+    const { data: { user }, error } = await client.auth.getUser();
     
     if (error) {
         console.error('Error obteniendo usuario:', error);
@@ -128,9 +128,9 @@ async function obtenerUsuarioActual() {
 
 // Función para obtener datos de la tienda del usuario
 async function obtenerDatosTienda(userId) {
-    const supabase = initSupabase();
+    const client = initSupabase();
     
-    const { data, error } = await supabase
+    const { data, error } = await client
         .from('tiendas')
         .select('*')
         .eq('user_id', userId)
