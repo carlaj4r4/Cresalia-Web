@@ -508,15 +508,35 @@ async function registrarNuevoCliente(datos) {
     } catch (error) {
         console.error('❌ Error en registro:', error);
         
-        // Mensaje más amigable si es error de tabla no encontrada
-        let mensajeUsuario = error.message;
-        if (error.message.includes('tabla') || error.message.includes('table') || error.message.includes('tiendas')) {
-            mensajeUsuario = 'La tabla "tiendas" no existe en Supabase. Por favor, ejecutá el script SQL "CREAR-TABLA-TIENDAS-SUPABASE.sql" en Supabase. Abrí la consola (F12) para ver instrucciones detalladas.';
+        // Dar mensajes más precisos según el tipo de error
+        const rawMessage = error?.message || 'Error desconocido';
+        const messageLower = rawMessage.toLowerCase();
+        let mensajeUsuario = rawMessage;
+
+        if (
+            messageLower.includes('could not find the table') ||
+            messageLower.includes('does not exist') ||
+            messageLower.includes('schema cache') ||
+            error?.code === 'PGRST205'
+        ) {
+            mensajeUsuario = 'No pudimos acceder a la tabla "tiendas". Verificá que exista en tu proyecto de Supabase (schema public) o ejecutá el script "CREAR-TABLA-TIENDAS-SUPABASE.sql".';
+        } else if (
+            messageLower.includes('row-level security') ||
+            messageLower.includes('permission denied') ||
+            messageLower.includes('violates row-level security') ||
+            error?.code === '42501'
+        ) {
+            mensajeUsuario = 'Tu cuenta se creó, pero por la política RLS debes confirmar tu email antes de que se cree la tienda. Revisá tu bandeja y vuelve a intentar luego de confirmar.';
+        } else if (
+            messageLower.includes('duplicate key value') ||
+            messageLower.includes('unique constraint')
+        ) {
+            mensajeUsuario = 'Ya existe una tienda para este usuario o subdominio. Revisá que el email/subdominio no estén en uso.';
         }
         
         return {
             success: false,
-            error: error.message,
+            error: rawMessage,
             mensaje: 'Error al registrar. ' + mensajeUsuario
         };
     }
