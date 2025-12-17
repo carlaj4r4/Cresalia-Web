@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Interfaz de Compradores</title>
+    <title>Panel de Compradores</title>
     
     <!-- Meta Security -->
     <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' cdnjs.cloudflare.com cdn.jsdelivr.net https://conversations-widget.brevo.com; script-src-elem 'self' 'unsafe-inline' cdnjs.cloudflare.com cdn.jsdelivr.net https://conversations-widget.brevo.com; style-src 'self' 'unsafe-inline' fonts.googleapis.com cdnjs.cloudflare.com cdn.jsdelivr.net; style-src-elem 'self' 'unsafe-inline' fonts.googleapis.com cdnjs.cloudflare.com cdn.jsdelivr.net; font-src 'self' fonts.gstatic.com cdnjs.cloudflare.com https:; img-src 'self' data: https:; connect-src 'self' https: https://conversations-widget.brevo.com https://api.brevo.com; frame-src 'self' https: https://conversations-widget.brevo.com; object-src 'none'; base-uri 'self'; form-action 'self';">
@@ -968,8 +968,8 @@
 </head>
 <body>
     <div class="demo-header">
-        <h1><i class="fas fa-shopping-cart"></i> Interfaz de Compradores</h1>
-        <p>Panel para navegación y compras de clientes</p>
+        <h1><i class="fas fa-shopping-cart"></i> Panel de Compradores</h1>
+        <p>Explora, compra y gestiona tu cuenta en Cresalia</p>
     </div>
     
     <!-- Filtros de Búsqueda Inteligente (Ocultos por defecto) -->
@@ -1032,12 +1032,55 @@
             <li><a href="#" onclick="mostrarHistorialServicios(); return false;" style="color: #10B981; font-weight: 600;">
                 <i class="fas fa-cogs"></i> Mis Servicios
             </a></li>
+            <li><a href="#mi-cuenta" style="color: #2563EB; font-weight: 600;">
+                <i class="fas fa-user-circle"></i> Mi Cuenta
+            </a></li>
             <li><a href="#" onclick="toggleCart(); return false;">
                 <i class="fas fa-shopping-cart"></i> Carrito
                 <span id="navCartCount" style="background: #EF4444; color: white; border-radius: 50%; padding: 2px 6px; font-size: 12px; margin-left: 5px;">0</span>
             </a></li>
         </ul>
     </nav>
+
+    <!-- Mi Cuenta Section -->
+    <section id="mi-cuenta" class="productos-section">
+        <div class="container">
+            <div class="section-header">
+                <h2><i class="fas fa-user-circle"></i> Mi Cuenta</h2>
+                <p>Accede a tu perfil, sesiones y preferencias.</p>
+            </div>
+            <div class="productos-grid" style="grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));">
+                <div class="producto-card">
+                    <div class="producto-image" style="background: linear-gradient(135deg, #2563EB, #7C3AED); color: white;">
+                        <i class="fas fa-sign-in-alt fa-3x"></i>
+                    </div>
+                    <div class="producto-content">
+                        <h3 class="producto-title">Ingresar / Registrarse</h3>
+                        <p class="producto-description">Inicia sesión o crea tu cuenta de comprador.</p>
+                        <div class="producto-actions">
+                            <a class="btn-add-cart" href="/login-comprador.html" style="width: 100%; text-align: center;">
+                                <i class="fas fa-sign-in-alt"></i> Ir a Login
+                            </a>
+                        </div>
+                    </div>
+                </div>
+                <div class="producto-card">
+                    <div class="producto-image" style="background: linear-gradient(135deg, #10B981, #14B8A6); color: white;">
+                        <i class="fas fa-user-cog fa-3x"></i>
+                    </div>
+                    <div class="producto-content">
+                        <h3 class="producto-title">Preferencias</h3>
+                        <p class="producto-description">Actualiza tus datos, notificaciones y preferencias.</p>
+                        <div class="producto-actions">
+                            <a class="btn-view-store" href="#preferencias-cumple" style="width: 100%; text-align: center;">
+                                <i class="fas fa-birthday-cake"></i> Ver preferencias
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
 
     <section class="cumple-preferencias-section" id="preferencias-cumple">
         <div class="cumple-preferencias-wrapper">
@@ -1111,94 +1154,18 @@
     <section id="productos" class="productos-section">
         <div class="container">
             <div class="section-header">
-                <h2><i class="fas fa-box"></i> Productos Destacados</h2>
-                <p>Descubre los mejores productos de nuestras tiendas asociadas</p>
+                <h2><i class="fas fa-box"></i> Productos</h2>
+                <p>No hay productos de prueba. Cuando conectes tu tienda, se mostrarán aquí.</p>
             </div>
             
             <div class="productos-grid">
-                <div class="producto-card">
-                    <div class="producto-image">
-                        <i class="fas fa-box fa-3x" style="color: #D1D5DB;"></i>
+                <div class="producto-card" style="grid-column: 1 / -1; text-align: center; padding: 30px;">
+                    <div class="producto-image" style="background: #EEF2FF; color: #6366F1;">
+                        <i class="fas fa-box-open fa-3x"></i>
                     </div>
-                    <div class="product-badge badge-new">Nuevo</div>
                     <div class="producto-content">
-                        <h3 class="producto-title">Producto de Ejemplo</h3>
-                        <p class="producto-description">Descripción del producto que se muestra en la tienda. Este es un ejemplo de cómo se verán los productos reales.</p>
-                        <div class="producto-price">
-                            <span class="price-current">$29.99</span>
-                            <span class="price-discount">-20%</span>
-                        </div>
-                        <div class="producto-actions">
-                            <button class="btn-add-cart" onclick="agregarAlCarrito(1)">
-                                <i class="fas fa-shopping-cart"></i>
-                                Agregar al Carrito
-                            </button>
-                            <button class="btn-view-store" onclick="demoAction('Ver tienda')">
-                                <i class="fas fa-store"></i>
-                                Ver Tienda
-                            </button>
-                            <button class="btn-rate-store" onclick="abrirCalificacionTienda('Tienda Demo', 1)" style="background: linear-gradient(135deg, #F59E0B, #D97706); color: white; border: none; padding: 8px 12px; border-radius: 8px; font-size: 0.9rem; cursor: pointer; transition: all 0.3s ease;">
-                                <i class="fas fa-star"></i>
-                                Calificar
-                            </button>
-                        </div>
-                    </div>
-                </div>
-                
-                <div class="producto-card">
-                    <div class="producto-image">
-                        <i class="fas fa-laptop fa-3x" style="color: #D1D5DB;"></i>
-                    </div>
-                    <div class="product-badge badge-sale">Oferta</div>
-                    <div class="producto-content">
-                        <h3 class="producto-title">Laptop Gaming Pro</h3>
-                        <p class="producto-description">Laptop de alta gama para gaming y trabajo profesional. Incluye procesador Intel i7 y tarjeta gráfica RTX 4060.</p>
-                        <div class="producto-price">
-                            <span class="price-original">$1,299.99</span>
-                            <span class="price-current">$999.99</span>
-                        </div>
-                        <div class="producto-actions">
-                            <button class="btn-add-cart" onclick="agregarAlCarrito(2)">
-                                <i class="fas fa-shopping-cart"></i>
-                                Agregar al Carrito
-                            </button>
-                            <button class="btn-view-store" onclick="demoAction('Ver tienda TechStore')">
-                                <i class="fas fa-store"></i>
-                                Ver Tienda
-                            </button>
-                            <button class="btn-rate-store" onclick="abrirCalificacionTienda('TechStore', 2)" style="background: linear-gradient(135deg, #F59E0B, #D97706); color: white; border: none; padding: 8px 12px; border-radius: 8px; font-size: 0.9rem; cursor: pointer; transition: all 0.3s ease;">
-                                <i class="fas fa-star"></i>
-                                Calificar
-                            </button>
-                        </div>
-                    </div>
-                </div>
-                
-                <div class="producto-card">
-                    <div class="producto-image">
-                        <i class="fas fa-tshirt fa-3x" style="color: #D1D5DB;"></i>
-                    </div>
-                    <div class="product-badge badge-featured">Destacado</div>
-                    <div class="producto-content">
-                        <h3 class="producto-title">Camiseta Premium</h3>
-                        <p class="producto-description">Camiseta de algodón orgánico 100% con diseño exclusivo. Disponible en múltiples colores y tallas.</p>
-                        <div class="producto-price">
-                            <span class="price-current">$24.99</span>
-                        </div>
-                        <div class="producto-actions">
-                            <button class="btn-add-cart" onclick="agregarAlCarrito(3)">
-                                <i class="fas fa-shopping-cart"></i>
-                                Agregar al Carrito
-                            </button>
-                            <button class="btn-view-store" onclick="demoAction('Ver tienda Fashion')">
-                                <i class="fas fa-store"></i>
-                                Ver Tienda
-                            </button>
-                            <button class="btn-rate-store" onclick="abrirCalificacionTienda('Fashion Store', 3)" style="background: linear-gradient(135deg, #F59E0B, #D97706); color: white; border: none; padding: 8px 12px; border-radius: 8px; font-size: 0.9rem; cursor: pointer; transition: all 0.3s ease;">
-                                <i class="fas fa-star"></i>
-                                Calificar
-                            </button>
-                        </div>
+                        <h3 class="producto-title">Sin productos cargados</h3>
+                        <p class="producto-description">Carga tu catálogo real para verlo en esta sección.</p>
                     </div>
                 </div>
             </div>
@@ -1414,29 +1381,8 @@
         
         // Función para agregar al carrito
         function agregarAlCarrito(productoId) {
-            const productos = [
-                { id: 1, nombre: 'Producto de Ejemplo', precio: 29.99 },
-                { id: 2, nombre: 'Laptop Gaming Pro', precio: 999.99 },
-                { id: 3, nombre: 'Camiseta Premium', precio: 24.99 }
-            ];
-            
-            const producto = productos.find(p => p.id === productoId);
-            if (producto) {
-                const itemExistente = carrito.find(item => item.id === productoId);
-                if (itemExistente) {
-                    itemExistente.cantidad += 1;
-                } else {
-                    carrito.push({
-                        id: producto.id,
-                        nombre: producto.nombre,
-                        precio: producto.precio,
-                        cantidad: 1
-                    });
-                }
-                
-                actualizarCarrito();
-                demoAction(`${producto.nombre} agregado al carrito`);
-            }
+            console.log('⚠️ No hay catálogo cargado. Conecta tu tienda para habilitar el carrito.');
+            demoAction('Carga tus productos para habilitar el carrito');
         }
         
         // Función para actualizar carrito
