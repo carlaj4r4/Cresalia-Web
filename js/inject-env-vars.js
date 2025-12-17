@@ -39,8 +39,8 @@
     // Inyectar variables de Supabase
     if (typeof window !== 'undefined') {
         window.__SUPABASE_URL__ = getEnvVar('SUPABASE_URL', 'https://lvdgklwcgrmfbqwghxhl.supabase.co');
-        // No dejar fallback de clave para no exponerla; debe venir de env
-        window.__SUPABASE_ANON_KEY__ = getEnvVar('SUPABASE_ANON_KEY', '');
+        // Fallback con anon key pública del proyecto (segura para frontend)
+        window.__SUPABASE_ANON_KEY__ = getEnvVar('SUPABASE_ANON_KEY', 'sb_publishable_m2TqrW1AqMOWIIyQM4oYkA_zeyAAhmR');
         window.__SUPABASE_SERVICE_ROLE_KEY__ = getEnvVar('SUPABASE_SERVICE_ROLE_KEY', null);
         
         // Inyectar variables de Mercado Pago
