@@ -8,10 +8,10 @@ const SUPABASE_CONFIG = {
          (typeof process !== 'undefined' && process.env && process.env.SUPABASE_URL) ||
          'https://lvdgklwcgrmfbqwghxhl.supabase.co',
     
-    // 🔑 Clave anónima (pública). Se espera que venga de env; este valor es placeholder.
+    // 🔑 Clave anónima (pública). Se espera que venga de env; sin fallback para evitar exponerla.
     anonKey: (typeof window !== 'undefined' && window.__SUPABASE_ANON_KEY__) ||
              (typeof process !== 'undefined' && process.env && process.env.SUPABASE_ANON_KEY) ||
-             'sb_publishable_m2TqrW1AqMOWIIyQM4oYkA_zeyAAhmR',
+             '',
     
     // Configuración de autenticación
     auth: {
@@ -28,6 +28,11 @@ let supabaseClient = null;
 function initSupabase() {
     if (typeof supabaseClient === 'undefined' || !supabaseClient) {
         console.log('🔐 Inicializando Supabase...');
+        
+        if (!SUPABASE_CONFIG.anonKey) {
+            console.error('❌ SUPABASE_ANON_KEY no está configurada. Define la variable de entorno.');
+            return null;
+        }
         
         // Esperar a que la librería esté disponible (hasta 5 segundos)
         let attempts = 0;
