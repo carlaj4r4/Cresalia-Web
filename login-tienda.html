@@ -291,7 +291,7 @@
         </form>
         
         <div class="forgot-password">
-            <a href="#" onclick="recuperarPassword(); return false;">
+            <a href="#" onclick="recuperarPasswordUI(); return false;">
                 ¿Olvidaste tu contraseña?
             </a>
         </div>
@@ -429,17 +429,19 @@
             }, 5000);
         }
         
-        async function recuperarPassword() {
+        async function recuperarPasswordUI() {
             const email = prompt('Ingresa tu email para recuperar tu contraseña:');
-            
             if (!email) return;
-            
-            const resultado = await recuperarPassword(email);
-            
-            if (resultado.success) {
-                alert(resultado.mensaje);
-            } else {
-                alert('Error: ' + resultado.mensaje);
+            try {
+                const resultado = await window.recuperarPassword(email);
+                if (resultado?.success) {
+                    alert(resultado.mensaje || 'Revisa tu correo para el enlace de recuperación.');
+                } else {
+                    alert('Error: ' + (resultado?.mensaje || 'No se pudo enviar el correo.'));
+                }
+            } catch (err) {
+                console.error('❌ Error en recuperación de contraseña:', err);
+                alert('Error enviando email de recuperación. Intenta de nuevo.');
             }
         }
     </script>
