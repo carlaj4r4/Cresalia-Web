@@ -62,6 +62,17 @@ CREATE TABLE IF NOT EXISTS contadores_seguidores (
 
 CREATE INDEX IF NOT EXISTS idx_contadores_entidad ON contadores_seguidores(entidad_id, entidad_tipo, ambito);
 
+-- RLS para contadores (permite lectura pública)
+ALTER TABLE contadores_seguidores ENABLE ROW LEVEL SECURITY;
+
+DROP POLICY IF EXISTS "Contadores visibles públicamente" ON contadores_seguidores;
+CREATE POLICY "Contadores visibles públicamente" ON contadores_seguidores
+    FOR SELECT USING (true);
+
+DROP POLICY IF EXISTS "Solo funciones pueden modificar contadores" ON contadores_seguidores;
+CREATE POLICY "Solo funciones pueden modificar contadores" ON contadores_seguidores
+    FOR ALL USING (false);
+
 -- ===== ROW LEVEL SECURITY =====
 
 ALTER TABLE seguidores_ecommerce ENABLE ROW LEVEL SECURITY;
@@ -335,20 +346,30 @@ CREATE TRIGGER trigger_actualizar_contadores_comu
     FOR EACH ROW
     EXECUTE FUNCTION trigger_actualizar_contadores_seguir();
 
--- ===== VIEWS ÚTILES =====
+-- ===== FUNCIONES PÚBLICAS (sin SECURITY DEFINER) =====
 
--- Top tiendas más seguidas
-CREATE OR REPLACE VIEW top_tiendas_seguidas AS
-SELECT 
-    t.id::TEXT as id,
-    t.nombre_tienda,
-    COALESCE(c.total_seguidores, 0) as total_seguidores
-FROM tiendas t
-LEFT JOIN contadores_seguidores c ON c.entidad_id = t.id::TEXT 
-    AND c.entidad_tipo = 'tienda' 
-    AND c.ambito = 'ecommerce'
-WHERE t.activa = true
-ORDER BY COALESCE(c.total_seguidores, 0) DESC;
+-- Top tiendas más seguidas (función en lugar de vista para evitar SECURITY DEFINER)
+CREATE OR REPLACE FUNCTION obtener_top_tiendas_seguidas(p_limite INTEGER DEFAULT 10)
+RETURNS TABLE (
+    id TEXT,
+    nombre_tienda TEXT,
+    total_seguidores INTEGER
+) AS $$
+BEGIN
+    RETURN QUERY
+    SELECT 
+        t.id::TEXT as id,
+        t.nombre_tienda,
+        COALESCE(c.total_seguidores, 0) as total_seguidores
+    FROM tiendas t
+    LEFT JOIN contadores_seguidores c ON c.entidad_id = t.id::TEXT 
+        AND c.entidad_tipo = 'tienda' 
+        AND c.ambito = 'ecommerce'
+    WHERE t.activa = true
+    ORDER BY COALESCE(c.total_seguidores, 0) DESC
+    LIMIT p_limite;
+END;
+$$ LANGUAGE plpgsql STABLE;
 
 -- ===== NOTAS DE USO =====
 -- Para seguir: SELECT seguir_entidad_ecommerce('123', 'tienda');

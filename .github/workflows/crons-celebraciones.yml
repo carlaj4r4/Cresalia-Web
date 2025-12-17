@@ -13,21 +13,51 @@ jobs:
       - name: Checkout código
         uses: actions/checkout@v4
 
+      - name: Verificar secrets configurados
+        run: |
+          if [ -z "${{ secrets.SUPABASE_URL }}" ]; then
+            echo "❌ ERROR: SUPABASE_URL no está configurado"
+            exit 1
+          fi
+          if [ -z "${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}" ]; then
+            echo "❌ ERROR: SUPABASE_SERVICE_ROLE_KEY no está configurado"
+            exit 1
+          fi
+          echo "✅ Secrets configurados correctamente"
+
       - name: Calcular aniversarios de tiendas
         run: |
-          curl -X POST "${{ secrets.SUPABASE_URL }}/rest/v1/rpc/calcular_aniversarios_tiendas_uuid" \
+          response=$(curl -s -w "\n%{http_code}" -X POST "${{ secrets.SUPABASE_URL }}/rest/v1/rpc/calcular_aniversarios_tiendas_uuid" \
             -H "apikey: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}" \
             -H "Authorization: Bearer ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}" \
             -H "Content-Type: application/json" \
-            -d '{}'
+            -d '{}')
+          http_code=$(echo "$response" | tail -n1)
+          body=$(echo "$response" | head -n-1)
+          echo "Status: $http_code"
+          echo "Response: $body"
+          if [ "$http_code" -ge 400 ]; then
+            echo "❌ Error en aniversarios de tiendas"
+            exit 1
+          fi
+          echo "✅ Aniversarios de tiendas calculados"
 
       - name: Calcular aniversarios de servicios
         run: |
-          curl -X POST "${{ secrets.SUPABASE_URL }}/rest/v1/rpc/calcular_aniversarios_servicios" \
+          response=$(curl -s -w "\n%{http_code}" -X POST "${{ secrets.SUPABASE_URL }}/rest/v1/rpc/calcular_aniversarios_servicios" \
             -H "apikey: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}" \
             -H "Authorization: Bearer ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}" \
             -H "Content-Type: application/json" \
-            -d '{}'
+            -d '{}')
+          http_code=$(echo "$response" | tail -n1)
+          body=$(echo "$response" | head -n-1)
+          echo "Status: $http_code"
+          echo "Response: $body"
+          if [ "$http_code" -ge 400 ]; then
+            echo "❌ Error en aniversarios de servicios"
+            exit 1
+          fi
+          echo "✅ Aniversarios de servicios calculados"
 
       - name: Notificar resultado
-        run: echo "✅ Celebraciones actualizadas correctamente"
+        run: echo "🎉 Celebraciones actualizadas correctamente"
