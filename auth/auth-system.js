@@ -76,7 +76,7 @@ async function registrarNuevoComprador(datos) {
         // Si hay sesión, intentar crear el registro inmediatamente
         if (authData.session) {
             let attempts = 0;
-            const maxAttempts = 8; // Aumentar a 8 intentos
+            const maxAttempts = 4; // Reducir a 4 intentos
             
             while (attempts < maxAttempts) {
                 try {
@@ -137,7 +137,7 @@ async function registrarNuevoComprador(datos) {
                             
                             // Esperar más tiempo - el schema cache puede tardar mucho
                             // Aumentar el tiempo de espera progresivamente
-                            const waitTime = Math.min(3000 * attempts, 15000); // Máximo 15 segundos
+                            const waitTime = Math.min(2000 * attempts, 10000); // Máximo 10 segundos
                             console.log(`⏳ Esperando ${waitTime/1000} segundos antes de reintentar...`);
                             await new Promise(resolve => setTimeout(resolve, waitTime));
                             continue;
@@ -150,8 +150,8 @@ async function registrarNuevoComprador(datos) {
                     compradorError = err;
                     attempts++;
                     if (attempts < maxAttempts) {
-                        console.log(`⏳ Error inesperado (intento ${attempts}/${maxAttempts}), reintentando...`);
-                        await new Promise(resolve => setTimeout(resolve, 2000 * attempts));
+                    console.log(`⏳ Error inesperado (intento ${attempts}/${maxAttempts}), reintentando...`);
+                    await new Promise(resolve => setTimeout(resolve, 1500 * attempts));
                         continue;
                     }
                     break;
@@ -349,7 +349,7 @@ async function registrarNuevoCliente(datos) {
         let tiendaData = null;
         let tiendaError = null;
         let attempts = 0;
-        const maxAttempts = 8; // Aumentar a 8 intentos (igual que compradores)
+        const maxAttempts = 4; // Reducir a 4 intentos para menos espera
         
         while (attempts < maxAttempts) {
             try {
@@ -411,7 +411,7 @@ async function registrarNuevoCliente(datos) {
                         
                         // Esperar más tiempo - el schema cache puede tardar mucho
                         // Aumentar el tiempo de espera progresivamente
-                        const waitTime = Math.min(3000 * attempts, 15000); // Máximo 15 segundos
+                        const waitTime = Math.min(2000 * attempts, 10000); // Espera más corta, máx 10s
                         console.log(`⏳ Esperando ${waitTime/1000} segundos antes de reintentar...`);
                         await new Promise(resolve => setTimeout(resolve, waitTime));
                         continue;
@@ -425,7 +425,7 @@ async function registrarNuevoCliente(datos) {
                 attempts++;
                 if (attempts < maxAttempts) {
                     console.log(`⏳ Error inesperado (intento ${attempts}/${maxAttempts}), reintentando...`);
-                    await new Promise(resolve => setTimeout(resolve, 2000 * attempts));
+                    await new Promise(resolve => setTimeout(resolve, 1500 * attempts));
                     continue;
                 }
                 break;
