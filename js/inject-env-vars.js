@@ -39,7 +39,7 @@
     // Inyectar variables de Supabase
     if (typeof window !== 'undefined') {
         window.__SUPABASE_URL__ = getEnvVar('SUPABASE_URL', 'https://lvdgklwcgrmfbqwghxhl.supabase.co');
-        window.__SUPABASE_ANON_KEY__ = getEnvVar('SUPABASE_ANON_KEY', 'REEMPLAZAR_CON_SUPABASE_ANON_KEY');
+        window.__SUPABASE_ANON_KEY__ = getEnvVar('SUPABASE_ANON_KEY', 'sb_publishable_m2TqrW1AqMOWIIyQM4oYkA_zeyAAhmR');
         window.__SUPABASE_SERVICE_ROLE_KEY__ = getEnvVar('SUPABASE_SERVICE_ROLE_KEY', null);
         
         // Inyectar variables de Mercado Pago

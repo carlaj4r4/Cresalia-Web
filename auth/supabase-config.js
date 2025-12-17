@@ -11,7 +11,7 @@ const SUPABASE_CONFIG = {
     // 🔑 Clave anónima (pública). Se espera que venga de env; este valor es placeholder.
     anonKey: (typeof window !== 'undefined' && window.__SUPABASE_ANON_KEY__) ||
              (typeof process !== 'undefined' && process.env && process.env.SUPABASE_ANON_KEY) ||
-             'REEMPLAZAR_CON_SUPABASE_ANON_KEY',
+             'sb_publishable_m2TqrW1AqMOWIIyQM4oYkA_zeyAAhmR',
     
     // Configuración de autenticación
     auth: {
