@@ -281,14 +281,17 @@
     </div>
     
     <!-- Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="js/inject-env-vars.js"></script>
     <script src="auth/supabase-config.js"></script>
     
     <script>
-        let supabase;
-        
         document.addEventListener('DOMContentLoaded', async function() {
-            supabase = initSupabase();
+            const client = initSupabase();
+            if (!client) {
+                console.error('❌ Supabase no inicializado');
+                return;
+            }
             
             // Verificar si viene de confirmación de email
             const hashParams = new URLSearchParams(window.location.hash.substring(1));
@@ -301,7 +304,7 @@
                 
                 // Intercambiar el token por una sesión
                 try {
-                    const { data, error } = await supabase.auth.setSession({
+                    const { data, error } = await client.auth.setSession({
                         access_token: accessToken,
                         refresh_token: hashParams.get('refresh_token') || ''
                     });
@@ -315,7 +318,7 @@
                         // Esperar un momento para que el trigger SQL cree el perfil
                         setTimeout(async () => {
                             // Verificar que el perfil se haya creado
-                            const { data: perfilData } = await supabase
+                            const { data: perfilData } = await client
                                 .from('compradores')
                                 .select('*')
                                 .eq('user_id', data.user.id)
@@ -362,7 +365,7 @@
                 btnLogin.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Iniciando sesión...';
                 
                 try {
-                    const { data, error } = await supabase.auth.signInWithPassword({
+                    const { data, error } = await client.auth.signInWithPassword({
                         email: email,
                         password: password
                     });
