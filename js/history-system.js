@@ -104,11 +104,22 @@ class HistorySystem {
     // ===== HISTORIAL DE SESIONES =====
     async loadSessionHistory() {
         try {
-            const sessionData = localStorage.getItem('sessionHistory');
+            let sessionData = localStorage.getItem('sessionHistory');
+            
+            // Si no hay datos en localStorage y es móvil, intentar IndexedDB
+            if (!sessionData && this.esMovil()) {
+                console.log('📱 Cargando sesiones desde IndexedDB (móvil)');
+                sessionData = await this.cargarDesdeIndexedDB('sessionHistory');
+                if (sessionData) {
+                    sessionData = JSON.stringify(sessionData);
+                }
+            }
+            
             this.histories.sesiones = sessionData ? JSON.parse(sessionData) : [];
             console.log('🔒 Historial de sesiones cargado:', this.histories.sesiones.length);
         } catch (error) {
             console.error('Error cargando historial de sesiones:', error);
+            this.histories.sesiones = [];
         }
     }
 
@@ -166,11 +177,21 @@ class HistorySystem {
         const session = {
             id: Date.now(),
             timestamp: new Date().toISOString(),
+            dispositivo: this.detectarDispositivo(),
             ...sessionData
         };
         
         this.histories.sesiones.unshift(session);
         this.saveSessionHistory();
+    }
+    
+    // Detectar tipo de dispositivo
+    detectarDispositivo() {
+        const ua = navigator.userAgent || navigator.vendor || window.opera;
+        if (/android/i.test(ua)) return 'mobile';
+        if (/iPad|iPhone|iPod/.test(ua) && !window.MSStream) return 'mobile';
+        if (/tablet/i.test(ua)) return 'tablet';
+        return 'desktop';
     }
 
     // ===== GUARDAR HISTORIALES =====
@@ -186,8 +207,83 @@ class HistorySystem {
         localStorage.setItem('emotionalHistory', JSON.stringify(this.histories.emocional));
     }
 
-    saveSessionHistory() {
-        localStorage.setItem('sessionHistory', JSON.stringify(this.histories.sesiones));
+    async saveSessionHistory() {
+        try {
+            localStorage.setItem('sessionHistory', JSON.stringify(this.histories.sesiones));
+        } catch (e) {
+            // Fallback para móviles: usar IndexedDB si localStorage falla
+            if (this.esMovil()) {
+                console.log('📱 Usando IndexedDB como respaldo para sesiones (móvil)');
+                await this.guardarEnIndexedDB('sessionHistory', this.histories.sesiones);
+            } else {
+                console.error('❌ Error guardando sesión:', e);
+            }
+        }
+    }
+    
+    esMovil() {
+        return /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+    }
+    
+    // Guardar en IndexedDB como fallback
+    async guardarEnIndexedDB(key, data) {
+        return new Promise((resolve, reject) => {
+            if (!('indexedDB' in window)) {
+                reject(new Error('IndexedDB no disponible'));
+                return;
+            }
+            
+            const request = indexedDB.open('CresaliaSessions', 1);
+            
+            request.onerror = () => reject(request.error);
+            request.onsuccess = () => {
+                const db = request.result;
+                const transaction = db.transaction(['sessions'], 'readwrite');
+                const store = transaction.objectStore('sessions');
+                const putRequest = store.put({ key, data, timestamp: Date.now() });
+                putRequest.onsuccess = () => resolve();
+                putRequest.onerror = () => reject(putRequest.error);
+            };
+            
+            request.onupgradeneeded = (event) => {
+                const db = event.target.result;
+                if (!db.objectStoreNames.contains('sessions')) {
+                    db.createObjectStore('sessions', { keyPath: 'key' });
+                }
+            };
+        });
+    }
+    
+    // Cargar desde IndexedDB como fallback
+    async cargarDesdeIndexedDB(key) {
+        return new Promise((resolve, reject) => {
+            if (!('indexedDB' in window)) {
+                resolve(null);
+                return;
+            }
+            
+            const request = indexedDB.open('CresaliaSessions', 1);
+            
+            request.onerror = () => resolve(null);
+            request.onsuccess = () => {
+                const db = request.result;
+                const transaction = db.transaction(['sessions'], 'readonly');
+                const store = transaction.objectStore('sessions');
+                const getRequest = store.get(key);
+                
+                getRequest.onsuccess = () => {
+                    resolve(getRequest.result ? getRequest.result.data : null);
+                };
+                getRequest.onerror = () => resolve(null);
+            };
+            
+            request.onupgradeneeded = (event) => {
+                const db = event.target.result;
+                if (!db.objectStoreNames.contains('sessions')) {
+                    db.createObjectStore('sessions', { keyPath: 'key' });
+                }
+            };
+        });
     }
 
     // ===== INTERFAZ DE HISTORIALES =====
