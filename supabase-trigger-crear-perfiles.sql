@@ -9,7 +9,7 @@ BEGIN
     -- Solo crear si el usuario tiene tipo_usuario = 'comprador' en metadata
     IF NEW.raw_user_meta_data->>'tipo_usuario' = 'comprador' THEN
         BEGIN
-            INSERT INTO compradores (user_id, nombre_completo, email, activo, fecha_registro)
+            INSERT INTO public.compradores (user_id, nombre_completo, email, activo, fecha_registro)
             VALUES (
                 NEW.id,
                 COALESCE(NEW.raw_user_meta_data->>'nombre_completo', NEW.email),
@@ -51,12 +51,12 @@ BEGIN
         subdomain_tienda := regexp_replace(subdomain_tienda, '^-|-$', '', 'g');
         
         -- Asegurar que el subdomain sea único
-        WHILE EXISTS (SELECT 1 FROM tiendas WHERE subdomain = subdomain_tienda) LOOP
+        WHILE EXISTS (SELECT 1 FROM public.tiendas WHERE subdomain = subdomain_tienda) LOOP
             subdomain_tienda := subdomain_tienda || '-' || floor(random() * 1000)::text;
         END LOOP;
         
         BEGIN
-            INSERT INTO tiendas (user_id, nombre_tienda, email, plan, subdomain, activa, fecha_creacion, configuracion)
+            INSERT INTO public.tiendas (user_id, nombre_tienda, email, plan, subdomain, activa, fecha_creacion, configuracion)
             VALUES (
                 NEW.id,
                 nombre_tienda,
