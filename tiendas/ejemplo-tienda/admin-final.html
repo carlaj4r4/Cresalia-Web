@@ -26,8 +26,6 @@
     <!-- Sistema de Notificaciones Push -->
     <script src="../../js/sistema-notificaciones-push.js"></script>
     
-    <!-- Sistema de Sesiones Persistentes -->
-    <script src="../../js/sistema-sesiones-persistentes.js"></script>
     <script src="../../js/configuracion-notificaciones-panel.js"></script>
     <script src="../../js/inyectar-tab-notificaciones.js"></script>
     
@@ -12217,9 +12215,15 @@ Precio: $${precio.toLocaleString('es-AR')} ARS/mes
     
     <!-- Sistema de Alertas de Emergencia Global -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <script src="../../js/inject-env-vars.js"></script>`n    <script src="../../config-supabase-seguro.js"></script>
+    <script src="../../js/inject-env-vars.js"></script>
+    <script src="../../config-supabase-seguro.js"></script>
     <script src="../../js/sistema-alertas-comunidades.js"></script>
-    <script src="../../js/panel-celebracion-tiendas.js"></script>
+    
+    <!-- Sistema de Sesiones Persistentes (después de config-supabase) -->
+    <script src="../../js/sistema-sesiones-persistentes.js"></script>
+    
+    <!-- Panel de Celebraciones (opcional - puede generar 404 si no hay API) -->
+    <!-- <script src="../../js/panel-celebracion-tiendas.js"></script> -->
     <script src="../../js/panel-historias-corazon.js"></script>
     <script>
         document.addEventListener('DOMContentLoaded', () => {

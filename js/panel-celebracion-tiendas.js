@@ -61,6 +61,10 @@
         try {
             const respuesta = await fetch(`${baseUrl}/api/aniversarios-celebracion?${params.toString()}`);
             if (!respuesta.ok) {
+                // Silenciar error 404 (API no implementada aún)
+                if (respuesta.status === 404) {
+                    return;
+                }
                 const texto = await respuesta.text().catch(() => '');
                 console.warn('Celebración Cresalia - respuesta no OK:', respuesta.status, texto);
                 return;
