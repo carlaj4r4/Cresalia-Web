@@ -5,7 +5,8 @@
 
 class SistemaEnvioEmailsAlertas {
     constructor() {
-        this.apiUrl = '/api/enviar-emails-alerta';
+        // Usar Supabase Edge Function en lugar de Vercel
+        this.apiUrl = `${window.supabaseUrl}/functions/v1/enviar-emails-alerta`;
         this.init();
     }
 
@@ -33,10 +34,14 @@ class SistemaEnvioEmailsAlertas {
         }
 
         try {
+            // Obtener el anon key de Supabase
+            const anonKey = window.supabaseAnonKey || window.SUPABASE_ANON_KEY;
+            
             const response = await fetch(this.apiUrl, {
                 method: 'POST',
                 headers: {
-                    'Content-Type': 'application/json'
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${anonKey}`
                 },
                 body: JSON.stringify({
                     alerta_id: id
