@@ -267,7 +267,7 @@ Título: ¡Gracias por hacer de Cresalia tu casa! 💜
 Mensaje: 
 Querida comunidad,
 
-Queremos tomarme un momento para agradecerles de corazón 
+Queremos tomarnos un momento para agradecerles de corazón 
 por confiar en Cresalia. Cada venta, cada compra, cada 
 mensaje... todo eso construye esta hermosa comunidad que 
 somos juntos.
