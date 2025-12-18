@@ -690,10 +690,18 @@
                             <span data-i18n="nav.mi_cuenta">Mi Cuenta</span>
                         </a>
                     </li>
+                    <!-- Para COMPRADORES -->
                     <li class="nav-item" id="btnMisCompras" style="display: none;">
                         <a class="nav-link" href="/mis-compras.html">
                             <i class="fas fa-shopping-bag"></i>
                             <span>Mis Compras</span>
+                        </a>
+                    </li>
+                    <!-- Para VENDEDORES/EMPRENDEDORES -->
+                    <li class="nav-item" id="btnConfiguracion" style="display: none;">
+                        <a class="nav-link" href="/tiendas/ejemplo-tienda/admin-final.html#configuracion">
+                            <i class="fas fa-cog"></i>
+                            <span>Configuración</span>
                         </a>
                     </li>
                     <li class="nav-item" id="btnCerrarSesion" style="display: none;">
@@ -2317,14 +2325,35 @@
                 const { data: { session }, error } = await supabase.auth.getSession();
                 
                 if (session && session.user) {
+                    // Obtener tipo de usuario
+                    const tipoUsuario = session.user.user_metadata?.tipo_usuario || 'comprador';
+                    const esVendedor = ['vendedor', 'emprendedor', 'servicio'].includes(tipoUsuario);
+                    
                     // Usuario logueado - mostrar botones de usuario
                     document.getElementById('btnIniciarSesion').style.display = 'none';
                     document.getElementById('btnComenzarGratis').style.display = 'none';
                     document.getElementById('btnMiCuenta').style.display = 'block';
-                    document.getElementById('btnMisCompras').style.display = 'block';
                     document.getElementById('btnCerrarSesion').style.display = 'block';
                     
-                    console.log('✅ Usuario logueado:', session.user.email);
+                    // Actualizar link de "Mi Cuenta" según tipo de usuario
+                    const btnMiCuenta = document.querySelector('#btnMiCuenta a');
+                    if (esVendedor) {
+                        btnMiCuenta.href = '/tiendas/ejemplo-tienda/admin-final.html';
+                        // Para vendedores, mostrar "Configuración" en lugar de "Mis Compras"
+                        document.getElementById('btnMisCompras').style.display = 'none';
+                        if (document.getElementById('btnConfiguracion')) {
+                            document.getElementById('btnConfiguracion').style.display = 'block';
+                        }
+                    } else {
+                        btnMiCuenta.href = '/demo-buyer-interface.html';
+                        // Para compradores, mostrar "Mis Compras"
+                        document.getElementById('btnMisCompras').style.display = 'block';
+                        if (document.getElementById('btnConfiguracion')) {
+                            document.getElementById('btnConfiguracion').style.display = 'none';
+                        }
+                    }
+                    
+                    console.log('✅ Usuario logueado:', session.user.email, '- Tipo:', tipoUsuario);
                 } else {
                     // Usuario NO logueado - mostrar botones de login/registro
                     document.getElementById('btnIniciarSesion').style.display = 'block';
@@ -2332,6 +2361,9 @@
                     document.getElementById('btnMiCuenta').style.display = 'none';
                     document.getElementById('btnMisCompras').style.display = 'none';
                     document.getElementById('btnCerrarSesion').style.display = 'none';
+                    if (document.getElementById('btnConfiguracion')) {
+                        document.getElementById('btnConfiguracion').style.display = 'none';
+                    }
                     
                     console.log('ℹ️ Usuario no logueado');
                 }
