@@ -456,13 +456,13 @@ RETURNS TABLE (
 BEGIN
     RETURN QUERY
     SELECT 
-        COUNT(*) FILTER (WHERE alcance = 'global' AND activa = true) as desastres_activos,
-        COUNT(*) FILTER (WHERE alcance = 'local' AND activa = true) as emergencias_locales_activas,
-        SUM(total_donaciones_dinero) as total_dinero_donado,
-        SUM(total_donaciones_materiales) as total_materiales_donados,
-        SUM(total_personas_ayudando) as total_personas_ayudando,
-        AVG(horas_sin_servicio) FILTER (WHERE tipo IN ('corte_luz', 'corte_gas', 'corte_agua') AND activa = false) as promedio_horas_resolucion
-    FROM alertas_emergencia_comunidades;
+        COUNT(*) FILTER (WHERE a.alcance = 'global' AND a.activa = true),
+        COUNT(*) FILTER (WHERE a.alcance = 'local' AND a.activa = true),
+        SUM(a.total_donaciones_dinero),
+        SUM(a.total_donaciones_materiales),
+        SUM(a.total_personas_ayudando),
+        AVG(a.horas_sin_servicio) FILTER (WHERE a.tipo IN ('corte_luz', 'corte_gas', 'corte_agua') AND a.activa = false)
+    FROM alertas_emergencia_comunidades a;
 END;
 $$ LANGUAGE plpgsql STABLE;
 
