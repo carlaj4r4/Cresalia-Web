@@ -1024,6 +1024,11 @@
 
     <nav class="demo-nav">
         <ul>
+            <li>
+                <a href="/index-cresalia.html" style="background: linear-gradient(135deg, #7C3AED, #EC4899); color: white; padding: 8px 16px; border-radius: 8px; font-weight: 600; transition: transform 0.3s;" onmouseover="this.style.transform='scale(1.05)'" onmouseout="this.style.transform='scale(1)'">
+                    <i class="fas fa-home"></i> Ir al Inicio
+                </a>
+            </li>
             <li><a href="#productos">Productos</a></li>
             <li><a href="/panel-comunidad-compradores.html" target="_blank" style="color: #EC4899; font-weight: 600;">
                 <i class="fas fa-users"></i> Comunidad
@@ -1047,6 +1052,11 @@
                 <i class="fas fa-shopping-cart"></i> Carrito
                 <span id="navCartCount" style="background: #EF4444; color: white; border-radius: 50%; padding: 2px 6px; font-size: 12px; margin-left: 5px;">0</span>
             </a></li>
+            <li>
+                <a href="#" onclick="cerrarSesionComprador(); return false;" style="color: #EF4444; font-weight: 600;">
+                    <i class="fas fa-sign-out-alt"></i> Cerrar Sesión
+                </a>
+            </li>
         </ul>
     </nav>
 
@@ -2978,5 +2988,54 @@
     
     <!-- Sistema de Envío de Emails Automáticos -->
     <script src="/js/sistema-envio-emails-alertas.js"></script>
+    
+    <!-- Sistema de Sesiones Persistentes -->
+    <script src="/js/sistema-sesiones-persistentes.js"></script>
+    
+    <!-- Función de Logout para Compradores -->
+    <script>
+        async function cerrarSesionComprador() {
+            if (!confirm('¿Estás seguro que querés cerrar sesión?')) {
+                return;
+            }
+            
+            try {
+                console.log('🚪 Cerrando sesión de comprador...');
+                
+                const supabase = initSupabase();
+                
+                if (supabase) {
+                    const { error } = await supabase.auth.signOut();
+                    
+                    if (error) {
+                        console.error('Error al cerrar sesión:', error);
+                    }
+                }
+                
+                // Limpiar localStorage
+                localStorage.removeItem('cresalia_sesion_activa');
+                localStorage.removeItem('cresalia_session_token');
+                localStorage.removeItem('cresalia_user_data');
+                localStorage.removeItem('cresalia_comprador_id');
+                localStorage.removeItem('carrito_cresalia');
+                
+                // Limpiar sessionStorage
+                sessionStorage.clear();
+                
+                console.log('✅ Sesión cerrada correctamente');
+                
+                // Redirigir al inicio
+                window.location.href = '/index-cresalia.html';
+                
+            } catch (error) {
+                console.error('❌ Error al cerrar sesión:', error);
+                alert('Error al cerrar sesión. Recargando página...');
+                window.location.reload();
+            }
+        }
+        
+        // Hacer disponible globalmente
+        window.cerrarSesionComprador = cerrarSesionComprador;
+    </script>
 </body>
 </html>
