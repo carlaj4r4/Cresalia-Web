@@ -64,6 +64,13 @@
         <h1>🧪 Test Edge Function de Emails</h1>
         <p>Este test verifica si la Edge Function está funcionando correctamente.</p>
         
+        <div style="background: #fef3c7; padding: 15px; border-radius: 8px; margin: 20px 0;">
+            <h3 style="margin-top: 0;">⚙️ Configuración</h3>
+            <p><strong>Proyecto actual:</strong> <span id="proyectoNombre"></span></p>
+            <button onclick="cambiarProyecto('tiendas')">🏪 Tiendas</button>
+            <button onclick="cambiarProyecto('comunidades')">🤝 Comunidades</button>
+        </div>
+        
         <div style="margin: 20px 0;">
             <label>ID de Alerta a probar:</label>
             <input type="number" id="alertaId" value="1" min="1">
@@ -79,10 +86,41 @@
         <div id="log" class="log">📝 Log de resultados aparecerá aquí...\n</div>
     </div>
 
-    <!-- Config Supabase -->
-    <script src="config-supabase-seguro.js"></script>
+    <!-- Supabase SDK -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
     <script>
+        // ========================================
+        // CONFIGURACIÓN DUAL: TIENDAS Y COMUNIDADES
+        // ========================================
+        
+        const PROYECTOS = {
+            tiendas: {
+                nombre: 'Cresalia (Tiendas)',
+                url: 'https://lvdgklwcgrmfbqwghxhl.supabase.co',
+                anonKey: 'TU_ANON_KEY_TIENDAS' // Reemplazar
+            },
+            comunidades: {
+                nombre: 'Cresalia Comunidades',
+                url: 'https://TU_URL_COMUNIDADES.supabase.co', // Reemplazar
+                anonKey: 'TU_ANON_KEY_COMUNIDADES' // Reemplazar
+            }
+        };
+
+        // Cliente activo
+        let proyectoActual = 'comunidades'; // Por defecto, alertas están en comunidades
+        let supabaseClient = null;
+
+        function cambiarProyecto(proyecto) {
+            proyectoActual = proyecto;
+            const config = PROYECTOS[proyecto];
+            
+            supabaseClient = supabase.createClient(config.url, config.anonKey);
+            
+            addLog(`🔄 Cambiado a proyecto: ${config.nombre}`, 'info');
+            addLog(`📡 URL: ${config.url}`, 'info');
+        }
+
         const log = document.getElementById('log');
 
         function addLog(mensaje, tipo = 'info') {
@@ -97,14 +135,15 @@
             addLog(`🚀 Llamando Edge Function con alerta_id: ${alertaId}`, 'info');
 
             try {
-                const url = `${supabaseUrl}/functions/v1/enviar-emails-alerta`;
+                const config = PROYECTOS[proyectoActual];
+                const url = `${config.url}/functions/v1/enviar-emails-alerta`;
                 addLog(`📡 URL: ${url}`, 'info');
 
                 const response = await fetch(url, {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
-                        'Authorization': `Bearer ${supabaseAnonKey}`
+                        'Authorization': `Bearer ${config.anonKey}`
                     },
                     body: JSON.stringify({ alerta_id: alertaId })
                 });
