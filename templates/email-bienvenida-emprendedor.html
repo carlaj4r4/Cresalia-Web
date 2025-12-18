@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bienvenida a Cresalia</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f4f7fa;
+        }
+        .email-container {
+            max-width: 600px;
+            margin: 20px auto;
+            background: white;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+        }
+        .header {
+            background: linear-gradient(135deg, #F59E0B 0%, #F97316 100%);
+            color: white;
+            padding: 40px 30px;
+            text-align: center;
+        }
+        .header h1 {
+            margin: 0;
+            font-size: 28px;
+            font-weight: 600;
+        }
+        .header .emoji {
+            font-size: 50px;
+            margin-bottom: 10px;
+        }
+        .content {
+            padding: 40px 30px;
+            color: #333;
+            line-height: 1.8;
+        }
+        .content h2 {
+            color: #F59E0B;
+            font-size: 22px;
+            margin-top: 0;
+        }
+        .highlight {
+            background: #FEF3C7;
+            border-left: 4px solid #F59E0B;
+            padding: 15px 20px;
+            margin: 20px 0;
+            border-radius: 4px;
+        }
+        .highlight strong {
+            color: #F59E0B;
+        }
+        .steps {
+            background: #F9FAFB;
+            padding: 20px;
+            border-radius: 8px;
+            margin: 20px 0;
+        }
+        .steps h3 {
+            color: #374151;
+            font-size: 18px;
+            margin-top: 0;
+        }
+        .steps ul {
+            margin: 10px 0;
+            padding-left: 20px;
+        }
+        .steps li {
+            margin: 10px 0;
+            color: #4B5563;
+        }
+        .button-container {
+            text-align: center;
+            margin: 30px 0;
+        }
+        .button {
+            display: inline-block;
+            padding: 16px 40px;
+            background: linear-gradient(135deg, #F59E0B 0%, #F97316 100%);
+            color: white;
+            text-decoration: none;
+            border-radius: 8px;
+            font-weight: 600;
+            font-size: 16px;
+            box-shadow: 0 4px 15px rgba(245, 158, 11, 0.3);
+            transition: transform 0.2s;
+        }
+        .button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(245, 158, 11, 0.4);
+        }
+        .footer {
+            background: #F9FAFB;
+            padding: 30px;
+            text-align: center;
+            color: #6B7280;
+            font-size: 14px;
+        }
+        .footer a {
+            color: #F59E0B;
+            text-decoration: none;
+        }
+        .divider {
+            height: 1px;
+            background: #E5E7EB;
+            margin: 30px 0;
+        }
+        .community-box {
+            background: #FEF3C7;
+            padding: 20px;
+            border-radius: 8px;
+            margin: 20px 0;
+            text-align: center;
+        }
+        .community-box h3 {
+            color: #F59E0B;
+            margin-top: 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="email-container">
+        <!-- Header -->
+        <div class="header">
+            <div class="emoji">🚀</div>
+            <h1>¡Bienvenido Emprendedor!</h1>
+        </div>
+
+        <!-- Content -->
+        <div class="content">
+            <h2>Hola {{NOMBRE_EMPRENDEDOR}},</h2>
+            
+            <p>¡Estamos muy emocionados de tenerte en nuestra comunidad de emprendedores! 🎉</p>
+            
+            <div class="highlight">
+                <strong>Tu perfil de emprendedor ha sido creado exitosamente</strong><br>
+                Ya sos parte de una comunidad vibrante de emprendedores que se apoyan mutuamente.
+            </div>
+
+            <p><strong>📍 Tu perfil único:</strong></p>
+            <div class="highlight">
+                <strong>{{SUBDOMAIN}}.cresalia.com</strong>
+            </div>
+
+            <div class="community-box">
+                <h3>🌟 Acceso Exclusivo a Comunidades</h3>
+                <p>Como emprendedor, tenés acceso a nuestras comunidades de apoyo mutuo donde podés:</p>
+                <ul style="text-align: left; display: inline-block;">
+                    <li>Conectar con otros emprendedores</li>
+                    <li>Compartir experiencias y aprendizajes</li>
+                    <li>Recibir apoyo emocional y motivacional</li>
+                    <li>Encontrar colaboradores y socios</li>
+                </ul>
+            </div>
+
+            <div class="steps">
+                <h3>🎯 Primeros pasos en tu viaje emprendedor:</h3>
+                <ul>
+                    <li><strong>Completa tu historia:</strong> Contanos sobre tu emprendimiento, motivación y objetivos</li>
+                    <li><strong>Sube tus productos/servicios:</strong> Muestra qué ofrecés al mundo</li>
+                    <li><strong>Únete a comunidades:</strong> Participa en grupos de emprendedores, salud mental y más</li>
+                    <li><strong>Personaliza tu perfil:</strong> Agrega foto, descripción y links a redes sociales</li>
+                    <li><strong>Conecta con la comunidad:</strong> Sigue a otros emprendedores, comenta y colabora</li>
+                </ul>
+            </div>
+
+            <div class="button-container">
+                <a href="https://cresalia.com/tiendas/panel.html" class="button">
+                    🚀 Ir a Mi Panel de Emprendedor
+                </a>
+            </div>
+
+            <div class="divider"></div>
+
+            <p><strong>💪 Recursos disponibles para vos:</strong></p>
+            <ul>
+                <li><strong>Comunidades de apoyo:</strong> Salud mental, duelo, ansiedad, emprendimiento</li>
+                <li><strong>Herramientas de gestión:</strong> Panel de ventas, inventario, estadísticas</li>
+                <li><strong>Networking:</strong> Conecta con otros emprendedores de tu zona</li>
+                <li><strong>Recursos educativos:</strong> Tips, guías y mejores prácticas</li>
+                <li><strong>Soporte 24/7:</strong> Nuestro equipo siempre está disponible</li>
+            </ul>
+
+            <p><strong>💡 Recordá:</strong> El emprendimiento es un viaje, no un destino. Estamos acá para acompañarte en cada paso! 🌟</p>
+
+            <p>No estás solo/a en este camino. Tenés toda una comunidad que te respalda y un equipo que cree en tu proyecto.</p>
+
+            <p style="margin-top: 30px;">
+                ¡Mucha fuerza y éxito en tu emprendimiento!<br>
+                <strong>El equipo de Cresalia</strong> ❤️
+            </p>
+        </div>
+
+        <!-- Footer -->
+        <div class="footer">
+            <p><strong>Cresalia</strong> - Comunidad de Emprendedores</p>
+            <p>
+                <a href="https://cresalia.com">Visitar Cresalia</a> •
+                <a href="https://cresalia.com/comunidades">Ver Comunidades</a> •
+                <a href="https://cresalia.com/ayuda">Centro de Ayuda</a> •
+                <a href="https://cresalia.com/contacto">Contacto</a>
+            </p>
+            <p style="font-size: 12px; color: #9CA3AF; margin-top: 15px;">
+                Este email fue enviado automáticamente. Por favor no respondas a este correo.
+            </p>
+        </div>
+    </div>
+</body>
+</html>

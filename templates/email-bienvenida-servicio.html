@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bienvenida a Cresalia</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f4f7fa;
+        }
+        .email-container {
+            max-width: 600px;
+            margin: 20px auto;
+            background: white;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+        }
+        .header {
+            background: linear-gradient(135deg, #10B981 0%, #14B8A6 100%);
+            color: white;
+            padding: 40px 30px;
+            text-align: center;
+        }
+        .header h1 {
+            margin: 0;
+            font-size: 28px;
+            font-weight: 600;
+        }
+        .header .emoji {
+            font-size: 50px;
+            margin-bottom: 10px;
+        }
+        .content {
+            padding: 40px 30px;
+            color: #333;
+            line-height: 1.8;
+        }
+        .content h2 {
+            color: #10B981;
+            font-size: 22px;
+            margin-top: 0;
+        }
+        .highlight {
+            background: #ECFDF5;
+            border-left: 4px solid #10B981;
+            padding: 15px 20px;
+            margin: 20px 0;
+            border-radius: 4px;
+        }
+        .highlight strong {
+            color: #10B981;
+        }
+        .steps {
+            background: #F9FAFB;
+            padding: 20px;
+            border-radius: 8px;
+            margin: 20px 0;
+        }
+        .steps h3 {
+            color: #374151;
+            font-size: 18px;
+            margin-top: 0;
+        }
+        .steps ul {
+            margin: 10px 0;
+            padding-left: 20px;
+        }
+        .steps li {
+            margin: 10px 0;
+            color: #4B5563;
+        }
+        .button-container {
+            text-align: center;
+            margin: 30px 0;
+        }
+        .button {
+            display: inline-block;
+            padding: 16px 40px;
+            background: linear-gradient(135deg, #10B981 0%, #14B8A6 100%);
+            color: white;
+            text-decoration: none;
+            border-radius: 8px;
+            font-weight: 600;
+            font-size: 16px;
+            box-shadow: 0 4px 15px rgba(16, 185, 129, 0.3);
+            transition: transform 0.2s;
+        }
+        .button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(16, 185, 129, 0.4);
+        }
+        .footer {
+            background: #F9FAFB;
+            padding: 30px;
+            text-align: center;
+            color: #6B7280;
+            font-size: 14px;
+        }
+        .footer a {
+            color: #10B981;
+            text-decoration: none;
+        }
+        .divider {
+            height: 1px;
+            background: #E5E7EB;
+            margin: 30px 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="email-container">
+        <!-- Header -->
+        <div class="header">
+            <div class="emoji">🎉</div>
+            <h1>¡Bienvenido a Cresalia!</h1>
+        </div>
+
+        <!-- Content -->
+        <div class="content">
+            <h2>Hola {{NOMBRE_SERVICIO}},</h2>
+            
+            <p>¡Estamos muy felices de tenerte en nuestra comunidad de profesionales y emprendedores de servicios! 🚀</p>
+            
+            <div class="highlight">
+                <strong>Tu perfil de servicio ha sido creado exitosamente</strong><br>
+                Ya podés empezar a ofrecer tus servicios profesionales y conectar con clientes en toda la región.
+            </div>
+
+            <p><strong>📍 Tu perfil único:</strong></p>
+            <div class="highlight">
+                <strong>{{SUBDOMAIN}}.cresalia.com</strong>
+            </div>
+
+            <div class="steps">
+                <h3>🎯 Próximos pasos para destacar:</h3>
+                <ul>
+                    <li><strong>Completa tu perfil profesional:</strong> Agrega tu experiencia, especialidades y certificaciones</li>
+                    <li><strong>Detalla tus servicios:</strong> Describe qué ofrecés, áreas de trabajo y tarifas</li>
+                    <li><strong>Agrega portfolio:</strong> Muestra ejemplos de trabajos anteriores y testimonios</li>
+                    <li><strong>Configura disponibilidad:</strong> Define tus horarios y zonas de atención</li>
+                    <li><strong>Comparte tu perfil:</strong> Difunde en redes sociales y con tus clientes actuales</li>
+                </ul>
+            </div>
+
+            <div class="button-container">
+                <a href="https://cresalia.com/tiendas/panel.html" class="button">
+                    🚀 Ir a Mi Panel de Servicios
+                </a>
+            </div>
+
+            <div class="divider"></div>
+
+            <p><strong>💼 Tipos de servicios que podés ofrecer:</strong></p>
+            <ul>
+                <li>Servicios profesionales (diseño, contabilidad, etc.)</li>
+                <li>Servicios de mantenimiento y reparación</li>
+                <li>Servicios de transporte y logística</li>
+                <li>Consultoría y asesoramiento</li>
+                <li>Y mucho más...</li>
+            </ul>
+
+            <p><strong>💡 Recordá:</strong> Tu perfil es tu carta de presentación. Cuanto más completo esté, más clientes potenciales atraerás.</p>
+
+            <p>Si tenés alguna duda o necesitás ayuda para configurar tu perfil, estamos acá para ayudarte 24/7! 💪</p>
+
+            <p style="margin-top: 30px;">
+                Saludos cordiales,<br>
+                <strong>El equipo de Cresalia</strong> ❤️
+            </p>
+        </div>
+
+        <!-- Footer -->
+        <div class="footer">
+            <p><strong>Cresalia</strong> - Plataforma de Servicios Profesionales</p>
+            <p>
+                <a href="https://cresalia.com">Visitar Cresalia</a> •
+                <a href="https://cresalia.com/ayuda">Centro de Ayuda</a> •
+                <a href="https://cresalia.com/contacto">Contacto</a>
+            </p>
+            <p style="font-size: 12px; color: #9CA3AF; margin-top: 15px;">
+                Este email fue enviado automáticamente. Por favor no respondas a este correo.
+            </p>
+        </div>
+    </div>
+</body>
+</html>

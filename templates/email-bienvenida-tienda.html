@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bienvenida a Cresalia</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f4f7fa;
+        }
+        .email-container {
+            max-width: 600px;
+            margin: 20px auto;
+            background: white;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+        }
+        .header {
+            background: linear-gradient(135deg, #2563EB 0%, #7C3AED 100%);
+            color: white;
+            padding: 40px 30px;
+            text-align: center;
+        }
+        .header h1 {
+            margin: 0;
+            font-size: 28px;
+            font-weight: 600;
+        }
+        .header .emoji {
+            font-size: 50px;
+            margin-bottom: 10px;
+        }
+        .content {
+            padding: 40px 30px;
+            color: #333;
+            line-height: 1.8;
+        }
+        .content h2 {
+            color: #2563EB;
+            font-size: 22px;
+            margin-top: 0;
+        }
+        .highlight {
+            background: #EFF6FF;
+            border-left: 4px solid #2563EB;
+            padding: 15px 20px;
+            margin: 20px 0;
+            border-radius: 4px;
+        }
+        .highlight strong {
+            color: #2563EB;
+        }
+        .steps {
+            background: #F9FAFB;
+            padding: 20px;
+            border-radius: 8px;
+            margin: 20px 0;
+        }
+        .steps h3 {
+            color: #374151;
+            font-size: 18px;
+            margin-top: 0;
+        }
+        .steps ul {
+            margin: 10px 0;
+            padding-left: 20px;
+        }
+        .steps li {
+            margin: 10px 0;
+            color: #4B5563;
+        }
+        .button-container {
+            text-align: center;
+            margin: 30px 0;
+        }
+        .button {
+            display: inline-block;
+            padding: 16px 40px;
+            background: linear-gradient(135deg, #2563EB 0%, #7C3AED 100%);
+            color: white;
+            text-decoration: none;
+            border-radius: 8px;
+            font-weight: 600;
+            font-size: 16px;
+            box-shadow: 0 4px 15px rgba(37, 99, 235, 0.3);
+            transition: transform 0.2s;
+        }
+        .button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(37, 99, 235, 0.4);
+        }
+        .footer {
+            background: #F9FAFB;
+            padding: 30px;
+            text-align: center;
+            color: #6B7280;
+            font-size: 14px;
+        }
+        .footer a {
+            color: #2563EB;
+            text-decoration: none;
+        }
+        .divider {
+            height: 1px;
+            background: #E5E7EB;
+            margin: 30px 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="email-container">
+        <!-- Header -->
+        <div class="header">
+            <div class="emoji">🎉</div>
+            <h1>¡Bienvenido a Cresalia!</h1>
+        </div>
+
+        <!-- Content -->
+        <div class="content">
+            <h2>Hola {{NOMBRE_TIENDA}},</h2>
+            
+            <p>¡Estamos muy felices de tenerte en nuestra comunidad de emprendedores! 🚀</p>
+            
+            <div class="highlight">
+                <strong>Tu tienda ha sido creada exitosamente</strong><br>
+                Ya podés empezar a vender y conectar con miles de compradores en toda la región.
+            </div>
+
+            <p><strong>📍 Tu link único:</strong></p>
+            <div class="highlight">
+                <strong>{{SUBDOMAIN}}.cresalia.com</strong>
+            </div>
+
+            <div class="steps">
+                <h3>🎯 Próximos pasos para empezar:</h3>
+                <ul>
+                    <li><strong>Completa tu perfil:</strong> Agrega información de contacto, redes sociales y horarios de atención</li>
+                    <li><strong>Sube tus productos/servicios:</strong> Agrega fotos de calidad y descripciones detalladas</li>
+                    <li><strong>Personaliza tu tienda:</strong> Elige colores, logo y diseño que representen tu marca</li>
+                    <li><strong>Comparte tu link:</strong> Difunde tu tienda en redes sociales y con tus clientes</li>
+                </ul>
+            </div>
+
+            <div class="button-container">
+                <a href="https://cresalia.com/tiendas/panel.html" class="button">
+                    🚀 Ir a Mi Panel de Tienda
+                </a>
+            </div>
+
+            <div class="divider"></div>
+
+            <p><strong>💡 Recordá:</strong></p>
+            <ul>
+                <li>Tu plan actual: <strong>{{PLAN}}</strong></li>
+                <li>Accedé a tu panel desde cualquier dispositivo</li>
+                <li>Podés editar tu información cuando quieras</li>
+                <li>Nuestro equipo está acá para ayudarte 24/7</li>
+            </ul>
+
+            <p>Si tenés alguna duda o necesitás ayuda, no dudes en escribirnos. Estamos acá para que tu emprendimiento crezca! 💪</p>
+
+            <p style="margin-top: 30px;">
+                Saludos cordiales,<br>
+                <strong>El equipo de Cresalia</strong> ❤️
+            </p>
+        </div>
+
+        <!-- Footer -->
+        <div class="footer">
+            <p><strong>Cresalia</strong> - Plataforma de Emprendedores</p>
+            <p>
+                <a href="https://cresalia.com">Visitar Cresalia</a> •
+                <a href="https://cresalia.com/ayuda">Centro de Ayuda</a> •
+                <a href="https://cresalia.com/contacto">Contacto</a>
+            </p>
+            <p style="font-size: 12px; color: #9CA3AF; margin-top: 15px;">
+                Este email fue enviado automáticamente. Por favor no respondas a este correo.
+            </p>
+        </div>
+    </div>
+</body>
+</html>
