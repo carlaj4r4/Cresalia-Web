@@ -449,8 +449,8 @@ RETURNS TABLE (
     desastres_activos BIGINT,
     emergencias_locales_activas BIGINT,
     total_dinero_donado NUMERIC,
-    total_materiales_donados NUMERIC,
-    total_personas_ayudando NUMERIC,
+    total_materiales_donados BIGINT,
+    total_personas_ayudando BIGINT,
     promedio_horas_resolucion NUMERIC
 ) AS $$
 BEGIN
