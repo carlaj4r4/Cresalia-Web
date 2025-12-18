@@ -529,10 +529,9 @@
                         mostrarNotificacion('🎉 ¡Bienvenido a tu panel de administración!', 'success');
                     }, 1000);
                     
-                    // Redirigir al panel admin de la tienda específica
+                    // Redirigir al panel admin correcto
                     setTimeout(() => {
-                        // Redirigir al admin de la tienda específica
-                        const adminUrl = `tiendas/${subdomain}/admin.html`;
+                        const adminUrl = 'tiendas/ejemplo-tienda/admin-final.html';
                         console.log('🚀 Redirigiendo a panel admin de tienda:', adminUrl);
                         window.location.href = adminUrl;
                     }, 2000);

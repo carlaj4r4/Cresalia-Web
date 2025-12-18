@@ -297,8 +297,8 @@ async function registrarNuevoCliente(datos) {
         console.log('🔍 Tipo de supabase:', typeof supabase, 'Método from:', typeof supabase?.from);
         
         // Siempre usar URL de producción para emails (los emails de confirmación deben ir a producción)
-        // Esto evita que los emails redirijan a localhost
-        const redirectUrl = 'https://cresalia-web.vercel.app/login-tienda.html';
+        // Redirigir al panel de administración correcto
+        const redirectUrl = 'https://cresalia-web.vercel.app/tiendas/ejemplo-tienda/admin-final.html';
         console.log('🔗 URL de redirección para email:', redirectUrl);
 
         const { data: authData, error: authError } = await supabase.auth.signUp({
