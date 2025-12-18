@@ -587,6 +587,8 @@
         
         function limpiarFormulario() {
             document.getElementById('formMensaje').reset();
+            document.getElementById('fecha_inicio').value = '';
+            document.getElementById('fecha_fin').value = '';
         }
         
         function mostrarNotificacion(mensaje, tipo) {
