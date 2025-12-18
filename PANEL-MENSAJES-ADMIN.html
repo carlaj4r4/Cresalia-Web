@@ -8,6 +8,12 @@
     <!-- Supabase -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     
+    <!-- Configuración Supabase -->
+    <script src="config-supabase-seguro.js"></script>
+    
+    <!-- Sistema de Mensajes Globales -->
+    <script src="js/sistema-mensajes-globales.js"></script>
+    
     <!-- Font Awesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
@@ -370,10 +376,32 @@
                         <label>Icono (Emoji opcional)</label>
                         <input type="text" id="icono" placeholder="Ej: 💜">
                     </div>
+                </div>
+                
+                <!-- Programación de Fecha y Hora -->
+                <h3 style="margin: 20px 0 10px 0; color: #374151; font-size: 16px;">⏰ Programación (Opcional)</h3>
+                
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>📅 Fecha de inicio (dejar vacío = ahora)</label>
+                        <input type="datetime-local" id="fecha_inicio">
+                    </div>
                     
                     <div class="form-group">
-                        <label>Duración del mensaje (días)</label>
-                        <input type="number" id="duracion" placeholder="7" min="1" max="365">
+                        <label>📅 Fecha de fin (dejar vacío = sin límite)</label>
+                        <input type="datetime-local" id="fecha_fin">
+                    </div>
+                </div>
+                
+                <div style="margin: 10px 0; padding: 12px; background: #FEF3C7; border-left: 4px solid #F59E0B; border-radius: 6px;">
+                    <strong>💡 O usa atajos rápidos:</strong>
+                    <div style="display: flex; gap: 10px; margin-top: 8px; flex-wrap: wrap;">
+                        <button type="button" onclick="setDuracion(1, 'horas')" class="btn" style="padding: 6px 12px; font-size: 13px;">1 hora</button>
+                        <button type="button" onclick="setDuracion(6, 'horas')" class="btn" style="padding: 6px 12px; font-size: 13px;">6 horas</button>
+                        <button type="button" onclick="setDuracion(1, 'dias')" class="btn" style="padding: 6px 12px; font-size: 13px;">1 día</button>
+                        <button type="button" onclick="setDuracion(3, 'dias')" class="btn" style="padding: 6px 12px; font-size: 13px;">3 días</button>
+                        <button type="button" onclick="setDuracion(7, 'dias')" class="btn" style="padding: 6px 12px; font-size: 13px;">1 semana</button>
+                        <button type="button" onclick="setDuracion(0, 'permanente')" class="btn" style="padding: 6px 12px; font-size: 13px;">♾️ Permanente</button>
                     </div>
                 </div>
                 
@@ -476,7 +504,11 @@
             document.getElementById('icono').value = template.icono || '';
             document.getElementById('sonido').checked = template.sonido || false;
             document.getElementById('persistente').checked = template.persistente || false;
-            document.getElementById('duracion').value = template.duracion || '';
+            
+            // Si tiene duración en la plantilla, configurarla
+            if (template.duracion) {
+                setDuracion(template.duracion, 'dias');
+            }
             
             // Scroll al formulario
             document.getElementById('formMensaje').scrollIntoView({ behavior: 'smooth' });
@@ -484,13 +516,47 @@
             mostrarNotificacion('Plantilla cargada! Puedes editarla antes de enviar.', 'success');
         }
         
+        function setDuracion(cantidad, unidad) {
+            const ahora = new Date();
+            let fechaFin;
+            
+            if (unidad === 'permanente') {
+                // Sin fecha de fin
+                document.getElementById('fecha_inicio').value = '';
+                document.getElementById('fecha_fin').value = '';
+                mostrarNotificacion('✅ Mensaje permanente (sin fecha de fin)', 'success');
+                return;
+            } else if (unidad === 'horas') {
+                fechaFin = new Date(ahora.getTime() + cantidad * 60 * 60 * 1000);
+            } else if (unidad === 'dias') {
+                fechaFin = new Date(ahora.getTime() + cantidad * 24 * 60 * 60 * 1000);
+            }
+            
+            // Formatear para datetime-local (YYYY-MM-DDTHH:MM)
+            const formatearFecha = (fecha) => {
+                const year = fecha.getFullYear();
+                const month = String(fecha.getMonth() + 1).padStart(2, '0');
+                const day = String(fecha.getDate()).padStart(2, '0');
+                const hours = String(fecha.getHours()).padStart(2, '0');
+                const minutes = String(fecha.getMinutes()).padStart(2, '0');
+                return `${year}-${month}-${day}T${hours}:${minutes}`;
+            };
+            
+            document.getElementById('fecha_inicio').value = ''; // Ahora
+            document.getElementById('fecha_fin').value = formatearFecha(fechaFin);
+            
+            mostrarNotificacion(`✅ Duracion configurada: ${cantidad} ${unidad}`, 'success');
+        }
+        
         async function enviarMensaje(event) {
             event.preventDefault();
             
-            const duracionDias = document.getElementById('duracion').value;
-            const fechaFin = duracionDias ? 
-                new Date(Date.now() + parseInt(duracionDias) * 24 * 60 * 60 * 1000).toISOString() : 
-                null;
+            // Obtener fechas configuradas
+            const fechaInicioInput = document.getElementById('fecha_inicio').value;
+            const fechaFinInput = document.getElementById('fecha_fin').value;
+            
+            const fechaInicio = fechaInicioInput ? new Date(fechaInicioInput).toISOString() : null;
+            const fechaFin = fechaFinInput ? new Date(fechaFinInput).toISOString() : null;
             
             const datos = {
                 tipo: document.getElementById('tipo').value,
@@ -502,6 +568,7 @@
                 icono: document.getElementById('icono').value,
                 sonido: document.getElementById('sonido').checked,
                 persistente: document.getElementById('persistente').checked,
+                fecha_inicio: fechaInicio,
                 fecha_fin: fechaFin
             };
             
