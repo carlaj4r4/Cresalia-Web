@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>🧪 Test Edge Function - Envío de Emails</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 50px auto;
+            padding: 20px;
+            background: #f5f5f5;
+        }
+        .container {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        button {
+            background: #8b5cf6;
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 16px;
+            margin: 10px 5px;
+        }
+        button:hover {
+            background: #7c3aed;
+        }
+        .log {
+            background: #1e293b;
+            color: #10b981;
+            padding: 20px;
+            border-radius: 8px;
+            margin-top: 20px;
+            font-family: 'Courier New', monospace;
+            max-height: 400px;
+            overflow-y: auto;
+            white-space: pre-wrap;
+        }
+        .error {
+            color: #ef4444;
+        }
+        .success {
+            color: #10b981;
+        }
+        .info {
+            color: #3b82f6;
+        }
+        input {
+            padding: 10px;
+            width: 200px;
+            border: 2px solid #e5e7eb;
+            border-radius: 5px;
+            margin: 10px 5px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🧪 Test Edge Function de Emails</h1>
+        <p>Este test verifica si la Edge Function está funcionando correctamente.</p>
+        
+        <div style="margin: 20px 0;">
+            <label>ID de Alerta a probar:</label>
+            <input type="number" id="alertaId" value="1" min="1">
+            <button onclick="testEdgeFunction()">🚀 Probar Edge Function</button>
+        </div>
+
+        <div style="margin: 20px 0;">
+            <button onclick="crearAlertaPrueba()">➕ Crear Alerta de Prueba</button>
+            <button onclick="verAlertasSupabase()">📋 Ver Alertas en Supabase</button>
+            <button onclick="verUsuariosRegistrados()">👥 Ver Usuarios Registrados</button>
+        </div>
+
+        <div id="log" class="log">📝 Log de resultados aparecerá aquí...\n</div>
+    </div>
+
+    <!-- Config Supabase -->
+    <script src="config-supabase-seguro.js"></script>
+
+    <script>
+        const log = document.getElementById('log');
+
+        function addLog(mensaje, tipo = 'info') {
+            const timestamp = new Date().toLocaleTimeString();
+            const clase = tipo === 'error' ? 'error' : tipo === 'success' ? 'success' : 'info';
+            log.innerHTML += `<span class="${clase}">[${timestamp}] ${mensaje}</span>\n`;
+            log.scrollTop = log.scrollHeight;
+        }
+
+        async function testEdgeFunction() {
+            const alertaId = parseInt(document.getElementById('alertaId').value);
+            addLog(`🚀 Llamando Edge Function con alerta_id: ${alertaId}`, 'info');
+
+            try {
+                const url = `${supabaseUrl}/functions/v1/enviar-emails-alerta`;
+                addLog(`📡 URL: ${url}`, 'info');
+
+                const response = await fetch(url, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${supabaseAnonKey}`
+                    },
+                    body: JSON.stringify({ alerta_id: alertaId })
+                });
+
+                addLog(`📬 Respuesta recibida: ${response.status} ${response.statusText}`, 'info');
+
+                const data = await response.json();
+                
+                if (!response.ok) {
+                    addLog(`❌ ERROR: ${data.error || JSON.stringify(data)}`, 'error');
+                    return;
+                }
+
+                addLog(`✅ ÉXITO: ${JSON.stringify(data, null, 2)}`, 'success');
+                addLog(`📧 Usuarios notificados: ${data.usuarios_notificados}`, 'success');
+                addLog(`❌ Usuarios fallidos: ${data.usuarios_fallidos || 0}`, data.usuarios_fallidos > 0 ? 'error' : 'info');
+
+            } catch (error) {
+                addLog(`❌ ERROR: ${error.message}`, 'error');
+                console.error(error);
+            }
+        }
+
+        async function crearAlertaPrueba() {
+            addLog('➕ Creando alerta de prueba...', 'info');
+
+            try {
+                const { data, error } = await supabaseClient
+                    .from('alertas_emergencia_comunidades')
+                    .insert([{
+                        tipo: 'inundacion',
+                        titulo: '🧪 Alerta de Prueba - Test Email',
+                        descripcion: 'Esta es una alerta de prueba para verificar el sistema de envío de emails.',
+                        severidad: 'media',
+                        alcance: 'global',
+                        ubicacion_texto: 'Prueba - Test Location',
+                        coordenadas: { lat: -34.6037, lng: -58.3816 },
+                        activa: true,
+                        creada_por: 'TEST',
+                        fecha_inicio: new Date().toISOString()
+                    }])
+                    .select()
+                    .single();
+
+                if (error) throw error;
+
+                addLog(`✅ Alerta creada con ID: ${data.id}`, 'success');
+                document.getElementById('alertaId').value = data.id;
+                
+                addLog('🚀 Llamando Edge Function automáticamente...', 'info');
+                setTimeout(() => testEdgeFunction(), 1000);
+
+            } catch (error) {
+                addLog(`❌ Error creando alerta: ${error.message}`, 'error');
+                console.error(error);
+            }
+        }
+
+        async function verAlertasSupabase() {
+            addLog('📋 Consultando alertas en Supabase...', 'info');
+
+            try {
+                const { data, error } = await supabaseClient
+                    .from('alertas_emergencia_comunidades')
+                    .select('id, titulo, alcance, activa, fecha_creacion')
+                    .order('id', { ascending: false })
+                    .limit(5);
+
+                if (error) throw error;
+
+                if (data.length === 0) {
+                    addLog('⚠️ No hay alertas en la base de datos', 'error');
+                    return;
+                }
+
+                addLog(`✅ Encontradas ${data.length} alertas:`, 'success');
+                data.forEach(a => {
+                    addLog(`  • ID ${a.id}: ${a.titulo} (${a.alcance}, activa: ${a.activa})`, 'info');
+                });
+
+            } catch (error) {
+                addLog(`❌ Error consultando alertas: ${error.message}`, 'error');
+                console.error(error);
+            }
+        }
+
+        async function verUsuariosRegistrados() {
+            addLog('👥 Consultando usuarios registrados para alertas...', 'info');
+
+            try {
+                const { data, error } = await supabaseClient
+                    .from('usuarios_ubicaciones_alertas')
+                    .select('email, acepto_recibir_alertas, alertas_globales, alertas_locales')
+                    .limit(10);
+
+                if (error) throw error;
+
+                if (!data || data.length === 0) {
+                    addLog('⚠️ NO HAY USUARIOS REGISTRADOS para recibir alertas', 'error');
+                    addLog('💡 Necesitás que los usuarios acepten recibir alertas primero', 'info');
+                    addLog('💡 Ejecutá el SQL: SUPABASE-UBICACIONES-USUARIOS-ALERTAS.sql', 'info');
+                    return;
+                }
+
+                addLog(`✅ Encontrados ${data.length} usuarios registrados:`, 'success');
+                data.forEach(u => {
+                    addLog(`  • ${u.email} (globales: ${u.alertas_globales}, locales: ${u.alertas_locales})`, 'info');
+                });
+
+            } catch (error) {
+                addLog(`❌ Error consultando usuarios: ${error.message}`, 'error');
+                console.error(error);
+            }
+        }
+
+        // Al cargar
+        addLog('✅ Test Edge Function cargado', 'success');
+        addLog(`📡 Supabase URL: ${supabaseUrl}`, 'info');
+        addLog(`🔑 Anon Key: ${supabaseAnonKey.substring(0, 20)}...`, 'info');
+    </script>
+</body>
+</html>
