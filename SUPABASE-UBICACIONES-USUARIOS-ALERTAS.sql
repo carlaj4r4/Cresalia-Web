@@ -195,12 +195,13 @@ CREATE TABLE IF NOT EXISTS alertas_emails_enviados (
     
     -- Metadata del envío
     distancia_km DOUBLE PRECISION,
-    tipo_alerta VARCHAR(20), -- 'global' o 'local'
-    
-    INDEX idx_emails_alerta (alerta_id),
-    INDEX idx_emails_email (email),
-    INDEX idx_emails_exitoso (exitoso)
+    tipo_alerta VARCHAR(20) -- 'global' o 'local'
 );
+
+-- Índices para la tabla de emails enviados
+CREATE INDEX IF NOT EXISTS idx_emails_alerta ON alertas_emails_enviados(alerta_id);
+CREATE INDEX IF NOT EXISTS idx_emails_email ON alertas_emails_enviados(email);
+CREATE INDEX IF NOT EXISTS idx_emails_exitoso ON alertas_emails_enviados(exitoso);
 
 ALTER TABLE alertas_emails_enviados ENABLE ROW LEVEL SECURITY;
 
