@@ -21,7 +21,7 @@ URL: https://tu-proyecto-ecommerce.supabase.co
 - Click en **+ New Query**
 
 ### **1.3 Copiar y Pegar**
-1. Abrí el archivo: `SUPABASE-MENSAJES-GLOBALES-CORREGIDO.sql`
+1. Abrí el archivo: `SUPABASE-MENSAJES-GLOBALES-FINAL.sql` ⭐
 2. Copiá TODO el contenido
 3. Pegalo en el SQL Editor de Supabase
 4. Click en **RUN** (botón verde abajo a la derecha)
@@ -39,11 +39,22 @@ URL: https://tu-proyecto-comunidades.supabase.co
 
 ### **2.2 Repetir el proceso**
 1. SQL Editor → + New Query
-2. Copiar TODO de `SUPABASE-MENSAJES-GLOBALES-CORREGIDO.sql`
+2. Copiar TODO de `SUPABASE-MENSAJES-GLOBALES-FINAL.sql` ⭐
 3. Pegar
 4. RUN
 
 ✅ **Listo!** Ahora tenés mensajes en ambos proyectos.
+
+---
+
+## ⚠️ ¿Tuviste Error en Comunidades?
+
+Si te salió: `ERROR: 42P01: relation "mensajes_globales" does not exist`
+
+**Solución**: Usá el archivo `SUPABASE-MENSAJES-GLOBALES-FINAL.sql` en lugar del anterior. Este archivo:
+- ✅ Crea la tabla primero
+- ✅ Después elimina políticas/triggers
+- ✅ Funciona en AMBOS proyectos (aunque la tabla no exista)
 
 ---
 
