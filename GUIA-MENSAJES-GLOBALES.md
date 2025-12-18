@@ -190,9 +190,9 @@ Los mensajes aparecen automáticamente usando el sistema **elegant-notifications
 
 ## 🔒 Seguridad
 
-### **Solo VOS podés enviar mensajes**:
+### **Solo la administradora puede enviar mensajes**:
 - La tabla tiene RLS (Row Level Security) configurado
-- Solo el email `cresalia25@gmail.com` puede crear/editar/eliminar
+- Solo el email de administración puede crear/editar/eliminar
 - Todos los demás solo pueden **leer**
 
 ### **Control Total**:
@@ -205,7 +205,7 @@ Los mensajes aparecen automáticamente usando el sistema **elegant-notifications
 ## 🔄 Flujo Completo
 
 ### **Cuando VOS enviás un mensaje**:
-1. Completás el formulario en `PANEL-MENSAJES-CARLA.html`
+1. Completás el formulario en `PANEL-MENSAJES-ADMIN.html`
 2. Click en "Enviar"
 3. Se guarda en Supabase (tabla `mensajes_globales`)
 
@@ -223,7 +223,7 @@ Los mensajes aparecen automáticamente usando el sistema **elegant-notifications
 
 ### **Para Agradecimientos**:
 - Enviá mensajes sinceros y personales
-- Firmá con tu nombre ("- Carla")
+- Firmá con "El equipo de Cresalia" o sin firma
 - Usá emojis de corazón 💜
 - Prioridad: ALTA (para que lo vean)
 
@@ -267,7 +267,7 @@ Título: ¡Gracias por hacer de Cresalia tu casa! 💜
 Mensaje: 
 Querida comunidad,
 
-Quiero tomarme un momento para agradecerles de corazón 
+Queremos tomarme un momento para agradecerles de corazón 
 por confiar en Cresalia. Cada venta, cada compra, cada 
 mensaje... todo eso construye esta hermosa comunidad que 
 somos juntos.
@@ -275,7 +275,7 @@ somos juntos.
 Gracias por estar aquí. Gracias por creer en nosotros.
 
 Con mucho cariño,
-Carla 💜
+El equipo de Cresalia 💜
 ```
 
 ---
@@ -295,7 +295,7 @@ Por favor, tomen precauciones:
 - Mantengan contacto con sus seres queridos
 - Sigan las indicaciones de las autoridades
 
-Cresalia está con ustedes. ¡Cuídense! 💜
+El equipo de Cresalia está con ustedes. ¡Cuídense! 💜
 ```
 
 ---
