@@ -278,7 +278,7 @@ async function registrarNuevoComprador(datos) {
 async function registrarNuevoCliente(datos) {
     console.log('📝 Registrando nuevo cliente (vendedor)...');
     
-    const { email, password, nombreTienda, plan } = datos;
+    const { email, password, nombreTienda, plan, celular } = datos;
     
     try {
         const supabase = initSupabase();
@@ -309,7 +309,8 @@ async function registrarNuevoCliente(datos) {
                 data: {
                     nombre_tienda: nombreTienda,
                     plan: plan,
-                    tipo_usuario: 'vendedor'
+                    tipo_usuario: 'vendedor',
+                    celular: celular || null
                 }
             }
         });

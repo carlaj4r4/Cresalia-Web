@@ -25,6 +25,9 @@
     
     <!-- Sistema de Notificaciones Push -->
     <script src="../../js/sistema-notificaciones-push.js"></script>
+    
+    <!-- Sistema de Sesiones Persistentes -->
+    <script src="../../js/sistema-sesiones-persistentes.js"></script>
     <script src="../../js/configuracion-notificaciones-panel.js"></script>
     <script src="../../js/inyectar-tab-notificaciones.js"></script>
     
@@ -1230,6 +1233,14 @@
                         <a href="#" class="nav-link" onclick="abrirHistorialPagos()">
                             <i class="fas fa-credit-card"></i>
                             <span>Historial de Pagos</span>
+                        </a>
+                    </li>
+                    
+                    <!-- Botón de Logout -->
+                    <li class="nav-item" style="margin-top: 20px; border-top: 1px solid rgba(255,255,255,0.1); padding-top: 15px;">
+                        <a href="#" class="nav-link" onclick="cerrarSesionSegura()" style="color: #fca5a5; transition: all 0.3s;" onmouseover="this.style.color='#ef4444'" onmouseout="this.style.color='#fca5a5'">
+                            <i class="fas fa-sign-out-alt"></i>
+                            <span>Cerrar Sesión</span>
                         </a>
                     </li>
                 </ul>
@@ -12570,5 +12581,50 @@ Precio: $${precio.toLocaleString('es-AR')} ARS/mes
     
     <!-- Sistema de Alertas Inteligente (Solidaridad Global + Proximidad Local) -->
     <script src="../../js/sistema-alertas-inteligente.js"></script>
+    
+    <!-- Función de Logout -->
+    <script>
+        async function cerrarSesionSegura() {
+            if (!confirm('¿Estás seguro que querés cerrar sesión?')) {
+                return;
+            }
+            
+            try {
+                console.log('🚪 Cerrando sesión...');
+                
+                const supabase = initSupabase();
+                
+                if (supabase) {
+                    const { error } = await supabase.auth.signOut();
+                    
+                    if (error) {
+                        console.error('Error al cerrar sesión:', error);
+                    }
+                }
+                
+                // Limpiar localStorage
+                localStorage.removeItem('cresalia_sesion_activa');
+                localStorage.removeItem('cresalia_session_token');
+                localStorage.removeItem('cresalia_user_data');
+                localStorage.removeItem('plan-actual');
+                
+                // Limpiar sessionStorage
+                sessionStorage.clear();
+                
+                console.log('✅ Sesión cerrada correctamente');
+                
+                // Redirigir al login
+                window.location.href = '../../login-tienda.html';
+                
+            } catch (error) {
+                console.error('❌ Error al cerrar sesión:', error);
+                alert('Error al cerrar sesión. Recargando página...');
+                window.location.reload();
+            }
+        }
+        
+        // Hacer disponible globalmente
+        window.cerrarSesionSegura = cerrarSesionSegura;
+    </script>
 </body>
 </html>

@@ -333,6 +333,22 @@
             </div>
             
             <div class="form-group">
+                <label for="celular">
+                    <i class="fas fa-phone"></i> Celular (Opcional)
+                </label>
+                <input 
+                    type="tel" 
+                    id="celular" 
+                    placeholder="+54 9 11 1234-5678" 
+                    pattern="[+]?[0-9\s-()]+"
+                    autocomplete="tel"
+                >
+                <small style="color: #666; font-size: 12px; display: block; margin-top: 5px;">
+                    📱 Para que tus clientes puedan contactarte por WhatsApp
+                </small>
+            </div>
+            
+            <div class="form-group">
                 <label for="password">
                     <i class="fas fa-lock"></i> Contraseña
                 </label>
@@ -442,6 +458,7 @@
                 
                 const nombreTienda = document.getElementById('nombreTienda').value.trim();
                 const email = document.getElementById('email').value.trim();
+                const celular = document.getElementById('celular')?.value.trim() || null;
                 const password = document.getElementById('password').value;
                 const confirmPassword = document.getElementById('confirmPassword').value;
                 const plan = document.getElementById('plan').value;
@@ -488,7 +505,8 @@
                         email,
                         password,
                         nombreTienda,
-                        plan
+                        plan,
+                        celular
                     });
                 
                 console.log('📊 Resultado del registro:', resultado);
