@@ -12,6 +12,9 @@
     <!-- Supabase Client Library -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     
+    <!-- Sistema de Emails de Bienvenida -->
+    <script src="/js/email-bienvenida-brevo.js"></script>
+    
     <!-- Font Awesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
@@ -453,6 +456,16 @@
                         nombre: nombre,
                         tipo: 'comprador'
                     }));
+                    
+                    // Enviar email de bienvenida
+                    enviarEmailBienvenida({
+                        email: email,
+                        nombre: nombre,
+                        tipo: 'comprador'
+                    }).catch(err => {
+                        console.warn('⚠️ Error enviando email de bienvenida:', err);
+                        // No bloqueamos el flujo si falla el email
+                    });
                     
                     // Mostrar mensaje de bienvenida
                     setTimeout(() => {

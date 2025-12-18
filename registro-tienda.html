@@ -13,6 +13,9 @@
     <!-- Supabase Client Library -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     
+    <!-- Sistema de Emails de Bienvenida -->
+    <script src="/js/email-bienvenida-brevo.js"></script>
+    
     <!-- Font Awesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
@@ -504,6 +507,23 @@
                     }));
                     localStorage.setItem('plan-actual', plan);
                     
+                    // Enviar email de bienvenida
+                    const subdomain = nombreTienda
+                        .toLowerCase()
+                        .replace(/\s+/g, '-')
+                        .replace(/[^a-z0-9-]/g, '');
+                    
+                    enviarEmailBienvenida({
+                        email: email,
+                        nombre: nombreTienda,
+                        tipo: 'tienda',
+                        subdomain: subdomain,
+                        plan: plan
+                    }).catch(err => {
+                        console.warn('⚠️ Error enviando email de bienvenida:', err);
+                        // No bloqueamos el flujo si falla el email
+                    });
+                    
                     // Mostrar mensaje de bienvenida
                     setTimeout(() => {
                         mostrarNotificacion('🎉 ¡Bienvenido a tu panel de administración!', 'success');
@@ -511,12 +531,6 @@
                     
                     // Redirigir al panel admin de la tienda específica
                     setTimeout(() => {
-                        // Crear subdomain único para la tienda
-                        const subdomain = nombreTienda
-                            .toLowerCase()
-                            .replace(/\s+/g, '-')
-                            .replace(/[^a-z0-9-]/g, '');
-                        
                         // Redirigir al admin de la tienda específica
                         const adminUrl = `tiendas/${subdomain}/admin.html`;
                         console.log('🚀 Redirigiendo a panel admin de tienda:', adminUrl);

@@ -36,6 +36,11 @@
     <!-- Sistema de Alertas de Emergencia -->
     <script src="/js/sistema-alertas-emergencia-global.js"></script>
     
+    <!-- Sistema de Notificaciones Push para Compradores -->
+    <script src="/js/sistema-notificaciones-push.js"></script>
+    <script src="/js/configuracion-notificaciones-panel.js"></script>
+    <script src="/js/configuracion-notificaciones-comprador.js"></script>
+    
     <style>
         body {
             font-family: 'Poppins', sans-serif;
@@ -1034,6 +1039,9 @@
             </a></li>
             <li><a href="#mi-cuenta" style="color: #2563EB; font-weight: 600;">
                 <i class="fas fa-user-circle"></i> Mi Cuenta
+            </a></li>
+            <li><a href="#" onclick="abrirConfiguracionNotificacionesComprador(); return false;" style="color: #F59E0B; font-weight: 600;">
+                <i class="fas fa-bell"></i> Notificaciones
             </a></li>
             <li><a href="#" onclick="toggleCart(); return false;">
                 <i class="fas fa-shopping-cart"></i> Carrito
