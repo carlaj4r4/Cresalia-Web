@@ -671,21 +671,35 @@
                             <span id="cartCount" class="cart-count">0</span>
                         </a>
                     </li>
-                    <li class="nav-item">
+                    <!-- Botones para usuarios NO logueados -->
+                    <li class="nav-item" id="btnIniciarSesion">
                         <button class="btn btn-outline-primary btn-sm me-2" onclick="toggleUserSystem(); showLoginForm(); return false;" style="margin-top: 0.25rem;">
                             <i class="fas fa-sign-in-alt"></i> Iniciar Sesión
                         </button>
                     </li>
-                    <li class="nav-item">
+                    <li class="nav-item" id="btnComenzarGratis">
                         <button class="btn btn-primary btn-sm me-2" onclick="toggleUserSystem(); showRegisterForm(); return false;" style="margin-top: 0.25rem;">
                             <i class="fas fa-user-plus"></i> Comenzar Gratis
                         </button>
                     </li>
-                    <li class="nav-item">
-                        <a class="nav-link user-nav-btn" href="#" onclick="toggleUserSystem()" style="display: none;" id="userAccountBtn">
+                    
+                    <!-- Botones para usuarios LOGUEADOS -->
+                    <li class="nav-item" id="btnMiCuenta" style="display: none;">
+                        <a class="nav-link" href="/perfil-comprador.html">
                             <i class="fas fa-user-circle"></i>
-                            <span id="userButtonText" data-i18n="nav.mi_cuenta">Mi Cuenta</span>
+                            <span data-i18n="nav.mi_cuenta">Mi Cuenta</span>
                         </a>
+                    </li>
+                    <li class="nav-item" id="btnMisCompras" style="display: none;">
+                        <a class="nav-link" href="/mis-compras.html">
+                            <i class="fas fa-shopping-bag"></i>
+                            <span>Mis Compras</span>
+                        </a>
+                    </li>
+                    <li class="nav-item" id="btnCerrarSesion" style="display: none;">
+                        <button class="btn btn-outline-danger btn-sm me-2" onclick="cerrarSesionNav()" style="margin-top: 0.25rem;">
+                            <i class="fas fa-sign-out-alt"></i> Salir
+                        </button>
                     </li>
                     <li class="nav-item">
                         <a class="nav-link" href="#" onclick="toggleLanguageSelector(); return false;" title="Cambiar idioma">
@@ -2293,6 +2307,72 @@
                 bienvenida.remove();
             }
         }
+    </script>
+    
+    <!-- Sistema de Detección de Sesión para Nav -->
+    <script>
+        // Verificar sesión al cargar la página
+        async function verificarSesionNav() {
+            try {
+                const { data: { session }, error } = await supabase.auth.getSession();
+                
+                if (session && session.user) {
+                    // Usuario logueado - mostrar botones de usuario
+                    document.getElementById('btnIniciarSesion').style.display = 'none';
+                    document.getElementById('btnComenzarGratis').style.display = 'none';
+                    document.getElementById('btnMiCuenta').style.display = 'block';
+                    document.getElementById('btnMisCompras').style.display = 'block';
+                    document.getElementById('btnCerrarSesion').style.display = 'block';
+                    
+                    console.log('✅ Usuario logueado:', session.user.email);
+                } else {
+                    // Usuario NO logueado - mostrar botones de login/registro
+                    document.getElementById('btnIniciarSesion').style.display = 'block';
+                    document.getElementById('btnComenzarGratis').style.display = 'block';
+                    document.getElementById('btnMiCuenta').style.display = 'none';
+                    document.getElementById('btnMisCompras').style.display = 'none';
+                    document.getElementById('btnCerrarSesion').style.display = 'none';
+                    
+                    console.log('ℹ️ Usuario no logueado');
+                }
+            } catch (error) {
+                console.error('Error verificando sesión:', error);
+            }
+        }
+        
+        // Función para cerrar sesión desde el nav
+        async function cerrarSesionNav() {
+            if (!confirm('¿Estás seguro que quieres cerrar sesión?')) {
+                return;
+            }
+            
+            try {
+                await supabase.auth.signOut();
+                alert('¡Sesión cerrada exitosamente!');
+                
+                // Actualizar navegación
+                document.getElementById('btnIniciarSesion').style.display = 'block';
+                document.getElementById('btnComenzarGratis').style.display = 'block';
+                document.getElementById('btnMiCuenta').style.display = 'none';
+                document.getElementById('btnMisCompras').style.display = 'none';
+                document.getElementById('btnCerrarSesion').style.display = 'none';
+                
+                // Recargar página
+                window.location.reload();
+            } catch (error) {
+                console.error('Error cerrando sesión:', error);
+                alert('Error cerrando sesión. Por favor, intenta de nuevo.');
+            }
+        }
+        
+        // Ejecutar al cargar la página
+        document.addEventListener('DOMContentLoaded', verificarSesionNav);
+        
+        // También verificar cuando cambie el estado de autenticación
+        supabase.auth.onAuthStateChange((event, session) => {
+            console.log('Auth state changed:', event);
+            verificarSesionNav();
+        });
     </script>
     
     <!-- Sistema de Acceso Secreto al Panel de Administración -->
