@@ -1,7 +1,7 @@
 /**
  * 📧 SISTEMA DE MENSAJES GLOBALES - CRESALIA
  * 
- * Sistema completo para que Carla pueda enviar mensajes a TODOS los usuarios:
+ * Sistema completo para que la administradora pueda enviar mensajes a TODOS los usuarios:
  * - Alertas de emergencia
  * - Mensajes de agradecimiento
  * - Anuncios importantes
@@ -248,7 +248,7 @@ class SistemaMensajesGlobales {
 }
 
 // ============================================
-// 🎨 PANEL DE ADMINISTRACIÓN (Solo para Carla)
+// 🎨 PANEL DE ADMINISTRACIÓN (Solo para Admin)
 // ============================================
 
 class PanelMensajesAdmin {
@@ -380,7 +380,7 @@ window.sistemaMensajesGlobales = sistemaMensajesGlobales;
 window.panelMensajesAdmin = panelMensajesAdmin;
 
 // ============================================
-// 📝 EJEMPLOS DE USO PARA CARLA
+// 📝 EJEMPLOS DE USO PARA ADMIN
 // ============================================
 
 /*
@@ -388,7 +388,7 @@ window.panelMensajesAdmin = panelMensajesAdmin;
 await panelMensajesAdmin.enviarMensaje({
     tipo: 'agradecimiento',
     titulo: '¡Gracias por estar aquí! 💜',
-    mensaje: 'Querida comunidad, quiero agradecerles de corazón por confiar en Cresalia. Juntos estamos construyendo algo hermoso. - Carla',
+    mensaje: 'Querida comunidad, queremos agradecerles de corazón por confiar en Cresalia. Juntos estamos construyendo algo hermoso. - El equipo de Cresalia',
     destinatarios: 'todos',
     prioridad: 'alta',
     estilo: 'success',

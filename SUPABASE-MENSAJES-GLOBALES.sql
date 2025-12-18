@@ -1,7 +1,7 @@
 -- ============================================
 -- 📧 SISTEMA DE MENSAJES GLOBALES - CRESALIA
 -- ============================================
--- Para que Carla pueda enviar mensajes a TODOS los usuarios
+-- Para que la administradora pueda enviar mensajes a TODOS los usuarios
 -- Alertas de emergencia + Mensajes de agradecimiento + Anuncios
 
 -- Tabla principal de mensajes
@@ -89,7 +89,7 @@ CREATE POLICY "Solo admins crean mensajes"
     WITH CHECK (
         auth.uid() IN (
             SELECT id FROM auth.users 
-            WHERE email = 'cresalia25@gmail.com' -- Email de Carla
+            WHERE email = 'cresalia25@gmail.com' -- Email de administración
         )
     );
 
@@ -243,7 +243,7 @@ $$ LANGUAGE plpgsql STABLE;
 -- Descomentar para insertar mensajes de ejemplo
 
 /*
--- Mensaje de agradecimiento de Carla
+-- Mensaje de agradecimiento del equipo
 INSERT INTO mensajes_globales (
     tipo,
     titulo,
@@ -257,7 +257,7 @@ INSERT INTO mensajes_globales (
 ) VALUES (
     'agradecimiento',
     '¡Gracias por ser parte de Cresalia! 💜',
-    'Querida comunidad, quiero agradecerles por confiar en nuestra plataforma. Juntos estamos construyendo algo hermoso. ¡Gracias por estar aquí! - Carla',
+    'Querida comunidad, quiero agradecerles por confiar en nuestra plataforma. Juntos estamos construyendo algo hermoso. ¡Gracias por estar aquí! - El equipo de Cresalia',
     'todos',
     'alta',
     'success',

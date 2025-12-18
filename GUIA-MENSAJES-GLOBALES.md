@@ -1,8 +1,8 @@
-# 📧 Guía Completa: Sistema de Mensajes Globales para Carla
+# 📧 Guía Completa: Sistema de Mensajes Globales
 
 ## 🎯 ¿Qué es Esto?
 
-Un sistema completo para que **VOS** puedas enviar mensajes a **TODA** la comunidad Cresalia:
+Un sistema completo para que **VOS** (como administradora) puedas enviar mensajes a **TODA** la comunidad Cresalia:
 - 💜 Mensajes de agradecimiento
 - 🚨 Alertas de emergencia
 - 📢 Anuncios importantes
@@ -46,10 +46,10 @@ Agregá esta línea **antes del `</body>`** en:
 
 ### **Paso 3: Abrir el Panel de Mensajes** (1 min)
 
-Abrí el archivo `PANEL-MENSAJES-CARLA.html` en tu navegador:
+Abrí el archivo `PANEL-MENSAJES-ADMIN.html` en tu navegador:
 
 ```
-file:///C:/Users/carla/Cresalia-Web/PANEL-MENSAJES-CARLA.html
+file:///C:/Users/carla/Cresalia-Web/PANEL-MENSAJES-ADMIN.html
 ```
 
 ✅ **Ya está!** Ya podés enviar mensajes a todos.
@@ -60,7 +60,7 @@ file:///C:/Users/carla/Cresalia-Web/PANEL-MENSAJES-CARLA.html
 
 ### **Opción A: Plantillas Rápidas** (Más Fácil)
 
-1. Abrí `PANEL-MENSAJES-CARLA.html`
+1. Abrí `PANEL-MENSAJES-ADMIN.html`
 2. Click en una plantilla:
    - 💜 **Mensaje de Agradecimiento** - Ya viene con tu mensaje de agradecimiento
    - 🚨 **Alerta de Emergencia** - Para emergencias urgentes
@@ -102,7 +102,7 @@ file:///C:/Users/carla/Cresalia-Web/PANEL-MENSAJES-CARLA.html
 Título: ¡Gracias por estar aquí! 💜
 Mensaje: Querida comunidad, quiero agradecerles de corazón 
 por confiar en Cresalia. Juntos estamos construyendo 
-algo hermoso. - Carla
+algo hermoso. - El equipo de Cresalia
 ```
 
 ---
