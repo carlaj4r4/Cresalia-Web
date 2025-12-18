@@ -98,12 +98,12 @@
             tiendas: {
                 nombre: 'Cresalia (Tiendas)',
                 url: 'https://lvdgklwcgrmfbqwghxhl.supabase.co',
-                anonKey: 'TU_ANON_KEY_TIENDAS' // Reemplazar
+                anonKey: 'ANON_KEY_PENDIENTE' // Configurar en Supabase → Settings → API
             },
             comunidades: {
                 nombre: 'Cresalia Comunidades',
-                url: 'https://TU_URL_COMUNIDADES.supabase.co', // Reemplazar
-                anonKey: 'TU_ANON_KEY_COMUNIDADES' // Reemplazar
+                url: 'https://zbomxayytvwjbdzbegcw.supabase.co',
+                anonKey: 'ANON_KEY_PENDIENTE' // Configurar en Supabase → Settings → API
             }
         };
 
@@ -260,9 +260,13 @@
         }
 
         // Al cargar
-        addLog('✅ Test Edge Function cargado', 'success');
-        addLog(`📡 Supabase URL: ${supabaseUrl}`, 'info');
-        addLog(`🔑 Anon Key: ${supabaseAnonKey.substring(0, 20)}...`, 'info');
+        window.addEventListener('DOMContentLoaded', () => {
+            cambiarProyecto('comunidades'); // Iniciar con comunidades
+            
+            addLog('✅ Test Edge Function cargado', 'success');
+            addLog('⚠️ IMPORTANTE: Edita las URLs y Keys en el código', 'error');
+            addLog('📝 Busca PROYECTOS en el código y reemplaza los valores', 'info');
+        });
     </script>
 </body>
 </html>
