@@ -20,11 +20,8 @@ class SistemaMensajesGlobales {
     async inicializar() {
         console.log('📧 Inicializando Sistema de Mensajes Globales...');
         
-        // Verificar si Supabase está disponible
-        if (typeof supabase === 'undefined') {
-            console.warn('⚠️ Supabase no está disponible, mensajes globales deshabilitados');
-            return;
-        }
+        // Esperar a que initSupabase esté disponible
+        await this.esperarInitSupabase();
         
         // Cargar mensajes inmediatamente
         await this.cargarMensajes();
@@ -38,10 +35,40 @@ class SistemaMensajesGlobales {
     }
     
     /**
+     * Esperar a que initSupabase esté disponible
+     */
+    async esperarInitSupabase(maxIntentos = 10, intento = 0) {
+        if (typeof initSupabase !== 'undefined' && typeof initSupabase === 'function') {
+            return true;
+        } else if (intento < maxIntentos) {
+            await new Promise(resolve => setTimeout(resolve, 500));
+            return this.esperarInitSupabase(maxIntentos, intento + 1);
+        } else {
+            console.warn('⚠️ initSupabase no está disponible después de varios intentos');
+            return false;
+        }
+    }
+    
+    /**
      * Cargar mensajes activos desde Supabase
      */
     async cargarMensajes() {
         try {
+            // Verificar que initSupabase esté disponible
+            if (typeof initSupabase === 'undefined' || typeof initSupabase !== 'function') {
+                console.log('ℹ️ Supabase aún no está disponible, reintentando...');
+                setTimeout(() => this.cargarMensajes(), 1000);
+                return;
+            }
+            
+            // Obtener cliente Supabase
+            const supabase = initSupabase();
+            
+            if (!supabase || typeof supabase.rpc !== 'function') {
+                console.log('ℹ️ Supabase no configurado para mensajes o rpc no disponible');
+                return;
+            }
+            
             const tipoUsuario = this.obtenerTipoUsuario();
             
             // Obtener mensajes activos
@@ -139,6 +166,16 @@ class SistemaMensajesGlobales {
      */
     async marcarComoLeido(mensajeId) {
         try {
+            // Verificar que initSupabase esté disponible
+            if (typeof initSupabase === 'undefined' || typeof initSupabase !== 'function') {
+                return; // Silenciosamente fallar si no está disponible
+            }
+            
+            const supabase = initSupabase();
+            if (!supabase || typeof supabase.rpc !== 'function') {
+                return;
+            }
+            
             const dispositivo = this.detectarDispositivo();
             
             const { data, error } = await supabase.rpc('marcar_mensaje_leido', {
@@ -294,6 +331,16 @@ class PanelMensajesAdmin {
      */
     async obtenerTodosMensajes() {
         try {
+            // Verificar que initSupabase esté disponible
+            if (typeof initSupabase === 'undefined' || typeof initSupabase !== 'function') {
+                throw new Error('Supabase no está disponible');
+            }
+            
+            const supabase = initSupabase();
+            if (!supabase || typeof supabase.from !== 'function') {
+                throw new Error('Supabase no configurado correctamente');
+            }
+            
             const { data, error } = await supabase
                 .from('mensajes_globales')
                 .select('*')
@@ -313,6 +360,16 @@ class PanelMensajesAdmin {
      */
     async desactivarMensaje(mensajeId) {
         try {
+            // Verificar que initSupabase esté disponible
+            if (typeof initSupabase === 'undefined' || typeof initSupabase !== 'function') {
+                throw new Error('Supabase no está disponible');
+            }
+            
+            const supabase = initSupabase();
+            if (!supabase || typeof supabase.from !== 'function') {
+                throw new Error('Supabase no configurado correctamente');
+            }
+            
             const { data, error } = await supabase
                 .from('mensajes_globales')
                 .update({ activo: false })
