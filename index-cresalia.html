@@ -2322,6 +2322,19 @@
         // Verificar sesión al cargar la página
         async function verificarSesionNav() {
             try {
+                // Esperar a que initSupabase esté disponible
+                if (typeof initSupabase === 'undefined' || typeof initSupabase !== 'function') {
+                    console.log('ℹ️ Supabase aún no está disponible, reintentando...');
+                    setTimeout(verificarSesionNav, 1000);
+                    return;
+                }
+                
+                const supabase = initSupabase();
+                if (!supabase || typeof supabase.auth === 'undefined') {
+                    console.log('ℹ️ Supabase auth no disponible');
+                    return;
+                }
+                
                 const { data: { session }, error } = await supabase.auth.getSession();
                 
                 if (session && session.user) {
@@ -2379,6 +2392,16 @@
             }
             
             try {
+                // Verificar que initSupabase esté disponible
+                if (typeof initSupabase === 'undefined' || typeof initSupabase !== 'function') {
+                    throw new Error('Supabase no está disponible');
+                }
+                
+                const supabase = initSupabase();
+                if (!supabase || typeof supabase.auth === 'undefined') {
+                    throw new Error('Supabase auth no disponible');
+                }
+                
                 await supabase.auth.signOut();
                 alert('¡Sesión cerrada exitosamente!');
                 
