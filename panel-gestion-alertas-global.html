@@ -824,13 +824,21 @@
                 
                 if (error) throw error;
                 
-                mostrarExito(`✅ Alerta creada correctamente (ID: ${data[0].id})`);
+                const alertaCreada = data[0];
+                
+                mostrarExito(`✅ Alerta creada correctamente (ID: ${alertaCreada.id})`);
                 document.getElementById('formCrearAlerta').reset();
                 document.getElementById('checkTodas').checked = true;
                 document.querySelectorAll('.check-comunidad').forEach(c => {
                     c.checked = true;
                     c.disabled = false;
                 });
+                
+                // 🔥 DISPARAR EVENTO para que se envíen los emails automáticamente
+                console.log('📧 Disparando evento alerta-creada para ID:', alertaCreada.id);
+                document.dispatchEvent(new CustomEvent('alerta-creada', {
+                    detail: alertaCreada
+                }));
                 
                 // Recargar listas
                 setTimeout(() => {
