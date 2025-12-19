@@ -13,7 +13,7 @@ SELECT
     u.raw_user_meta_data->>'plan' as plan
 FROM auth.users u
 LEFT JOIN public.tiendas t ON t.user_id = u.id
-WHERE (u.raw_user_meta_data->>'tipo_usuario' IN ('vendedor', 'emprendedor') 
+WHERE (u.raw_user_meta_data->>'tipo_usuario' IN ('vendedor', 'emprendedor', 'servicios') 
        OR u.raw_user_meta_data->>'nombre_tienda' IS NOT NULL)
   AND t.id IS NULL;
 
@@ -55,14 +55,15 @@ SELECT
     NOW() as fecha_creacion,
     jsonb_build_object(
         'tipo', CASE 
-            WHEN u.raw_user_meta_data->>'tipo_usuario' = 'emprendedor' THEN 'emprendedor' 
+            WHEN u.raw_user_meta_data->>'tipo_usuario' = 'emprendedor' THEN 'emprendedor'
+            WHEN u.raw_user_meta_data->>'tipo_usuario' = 'servicios' THEN 'servicio'
             ELSE 'tienda' 
         END,
-        'es_servicio', (u.raw_user_meta_data->>'tipo_usuario' = 'emprendedor')
+        'es_servicio', (u.raw_user_meta_data->>'tipo_usuario' IN ('emprendedor', 'servicios'))
     ) as configuracion
 FROM auth.users u
 LEFT JOIN public.tiendas t ON t.user_id = u.id
-WHERE (u.raw_user_meta_data->>'tipo_usuario' IN ('vendedor', 'emprendedor') 
+WHERE (u.raw_user_meta_data->>'tipo_usuario' IN ('vendedor', 'emprendedor', 'servicios') 
        OR u.raw_user_meta_data->>'nombre_tienda' IS NOT NULL)
   AND t.id IS NULL
 ON CONFLICT (user_id) DO NOTHING;
