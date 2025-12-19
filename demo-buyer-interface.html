@@ -538,6 +538,32 @@
                 justify-content: center;
             }
             
+            /* Botón "Ir al Inicio" responsive */
+            .demo-nav ul li:first-child a {
+                padding: 8px 12px !important;
+                font-size: 0.85rem !important;
+            }
+            
+            .demo-nav ul li:first-child a span {
+                display: none; /* Ocultar texto en móvil, solo icono */
+            }
+            
+            /* Widget de perfil responsive */
+            .widget-perfil-usuario > div {
+                flex-direction: column;
+                text-align: center;
+            }
+            
+            .widget-perfil-usuario > div > div:last-child {
+                width: 100%;
+                justify-content: center;
+            }
+            
+            .widget-perfil-usuario > div > div:last-child button {
+                flex: 1;
+                min-width: 120px;
+            }
+            
             .demo-header {
                 padding: 15px 10px;
             }

@@ -348,6 +348,27 @@
         }
         @media (max-width: 768px) {
             .form-grid-2 { grid-template-columns: 1fr; }
+            
+            /* Widget de perfil tienda responsive */
+            .widget-perfil-tienda > div {
+                flex-direction: column;
+                text-align: center;
+            }
+            
+            .widget-perfil-tienda > div > div:last-child {
+                width: 100%;
+                justify-content: center;
+            }
+            
+            .widget-perfil-tienda > div > div:last-child button {
+                flex: 1;
+                min-width: 120px;
+            }
+            
+            /* Botón Ir al Inicio responsive */
+            .nav-text-inicio {
+                display: none; /* Solo icono en móvil */
+            }
         }
 
         /* Ajustes extra para bienestar en pantallas pequeñas */
@@ -1261,6 +1282,32 @@
                 </div>
 
                 <div id="celebracionBanner" class="celebracion-banner" style="display:none;"></div>
+                
+                <!-- Widget de Perfil con Avatar/Logo -->
+                <div id="widget-perfil-tienda" class="widget-perfil-tienda" style="background: linear-gradient(135deg, #7C3AED, #EC4899); border-radius: 16px; padding: 24px; margin-bottom: 24px; color: white; display: none;">
+                    <div style="display: flex; align-items: center; gap: 20px; flex-wrap: wrap;">
+                        <div class="avatar-container" style="position: relative;">
+                            <img id="avatar-tienda" src="" alt="Logo/Avatar" style="width: 100px; height: 100px; border-radius: 50%; border: 4px solid rgba(255,255,255,0.3); object-fit: cover; background: rgba(255,255,255,0.2); cursor: pointer;" onclick="document.getElementById('input-avatar-tienda').click()">
+                            <label for="input-avatar-tienda" style="position: absolute; bottom: 0; right: 0; background: rgba(255,255,255,0.9); border-radius: 50%; width: 32px; height: 32px; display: flex; align-items: center; justify-content: center; cursor: pointer; box-shadow: 0 2px 8px rgba(0,0,0,0.2);">
+                                <i class="fas fa-camera" style="color: #7C3AED; font-size: 14px;"></i>
+                            </label>
+                            <input type="file" id="input-avatar-tienda" accept="image/*" style="display: none;" onchange="cambiarAvatarTienda(event)">
+                        </div>
+                        <div style="flex: 1; min-width: 200px;">
+                            <h3 id="nombre-tienda-widget" style="margin: 0 0 8px 0; font-size: 24px; font-weight: 600;">Mi Tienda</h3>
+                            <p id="email-tienda-widget" style="margin: 0; opacity: 0.9; font-size: 14px;">email@ejemplo.com</p>
+                            <p id="plan-tienda-widget" style="margin: 8px 0 0; opacity: 0.8; font-size: 12px; background: rgba(255,255,255,0.2); padding: 4px 12px; border-radius: 12px; display: inline-block;">Plan: FREE</p>
+                        </div>
+                        <div style="display: flex; gap: 12px; flex-wrap: wrap;">
+                            <button onclick="mostrarSeccion('productos')" style="background: rgba(255,255,255,0.2); border: none; color: white; padding: 10px 20px; border-radius: 8px; cursor: pointer; font-weight: 600; transition: all 0.3s;" onmouseover="this.style.background='rgba(255,255,255,0.3)'" onmouseout="this.style.background='rgba(255,255,255,0.2)'">
+                                <i class="fas fa-box"></i> Productos
+                            </button>
+                            <button onclick="mostrarSeccion('servicios')" style="background: rgba(255,255,255,0.2); border: none; color: white; padding: 10px 20px; border-radius: 8px; cursor: pointer; font-weight: 600; transition: all 0.3s;" onmouseover="this.style.background='rgba(255,255,255,0.3)'" onmouseout="this.style.background='rgba(255,255,255,0.2)'">
+                                <i class="fas fa-concierge-bell"></i> Servicios
+                            </button>
+                        </div>
+                    </div>
+                </div>
                 
                 <div class="stats-grid">
                     <div class="stat-card">
@@ -2489,6 +2536,23 @@
         // ============================================
         
         function mostrarSeccion(seccionId) {
+            // Cerrar cualquier modal abierto al cambiar de sección
+            const modalesAbiertos = document.querySelectorAll('.modal.show, [id^="modal"]');
+            modalesAbiertos.forEach(modal => {
+                if (modal.style && modal.style.display === 'flex') {
+                    modal.style.display = 'none';
+                }
+                if (modal.classList && modal.classList.contains('show')) {
+                    modal.classList.remove('show');
+                }
+            });
+            
+            // Cerrar modal de historial si está abierto
+            const modalHistorial = document.getElementById('modalHistorialVentasTurnos');
+            if (modalHistorial) {
+                modalHistorial.remove();
+            }
+            
             // Ocultar todas las secciones
             const secciones = document.querySelectorAll('.content-section');
             secciones.forEach(seccion => {
@@ -12636,6 +12700,97 @@ Precio: $${precio.toLocaleString('es-AR')} ARS/mes
         
         // Hacer disponible globalmente
         window.cerrarSesionSegura = cerrarSesionSegura;
+        
+        // ===== SISTEMA DE AVATAR/LOGO PARA TIENDA =====
+        async function cargarDatosTienda() {
+            try {
+                const supabase = initSupabase();
+                if (!supabase) {
+                    // Reintentar después de 1 segundo
+                    setTimeout(cargarDatosTienda, 1000);
+                    return;
+                }
+                
+                const { data: { user }, error } = await supabase.auth.getUser();
+                
+                if (error || !user) {
+                    // Usuario no logueado, ocultar widget
+                    document.getElementById('widget-perfil-tienda').style.display = 'none';
+                    return;
+                }
+                
+                // Mostrar widget
+                const widget = document.getElementById('widget-perfil-tienda');
+                widget.style.display = 'block';
+                
+                // Cargar datos del usuario/tienda
+                const nombreTienda = user.user_metadata?.nombre_tienda || user.user_metadata?.nombre || user.email?.split('@')[0] || 'Mi Tienda';
+                const email = user.email || '';
+                const plan = user.user_metadata?.plan || localStorage.getItem('plan-actual') || 'FREE';
+                
+                document.getElementById('nombre-tienda-widget').textContent = nombreTienda;
+                document.getElementById('email-tienda-widget').textContent = email;
+                document.getElementById('plan-tienda-widget').textContent = `Plan: ${plan.toUpperCase()}`;
+                
+                // Cargar avatar/logo guardado
+                const avatarUrl = localStorage.getItem('cresalia_avatar_tienda_url');
+                if (avatarUrl) {
+                    document.getElementById('avatar-tienda').src = avatarUrl;
+                } else {
+                    // Avatar por defecto con iniciales
+                    const iniciales = nombreTienda.substring(0, 2).toUpperCase();
+                    document.getElementById('avatar-tienda').src = `data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' width='100' height='100'><rect width='100' height='100' fill='%237C3AED'/><text x='50%' y='50%' dominant-baseline='middle' text-anchor='middle' font-size='36' font-weight='bold' fill='white'>${iniciales}</text></svg>`;
+                }
+                
+            } catch (error) {
+                console.error('Error cargando datos de tienda:', error);
+            }
+        }
+        
+        async function cambiarAvatarTienda(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+            
+            // Validar tamaño (máx 2MB)
+            if (file.size > 2 * 1024 * 1024) {
+                alert('⚠️ La imagen es muy grande. Por favor, elegí una imagen menor a 2MB.');
+                return;
+            }
+            
+            // Validar tipo
+            if (!file.type.startsWith('image/')) {
+                alert('⚠️ Por favor, elegí una imagen válida.');
+                return;
+            }
+            
+            try {
+                // Crear preview
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    const avatarImg = document.getElementById('avatar-tienda');
+                    avatarImg.src = e.target.result;
+                    
+                    // Guardar en localStorage
+                    localStorage.setItem('cresalia_avatar_tienda_url', e.target.result);
+                    
+                    console.log('✅ Logo/Avatar de tienda guardado');
+                };
+                reader.readAsDataURL(file);
+                
+            } catch (error) {
+                console.error('Error cambiando avatar:', error);
+                alert('❌ Error al cambiar el logo. Por favor, intentá de nuevo.');
+            }
+        }
+        
+        // Cargar datos al iniciar
+        document.addEventListener('DOMContentLoaded', () => {
+            setTimeout(cargarDatosTienda, 1500);
+        });
+        
+        // Hacer funciones globales
+        window.cambiarAvatarTienda = cambiarAvatarTienda;
+        window.cargarDatosTienda = cargarDatosTienda;
     </script>
 </body>
 </html>

@@ -109,11 +109,18 @@ class SistemaAlertasInteligente {
     
     async cargarAlertasInteligentes() {
         try {
+            // Esperar a que Supabase esté disponible
+            if (typeof initSupabase === 'undefined') {
+                console.log('ℹ️ Supabase aún no está disponible, reintentando...');
+                setTimeout(() => this.cargarAlertasInteligentes(), 1000);
+                return;
+            }
+            
             // Obtener cliente de Supabase
             const supabase = initSupabase();
             
-            if (!supabase) {
-                console.log('ℹ️ Supabase no configurado para alertas');
+            if (!supabase || typeof supabase.rpc !== 'function') {
+                console.log('ℹ️ Supabase no configurado para alertas o rpc no disponible');
                 return;
             }
             
