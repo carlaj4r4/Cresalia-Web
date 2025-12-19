@@ -16,7 +16,34 @@ serve(async (req) => {
   }
 
   try {
-    const { alerta_id } = await req.json()
+    // Verificar que el request tenga body
+    const body = await req.text()
+    
+    if (!body || body.trim() === '') {
+      return new Response(
+        JSON.stringify({ error: 'Request body vacío' }),
+        { 
+          status: 400, 
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' } 
+        }
+      )
+    }
+    
+    // Parsear JSON de forma segura
+    let alerta_id
+    try {
+      const parsed = JSON.parse(body)
+      alerta_id = parsed.alerta_id
+    } catch (parseError) {
+      console.error('Error parseando JSON:', parseError)
+      return new Response(
+        JSON.stringify({ error: 'JSON inválido', details: parseError.message }),
+        { 
+          status: 400, 
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' } 
+        }
+      )
+    }
 
     if (!alerta_id) {
       throw new Error('alerta_id es requerido')

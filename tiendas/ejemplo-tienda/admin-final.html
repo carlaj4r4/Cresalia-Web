@@ -3633,9 +3633,22 @@
         function abrirHistorialVentasTurnos() {
             console.log('📊 Abriendo historial de ventas y turnos...');
             
+            // Cerrar cualquier modal de historial existente antes de abrir uno nuevo
+            const modalExistente = document.getElementById('modalHistorialVentasTurnos');
+            if (modalExistente) {
+                modalExistente.remove();
+            }
+            
             const modal = document.createElement('div');
             modal.id = 'modalHistorialVentasTurnos';
             modal.style.cssText = 'position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.8); display: flex; align-items: center; justify-content: center; z-index: 999999;';
+            
+            // Cerrar modal al hacer click fuera
+            modal.onclick = function(e) {
+                if (e.target === modal) {
+                    cerrarHistorialVentasTurnos();
+                }
+            };
             
             const estadisticasVentas = sistemaHistorialVentasTurnos.obtenerEstadisticasVentas();
             const estadisticasTurnos = sistemaHistorialVentasTurnos.obtenerEstadisticasTurnos();
@@ -12286,8 +12299,8 @@ Precio: $${precio.toLocaleString('es-AR')} ARS/mes
     <!-- Sistema de Alertas de Emergencia Global -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="../../js/inject-env-vars.js"></script>
-    <!-- Configuración de Supabase - Intentar cargar desde raíz o js -->
-    <script src="../../config-supabase-seguro.js" onerror="console.warn('⚠️ config-supabase-seguro.js no encontrado, usando auth/supabase-config.js'); this.onerror=null; this.src='../../auth/supabase-config.js';"></script>
+    <!-- Configuración de Supabase - Cargar auth/supabase-config.js directamente -->
+    <script src="../../auth/supabase-config.js"></script>
     <script src="../../js/sistema-alertas-comunidades.js"></script>
     
     <!-- Sistema de Sesiones Persistentes (después de config-supabase) -->
@@ -12783,9 +12796,20 @@ Precio: $${precio.toLocaleString('es-AR')} ARS/mes
             }
         }
         
+        // Función para esperar a que initSupabase esté disponible
+        function esperarInitSupabaseAdmin(callback, maxIntentos = 10, intento = 0) {
+            if (typeof initSupabase !== 'undefined' && typeof initSupabase === 'function') {
+                callback();
+            } else if (intento < maxIntentos) {
+                setTimeout(() => esperarInitSupabaseAdmin(callback, maxIntentos, intento + 1), 500);
+            } else {
+                console.warn('⚠️ initSupabase no está disponible para cargar datos de tienda');
+            }
+        }
+        
         // Cargar datos al iniciar
         document.addEventListener('DOMContentLoaded', () => {
-            setTimeout(cargarDatosTienda, 1500);
+            esperarInitSupabaseAdmin(cargarDatosTienda);
         });
         
         // Hacer funciones globales

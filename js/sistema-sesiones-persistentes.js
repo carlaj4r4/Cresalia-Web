@@ -158,15 +158,26 @@
         };
     }
 
+    // Función para esperar a que initSupabase esté disponible
+    function esperarInitSupabase(callback, maxIntentos = 10, intento = 0) {
+        if (typeof initSupabase !== 'undefined' && typeof initSupabase === 'function') {
+            callback();
+        } else if (intento < maxIntentos) {
+            setTimeout(() => esperarInitSupabase(callback, maxIntentos, intento + 1), 500);
+        } else {
+            console.warn('⚠️ initSupabase no está disponible después de varios intentos');
+        }
+    }
+
     // Inicializar cuando el DOM esté listo
     if (document.readyState === 'loading') {
         document.addEventListener('DOMContentLoaded', function() {
-            setTimeout(inicializarSesionesPersistentes, 1000); // Esperar 1 segundo para que Supabase esté listo
             protegerSesion();
+            esperarInitSupabase(inicializarSesionesPersistentes);
         });
     } else {
-        setTimeout(inicializarSesionesPersistentes, 1000);
         protegerSesion();
+        esperarInitSupabase(inicializarSesionesPersistentes);
     }
 
     console.log('✅ Sistema de sesiones persistentes cargado');
