@@ -391,6 +391,16 @@ class PanelMensajesAdmin {
      */
     async verEstadisticas(mensajeId) {
         try {
+            // Verificar que initSupabase esté disponible
+            if (typeof initSupabase === 'undefined' || typeof initSupabase !== 'function') {
+                throw new Error('Supabase no está disponible');
+            }
+            
+            const supabase = initSupabase();
+            if (!supabase || typeof supabase.rpc !== 'function') {
+                throw new Error('Supabase no configurado correctamente');
+            }
+            
             const { data, error } = await supabase.rpc('estadisticas_mensaje', {
                 p_mensaje_id: mensajeId
             });

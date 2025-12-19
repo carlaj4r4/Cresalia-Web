@@ -244,11 +244,11 @@ function generarTemplateEmail(alerta: any) {
 
       <div style="text-align: center; margin: 30px 0;">
         ${esGlobal ? `
-          <a href="https://cresalia.com/comunidades/donaciones" class="btn">
+          <a href="https://cresalia-web.vercel.app/comunidades/donaciones" class="btn">
             💜 Ayudar con Donación
           </a>
         ` : `
-          <a href="https://cresalia.com/comunidades/alerta/${alerta.id}" class="btn">
+          <a href="https://cresalia-web.vercel.app/comunidades/alerta/${alerta.id}" class="btn">
             Ver Detalles de la Alerta
           </a>
         `}
@@ -266,7 +266,7 @@ function generarTemplateEmail(alerta: any) {
       <p><strong>Cresalia Comunidades</strong></p>
       <p>Recibiste este email porque aceptaste recibir alertas de emergencia.</p>
       <p style="font-size: 11px; margin-top: 10px;">
-        <a href="https://cresalia.com/configuracion/alertas" style="color: #666;">
+        <a href="https://cresalia-web.vercel.app/configuracion/alertas" style="color: #666;">
           Configurar preferencias de alertas
         </a>
       </p>
