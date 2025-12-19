@@ -37,10 +37,12 @@ SELECT
         'Mi Tienda'
     ) as nombre_tienda,
     u.email,
-    COALESCE(
-        u.raw_user_meta_data->>'plan',
-        'basico'
-    ) as plan,
+    -- Mapear 'free' a 'basico' y validar que sea uno de los valores permitidos
+    CASE 
+        WHEN u.raw_user_meta_data->>'plan' = 'free' THEN 'basico'
+        WHEN u.raw_user_meta_data->>'plan' IN ('basico', 'pro', 'premium') THEN u.raw_user_meta_data->>'plan'
+        ELSE 'basico'
+    END as plan,
     -- Generar subdomain único
     COALESCE(
         lower(regexp_replace(

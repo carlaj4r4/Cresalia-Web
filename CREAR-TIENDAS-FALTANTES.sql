@@ -43,7 +43,12 @@ BEGIN
         -- Obtener datos del usuario
         tipo_usuario := usuario_record.tipo_usuario;
         nombre_tienda := COALESCE(usuario_record.nombre_tienda, 'Mi Tienda');
-        plan_tienda := COALESCE(usuario_record.plan, 'basico');
+        -- Mapear 'free' a 'basico' y validar que sea uno de los valores permitidos
+        plan_tienda := CASE 
+            WHEN usuario_record.plan = 'free' THEN 'basico'
+            WHEN usuario_record.plan IN ('basico', 'pro', 'premium') THEN usuario_record.plan
+            ELSE 'basico'
+        END;
         es_emprendedor := (tipo_usuario = 'emprendedor');
         
         -- Generar subdomain
