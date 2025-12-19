@@ -1,7 +1,5 @@
-// ============================================
-// 📧 CÓDIGO COMPLETO PARA EDGE FUNCTION
-// ============================================
-// PASO 3: Copiar TODO este código y pegarlo en el editor de Supabase
+// Supabase Edge Function para enviar emails de alertas
+// Deploy: supabase functions deploy enviar-emails-alerta
 
 import { serve } from 'https://deno.land/std@0.168.0/http/server.ts'
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2'
@@ -18,7 +16,78 @@ serve(async (req) => {
   }
 
   try {
-    const { alerta_id } = await req.json()
+    // Verificar que el request tenga body
+    let bodyText = ''
+    try {
+      bodyText = await req.text()
+    } catch (textError) {
+      console.error('Error leyendo body:', textError)
+      return new Response(
+        JSON.stringify({ error: 'Error leyendo request body', details: textError.message }),
+        { 
+          status: 400, 
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' } 
+        }
+      )
+    }
+    
+    // Limpiar el body: remover espacios al inicio/final y caracteres extra
+    const bodyClean = bodyText.trim()
+    
+    if (!bodyClean || bodyClean === '') {
+      return new Response(
+        JSON.stringify({ error: 'Request body vacío' }),
+        { 
+          status: 400, 
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' } 
+        }
+      )
+    }
+    
+    // Verificar que empiece y termine con llaves/corchetes (JSON válido)
+    if (!bodyClean.startsWith('{') && !bodyClean.startsWith('[')) {
+      return new Response(
+        JSON.stringify({ error: 'Body no es JSON válido (debe empezar con { o [)' }),
+        { 
+          status: 400, 
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' } 
+        }
+      )
+    }
+    
+    // Parsear JSON de forma segura
+    let alerta_id
+    try {
+      const parsed = JSON.parse(bodyClean)
+      
+      // Verificar que sea un objeto
+      if (typeof parsed !== 'object' || parsed === null) {
+        return new Response(
+          JSON.stringify({ error: 'JSON debe ser un objeto' }),
+          { 
+            status: 400, 
+            headers: { ...corsHeaders, 'Content-Type': 'application/json' } 
+          }
+        )
+      }
+      
+      alerta_id = parsed.alerta_id
+      
+    } catch (parseError) {
+      console.error('Error parseando JSON:', parseError)
+      console.error('Body recibido:', bodyClean.substring(0, 100)) // Log primeros 100 caracteres
+      return new Response(
+        JSON.stringify({ 
+          error: 'JSON inválido', 
+          details: parseError.message,
+          body_preview: bodyClean.substring(0, 50) // Mostrar preview del body
+        }),
+        { 
+          status: 400, 
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' } 
+        }
+      )
+    }
 
     if (!alerta_id) {
       throw new Error('alerta_id es requerido')
@@ -119,7 +188,7 @@ function generarTemplateEmail(alerta: any) {
 
   const icono = iconos[alerta.tipo] || '⚠️'
   const color = colores[alerta.severidad] || '#3b82f6'
-  
+
   const esGlobal = alerta.alcance === 'global'
   const ubicacion = alerta.ubicacion_texto || 'Ubicación no especificada'
 
@@ -175,11 +244,11 @@ function generarTemplateEmail(alerta: any) {
 
       <div style="text-align: center; margin: 30px 0;">
         ${esGlobal ? `
-          <a href="https://cresalia.com/comunidades/donaciones" class="btn">
+          <a href="https://cresalia-web.vercel.app/comunidades/donaciones" class="btn">
             💜 Ayudar con Donación
           </a>
         ` : `
-          <a href="https://cresalia.com/comunidades/alerta/${alerta.id}" class="btn">
+          <a href="https://cresalia-web.vercel.app/comunidades/alerta/${alerta.id}" class="btn">
             Ver Detalles de la Alerta
           </a>
         `}
@@ -197,7 +266,7 @@ function generarTemplateEmail(alerta: any) {
       <p><strong>Cresalia Comunidades</strong></p>
       <p>Recibiste este email porque aceptaste recibir alertas de emergencia.</p>
       <p style="font-size: 11px; margin-top: 10px;">
-        <a href="https://cresalia.com/configuracion/alertas" style="color: #666;">
+        <a href="https://cresalia-web.vercel.app/configuracion/alertas" style="color: #666;">
           Configurar preferencias de alertas
         </a>
       </p>
