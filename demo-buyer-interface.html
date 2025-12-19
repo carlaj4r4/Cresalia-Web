@@ -517,6 +517,27 @@
                 overflow-x: hidden;
             }
             
+            /* Botón "Ir al Inicio" responsive */
+            .demo-nav ul li:first-child a {
+                padding: 8px 12px !important;
+                font-size: 0.85rem !important;
+            }
+            
+            .demo-nav ul li:first-child a span {
+                display: none; /* Ocultar texto en móvil, solo icono */
+            }
+            
+            /* Widget de perfil responsive */
+            .widget-perfil-usuario > div {
+                flex-direction: column;
+                text-align: center;
+            }
+            
+            .widget-perfil-usuario > div > div:last-child {
+                width: 100%;
+                justify-content: center;
+            }
+            
             .demo-header {
                 padding: 15px 10px;
             }
@@ -1067,6 +1088,32 @@
                 <h2><i class="fas fa-user-circle"></i> Mi Cuenta</h2>
                 <p>Accede a tu perfil, sesiones y preferencias.</p>
             </div>
+            
+            <!-- Widget de Perfil con Avatar -->
+            <div id="widget-perfil-usuario" class="widget-perfil-usuario" style="background: linear-gradient(135deg, #7C3AED, #EC4899); border-radius: 16px; padding: 24px; margin-bottom: 24px; color: white; display: none;">
+                <div style="display: flex; align-items: center; gap: 20px; flex-wrap: wrap;">
+                    <div class="avatar-container" style="position: relative;">
+                        <img id="avatar-usuario" src="" alt="Avatar" style="width: 80px; height: 80px; border-radius: 50%; border: 4px solid rgba(255,255,255,0.3); object-fit: cover; background: rgba(255,255,255,0.2); cursor: pointer;" onclick="document.getElementById('input-avatar').click()">
+                        <label for="input-avatar" style="position: absolute; bottom: 0; right: 0; background: rgba(255,255,255,0.9); border-radius: 50%; width: 28px; height: 28px; display: flex; align-items: center; justify-content: center; cursor: pointer; box-shadow: 0 2px 8px rgba(0,0,0,0.2);">
+                            <i class="fas fa-camera" style="color: #7C3AED; font-size: 12px;"></i>
+                        </label>
+                        <input type="file" id="input-avatar" accept="image/*" style="display: none;" onchange="cambiarAvatar(event)">
+                    </div>
+                    <div style="flex: 1; min-width: 200px;">
+                        <h3 id="nombre-usuario-widget" style="margin: 0 0 8px 0; font-size: 24px; font-weight: 600;">Usuario</h3>
+                        <p id="email-usuario-widget" style="margin: 0; opacity: 0.9; font-size: 14px;">email@ejemplo.com</p>
+                    </div>
+                    <div style="display: flex; gap: 12px; flex-wrap: wrap;">
+                        <button onclick="mostrarHistorialCompras()" style="background: rgba(255,255,255,0.2); border: none; color: white; padding: 10px 20px; border-radius: 8px; cursor: pointer; font-weight: 600; transition: all 0.3s;" onmouseover="this.style.background='rgba(255,255,255,0.3)'" onmouseout="this.style.background='rgba(255,255,255,0.2)'">
+                            <i class="fas fa-shopping-bag"></i> Mis Compras
+                        </button>
+                        <button onclick="abrirConfiguracionNotificacionesComprador()" style="background: rgba(255,255,255,0.2); border: none; color: white; padding: 10px 20px; border-radius: 8px; cursor: pointer; font-weight: 600; transition: all 0.3s;" onmouseover="this.style.background='rgba(255,255,255,0.3)'" onmouseout="this.style.background='rgba(255,255,255,0.2)'">
+                            <i class="fas fa-bell"></i> Notificaciones
+                        </button>
+                    </div>
+                </div>
+            </div>
+            
             <div class="productos-grid" style="grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));">
                 <div class="producto-card">
                     <div class="producto-image" style="background: linear-gradient(135deg, #2563EB, #7C3AED); color: white;">
@@ -3036,6 +3083,116 @@
         
         // Hacer disponible globalmente
         window.cerrarSesionComprador = cerrarSesionComprador;
+        
+        // ===== SISTEMA DE AVATAR =====
+        async function cargarDatosUsuario() {
+            try {
+                const supabase = initSupabase();
+                if (!supabase) return;
+                
+                const { data: { user }, error } = await supabase.auth.getUser();
+                
+                if (error || !user) {
+                    // Usuario no logueado, ocultar widget
+                    document.getElementById('widget-perfil-usuario').style.display = 'none';
+                    return;
+                }
+                
+                // Mostrar widget
+                const widget = document.getElementById('widget-perfil-usuario');
+                widget.style.display = 'block';
+                
+                // Cargar datos del usuario
+                const nombre = user.user_metadata?.nombre || user.user_metadata?.nombre_tienda || user.email?.split('@')[0] || 'Usuario';
+                const email = user.email || '';
+                
+                document.getElementById('nombre-usuario-widget').textContent = nombre;
+                document.getElementById('email-usuario-widget').textContent = email;
+                
+                // Cargar avatar guardado
+                const avatarUrl = localStorage.getItem('cresalia_avatar_url');
+                if (avatarUrl) {
+                    document.getElementById('avatar-usuario').src = avatarUrl;
+                } else {
+                    // Avatar por defecto con iniciales
+                    const iniciales = nombre.charAt(0).toUpperCase();
+                    document.getElementById('avatar-usuario').src = `data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' width='80' height='80'><rect width='80' height='80' fill='%237C3AED'/><text x='50%' y='50%' dominant-baseline='middle' text-anchor='middle' font-size='32' font-weight='bold' fill='white'>${iniciales}</text></svg>`;
+                }
+                
+            } catch (error) {
+                console.error('Error cargando datos de usuario:', error);
+            }
+        }
+        
+        async function cambiarAvatar(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+            
+            // Validar tamaño (máx 2MB)
+            if (file.size > 2 * 1024 * 1024) {
+                alert('⚠️ La imagen es muy grande. Por favor, elegí una imagen menor a 2MB.');
+                return;
+            }
+            
+            // Validar tipo
+            if (!file.type.startsWith('image/')) {
+                alert('⚠️ Por favor, elegí una imagen válida.');
+                return;
+            }
+            
+            try {
+                // Crear preview
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    const avatarImg = document.getElementById('avatar-usuario');
+                    avatarImg.src = e.target.result;
+                    
+                    // Guardar en localStorage
+                    localStorage.setItem('cresalia_avatar_url', e.target.result);
+                    
+                    // Opcional: Subir a Supabase Storage
+                    subirAvatarASupabase(file);
+                };
+                reader.readAsDataURL(file);
+                
+            } catch (error) {
+                console.error('Error cambiando avatar:', error);
+                alert('❌ Error al cambiar el avatar. Por favor, intentá de nuevo.');
+            }
+        }
+        
+        async function subirAvatarASupabase(file) {
+            try {
+                const supabase = initSupabase();
+                if (!supabase) return;
+                
+                const { data: { user } } = await supabase.auth.getUser();
+                if (!user) return;
+                
+                // Crear nombre único para el archivo
+                const fileName = `avatars/${user.id}/${Date.now()}_${file.name}`;
+                
+                // Subir a Supabase Storage (si tenés un bucket configurado)
+                // const { data, error } = await supabase.storage
+                //     .from('avatars')
+                //     .upload(fileName, file, { upsert: true });
+                
+                // Por ahora solo guardamos en localStorage
+                console.log('✅ Avatar guardado localmente');
+                
+            } catch (error) {
+                console.warn('⚠️ No se pudo subir a Supabase, guardado solo localmente:', error);
+            }
+        }
+        
+        // Cargar datos al iniciar
+        document.addEventListener('DOMContentLoaded', () => {
+            setTimeout(cargarDatosUsuario, 1000);
+        });
+        
+        // Hacer funciones globales
+        window.cambiarAvatar = cambiarAvatar;
+        window.cargarDatosUsuario = cargarDatosUsuario;
     </script>
 </body>
 </html>

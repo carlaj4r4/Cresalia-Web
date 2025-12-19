@@ -1052,6 +1052,12 @@
             <nav>
                 <ul class="nav-menu">
                     <li class="nav-item">
+                        <a href="/index-cresalia.html" class="nav-link" style="background: linear-gradient(135deg, #7C3AED, #EC4899); color: white; padding: 10px 20px; border-radius: 8px; font-weight: 600; transition: transform 0.3s; white-space: nowrap;" onmouseover="this.style.transform='scale(1.05)'" onmouseout="this.style.transform='scale(1)'">
+                            <i class="fas fa-home"></i>
+                            <span class="nav-text-inicio">Ir al Inicio</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
                         <a href="#" class="nav-link active" onclick="mostrarSeccion('dashboard')">
                             <i class="fas fa-tachometer-alt"></i>
                             <span>Dashboard</span>
@@ -12216,7 +12222,8 @@ Precio: $${precio.toLocaleString('es-AR')} ARS/mes
     <!-- Sistema de Alertas de Emergencia Global -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="../../js/inject-env-vars.js"></script>
-    <script src="../../config-supabase-seguro.js"></script>
+    <!-- Configuración de Supabase - Intentar cargar desde raíz o js -->
+    <script src="../../config-supabase-seguro.js" onerror="console.warn('⚠️ config-supabase-seguro.js no encontrado, usando auth/supabase-config.js'); this.onerror=null; this.src='../../auth/supabase-config.js';"></script>
     <script src="../../js/sistema-alertas-comunidades.js"></script>
     
     <!-- Sistema de Sesiones Persistentes (después de config-supabase) -->

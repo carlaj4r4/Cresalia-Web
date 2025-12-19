@@ -109,8 +109,10 @@ class SistemaAlertasInteligente {
     
     async cargarAlertasInteligentes() {
         try {
-            // Si no hay Supabase configurado, salir
-            if (typeof supabase === 'undefined') {
+            // Obtener cliente de Supabase
+            const supabase = initSupabase();
+            
+            if (!supabase) {
                 console.log('ℹ️ Supabase no configurado para alertas');
                 return;
             }
