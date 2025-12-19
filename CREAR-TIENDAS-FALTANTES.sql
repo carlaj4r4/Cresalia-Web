@@ -36,7 +36,7 @@ BEGIN
             u.raw_user_meta_data->>'plan' as plan
         FROM auth.users u
         LEFT JOIN public.tiendas t ON t.user_id = u.id
-        WHERE (u.raw_user_meta_data->>'tipo_usuario' IN ('vendedor', 'emprendedor') 
+        WHERE (u.raw_user_meta_data->>'tipo_usuario' IN ('vendedor', 'emprendedor', 'servicios') 
                OR u.raw_user_meta_data->>'nombre_tienda' IS NOT NULL)
           AND t.id IS NULL
     LOOP
@@ -49,7 +49,7 @@ BEGIN
             WHEN usuario_record.plan IN ('basico', 'pro', 'premium') THEN usuario_record.plan
             ELSE 'basico'
         END;
-        es_emprendedor := (tipo_usuario = 'emprendedor');
+        es_emprendedor := (tipo_usuario IN ('emprendedor', 'servicios'));
         
         -- Generar subdomain
         subdomain_tienda := lower(regexp_replace(nombre_tienda, '[^a-zA-Z0-9]+', '-', 'g'));
@@ -81,8 +81,12 @@ BEGIN
                 true,
                 NOW(),
                 jsonb_build_object(
-                    'tipo', CASE WHEN es_emprendedor THEN 'emprendedor' ELSE 'tienda' END,
-                    'es_servicio', es_emprendedor
+                    'tipo', CASE 
+                        WHEN tipo_usuario = 'emprendedor' THEN 'emprendedor'
+                        WHEN tipo_usuario = 'servicios' THEN 'servicio'
+                        ELSE 'tienda' 
+                    END,
+                    'es_servicio', (tipo_usuario IN ('emprendedor', 'servicios'))
                 )
             )
             ON CONFLICT (user_id) DO NOTHING;

@@ -39,10 +39,10 @@ DECLARE
     es_emprendedor BOOLEAN;
 BEGIN
     tipo_usuario := NEW.raw_user_meta_data->>'tipo_usuario';
-    es_emprendedor := (tipo_usuario = 'emprendedor');
+    es_emprendedor := (tipo_usuario IN ('emprendedor', 'servicios'));
     
-    -- Crear si el usuario tiene tipo_usuario = 'vendedor' o 'emprendedor' o tiene nombre_tienda en metadata
-    IF tipo_usuario IN ('vendedor', 'emprendedor') OR NEW.raw_user_meta_data->>'nombre_tienda' IS NOT NULL THEN
+    -- Crear si el usuario tiene tipo_usuario = 'vendedor', 'emprendedor', 'servicios' o tiene nombre_tienda en metadata
+    IF tipo_usuario IN ('vendedor', 'emprendedor', 'servicios') OR NEW.raw_user_meta_data->>'nombre_tienda' IS NOT NULL THEN
         nombre_tienda := COALESCE(NEW.raw_user_meta_data->>'nombre_tienda', 'Mi Tienda');
         plan_tienda := COALESCE(NEW.raw_user_meta_data->>'plan', 'basico');
         
@@ -66,8 +66,12 @@ BEGIN
                 true,
                 NOW(),
                 jsonb_build_object(
-                    'tipo', CASE WHEN es_emprendedor THEN 'emprendedor' ELSE 'tienda' END,
-                    'es_servicio', es_emprendedor
+                    'tipo', CASE 
+                        WHEN tipo_usuario = 'emprendedor' THEN 'emprendedor'
+                        WHEN tipo_usuario = 'servicios' THEN 'servicio'
+                        ELSE 'tienda' 
+                    END,
+                    'es_servicio', (tipo_usuario IN ('emprendedor', 'servicios'))
                 )
             )
             ON CONFLICT (user_id) DO NOTHING;
