@@ -12775,21 +12775,35 @@ Precio: $${precio.toLocaleString('es-AR')} ARS/mes
                     return;
                 }
                 
+                // Obtener datos de la tienda desde la tabla
+                const { data: tienda, error: errorTienda } = await supabase
+                    .from('tiendas')
+                    .select('*')
+                    .eq('user_id', user.id)
+                    .single();
+                
                 // Mostrar widget
                 const widget = document.getElementById('widget-perfil-tienda');
                 widget.style.display = 'block';
                 
                 // Cargar datos del usuario/tienda
-                const nombreTienda = user.user_metadata?.nombre_tienda || user.user_metadata?.nombre || user.email?.split('@')[0] || 'Mi Tienda';
-                const email = user.email || '';
-                const plan = user.user_metadata?.plan || localStorage.getItem('plan-actual') || 'FREE';
+                const nombreTienda = tienda?.nombre_tienda || user.user_metadata?.nombre_tienda || user.user_metadata?.nombre || user.email?.split('@')[0] || 'Mi Tienda';
+                const email = tienda?.email || user.email || '';
+                const plan = tienda?.plan || user.user_metadata?.plan || localStorage.getItem('plan-actual') || 'FREE';
                 
                 document.getElementById('nombre-tienda-widget').textContent = nombreTienda;
                 document.getElementById('email-tienda-widget').textContent = email;
                 document.getElementById('plan-tienda-widget').textContent = `Plan: ${plan.toUpperCase()}`;
                 
-                // Cargar avatar/logo guardado
-                const avatarUrl = localStorage.getItem('cresalia_avatar_tienda_url');
+                // Cargar avatar/logo desde Supabase (configuracion.avatar_url) o localStorage (fallback)
+                let avatarUrl = null;
+                if (tienda?.configuracion?.avatar_url) {
+                    avatarUrl = tienda.configuracion.avatar_url;
+                } else {
+                    // Fallback a localStorage
+                    avatarUrl = localStorage.getItem('cresalia_avatar_tienda_url');
+                }
+                
                 if (avatarUrl) {
                     document.getElementById('avatar-tienda').src = avatarUrl;
                 } else {
@@ -12820,16 +12834,87 @@ Precio: $${precio.toLocaleString('es-AR')} ARS/mes
             }
             
             try {
-                // Crear preview
+                const supabase = initSupabase();
+                if (!supabase) {
+                    alert('❌ Error: Supabase no está disponible. Por favor, recargá la página.');
+                    return;
+                }
+                
+                // Obtener usuario actual
+                const { data: { user }, error: userError } = await supabase.auth.getUser();
+                if (userError || !user) {
+                    alert('❌ Error: No se pudo obtener el usuario. Por favor, iniciá sesión de nuevo.');
+                    return;
+                }
+                
+                // Obtener datos de la tienda
+                const { data: tienda, error: tiendaError } = await supabase
+                    .from('tiendas')
+                    .select('*')
+                    .eq('user_id', user.id)
+                    .single();
+                
+                if (tiendaError || !tienda) {
+                    alert('❌ Error: No se encontró la tienda. Por favor, contactá soporte.');
+                    return;
+                }
+                
+                // Crear preview inmediato
                 const reader = new FileReader();
-                reader.onload = function(e) {
+                reader.onload = async function(e) {
                     const avatarImg = document.getElementById('avatar-tienda');
-                    avatarImg.src = e.target.result;
+                    avatarImg.src = e.target.result; // Preview inmediato
                     
-                    // Guardar en localStorage
-                    localStorage.setItem('cresalia_avatar_tienda_url', e.target.result);
+                    // Subir a Supabase Storage
+                    const fileExt = file.name.split('.').pop();
+                    const fileName = `${user.id}/avatar-${Date.now()}.${fileExt}`;
+                    const filePath = `tiendas/${fileName}`;
                     
-                    console.log('✅ Logo/Avatar de tienda guardado');
+                    // Subir archivo
+                    const { data: uploadData, error: uploadError } = await supabase.storage
+                        .from('avatars')
+                        .upload(filePath, file, {
+                            cacheControl: '3600',
+                            upsert: true
+                        });
+                    
+                    if (uploadError) {
+                        console.error('Error subiendo imagen:', uploadError);
+                        // Si falla Storage, guardar en localStorage como fallback
+                        localStorage.setItem('cresalia_avatar_tienda_url', e.target.result);
+                        alert('⚠️ No se pudo subir a la nube, pero se guardó localmente.');
+                        return;
+                    }
+                    
+                    // Obtener URL pública
+                    const { data: { publicUrl } } = supabase.storage
+                        .from('avatars')
+                        .getPublicUrl(filePath);
+                    
+                    // Actualizar en la tabla tiendas (configuracion.avatar_url)
+                    const configuracionActual = tienda.configuracion || {};
+                    const nuevaConfiguracion = {
+                        ...configuracionActual,
+                        avatar_url: publicUrl
+                    };
+                    
+                    const { error: updateError } = await supabase
+                        .from('tiendas')
+                        .update({ configuracion: nuevaConfiguracion })
+                        .eq('user_id', user.id);
+                    
+                    if (updateError) {
+                        console.error('Error actualizando avatar en BD:', updateError);
+                        // Fallback a localStorage
+                        localStorage.setItem('cresalia_avatar_tienda_url', e.target.result);
+                        alert('⚠️ No se pudo guardar en la base de datos, pero se guardó localmente.');
+                    } else {
+                        // Actualizar imagen con URL pública
+                        avatarImg.src = publicUrl;
+                        // También guardar en localStorage como backup
+                        localStorage.setItem('cresalia_avatar_tienda_url', publicUrl);
+                        console.log('✅ Logo/Avatar de tienda guardado en Supabase:', publicUrl);
+                    }
                 };
                 reader.readAsDataURL(file);
                 
