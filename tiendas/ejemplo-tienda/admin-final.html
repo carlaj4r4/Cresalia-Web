@@ -2536,22 +2536,22 @@
         // ============================================
         
         function mostrarSeccion(seccionId) {
-            // Cerrar cualquier modal abierto al cambiar de sección
-            const modalesAbiertos = document.querySelectorAll('.modal.show, [id^="modal"]');
-            modalesAbiertos.forEach(modal => {
-                if (modal.style && modal.style.display === 'flex') {
-                    modal.style.display = 'none';
-                }
-                if (modal.classList && modal.classList.contains('show')) {
-                    modal.classList.remove('show');
-                }
-            });
+            // Cerrar todos los modales al cambiar de sección
+            cerrarTodosLosModales();
             
-            // Cerrar modal de historial si está abierto
+            // Cerrar modal de historial si está abierto (por si se creó dinámicamente)
             const modalHistorial = document.getElementById('modalHistorialVentasTurnos');
             if (modalHistorial) {
                 modalHistorial.remove();
             }
+            
+            // También buscar modales creados dinámicamente que puedan estar en el body
+            const modalesDinamicos = document.querySelectorAll('[id*="Historial"], [id*="historial"], [id*="Modal"], [id*="modal"]');
+            modalesDinamicos.forEach(modal => {
+                if (modal.style && (modal.style.display === 'flex' || modal.style.display === 'block')) {
+                    modal.remove();
+                }
+            });
             
             // Ocultar todas las secciones
             const secciones = document.querySelectorAll('.content-section');
@@ -2606,10 +2606,32 @@
         function cerrarModal(modalId) {
             const modal = document.getElementById(modalId);
             if (modal) {
+                // Remover clase show
                 modal.classList.remove('show');
+                
+                // Asegurar que display sea none (por si tiene estilo inline)
+                modal.style.display = 'none';
+                
+                // Restaurar overflow del body
                 document.body.style.overflow = 'auto';
+                
+                // Remover cualquier listener de click que pueda estar interfiriendo
+                modal.onclick = null;
+                
                 console.log(`✅ Modal cerrado: ${modalId}`);
             }
+        }
+        
+        // Función para cerrar todos los modales
+        function cerrarTodosLosModales() {
+            const modales = document.querySelectorAll('.modal');
+            modales.forEach(modal => {
+                modal.classList.remove('show');
+                modal.style.display = 'none';
+                modal.onclick = null;
+            });
+            document.body.style.overflow = 'auto';
+            console.log('✅ Todos los modales cerrados');
         }
         
         function abrirModalBienestar() {
@@ -2629,7 +2651,16 @@
         // Cerrar modales al hacer clic fuera
         window.addEventListener('click', function(event) {
             if (event.target.classList.contains('modal')) {
-                event.target.style.display = 'none';
+                // Usar la función cerrarModal en lugar de manipular directamente
+                const modalId = event.target.id;
+                if (modalId) {
+                    cerrarModal(modalId);
+                } else {
+                    // Si no tiene ID, cerrar directamente
+                    event.target.classList.remove('show');
+                    event.target.style.display = 'none';
+                    document.body.style.overflow = 'auto';
+                }
                 console.log('✅ Modal cerrado al hacer clic fuera');
             }
         });
@@ -2639,8 +2670,20 @@
             if (event.key === 'Escape') {
                 const modales = document.querySelectorAll('.modal');
                 modales.forEach(modal => {
-                    if (modal.style.display === 'flex') {
-                        modal.style.display = 'none';
+                    // Verificar si el modal está visible (por clase o estilo)
+                    const estaVisible = modal.classList.contains('show') || 
+                                       modal.style.display === 'flex' ||
+                                       window.getComputedStyle(modal).display === 'flex';
+                    
+                    if (estaVisible) {
+                        const modalId = modal.id;
+                        if (modalId) {
+                            cerrarModal(modalId);
+                        } else {
+                            modal.classList.remove('show');
+                            modal.style.display = 'none';
+                            document.body.style.overflow = 'auto';
+                        }
                         console.log('✅ Modal cerrado con Escape');
                     }
                 });
