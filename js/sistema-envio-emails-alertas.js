@@ -37,15 +37,31 @@ class SistemaEnvioEmailsAlertas {
             // Obtener el anon key de Supabase
             const anonKey = window.supabaseAnonKey || window.SUPABASE_ANON_KEY;
             
+            if (!anonKey) {
+                throw new Error('Supabase Anon Key no configurada');
+            }
+            
+            // Preparar body limpio
+            const bodyData = {
+                alerta_id: id
+            };
+            
+            const bodyString = JSON.stringify(bodyData);
+            
+            console.log('📧 Enviando request a Edge Function:', {
+                url: this.apiUrl,
+                alerta_id: id,
+                body: bodyString
+            });
+            
             const response = await fetch(this.apiUrl, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${anonKey}`
+                    'Authorization': `Bearer ${anonKey}`,
+                    'apikey': anonKey // Agregar apikey también (requerido por Supabase)
                 },
-                body: JSON.stringify({
-                    alerta_id: id
-                })
+                body: bodyString
             });
 
             const data = await response.json();

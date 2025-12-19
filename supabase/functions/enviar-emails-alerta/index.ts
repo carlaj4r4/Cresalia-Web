@@ -17,11 +17,37 @@ serve(async (req) => {
 
   try {
     // Verificar que el request tenga body
-    const body = await req.text()
+    let bodyText = ''
+    try {
+      bodyText = await req.text()
+    } catch (textError) {
+      console.error('Error leyendo body:', textError)
+      return new Response(
+        JSON.stringify({ error: 'Error leyendo request body', details: textError.message }),
+        { 
+          status: 400, 
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' } 
+        }
+      )
+    }
     
-    if (!body || body.trim() === '') {
+    // Limpiar el body: remover espacios al inicio/final y caracteres extra
+    const bodyClean = bodyText.trim()
+    
+    if (!bodyClean || bodyClean === '') {
       return new Response(
         JSON.stringify({ error: 'Request body vacío' }),
+        { 
+          status: 400, 
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' } 
+        }
+      )
+    }
+    
+    // Verificar que empiece y termine con llaves/corchetes (JSON válido)
+    if (!bodyClean.startsWith('{') && !bodyClean.startsWith('[')) {
+      return new Response(
+        JSON.stringify({ error: 'Body no es JSON válido (debe empezar con { o [)' }),
         { 
           status: 400, 
           headers: { ...corsHeaders, 'Content-Type': 'application/json' } 
@@ -32,12 +58,30 @@ serve(async (req) => {
     // Parsear JSON de forma segura
     let alerta_id
     try {
-      const parsed = JSON.parse(body)
+      const parsed = JSON.parse(bodyClean)
+      
+      // Verificar que sea un objeto
+      if (typeof parsed !== 'object' || parsed === null) {
+        return new Response(
+          JSON.stringify({ error: 'JSON debe ser un objeto' }),
+          { 
+            status: 400, 
+            headers: { ...corsHeaders, 'Content-Type': 'application/json' } 
+          }
+        )
+      }
+      
       alerta_id = parsed.alerta_id
+      
     } catch (parseError) {
       console.error('Error parseando JSON:', parseError)
+      console.error('Body recibido:', bodyClean.substring(0, 100)) // Log primeros 100 caracteres
       return new Response(
-        JSON.stringify({ error: 'JSON inválido', details: parseError.message }),
+        JSON.stringify({ 
+          error: 'JSON inválido', 
+          details: parseError.message,
+          body_preview: bodyClean.substring(0, 50) // Mostrar preview del body
+        }),
         { 
           status: 400, 
           headers: { ...corsHeaders, 'Content-Type': 'application/json' } 
