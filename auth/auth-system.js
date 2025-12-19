@@ -570,10 +570,57 @@ async function loginCliente(email, password) {
         
         if (error) throw error;
         
-        // 2. Obtener datos de la tienda
-        const tienda = await obtenerDatosTienda(data.user.id);
+        // 2. Obtener datos de la tienda (con fallback para crear si no existe)
+        let tienda = await obtenerDatosTienda(data.user.id);
         
-        // 3. Verificar que la tienda esté activa
+        // 3. Si no hay tienda, intentar crearla desde metadata
+        if (!tienda) {
+            console.log('⚠️ Tienda no encontrada después del login, intentando crear...');
+            
+            const nombreTienda = data.user.user_metadata?.nombre_tienda || 'Mi Tienda';
+            const plan = data.user.user_metadata?.plan || 'basico';
+            const tipoUsuario = data.user.user_metadata?.tipo_usuario;
+            
+            // Solo intentar crear si es vendedor
+            if (tipoUsuario === 'vendedor' || tipoUsuario === 'emprendedor' || data.user.user_metadata?.nombre_tienda) {
+                const subdomain = nombreTienda
+                    .toLowerCase()
+                    .replace(/\s+/g, '-')
+                    .replace(/[^a-z0-9-]/g, '');
+                
+                const { data: nuevaTienda, error: createError } = await supabase
+                    .from('tiendas')
+                    .insert([
+                        {
+                            user_id: data.user.id,
+                            nombre_tienda: nombreTienda,
+                            email: data.user.email,
+                            plan: plan,
+                            subdomain: subdomain,
+                            activa: true,
+                            fecha_creacion: new Date().toISOString()
+                        }
+                    ])
+                    .select()
+                    .single();
+                
+                if (!createError && nuevaTienda) {
+                    console.log('✅ Tienda creada exitosamente después del login');
+                    tienda = nuevaTienda;
+                } else {
+                    console.error('❌ Error creando tienda después del login:', createError);
+                    // Si falla por RLS, informar al usuario
+                    if (createError?.code === '42501' || createError?.message?.includes('permission denied')) {
+                        throw new Error('Tu cuenta existe pero la tienda aún no se ha creado. Por favor, contacta a soporte o espera unos minutos y vuelve a intentar.');
+                    }
+                    throw new Error('No se pudo crear tu tienda. Por favor, contacta a soporte.');
+                }
+            } else {
+                throw new Error('Tu cuenta no está configurada como vendedor. Por favor, regístrate como vendedor desde la página de registro.');
+            }
+        }
+        
+        // 4. Verificar que la tienda esté activa
         if (!tienda || !tienda.activa) {
             await supabase.auth.signOut();
             throw new Error('Tu tienda no está activa. Contacta a soporte.');
@@ -656,14 +703,51 @@ async function verificarAccesoAdmin() {
             };
         }
         
-        // 3. Obtener datos de la tienda
-        const tienda = await obtenerDatosTienda(user.id);
+        // 3. Obtener datos de la tienda (con fallback para crear si no existe)
+        let tienda = await obtenerDatosTienda(user.id);
+        
+        // Si no hay tienda, intentar crearla desde metadata
+        if (!tienda) {
+            console.log('⚠️ Tienda no encontrada en verificarAccesoAdmin, intentando crear...');
+            
+            const nombreTienda = user.user_metadata?.nombre_tienda || 'Mi Tienda';
+            const plan = user.user_metadata?.plan || 'basico';
+            const tipoUsuario = user.user_metadata?.tipo_usuario;
+            
+            if (tipoUsuario === 'vendedor' || tipoUsuario === 'emprendedor' || user.user_metadata?.nombre_tienda) {
+                const subdomain = nombreTienda
+                    .toLowerCase()
+                    .replace(/\s+/g, '-')
+                    .replace(/[^a-z0-9-]/g, '');
+                
+                const { data: nuevaTienda, error: createError } = await supabase
+                    .from('tiendas')
+                    .insert([
+                        {
+                            user_id: user.id,
+                            nombre_tienda: nombreTienda,
+                            email: user.email,
+                            plan: plan,
+                            subdomain: subdomain,
+                            activa: true,
+                            fecha_creacion: new Date().toISOString()
+                        }
+                    ])
+                    .select()
+                    .single();
+                
+                if (!createError && nuevaTienda) {
+                    console.log('✅ Tienda creada exitosamente en verificarAccesoAdmin');
+                    tienda = nuevaTienda;
+                }
+            }
+        }
         
         if (!tienda || !tienda.activa) {
-            console.log('❌ Tienda no activa');
+            console.log('❌ Tienda no activa o no encontrada');
             return {
                 tieneAcceso: false,
-                mensaje: 'Tu tienda no está activa'
+                mensaje: 'Tu tienda no está activa o no se pudo crear. Por favor, contacta a soporte.'
             };
         }
         

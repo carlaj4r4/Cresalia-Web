@@ -137,20 +137,91 @@ async function obtenerUsuarioActual() {
 
 // Función para obtener datos de la tienda del usuario
 async function obtenerDatosTienda(userId) {
-    const client = initSupabase();
-    
-    const { data, error } = await client
-        .from('tiendas')
-        .select('*')
-        .eq('user_id', userId)
-        .single();
-    
-    if (error) {
-        console.error('Error obteniendo datos de tienda:', error);
+    try {
+        const client = initSupabase();
+        
+        if (!client || typeof client.from !== 'function') {
+            console.error('❌ Supabase no está inicializado correctamente');
+            return null;
+        }
+        
+        // Intentar obtener la tienda
+        const { data, error } = await client
+            .from('tiendas')
+            .select('*')
+            .eq('user_id', userId)
+            .single();
+        
+        // Si no hay error, retornar los datos
+        if (!error && data) {
+            return data;
+        }
+        
+        // Si no existe la tienda, intentar crearla usando los datos del usuario
+        if (error && (error.code === 'PGRST116' || error.message?.includes('No rows returned'))) {
+            console.log('⚠️ Tienda no encontrada, intentando crear desde metadata del usuario...');
+            
+            // Obtener datos del usuario
+            const { data: { user }, error: userError } = await client.auth.getUser();
+            
+            if (userError || !user) {
+                console.error('❌ Error obteniendo usuario:', userError);
+                return null;
+            }
+            
+            // Verificar si el usuario tiene metadata de tienda
+            const nombreTienda = user.user_metadata?.nombre_tienda || user.user_metadata?.nombre_tienda;
+            const plan = user.user_metadata?.plan || 'basico';
+            const tipoUsuario = user.user_metadata?.tipo_usuario;
+            
+            // Solo crear si es vendedor o tiene nombre_tienda
+            if (tipoUsuario === 'vendedor' || tipoUsuario === 'emprendedor' || nombreTienda) {
+                console.log('📝 Creando tienda desde metadata del usuario...');
+                
+                const subdomain = (nombreTienda || 'mi-tienda')
+                    .toLowerCase()
+                    .replace(/\s+/g, '-')
+                    .replace(/[^a-z0-9-]/g, '');
+                
+                // Intentar crear la tienda
+                const { data: nuevaTienda, error: createError } = await client
+                    .from('tiendas')
+                    .insert([
+                        {
+                            user_id: userId,
+                            nombre_tienda: nombreTienda || 'Mi Tienda',
+                            email: user.email,
+                            plan: plan,
+                            subdomain: subdomain,
+                            activa: true,
+                            fecha_creacion: new Date().toISOString()
+                        }
+                    ])
+                    .select()
+                    .single();
+                
+                if (!createError && nuevaTienda) {
+                    console.log('✅ Tienda creada exitosamente desde metadata');
+                    return nuevaTienda;
+                } else {
+                    console.error('❌ Error creando tienda:', createError);
+                    // Si falla por RLS, el trigger debería crearla
+                    // Retornar null para que el usuario vea el mensaje apropiado
+                    return null;
+                }
+            }
+        }
+        
+        // Otro tipo de error
+        if (error) {
+            console.error('❌ Error obteniendo datos de tienda:', error);
+        }
+        
+        return null;
+    } catch (error) {
+        console.error('❌ Error en obtenerDatosTienda:', error);
         return null;
     }
-    
-    return data;
 }
 
 // Exportar funciones

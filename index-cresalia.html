@@ -2351,7 +2351,7 @@
                     // Actualizar link de "Mi Cuenta" según tipo de usuario
                     const btnMiCuenta = document.querySelector('#btnMiCuenta a');
                     if (esVendedor) {
-                        btnMiCuenta.href = '/tiendas/ejemplo-tienda/admin-final.html';
+                        btnMiCuenta.href = 'tiendas/ejemplo-tienda/admin-final.html';
                         // Para vendedores, mostrar "Configuración" en lugar de "Mis Compras"
                         document.getElementById('btnMisCompras').style.display = 'none';
                         if (document.getElementById('btnConfiguracion')) {
@@ -2392,16 +2392,6 @@
             }
             
             try {
-                // Verificar que initSupabase esté disponible
-                if (typeof initSupabase === 'undefined' || typeof initSupabase !== 'function') {
-                    throw new Error('Supabase no está disponible');
-                }
-                
-                const supabase = initSupabase();
-                if (!supabase || typeof supabase.auth === 'undefined') {
-                    throw new Error('Supabase auth no disponible');
-                }
-                
                 await supabase.auth.signOut();
                 alert('¡Sesión cerrada exitosamente!');
                 
@@ -2424,10 +2414,28 @@
         document.addEventListener('DOMContentLoaded', verificarSesionNav);
         
         // También verificar cuando cambie el estado de autenticación
-        supabase.auth.onAuthStateChange((event, session) => {
-            console.log('Auth state changed:', event);
-            verificarSesionNav();
-        });
+        // Esperar a que initSupabase esté disponible antes de configurar el listener
+        function configurarAuthListener() {
+            if (typeof initSupabase === 'undefined' || typeof initSupabase !== 'function') {
+                setTimeout(configurarAuthListener, 500);
+                return;
+            }
+            
+            const supabase = initSupabase();
+            if (supabase && typeof supabase.auth !== 'undefined' && typeof supabase.auth.onAuthStateChange === 'function') {
+                supabase.auth.onAuthStateChange((event, session) => {
+                    console.log('Auth state changed:', event);
+                    verificarSesionNav();
+                });
+            }
+        }
+        
+        // Configurar listener después de que el DOM esté listo
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', configurarAuthListener);
+        } else {
+            configurarAuthListener();
+        }
     </script>
     
     <!-- Sistema de Acceso Secreto al Panel de Administración -->
@@ -2872,22 +2880,23 @@
             try {
                 let servicios = [];
                 
-                // Intentar cargar desde Supabase
-                if (window.supabase || window.SUPABASE_CLIENT) {
-                    const supabase = window.supabase || window.SUPABASE_CLIENT;
-                    
+                // Intentar cargar desde Supabase usando initSupabase
+                if (typeof initSupabase !== 'undefined' && typeof initSupabase === 'function') {
                     try {
-                        const { data, error } = await supabase
-                            .from('servicios')
-                            .select('*, tiendas(nombre, slug, logo)')
-                            .eq('estado', 'activo')
-                            .eq('visible', true);
-                        
-                        if (!error && data) {
-                            servicios = data;
+                        const supabase = initSupabase();
+                        if (supabase && typeof supabase.from === 'function') {
+                            const { data, error } = await supabase
+                                .from('servicios')
+                                .select('*, tiendas(nombre, slug, logo)')
+                                .eq('estado', 'activo')
+                                .eq('visible', true);
+                            
+                            if (!error && data) {
+                                servicios = data;
+                            }
                         }
                     } catch (supabaseError) {
-                        console.log('⚠️ Error cargando servicios desde Supabase:', supabaseError);
+                        console.warn('⚠️ Error cargando servicios desde Supabase:', supabaseError);
                     }
                 }
                 
