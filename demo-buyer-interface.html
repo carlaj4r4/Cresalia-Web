@@ -3133,48 +3133,59 @@
                 const nombre = user.user_metadata?.nombre || user.user_metadata?.nombre_tienda || user.email?.split('@')[0] || 'Usuario';
                 const email = user.email || '';
                 
-                // Verificar tipo de usuario desde metadata Y desde tabla tiendas
-                let tipoUsuario = user.user_metadata?.tipo_usuario;
+                // Verificar tipo de usuario: primero en tabla tiendas (más confiable)
+                let tipoUsuario = null;
                 
-                // Si no está en metadata, verificar en tabla tiendas
-                if (!tipoUsuario || tipoUsuario === 'comprador') {
-                    try {
-                        const { data: tienda } = await supabase
-                            .from('tiendas')
-                            .select('configuracion')
-                            .eq('user_id', user.id)
-                            .single();
-                        
-                        if (tienda && tienda.configuracion) {
+                // 1. Verificar si existe en tabla tiendas (prioridad)
+                try {
+                    const { data: tienda, error: errorTienda } = await supabase
+                        .from('tiendas')
+                        .select('configuracion, plan')
+                        .eq('user_id', user.id)
+                        .single();
+                    
+                    if (tienda && !errorTienda) {
+                        // Usuario es vendedor/emprendedor/servicios
+                        if (tienda.configuracion?.tipo) {
                             const tipoConfig = tienda.configuracion.tipo;
-                            if (tipoConfig === 'tienda' || tipoConfig === 'emprendedor' || tipoConfig === 'servicio') {
-                                tipoUsuario = tipoConfig === 'servicio' ? 'servicios' : 
-                                            tipoConfig === 'emprendedor' ? 'emprendedor' : 
-                                            'vendedor';
-                            }
+                            tipoUsuario = tipoConfig === 'servicio' ? 'servicios' : 
+                                        tipoConfig === 'emprendedor' ? 'emprendedor' : 
+                                        'vendedor';
+                        } else {
+                            // Si no tiene tipo en configuracion, pero existe en tiendas, es vendedor
+                            tipoUsuario = 'vendedor';
                         }
-                    } catch (error) {
-                        // Si no hay tienda, es comprador
-                        console.log('Usuario no tiene tienda, es comprador');
                     }
+                } catch (error) {
+                    // No hay tienda, continuar verificando
+                    console.log('Usuario no tiene tienda registrada');
                 }
                 
-                // Si aún no hay tipo, verificar en tabla compradores
+                // 2. Si no es vendedor, verificar metadata
+                if (!tipoUsuario) {
+                    tipoUsuario = user.user_metadata?.tipo_usuario;
+                }
+                
+                // 3. Si aún no hay tipo, verificar en tabla compradores
                 if (!tipoUsuario) {
                     try {
-                        const { data: comprador } = await supabase
+                        const { data: comprador, error: errorComprador } = await supabase
                             .from('compradores')
                             .select('user_id')
                             .eq('user_id', user.id)
                             .single();
                         
-                        if (comprador) {
+                        if (comprador && !errorComprador) {
                             tipoUsuario = 'comprador';
                         }
                     } catch (error) {
-                        // Por defecto, comprador
-                        tipoUsuario = 'comprador';
+                        // No hay comprador registrado
                     }
+                }
+                
+                // 4. Por defecto, comprador
+                if (!tipoUsuario) {
+                    tipoUsuario = 'comprador';
                 }
                 
                 // Determinar el tipo de usuario correcto para mostrar
