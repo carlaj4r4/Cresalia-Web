@@ -4167,8 +4167,11 @@
                             </button>
                         </div>
                         
-                        <div style="text-align: center; margin-top: 30px;">
-                            <button onclick="cerrarModalTipoCuentaIndex()" style="background: #6b7280; color: white; padding: 12px 30px; border: none; border-radius: 10px; cursor: pointer;">
+                        <div style="text-align: center; margin-top: 30px; display: flex; gap: 10px; justify-content: center;">
+                            <button onclick="volverAModalRegistroLogin()" style="background: #6b7280; color: white; padding: 12px 30px; border: none; border-radius: 10px; cursor: pointer; display: flex; align-items: center; gap: 8px;">
+                                <i class="fas fa-arrow-left"></i> Volver
+                            </button>
+                            <button onclick="cerrarModalTipoCuentaIndex()" style="background: #ef4444; color: white; padding: 12px 30px; border: none; border-radius: 10px; cursor: pointer;">
                                 <i class="fas fa-times"></i> Cerrar
                             </button>
                         </div>
@@ -4217,8 +4220,11 @@
                             </button>
                         </div>
                         
-                        <div style="text-align: center; margin-top: 30px;">
-                            <button onclick="cerrarModalTipoLoginIndex()" style="background: #6b7280; color: white; padding: 12px 30px; border: none; border-radius: 10px; cursor: pointer;">
+                        <div style="text-align: center; margin-top: 30px; display: flex; gap: 10px; justify-content: center;">
+                            <button onclick="volverAModalRegistroLogin()" style="background: #6b7280; color: white; padding: 12px 30px; border: none; border-radius: 10px; cursor: pointer; display: flex; align-items: center; gap: 8px;">
+                                <i class="fas fa-arrow-left"></i> Volver
+                            </button>
+                            <button onclick="cerrarModalTipoLoginIndex()" style="background: #ef4444; color: white; padding: 12px 30px; border: none; border-radius: 10px; cursor: pointer;">
                                 <i class="fas fa-times"></i> Cerrar
                             </button>
                         </div>
@@ -4259,6 +4265,19 @@
         function cerrarModalTipoLoginIndex() {
             const modal = document.getElementById('modalTipoLoginIndex');
             if (modal) modal.remove();
+        }
+        
+        // Función para volver al modal de registro/login desde los modales de selección
+        function volverAModalRegistroLogin() {
+            // Cerrar modal de tipo de cuenta/login
+            const modalTipoCuenta = document.getElementById('modalTipoCuentaIndex');
+            const modalTipoLogin = document.getElementById('modalTipoLoginIndex');
+            
+            if (modalTipoCuenta) modalTipoCuenta.remove();
+            if (modalTipoLogin) modalTipoLogin.remove();
+            
+            // Volver a abrir el sistema de usuarios (modal de registro/login)
+            openUserSystem();
         }
     </script>
     
