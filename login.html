@@ -251,6 +251,27 @@
     <script src="auth/auth-system.js"></script>
     
     <script>
+        // Verificar que el modal NO se abra automáticamente al recargar
+        document.addEventListener('DOMContentLoaded', () => {
+            // Asegurarse de que el modal esté cerrado al cargar
+            const modal = document.getElementById('modalRecuperarPassword');
+            if (modal) {
+                modal.style.display = 'none';
+            }
+            
+            // Limpiar cualquier parámetro de URL que pueda abrir el modal
+            const url = new URL(window.location);
+            if (url.searchParams.has('recuperar') || url.searchParams.has('reset')) {
+                url.searchParams.delete('recuperar');
+                url.searchParams.delete('reset');
+                window.history.replaceState({}, document.title, url.pathname);
+            }
+            
+            // Limpiar localStorage/sessionStorage si hay algo que pueda abrir el modal
+            localStorage.removeItem('mostrar_modal_recuperar');
+            sessionStorage.removeItem('mostrar_modal_recuperar');
+        });
+        
         function irALoginTienda() {
             window.location.href = 'login-tienda.html';
         }

@@ -1199,8 +1199,8 @@
                 </div>
             </div>
             
-            <div class="productos-grid" style="grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));">
-                <div class="producto-card">
+            <div class="productos-grid" style="grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));" id="grid-mi-cuenta">
+                <div class="producto-card" id="card-ingresar-registro" style="display: none;">
                     <div class="producto-image" style="background: linear-gradient(135deg, #2563EB, #7C3AED); color: white;">
                         <i class="fas fa-sign-in-alt fa-3x"></i>
                     </div>
@@ -3189,9 +3189,42 @@
             return null;
         }
         
-        // Cargar datos del usuario cuando la página esté lista
+                // Cargar datos del usuario cuando la página esté lista
         document.addEventListener('DOMContentLoaded', () => {
             setTimeout(cargarDatosUsuario, 1000);
+        });
+        
+        // Función para mostrar/ocultar card de login según si hay sesión
+        async function verificarYActualizarCardLogin() {
+            try {
+                const supabase = await esperarInitSupabase();
+                if (!supabase) return;
+                
+                const { data: { user }, error } = await supabase.auth.getUser();
+                const cardLogin = document.getElementById('card-ingresar-registro');
+                
+                if (cardLogin) {
+                    // Si hay usuario logueado, ocultar card de login
+                    if (user && !error) {
+                        cardLogin.style.display = 'none';
+                    } else {
+                        // Si no hay usuario, mostrar card de login
+                        cardLogin.style.display = 'block';
+                    }
+                }
+            } catch (error) {
+                console.log('Error verificando sesión para card login:', error);
+                // Si hay error, mostrar card de login por defecto
+                const cardLogin = document.getElementById('card-ingresar-registro');
+                if (cardLogin) {
+                    cardLogin.style.display = 'block';
+                }
+            }
+        }
+        
+        // Verificar al cargar la página
+        document.addEventListener('DOMContentLoaded', () => {
+            setTimeout(verificarYActualizarCardLogin, 1500);
         });
         
         // ===== SISTEMA DE AVATAR =====
