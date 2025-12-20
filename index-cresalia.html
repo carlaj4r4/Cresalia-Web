@@ -2335,9 +2335,35 @@
                 const { data: { session }, error } = await supabase.auth.getSession();
                 
                 if (session && session.user) {
-                    // Obtener tipo de usuario
-                    const tipoUsuario = session.user.user_metadata?.tipo_usuario || 'comprador';
-                    const esVendedor = ['vendedor', 'emprendedor', 'servicio'].includes(tipoUsuario);
+                    // Obtener tipo de usuario: verificar primero en tabla tiendas (más confiable)
+                    let tipoUsuario = session.user.user_metadata?.tipo_usuario;
+                    
+                    // Si no está en metadata o es 'comprador', verificar en tabla tiendas
+                    if (!tipoUsuario || tipoUsuario === 'comprador') {
+                        try {
+                            const { data: tienda, error: errorTienda } = await supabase
+                                .from('tiendas')
+                                .select('configuracion')
+                                .eq('user_id', session.user.id)
+                                .single();
+                            
+                            if (tienda && !errorTienda && tienda.configuracion?.tipo) {
+                                const tipoConfig = tienda.configuracion.tipo;
+                                tipoUsuario = tipoConfig === 'servicio' ? 'servicios' : 
+                                            tipoConfig === 'emprendedor' ? 'emprendedor' : 
+                                            'vendedor';
+                            }
+                        } catch (error) {
+                            // No hay tienda, continuar con metadata o default
+                        }
+                    }
+                    
+                    // Si aún no hay tipo, usar metadata o default a comprador
+                    if (!tipoUsuario) {
+                        tipoUsuario = session.user.user_metadata?.tipo_usuario || 'comprador';
+                    }
+                    
+                    const esVendedor = ['vendedor', 'emprendedor', 'servicios'].includes(tipoUsuario);
                     
                     // Usuario logueado - mostrar botones de usuario
                     document.getElementById('btnIniciarSesion').style.display = 'none';
