@@ -811,8 +811,20 @@ async function recuperarPassword(email) {
     try {
         const supabase = initSupabase();
         
+        // Determinar URL de redirección según el entorno
+        const isProduction = window.location.hostname !== 'localhost' && 
+                            window.location.hostname !== '127.0.0.1' &&
+                            !window.location.hostname.includes('localhost');
+        
+        // Usar URL de producción para emails
+        const redirectUrl = isProduction 
+            ? 'https://cresalia-web.vercel.app/auth/reset-password.html'
+            : `${window.location.origin}/auth/reset-password.html`;
+        
+        console.log('🔗 URL de redirección para reset password:', redirectUrl);
+        
         const { error } = await supabase.auth.resetPasswordForEmail(email, {
-            redirectTo: `${window.location.origin}/auth/reset-password.html`
+            redirectTo: redirectUrl
         });
         
         if (error) throw error;
