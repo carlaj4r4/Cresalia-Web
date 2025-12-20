@@ -3092,7 +3092,8 @@
     <script src="js/compradores-cumple-consent.js"></script>
     <!-- Sistema de Alertas de Emergencia Global -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <script src="/js/inject-env-vars.js"></script>`n    <script src="/config-supabase-seguro.js"></script>
+    <script src="/js/inject-env-vars.js"></script>
+    <script src="auth/supabase-config.js"></script>
     <script src="/js/sistema-alertas-comunidades.js"></script>
     <!-- Sistema de Check-in Automático de Emergencias -->
     <script src="/js/sistema-checkin-emergencias.js"></script>
@@ -3134,7 +3135,7 @@
             try {
                 console.log('🚪 Cerrando sesión de comprador...');
                 
-                const supabase = initSupabase();
+                const supabase = await esperarInitSupabase();
                 
                 if (supabase) {
                     const { error } = await supabase.auth.signOut();
@@ -3169,11 +3170,40 @@
         // Hacer disponible globalmente
         window.cerrarSesionComprador = cerrarSesionComprador;
         
+        // Función auxiliar para esperar initSupabase
+        async function esperarInitSupabase(maxIntentos = 10, intervalo = 500) {
+            for (let i = 0; i < maxIntentos; i++) {
+                if (typeof initSupabase === 'function') {
+                    try {
+                        const supabase = initSupabase();
+                        if (supabase) return supabase;
+                    } catch (error) {
+                        console.warn('Error al llamar initSupabase:', error);
+                    }
+                }
+                if (i < maxIntentos - 1) {
+                    await new Promise(resolve => setTimeout(resolve, intervalo));
+                }
+            }
+            console.error('❌ initSupabase no disponible después de varios intentos');
+            return null;
+        }
+        
+        // Cargar datos del usuario cuando la página esté lista
+        document.addEventListener('DOMContentLoaded', () => {
+            setTimeout(cargarDatosUsuario, 1000);
+        });
+        
         // ===== SISTEMA DE AVATAR =====
         async function cargarDatosUsuario() {
             try {
-                const supabase = initSupabase();
-                if (!supabase) return;
+                // Esperar a que initSupabase esté disponible
+                const supabase = await esperarInitSupabase();
+                if (!supabase) {
+                    console.warn('⚠️ initSupabase no disponible, reintentando en 1 segundo...');
+                    setTimeout(cargarDatosUsuario, 1000);
+                    return;
+                }
                 
                 const { data: { user }, error } = await supabase.auth.getUser();
                 
