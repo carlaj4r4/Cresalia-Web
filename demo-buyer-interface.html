@@ -1020,7 +1020,7 @@
 </head>
 <body>
     <div class="demo-header">
-        <h1><i class="fas fa-shopping-cart"></i> Panel de Compradores</h1>
+        <h1 id="titulo-panel-usuario"><i class="fas fa-shopping-cart"></i> Panel de Usuario</h1>
         <p>Explora, compra y gestiona tu cuenta en Cresalia</p>
     </div>
     
@@ -3132,9 +3132,52 @@
                 // Cargar datos del usuario
                 const nombre = user.user_metadata?.nombre || user.user_metadata?.nombre_tienda || user.email?.split('@')[0] || 'Usuario';
                 const email = user.email || '';
-                const tipoUsuario = user.user_metadata?.tipo_usuario || 'comprador';
                 
-                // Determinar el tipo de usuario correcto
+                // Verificar tipo de usuario desde metadata Y desde tabla tiendas
+                let tipoUsuario = user.user_metadata?.tipo_usuario;
+                
+                // Si no está en metadata, verificar en tabla tiendas
+                if (!tipoUsuario || tipoUsuario === 'comprador') {
+                    try {
+                        const { data: tienda } = await supabase
+                            .from('tiendas')
+                            .select('configuracion')
+                            .eq('user_id', user.id)
+                            .single();
+                        
+                        if (tienda && tienda.configuracion) {
+                            const tipoConfig = tienda.configuracion.tipo;
+                            if (tipoConfig === 'tienda' || tipoConfig === 'emprendedor' || tipoConfig === 'servicio') {
+                                tipoUsuario = tipoConfig === 'servicio' ? 'servicios' : 
+                                            tipoConfig === 'emprendedor' ? 'emprendedor' : 
+                                            'vendedor';
+                            }
+                        }
+                    } catch (error) {
+                        // Si no hay tienda, es comprador
+                        console.log('Usuario no tiene tienda, es comprador');
+                    }
+                }
+                
+                // Si aún no hay tipo, verificar en tabla compradores
+                if (!tipoUsuario) {
+                    try {
+                        const { data: comprador } = await supabase
+                            .from('compradores')
+                            .select('user_id')
+                            .eq('user_id', user.id)
+                            .single();
+                        
+                        if (comprador) {
+                            tipoUsuario = 'comprador';
+                        }
+                    } catch (error) {
+                        // Por defecto, comprador
+                        tipoUsuario = 'comprador';
+                    }
+                }
+                
+                // Determinar el tipo de usuario correcto para mostrar
                 let tipoDisplay = '';
                 if (['vendedor', 'emprendedor', 'servicios'].includes(tipoUsuario)) {
                     tipoDisplay = tipoUsuario === 'vendedor' ? '🏪 Vendedor' : 
@@ -3152,6 +3195,16 @@
                 if (tipoWidget) {
                     tipoWidget.textContent = tipoDisplay;
                     tipoWidget.style.display = 'block';
+                }
+                
+                // Actualizar título del panel según tipo de usuario
+                const tituloPanel = document.getElementById('titulo-panel-usuario');
+                if (tituloPanel) {
+                    if (['vendedor', 'emprendedor', 'servicios'].includes(tipoUsuario)) {
+                        tituloPanel.innerHTML = '<i class="fas fa-store"></i> Panel de Vendedor';
+                    } else {
+                        tituloPanel.innerHTML = '<i class="fas fa-shopping-cart"></i> Panel de Comprador';
+                    }
                 }
                 
                 // Cargar avatar guardado
