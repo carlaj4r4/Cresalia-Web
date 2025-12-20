@@ -1613,6 +1613,130 @@
                             <i class="fas fa-rocket" style="font-size: 48px; margin-bottom: 20px; opacity: 0.5;"></i>
                             <p>Activa el widget para generar tu acceso directo personalizado</p>
                         </div>
+                        
+                        <!-- Pestañas para Panel y Comunidades -->
+                        <div style="border-top: 2px solid #E5E7EB; margin-top: 40px; padding-top: 30px;">
+                            <div style="display: flex; gap: 10px; margin-bottom: 25px; border-bottom: 2px solid #E5E7EB;">
+                                <button id="tab-panel" onclick="mostrarTabWidget('panel')" style="flex: 1; padding: 12px; border: none; background: transparent; color: #7C3AED; font-weight: 600; border-bottom: 3px solid #7C3AED; cursor: pointer;">
+                                    <i class="fas fa-tachometer-alt"></i> Panel Admin
+                                </button>
+                                <button id="tab-comunidad" onclick="mostrarTabWidget('comunidad')" style="flex: 1; padding: 12px; border: none; background: transparent; color: #6B7280; font-weight: 600; cursor: pointer;">
+                                    <i class="fas fa-users"></i> Comunidades
+                                </button>
+                            </div>
+                            
+                            <!-- Contenido de Widget Comunidades -->
+                            <div id="contenido-widget-comunidad" style="display: none;">
+                                <div style="background: linear-gradient(135deg, #ECFDF5, #D1FAE5); padding: 25px; border-radius: 15px; margin-bottom: 25px; border-left: 4px solid #10B981;">
+                                    <h3 style="color: #065F46; margin-bottom: 15px; display: flex; align-items: center; gap: 10px;">
+                                        <i class="fas fa-info-circle"></i> Widget de Acceso Directo a Comunidades
+                                    </h3>
+                                    <p style="color: #047857; line-height: 1.6;">
+                                        Crea un acceso directo personalizado a cualquier <strong>comunidad de Cresalia</strong> con tu logo. 
+                                        Ideal para compartir con tu equipo o usuarios que quieren acceder rápidamente a una comunidad específica.
+                                    </p>
+                                </div>
+                                
+                                <div style="margin-bottom: 30px;">
+                                    <label style="display: flex; align-items: center; gap: 10px; margin-bottom: 15px; font-weight: 600; color: #374151;">
+                                        <input type="checkbox" id="activar-widget-comunidad" style="width: 20px; height: 20px; cursor: pointer;">
+                                        <span>Activar Widget de Acceso Directo a Comunidades</span>
+                                    </label>
+                                    <p style="color: #6B7280; font-size: 14px; margin-left: 30px;">
+                                        Al activar, podrás generar widgets personalizados para acceder rápidamente a comunidades.
+                                    </p>
+                                </div>
+                                
+                                <div id="contenido-widget-comunidad-activo" style="display: none;">
+                                    <!-- Selector de Comunidad -->
+                                    <div style="margin-bottom: 30px;">
+                                        <label style="display: block; margin-bottom: 10px; font-weight: 600; color: #374151;">
+                                            <i class="fas fa-users"></i> Selecciona una Comunidad
+                                        </label>
+                                        <select id="select-comunidad" style="width: 100%; padding: 12px; border: 2px solid #E5E7EB; border-radius: 8px; font-size: 14px; background: white; cursor: pointer;" onchange="generarWidgetComunidad()">
+                                            <option value="">-- Selecciona una comunidad --</option>
+                                            <option value="mujeres-sobrevivientes|comunidades/mujeres-sobrevivientes/index.html|💜 Mujeres Sobrevivientes">💜 Mujeres Sobrevivientes</option>
+                                            <option value="hombres-sobrevivientes|comunidades/hombres-sobrevivientes/index.html|💙 Hombres Sobrevivientes">💙 Hombres Sobrevivientes</option>
+                                            <option value="lgbtq-experiencias|comunidades/lgbtq-experiencias/index.html|🏳️‍🌈 LGBTQ+ Experiencias">🏳️‍🌈 LGBTQ+ Experiencias</option>
+                                            <option value="inmigrantes-racializados|comunidades/inmigrantes-racializados/index.html|🌍 Inmigrantes y Racializados">🌍 Inmigrantes y Racializados</option>
+                                            <option value="adultos-mayores|comunidades/adultos-mayores/index.html|👴 Adultos Mayores">👴 Adultos Mayores</option>
+                                            <option value="discapacidad|comunidades/discapacidad/index.html|♿ Discapacidad">♿ Discapacidad</option>
+                                            <option value="enfermedades-cronicas|comunidades/enfermedades-cronicas/index.html|💚 Enfermedades Crónicas">💚 Enfermedades Crónicas</option>
+                                            <option value="cuidadores|comunidades/cuidadores/index.html|🤲 Cuidadores">🤲 Cuidadores</option>
+                                            <option value="madres-padres-solteros|comunidades/madres-padres-solteros/index.html|👨‍👩‍👧 Madres/Padres Solteros">👨‍👩‍👧 Madres/Padres Solteros</option>
+                                            <option value="maternidad|comunidades/maternidad/index.html|🤱 Maternidad">🤱 Maternidad</option>
+                                            <option value="duelo-perinatal|comunidades/duelo-perinatal/index.html|💔 Duelo Perinatal">💔 Duelo Perinatal</option>
+                                            <option value="anti-bullying|comunidades/anti-bullying/index.html|🛡️ Anti-Bullying">🛡️ Anti-Bullying</option>
+                                            <option value="estres-laboral|comunidades/estres-laboral/index.html|💼 Estrés Laboral">💼 Estrés Laboral</option>
+                                            <option value="estres|comunidades/estres/index.html|😰 Estrés">😰 Estrés</option>
+                                            <option value="desempleos|comunidades/desempleos/index.html|📋 Desempleos">📋 Desempleos</option>
+                                            <option value="libertad-emocional|comunidades/libertad-emocional/index.html|🦋 Libertad Emocional">🦋 Libertad Emocional</option>
+                                            <option value="libertad-economica|comunidades/libertad-economica/index.html|💰 Libertad Económica">💰 Libertad Económica</option>
+                                            <option value="sanando-abandonos|comunidades/sanando-abandonos/index.html|💜 Sanando Abandonos">💜 Sanando Abandonos</option>
+                                            <option value="injusticias-vividas|comunidades/injusticias-vividas/index.html|⚖️ Injusticias Vividas">⚖️ Injusticias Vividas</option>
+                                            <option value="espiritualidad-fe|comunidades/espiritualidad-fe/index.html|🙏 Espiritualidad y Fe">🙏 Espiritualidad y Fe</option>
+                                            <option value="medicos-enfermeros|comunidades/medicos-enfermeros/index.html|⚕️ Médicos y Enfermeros">⚕️ Médicos y Enfermeros</option>
+                                            <option value="bomberos|comunidades/bomberos/index.html|🚒 Bomberos">🚒 Bomberos</option>
+                                            <option value="veterinarios|comunidades/veterinarios/index.html|🐾 Veterinarios">🐾 Veterinarios</option>
+                                            <option value="transporte-publico|comunidades/transporte-publico/index.html|🚌 Transporte Público">🚌 Transporte Público</option>
+                                            <option value="alertas-servicios-publicos|comunidades/alertas-servicios-publicos/index.html|🚨 Alertas Servicios Públicos">🚨 Alertas Servicios Públicos</option>
+                                            <option value="gamers-videojuegos|comunidades/gamers-videojuegos/index.html|🎮 Gamers y Videojuegos">🎮 Gamers y Videojuegos</option>
+                                            <option value="otakus-anime-manga|comunidades/otakus-anime-manga/index.html|🎌 Otakus, Anime y Manga">🎌 Otakus, Anime y Manga</option>
+                                            <option value="caminando-juntos|comunidades/caminando-juntos/index.html|👣 Caminando Juntos">👣 Caminando Juntos</option>
+                                            <option value="viajeros|comunidades/viajeros/index.html|✈️ Viajeros">✈️ Viajeros</option>
+                                            <option value="desahogo-libre|comunidades/desahogo-libre/index.html|💬 Desahogo Libre">💬 Desahogo Libre</option>
+                                            <option value="experiencias-sobrenaturales|comunidades/experiencias-sobrenaturales/index.html|👻 Experiencias Sobrenaturales">👻 Experiencias Sobrenaturales</option>
+                                            <option value="panel-comunidad-vendedores|panel-comunidad-vendedores.html|💼 Comunidad de Vendedores">💼 Comunidad de Vendedores</option>
+                                            <option value="panel-comunidad-compradores|panel-comunidad-compradores.html|🛒 Comunidad de Compradores">🛒 Comunidad de Compradores</option>
+                                        </select>
+                                    </div>
+                                    
+                                    <!-- Preview del Widget Comunidad -->
+                                    <div id="preview-widget-comunidad-container" style="display: none;">
+                                        <div style="margin-bottom: 30px;">
+                                            <h3 style="color: #1F2937; margin-bottom: 20px;">📱 Vista Previa del Widget</h3>
+                                            <div id="preview-widget-comunidad" style="background: linear-gradient(135deg, #10B981 0%, #059669 100%); padding: 40px; border-radius: 20px; max-width: 400px; margin: 0 auto; box-shadow: 0 10px 40px rgba(0,0,0,0.2);">
+                                                <div style="background: white; border-radius: 15px; padding: 30px; text-align: center;">
+                                                    <div style="width: 60px; height: 60px; margin: 0 auto 15px; background: linear-gradient(135deg, #7C3AED, #EC4899); border-radius: 12px; display: flex; align-items: center; justify-content: center; color: white; font-size: 24px; font-weight: bold;">
+                                                        💜
+                                                    </div>
+                                                    <img id="preview-logo-tienda-comunidad" src="" alt="Logo" style="width: 100px; height: 100px; border-radius: 50%; object-fit: cover; border: 4px solid #E5E7EB; margin: 0 auto 15px; display: block;">
+                                                    <div id="preview-comunidad-badge" class="comunidad-badge" style="background: linear-gradient(135deg, #10B981, #059669); color: white; padding: 8px 16px; border-radius: 20px; display: inline-block; margin-bottom: 15px; font-size: 14px; font-weight: 600;"></div>
+                                                    <h4 id="preview-nombre-comunidad" style="color: #1F2937; margin-bottom: 5px;">Comunidad</h4>
+                                                    <p style="color: #6B7280; margin-bottom: 20px; font-size: 14px;">Acceso Directo</p>
+                                                    <button style="background: linear-gradient(135deg, #10B981, #059669); color: white; border: none; padding: 12px 25px; border-radius: 10px; font-weight: 600; cursor: pointer; width: 100%;">
+                                                        <i class="fas fa-users"></i> Acceder a la Comunidad
+                                                    </button>
+                                                    <p style="color: #9CA3AF; font-size: 11px; margin-top: 15px;">Powered by Cresalia</p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        
+                                        <!-- URL del Widget Comunidad -->
+                                        <div style="margin-bottom: 30px;">
+                                            <h3 style="color: #1F2937; margin-bottom: 15px;">🔗 URL de tu Widget</h3>
+                                            <div style="display: flex; gap: 10px; align-items: center;">
+                                                <input type="text" id="url-widget-comunidad" readonly style="flex: 1; padding: 12px; border: 2px solid #E5E7EB; border-radius: 8px; font-size: 14px; background: #F9FAFB;">
+                                                <button onclick="copiarUrlWidgetComunidad()" class="btn btn-success" style="white-space: nowrap;">
+                                                    <i class="fas fa-copy"></i> Copiar
+                                                </button>
+                                            </div>
+                                        </div>
+                                        
+                                        <!-- Código HTML Embed Comunidad -->
+                                        <div style="margin-bottom: 30px;">
+                                            <h3 style="color: #1F2937; margin-bottom: 15px;">📄 Código HTML para Embed</h3>
+                                            <div style="background: #1F2937; color: #F9FAFB; padding: 15px; border-radius: 8px; font-family: 'Courier New', monospace; font-size: 12px; overflow-x: auto; margin-bottom: 10px;">
+                                                <pre id="codigo-html-widget-comunidad" style="margin: 0; white-space: pre-wrap; word-wrap: break-word;"></pre>
+                                            </div>
+                                            <button onclick="copiarCodigoWidgetComunidad()" class="btn btn-secondary">
+                                                <i class="fas fa-copy"></i> Copiar Código
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -13189,12 +13313,186 @@ Precio: $${precio.toLocaleString('es-AR')} ARS/mes
             }
         }
         
+        // ===== WIDGET DE ACCESO DIRECTO A COMUNIDADES =====
+        function inicializarWidgetComunidad() {
+            const checkbox = document.getElementById('activar-widget-comunidad');
+            const contenidoActivo = document.getElementById('contenido-widget-comunidad-activo');
+            
+            if (!checkbox) return;
+            
+            // Cargar estado guardado
+            const widgetActivo = localStorage.getItem('cresalia_widget_comunidad_activo') === 'true';
+            checkbox.checked = widgetActivo;
+            
+            if (widgetActivo) {
+                contenidoActivo.style.display = 'block';
+            } else {
+                contenidoActivo.style.display = 'none';
+            }
+            
+            // Listener para cambios
+            checkbox.addEventListener('change', function() {
+                const activado = this.checked;
+                localStorage.setItem('cresalia_widget_comunidad_activo', activado ? 'true' : 'false');
+                
+                if (activado) {
+                    const confirmar = confirm('¿Deseas activar el Widget de Acceso Directo a Comunidades?\n\nEsto te permitirá generar URLs personalizadas para acceder rápidamente a cualquier comunidad de Cresalia.');
+                    if (confirmar) {
+                        contenidoActivo.style.display = 'block';
+                    } else {
+                        this.checked = false;
+                        localStorage.setItem('cresalia_widget_comunidad_activo', 'false');
+                    }
+                } else {
+                    contenidoActivo.style.display = 'none';
+                }
+            });
+        }
+        
+        function mostrarTabWidget(tab) {
+            const tabPanel = document.getElementById('tab-panel');
+            const tabComunidad = document.getElementById('tab-comunidad');
+            const contenidoWidget = document.getElementById('contenido-widget');
+            const contenidoComunidad = document.getElementById('contenido-widget-comunidad');
+            
+            if (tab === 'panel') {
+                tabPanel.style.color = '#7C3AED';
+                tabPanel.style.borderBottom = '3px solid #7C3AED';
+                tabComunidad.style.color = '#6B7280';
+                tabComunidad.style.borderBottom = 'none';
+                contenidoWidget.style.display = 'block';
+                contenidoComunidad.style.display = 'none';
+            } else {
+                tabPanel.style.color = '#6B7280';
+                tabPanel.style.borderBottom = 'none';
+                tabComunidad.style.color = '#10B981';
+                tabComunidad.style.borderBottom = '3px solid #10B981';
+                contenidoWidget.style.display = 'none';
+                contenidoComunidad.style.display = 'block';
+                inicializarWidgetComunidad();
+            }
+        }
+        
+        async function generarWidgetComunidad() {
+            const select = document.getElementById('select-comunidad');
+            if (!select || !select.value) {
+                document.getElementById('preview-widget-comunidad-container').style.display = 'none';
+                return;
+            }
+            
+            const [nombreComunidad, urlComunidad, labelComunidad] = select.value.split('|');
+            const partesLabel = labelComunidad.split(' ');
+            const iconoComunidad = partesLabel[0];
+            const nombreComunidadLimpio = partesLabel.slice(1).join(' ');
+            
+            try {
+                const supabase = initSupabase();
+                if (!supabase) return;
+                
+                const { data: { user } } = await supabase.auth.getUser();
+                if (!user) return;
+                
+                // Obtener datos de la tienda
+                const { data: tienda } = await supabase
+                    .from('tiendas')
+                    .select('nombre_tienda, configuracion')
+                    .eq('user_id', user.id)
+                    .single();
+                
+                const nombreTienda = tienda?.nombre_tienda || user.user_metadata?.nombre_tienda || 'Mi Tienda';
+                const logoUrl = tienda?.configuracion?.avatar_url || localStorage.getItem('cresalia_avatar_tienda_url') || '';
+                const baseUrl = window.location.origin;
+                const widgetUrl = `${baseUrl}/tiendas/ejemplo-tienda/widget-acceso-comunidad.html?url=${encodeURIComponent(urlComunidad)}&logo=${encodeURIComponent(logoUrl)}&tienda=${encodeURIComponent(nombreTienda)}&comunidad=${encodeURIComponent(nombreComunidadLimpio)}&icono=${encodeURIComponent(iconoComunidad)}`;
+                
+                // Actualizar preview
+                const previewLogo = document.getElementById('preview-logo-tienda-comunidad');
+                const previewNombre = document.getElementById('preview-nombre-comunidad');
+                const previewBadge = document.getElementById('preview-comunidad-badge');
+                
+                if (previewLogo) {
+                    if (logoUrl) {
+                        previewLogo.src = logoUrl;
+                    } else {
+                        const iniciales = nombreTienda.substring(0, 2).toUpperCase();
+                        previewLogo.src = `data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' width='100' height='100'><rect width='100' height='100' fill='%237C3AED'/><text x='50%25' y='50%25' dominant-baseline='middle' text-anchor='middle' font-size='36' font-weight='bold' fill='white'>${iniciales}</text></svg>`;
+                    }
+                }
+                
+                if (previewNombre) {
+                    previewNombre.textContent = nombreComunidadLimpio;
+                }
+                
+                if (previewBadge) {
+                    previewBadge.innerHTML = iconoComunidad + ' ' + nombreComunidadLimpio;
+                }
+                
+                // Mostrar preview
+                document.getElementById('preview-widget-comunidad-container').style.display = 'block';
+                
+                // Actualizar URL
+                const urlInput = document.getElementById('url-widget-comunidad');
+                if (urlInput) {
+                    urlInput.value = widgetUrl;
+                }
+                
+                // Generar código HTML
+                const codigoHTMLCompleto = `<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Acceso Directo - ${nombreComunidadLimpio}</title>
+    <meta http-equiv="refresh" content="0; url=${widgetUrl}">
+</head>
+<body>
+    <script>
+        window.location.href = "${widgetUrl}";
+    </script>
+    <p>Redirigiendo... <a href="${widgetUrl}">Haz clic aquí</a></p>
+</body>
+</html>`;
+                
+                const codigoDiv = document.getElementById('codigo-html-widget-comunidad');
+                if (codigoDiv) {
+                    codigoDiv.textContent = codigoHTMLCompleto;
+                }
+                
+            } catch (error) {
+                console.error('Error generando widget comunidad:', error);
+            }
+        }
+        
+        function copiarUrlWidgetComunidad() {
+            const urlInput = document.getElementById('url-widget-comunidad');
+            if (urlInput) {
+                urlInput.select();
+                document.execCommand('copy');
+                alert('✅ URL copiada al portapapeles');
+            }
+        }
+        
+        function copiarCodigoWidgetComunidad() {
+            const codigoDiv = document.getElementById('codigo-html-widget-comunidad');
+            if (codigoDiv) {
+                const textarea = document.createElement('textarea');
+                textarea.value = codigoDiv.textContent;
+                document.body.appendChild(textarea);
+                textarea.select();
+                document.execCommand('copy');
+                document.body.removeChild(textarea);
+                alert('✅ Código copiado al portapapeles');
+            }
+        }
+        
         // Interceptar mostrarSeccion para inicializar widget cuando se muestre
         const originalMostrarSeccion = window.mostrarSeccion;
         window.mostrarSeccion = function(seccionId) {
             originalMostrarSeccion(seccionId);
             if (seccionId === 'widget-acceso-directo') {
-                setTimeout(inicializarWidgetAccesoDirecto, 100);
+                setTimeout(() => {
+                    inicializarWidgetAccesoDirecto();
+                    mostrarTabWidget('panel'); // Por defecto mostrar tab de panel
+                }, 100);
             }
         };
     </script>
