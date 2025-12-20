@@ -192,12 +192,63 @@
             </button>
         </div>
         
+        <div style="text-align: center; margin-top: 30px; padding-top: 20px; border-top: 1px solid #e0e0e0;">
+            <p style="color: #666; margin-bottom: 15px; font-size: 14px;">
+                <i class="fas fa-key"></i> ¿Olvidaste tu contraseña?
+            </p>
+            <button onclick="mostrarRecuperarPassword()" style="background: #6b7280; color: white; padding: 12px 24px; border: none; border-radius: 10px; cursor: pointer; font-size: 14px; transition: all 0.3s ease;" onmouseover="this.style.background='#4b5563'" onmouseout="this.style.background='#6b7280'">
+                <i class="fas fa-unlock-alt"></i> Recuperar Contraseña
+            </button>
+        </div>
+        
         <div class="back-link">
             <a href="index-cresalia.html">
                 <i class="fas fa-arrow-left"></i> Volver al inicio
             </a>
         </div>
     </div>
+    
+    <!-- Modal para recuperar contraseña -->
+    <div id="modalRecuperarPassword" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); display: flex; align-items: center; justify-content: center; z-index: 99999;">
+        <div style="background: white; border-radius: 20px; padding: 40px; max-width: 450px; margin: 20px; width: 90%;">
+            <div style="text-align: center; margin-bottom: 30px;">
+                <h2 style="margin: 0; color: #374151;"><i class="fas fa-key"></i> Recuperar Contraseña</h2>
+                <p style="color: #6b7280; margin-top: 10px;">Ingresa tu email para recibir el enlace de recuperación</p>
+            </div>
+            
+            <form id="formRecuperarPassword" onsubmit="enviarRecuperarPassword(event); return false;">
+                <div style="margin-bottom: 20px;">
+                    <label for="emailRecuperar" style="display: block; margin-bottom: 8px; color: #333; font-weight: 600; font-size: 14px;">
+                        <i class="fas fa-envelope"></i> Email
+                    </label>
+                    <input 
+                        type="email" 
+                        id="emailRecuperar" 
+                        placeholder="tu@email.com" 
+                        required
+                        autocomplete="email"
+                        style="width: 100%; padding: 12px 15px; border: 2px solid #e0e0e0; border-radius: 10px; font-size: 14px;"
+                    >
+                </div>
+                
+                <div id="mensajeRecuperar" style="display: none; padding: 15px; border-radius: 10px; margin-bottom: 20px;"></div>
+                
+                <div style="display: flex; gap: 10px; justify-content: center;">
+                    <button type="button" onclick="cerrarModalRecuperarPassword()" style="background: #6b7280; color: white; padding: 12px 24px; border: none; border-radius: 10px; cursor: pointer;">
+                        <i class="fas fa-times"></i> Cancelar
+                    </button>
+                    <button type="submit" id="btnEnviarRecuperar" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 12px 24px; border: none; border-radius: 10px; cursor: pointer; font-weight: 600;">
+                        <i class="fas fa-paper-plane"></i> Enviar
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+    
+    <!-- Scripts -->
+    <script src="js/inject-env-vars.js"></script>
+    <script src="auth/supabase-config.js"></script>
+    <script src="auth/auth-system.js"></script>
     
     <script>
         function irALoginTienda() {
@@ -207,6 +258,116 @@
         function irALoginComprador() {
             window.location.href = 'login-comprador.html';
         }
+        
+        function mostrarRecuperarPassword() {
+            document.getElementById('modalRecuperarPassword').style.display = 'flex';
+            document.getElementById('emailRecuperar').focus();
+        }
+        
+        function cerrarModalRecuperarPassword() {
+            document.getElementById('modalRecuperarPassword').style.display = 'none';
+            document.getElementById('formRecuperarPassword').reset();
+            document.getElementById('mensajeRecuperar').style.display = 'none';
+        }
+        
+        async function enviarRecuperarPassword(event) {
+            event.preventDefault();
+            
+            const email = document.getElementById('emailRecuperar').value.trim();
+            const btnEnviar = document.getElementById('btnEnviarRecuperar');
+            const mensajeDiv = document.getElementById('mensajeRecuperar');
+            
+            if (!email) {
+                mostrarMensaje('Por favor, ingresa tu email', 'error');
+                return;
+            }
+            
+            btnEnviar.disabled = true;
+            btnEnviar.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Enviando...';
+            
+            try {
+                // Esperar a que initSupabase esté disponible
+                if (typeof initSupabase === 'undefined' || typeof initSupabase !== 'function') {
+                    throw new Error('Supabase no está disponible. Por favor, recarga la página.');
+                }
+                
+                // Verificar que recuperarPassword esté disponible
+                if (typeof recuperarPassword === 'undefined' && typeof window.recuperarPassword === 'undefined') {
+                    throw new Error('La función de recuperación no está disponible. Por favor, recarga la página.');
+                }
+                
+                const funcionRecuperar = recuperarPassword || window.recuperarPassword;
+                const resultado = await funcionRecuperar(email);
+                
+                if (resultado && resultado.success) {
+                    mostrarMensaje('✅ ' + (resultado.mensaje || 'Te hemos enviado un email para recuperar tu contraseña. Revisa tu bandeja de entrada.'), 'success');
+                    setTimeout(() => {
+                        cerrarModalRecuperarPassword();
+                    }, 3000);
+                } else {
+                    mostrarMensaje('❌ ' + (resultado?.mensaje || 'Error al enviar el email. Por favor, intenta de nuevo.'), 'error');
+                }
+            } catch (error) {
+                console.error('Error recuperando contraseña:', error);
+                mostrarMensaje('❌ Error: ' + (error.message || 'No se pudo enviar el email. Por favor, intenta de nuevo.'), 'error');
+            } finally {
+                btnEnviar.disabled = false;
+                btnEnviar.innerHTML = '<i class="fas fa-paper-plane"></i> Enviar';
+            }
+        }
+        
+        function mostrarMensaje(mensaje, tipo) {
+            const mensajeDiv = document.getElementById('mensajeRecuperar');
+            mensajeDiv.textContent = mensaje;
+            mensajeDiv.className = tipo === 'success' ? 'notification success visible' : 'notification error visible';
+            mensajeDiv.style.display = 'block';
+        }
+        
+        // Cerrar modal al hacer click fuera
+        document.getElementById('modalRecuperarPassword').addEventListener('click', function(e) {
+            if (e.target === this) {
+                cerrarModalRecuperarPassword();
+            }
+        });
     </script>
+    
+    <style>
+        .notification {
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            display: none;
+            animation: slideDown 0.3s ease;
+        }
+        
+        @keyframes slideDown {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .notification.success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+        
+        .notification.error {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+        
+        .notification.visible {
+            display: block;
+        }
+    </style>
+</body>
+</html>
 </body>
 </html>
