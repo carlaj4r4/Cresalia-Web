@@ -673,9 +673,9 @@
                     </li>
                     <!-- Botones para usuarios NO logueados -->
                     <li class="nav-item" id="btnIniciarSesion">
-                        <button class="btn btn-outline-primary btn-sm me-2" onclick="toggleUserSystem(); showLoginForm(); return false;" style="margin-top: 0.25rem;">
+                        <a href="login.html" class="btn btn-outline-primary btn-sm me-2" style="margin-top: 0.25rem; text-decoration: none; display: inline-block;">
                             <i class="fas fa-sign-in-alt"></i> Iniciar Sesión
-                        </button>
+                        </a>
                     </li>
                     <li class="nav-item" id="btnComenzarGratis">
                         <button class="btn btn-primary btn-sm me-2" onclick="toggleUserSystem(); showRegisterForm(); return false;" style="margin-top: 0.25rem;">
@@ -767,9 +767,6 @@
                 <div class="user-form-footer">
                     <p>¿No tienes cuenta? <a href="#" onclick="showRegisterForm()">Regístrate aquí</a></p>
                     <div style="display: flex; gap: 10px; justify-content: center; margin-top: 15px;">
-                        <button class="user-btn secondary" onclick="closeUserSystem()" style="flex: 1;">
-                            <i class="fas fa-arrow-left"></i> Volver
-                        </button>
                         <button class="user-btn secondary" onclick="closeUserSystem()" style="flex: 1;">
                             <i class="fas fa-times"></i> Cerrar
                         </button>
