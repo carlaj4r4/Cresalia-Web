@@ -554,9 +554,21 @@
                 text-align: center;
             }
             
+            .widget-perfil-usuario .avatar-container {
+                margin: 0 auto 15px auto;
+            }
+            
+            .widget-perfil-usuario #tipo-usuario-widget {
+                display: block !important;
+                font-size: 11px !important;
+                margin-top: 6px !important;
+                opacity: 0.9 !important;
+            }
+            
             .widget-perfil-usuario > div > div:last-child {
                 width: 100%;
                 justify-content: center;
+                margin-top: 15px;
             }
             
             .widget-perfil-usuario > div > div:last-child button {
@@ -640,6 +652,23 @@
             }
         }
         
+        /* RESPONSIVE TABLET */
+        @media (max-width: 1024px) and (min-width: 769px) {
+            .widget-perfil-usuario {
+                padding: 20px !important;
+            }
+            
+            .widget-perfil-usuario #tipo-usuario-widget {
+                display: block !important;
+                font-size: 12px !important;
+                margin-top: 6px !important;
+            }
+            
+            .widget-perfil-usuario > div {
+                gap: 15px !important;
+            }
+        }
+        
         @media (max-width: 480px) {
             .demo-header h1 {
                 font-size: 1.2rem;
@@ -657,6 +686,35 @@
             .products-grid, .stores-grid {
                 grid-template-columns: 1fr !important;
             }
+            
+            /* Widget de perfil en móvil pequeño */
+            .widget-perfil-usuario {
+                padding: 18px !important;
+            }
+            
+            .widget-perfil-usuario .avatar-container img {
+                width: 60px !important;
+                height: 60px !important;
+            }
+            
+            .widget-perfil-usuario #nombre-usuario-widget {
+                font-size: 20px !important;
+            }
+            
+            .widget-perfil-usuario #email-usuario-widget {
+                font-size: 13px !important;
+            }
+            
+            .widget-perfil-usuario #tipo-usuario-widget {
+                font-size: 10px !important;
+                margin-top: 4px !important;
+            }
+            
+            .widget-perfil-usuario > div > div:last-child button {
+                padding: 8px 12px !important;
+                font-size: 0.85rem !important;
+            }
+        }
             
             .cumple-preferencias-wrapper {
                 padding: 20px 16px;
@@ -1077,7 +1135,7 @@
                 </a>
             </li>
             <li><a href="#productos">Productos</a></li>
-            <li><a href="/panel-comunidad-compradores.html" target="_blank" style="color: #EC4899; font-weight: 600;">
+            <li><a href="panel-comunidad-compradores.html" target="_blank" style="color: #EC4899; font-weight: 600;">
                 <i class="fas fa-users"></i> Comunidad
             </a></li>
             <li><a href="#" onclick="abrirFeedbackCompradores(); return false;" style="color: #10B981; font-weight: 600;">
