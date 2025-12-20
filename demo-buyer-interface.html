@@ -1128,6 +1128,7 @@
                     <div style="flex: 1; min-width: 200px;">
                         <h3 id="nombre-usuario-widget" style="margin: 0 0 8px 0; font-size: 24px; font-weight: 600;">Usuario</h3>
                         <p id="email-usuario-widget" style="margin: 0; opacity: 0.9; font-size: 14px;">email@ejemplo.com</p>
+                        <p id="tipo-usuario-widget" style="margin: 4px 0 0 0; opacity: 0.8; font-size: 12px; display: none;"></p>
                     </div>
                     <div style="display: flex; gap: 12px; flex-wrap: wrap;">
                         <button onclick="mostrarHistorialCompras()" style="background: rgba(255,255,255,0.2); border: none; color: white; padding: 10px 20px; border-radius: 8px; cursor: pointer; font-weight: 600; transition: all 0.3s;" onmouseover="this.style.background='rgba(255,255,255,0.3)'" onmouseout="this.style.background='rgba(255,255,255,0.2)'">
@@ -3131,9 +3132,27 @@
                 // Cargar datos del usuario
                 const nombre = user.user_metadata?.nombre || user.user_metadata?.nombre_tienda || user.email?.split('@')[0] || 'Usuario';
                 const email = user.email || '';
+                const tipoUsuario = user.user_metadata?.tipo_usuario || 'comprador';
+                
+                // Determinar el tipo de usuario correcto
+                let tipoDisplay = '';
+                if (['vendedor', 'emprendedor', 'servicios'].includes(tipoUsuario)) {
+                    tipoDisplay = tipoUsuario === 'vendedor' ? '🏪 Vendedor' : 
+                                 tipoUsuario === 'emprendedor' ? '💼 Emprendedor' : 
+                                 '🔧 Servicios';
+                } else {
+                    tipoDisplay = '🛒 Comprador';
+                }
                 
                 document.getElementById('nombre-usuario-widget').textContent = nombre;
                 document.getElementById('email-usuario-widget').textContent = email;
+                
+                // Mostrar tipo de usuario solo si existe el elemento
+                const tipoWidget = document.getElementById('tipo-usuario-widget');
+                if (tipoWidget) {
+                    tipoWidget.textContent = tipoDisplay;
+                    tipoWidget.style.display = 'block';
+                }
                 
                 // Cargar avatar guardado
                 const avatarUrl = localStorage.getItem('cresalia_avatar_url');

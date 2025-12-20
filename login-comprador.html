@@ -276,6 +276,10 @@
         <div class="links">
             ¿No tienes cuenta? <a href="registro-comprador.html">Regístrate</a>
             <br><br>
+            <a href="#" onclick="recuperarPasswordUI(); return false;" style="color: #EF4444; text-decoration: none; font-size: 14px;">
+                <i class="fas fa-key"></i> ¿Olvidaste tu contraseña?
+            </a>
+            <br><br>
             ¿Eres vendedor? <a href="login-tienda.html">Acceso para Tiendas</a>
         </div>
     </div>
@@ -415,7 +419,50 @@
                 notif.classList.remove('visible');
             }, 5000);
         }
+        
+        async function recuperarPasswordUI() {
+            const email = prompt('Ingresa tu email para recuperar tu contraseña:');
+            if (!email) return;
+            try {
+                // Esperar a que recuperarPassword esté disponible
+                if (typeof recuperarPassword === 'undefined' && typeof window.recuperarPassword === 'undefined') {
+                    // Cargar auth-system.js si no está disponible
+                    const script = document.createElement('script');
+                    script.src = 'auth/auth-system.js';
+                    document.head.appendChild(script);
+                    
+                    // Esperar a que se cargue
+                    await new Promise((resolve) => {
+                        let attempts = 0;
+                        const checkFunction = setInterval(() => {
+                            if (typeof recuperarPassword !== 'undefined' || typeof window.recuperarPassword !== 'undefined') {
+                                clearInterval(checkFunction);
+                                resolve();
+                            } else if (attempts++ > 20) {
+                                clearInterval(checkFunction);
+                                throw new Error('No se pudo cargar la función de recuperación');
+                            }
+                        }, 200);
+                    });
+                }
+                
+                const funcionRecuperar = recuperarPassword || window.recuperarPassword;
+                const resultado = await funcionRecuperar(email);
+                
+                if (resultado?.success) {
+                    mostrarNotificacion('✅ ' + (resultado.mensaje || 'Revisa tu correo para el enlace de recuperación.'), 'success');
+                } else {
+                    mostrarNotificacion('❌ ' + (resultado?.mensaje || 'No se pudo enviar el correo.'), 'error');
+                }
+            } catch (err) {
+                console.error('❌ Error en recuperación de contraseña:', err);
+                mostrarNotificacion('❌ Error enviando email de recuperación. Intenta de nuevo.', 'error');
+            }
+        }
     </script>
+    
+    <!-- Script de auth-system para recuperar contraseña -->
+    <script src="auth/auth-system.js"></script>
 </body>
 </html>
 
