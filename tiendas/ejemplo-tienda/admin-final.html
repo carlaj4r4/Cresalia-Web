@@ -1195,6 +1195,13 @@
                         </a>
                     </li>
                     <li class="nav-item">
+                        <a href="#" class="nav-link" onclick="mostrarSeccion('widget-acceso-directo')">
+                            <i class="fas fa-rocket"></i>
+                            <span>Acceso Directo</span>
+                            <small style="display: block; font-size: 0.7rem; opacity: 0.8;">💜 Nuevo</small>
+                        </a>
+                    </li>
+                    <li class="nav-item">
                         <a href="#" class="nav-link" onclick="abrirConfiguracionRemiseria()">
                             <i class="fas fa-car"></i>
                             <span>Remisería</span>
@@ -1508,6 +1515,106 @@
             <!-- Configuración de Celebraciones Section -->
             <div id="configuracion-celebraciones" class="content-section">
                 <!-- El contenido se cargará dinámicamente desde configuracion-celebracion-panel.js -->
+            </div>
+
+            <!-- Widget de Acceso Directo Section -->
+            <div id="widget-acceso-directo" class="content-section">
+                <div class="content-header">
+                    <h1><i class="fas fa-rocket"></i> Widget de Acceso Directo</h1>
+                    <p>Crea un acceso directo personalizado a tu panel con tu logo</p>
+                </div>
+                
+                <div class="card" style="max-width: 900px; margin: 0 auto;">
+                    <div style="padding: 30px;">
+                        <div style="background: linear-gradient(135deg, #F0F9FF, #E0F2FE); padding: 25px; border-radius: 15px; margin-bottom: 25px; border-left: 4px solid #0EA5E9;">
+                            <h3 style="color: #0C4A6E; margin-bottom: 15px; display: flex; align-items: center; gap: 10px;">
+                                <i class="fas fa-info-circle"></i> ¿Qué es esto?
+                            </h3>
+                            <p style="color: #075985; line-height: 1.6;">
+                                Crea un acceso directo personalizado a tu panel de administración con <strong>tu logo</strong> y el logo de <strong>Cresalia</strong>. 
+                                Esto permite acceder rápidamente al panel desde cualquier dispositivo sin tener que buscar la página.
+                            </p>
+                        </div>
+                        
+                        <div style="margin-bottom: 30px;">
+                            <label style="display: flex; align-items: center; gap: 10px; margin-bottom: 15px; font-weight: 600; color: #374151;">
+                                <input type="checkbox" id="activar-widget-acceso" style="width: 20px; height: 20px; cursor: pointer;">
+                                <span>Activar Widget de Acceso Directo</span>
+                            </label>
+                            <p style="color: #6B7280; font-size: 14px; margin-left: 30px;">
+                                Al activar, podrás generar un widget personalizado para acceder rápidamente a tu panel.
+                            </p>
+                        </div>
+                        
+                        <div id="contenido-widget" style="display: none;">
+                            <!-- Preview del Widget -->
+                            <div style="margin-bottom: 30px;">
+                                <h3 style="color: #1F2937; margin-bottom: 20px;">📱 Vista Previa del Widget</h3>
+                                <div id="preview-widget" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); padding: 40px; border-radius: 20px; max-width: 400px; margin: 0 auto; box-shadow: 0 10px 40px rgba(0,0,0,0.2);">
+                                    <div style="background: white; border-radius: 15px; padding: 30px; text-align: center;">
+                                        <div style="width: 60px; height: 60px; margin: 0 auto 15px; background: linear-gradient(135deg, #7C3AED, #EC4899); border-radius: 12px; display: flex; align-items: center; justify-content: center; color: white; font-size: 24px; font-weight: bold;">
+                                            💜
+                                        </div>
+                                        <img id="preview-logo-tienda" src="" alt="Logo" style="width: 100px; height: 100px; border-radius: 50%; object-fit: cover; border: 4px solid #E5E7EB; margin: 0 auto 15px; display: block;">
+                                        <h4 id="preview-nombre-tienda" style="color: #1F2937; margin-bottom: 5px;">Mi Tienda</h4>
+                                        <p style="color: #6B7280; margin-bottom: 20px; font-size: 14px;">Panel de Administración</p>
+                                        <button style="background: linear-gradient(135deg, #7C3AED, #EC4899); color: white; border: none; padding: 12px 25px; border-radius: 10px; font-weight: 600; cursor: pointer; width: 100%;">
+                                            <i class="fas fa-tachometer-alt"></i> Acceder al Panel
+                                        </button>
+                                        <p style="color: #9CA3AF; font-size: 11px; margin-top: 15px;">Powered by Cresalia</p>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- URL del Widget -->
+                            <div style="margin-bottom: 30px;">
+                                <h3 style="color: #1F2937; margin-bottom: 15px;">🔗 URL de tu Widget</h3>
+                                <div style="display: flex; gap: 10px; align-items: center;">
+                                    <input type="text" id="url-widget" readonly style="flex: 1; padding: 12px; border: 2px solid #E5E7EB; border-radius: 8px; font-size: 14px; background: #F9FAFB;">
+                                    <button onclick="copiarUrlWidget()" class="btn btn-primary" style="white-space: nowrap;">
+                                        <i class="fas fa-copy"></i> Copiar
+                                    </button>
+                                </div>
+                                <p style="color: #6B7280; font-size: 13px; margin-top: 10px;">
+                                    <i class="fas fa-info-circle"></i> Comparte esta URL o agrégala como favorito para acceso rápido
+                                </p>
+                            </div>
+                            
+                            <!-- Código HTML Embed -->
+                            <div style="margin-bottom: 30px;">
+                                <h3 style="color: #1F2937; margin-bottom: 15px;">📄 Código HTML para Embed</h3>
+                                <div style="background: #1F2937; color: #F9FAFB; padding: 15px; border-radius: 8px; font-family: 'Courier New', monospace; font-size: 12px; overflow-x: auto; margin-bottom: 10px;">
+                                    <pre id="codigo-html-widget" style="margin: 0; white-space: pre-wrap; word-wrap: break-word;"></pre>
+                                </div>
+                                <button onclick="copiarCodigoWidget()" class="btn btn-secondary">
+                                    <i class="fas fa-copy"></i> Copiar Código
+                                </button>
+                                <p style="color: #6B7280; font-size: 13px; margin-top: 10px;">
+                                    <i class="fas fa-info-circle"></i> Pega este código en tu sitio web o guardalo como archivo HTML
+                                </p>
+                            </div>
+                            
+                            <!-- Instrucciones -->
+                            <div style="background: #FEF3C7; border-left: 4px solid #F59E0B; padding: 20px; border-radius: 10px; margin-top: 30px;">
+                                <h4 style="color: #92400E; margin-bottom: 15px;">
+                                    <i class="fas fa-lightbulb"></i> Cómo usar tu Widget
+                                </h4>
+                                <ol style="color: #78350F; line-height: 2; margin-left: 20px;">
+                                    <li>Activa el widget marcando la casilla superior</li>
+                                    <li>Copia la URL o el código HTML</li>
+                                    <li>Agrega la URL como favorito en tu navegador o móvil</li>
+                                    <li>O pega el código HTML en tu sitio web personal</li>
+                                    <li>¡Accede rápidamente a tu panel con tu logo personalizado!</li>
+                                </ol>
+                            </div>
+                        </div>
+                        
+                        <div id="widget-desactivado" style="text-align: center; padding: 40px; color: #6B7280;">
+                            <i class="fas fa-rocket" style="font-size: 48px; margin-bottom: 20px; opacity: 0.5;"></i>
+                            <p>Activa el widget para generar tu acceso directo personalizado</p>
+                        </div>
+                    </div>
+                </div>
             </div>
 
             <!-- Productos Section -->
@@ -12943,6 +13050,153 @@ Precio: $${precio.toLocaleString('es-AR')} ARS/mes
         // Hacer funciones globales
         window.cambiarAvatarTienda = cambiarAvatarTienda;
         window.cargarDatosTienda = cargarDatosTienda;
+        
+        // ===== WIDGET DE ACCESO DIRECTO =====
+        function inicializarWidgetAccesoDirecto() {
+            const checkbox = document.getElementById('activar-widget-acceso');
+            const contenidoWidget = document.getElementById('contenido-widget');
+            const widgetDesactivado = document.getElementById('widget-desactivado');
+            
+            if (!checkbox) return;
+            
+            // Cargar estado guardado
+            const widgetActivo = localStorage.getItem('cresalia_widget_acceso_activo') === 'true';
+            checkbox.checked = widgetActivo;
+            
+            if (widgetActivo) {
+                contenidoWidget.style.display = 'block';
+                widgetDesactivado.style.display = 'none';
+                generarWidgetAccesoDirecto();
+            } else {
+                contenidoWidget.style.display = 'none';
+                widgetDesactivado.style.display = 'block';
+            }
+            
+            // Listener para cambios
+            checkbox.addEventListener('change', async function() {
+                const activado = this.checked;
+                localStorage.setItem('cresalia_widget_acceso_activo', activado ? 'true' : 'false');
+                
+                if (activado) {
+                    // Consultar al usuario si quiere activarlo
+                    const confirmar = confirm('¿Deseas activar el Widget de Acceso Directo?\n\nEsto generará una URL personalizada con tu logo para acceder rápidamente a tu panel.');
+                    if (confirmar) {
+                        contenidoWidget.style.display = 'block';
+                        widgetDesactivado.style.display = 'none';
+                        await generarWidgetAccesoDirecto();
+                    } else {
+                        this.checked = false;
+                        localStorage.setItem('cresalia_widget_acceso_activo', 'false');
+                    }
+                } else {
+                    contenidoWidget.style.display = 'none';
+                    widgetDesactivado.style.display = 'block';
+                }
+            });
+        }
+        
+        async function generarWidgetAccesoDirecto() {
+            try {
+                const supabase = initSupabase();
+                if (!supabase) return;
+                
+                const { data: { user } } = await supabase.auth.getUser();
+                if (!user) return;
+                
+                // Obtener datos de la tienda
+                const { data: tienda } = await supabase
+                    .from('tiendas')
+                    .select('nombre_tienda, configuracion')
+                    .eq('user_id', user.id)
+                    .single();
+                
+                const nombreTienda = tienda?.nombre_tienda || user.user_metadata?.nombre_tienda || 'Mi Tienda';
+                const logoUrl = tienda?.configuracion?.avatar_url || localStorage.getItem('cresalia_avatar_tienda_url') || '';
+                const panelUrl = window.location.href.split('/').slice(0, -1).join('/') + '/admin-final.html';
+                const baseUrl = window.location.origin;
+                const widgetUrl = `${baseUrl}/tiendas/ejemplo-tienda/widget-acceso-directo.html?url=${encodeURIComponent(panelUrl)}&logo=${encodeURIComponent(logoUrl)}&nombre=${encodeURIComponent(nombreTienda)}`;
+                
+                // Actualizar preview
+                const previewLogo = document.getElementById('preview-logo-tienda');
+                const previewNombre = document.getElementById('preview-nombre-tienda');
+                
+                if (previewLogo) {
+                    if (logoUrl) {
+                        previewLogo.src = logoUrl;
+                    } else {
+                        const iniciales = nombreTienda.substring(0, 2).toUpperCase();
+                        previewLogo.src = `data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' width='100' height='100'><rect width='100' height='100' fill='%237C3AED'/><text x='50%25' y='50%25' dominant-baseline='middle' text-anchor='middle' font-size='36' font-weight='bold' fill='white'>${iniciales}</text></svg>`;
+                    }
+                }
+                
+                if (previewNombre) {
+                    previewNombre.textContent = nombreTienda;
+                }
+                
+                // Actualizar URL
+                const urlInput = document.getElementById('url-widget');
+                if (urlInput) {
+                    urlInput.value = widgetUrl;
+                }
+                
+                // Generar código HTML
+                const codigoHTML = `<iframe src="${widgetUrl}" width="400" height="500" frameborder="0" style="border-radius: 15px; box-shadow: 0 10px 40px rgba(0,0,0,0.2);"></iframe>`;
+                const codigoHTMLCompleto = `<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Acceso Directo - ${nombreTienda}</title>
+    <meta http-equiv="refresh" content="0; url=${widgetUrl}">
+</head>
+<body>
+    <script>
+        window.location.href = "${widgetUrl}";
+    </script>
+    <p>Redirigiendo... <a href="${widgetUrl}">Haz clic aquí</a></p>
+</body>
+</html>`;
+                
+                const codigoDiv = document.getElementById('codigo-html-widget');
+                if (codigoDiv) {
+                    codigoDiv.textContent = codigoHTMLCompleto;
+                }
+                
+            } catch (error) {
+                console.error('Error generando widget:', error);
+            }
+        }
+        
+        function copiarUrlWidget() {
+            const urlInput = document.getElementById('url-widget');
+            if (urlInput) {
+                urlInput.select();
+                document.execCommand('copy');
+                alert('✅ URL copiada al portapapeles');
+            }
+        }
+        
+        function copiarCodigoWidget() {
+            const codigoDiv = document.getElementById('codigo-html-widget');
+            if (codigoDiv) {
+                const textarea = document.createElement('textarea');
+                textarea.value = codigoDiv.textContent;
+                document.body.appendChild(textarea);
+                textarea.select();
+                document.execCommand('copy');
+                document.body.removeChild(textarea);
+                alert('✅ Código copiado al portapapeles');
+            }
+        }
+        
+        // Interceptar mostrarSeccion para inicializar widget cuando se muestre
+        const originalMostrarSeccion = window.mostrarSeccion;
+        window.mostrarSeccion = function(seccionId) {
+            originalMostrarSeccion(seccionId);
+            if (seccionId === 'widget-acceso-directo') {
+                setTimeout(inicializarWidgetAccesoDirecto, 100);
+            }
+        };
     </script>
 </body>
 </html>
