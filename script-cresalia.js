@@ -5267,9 +5267,9 @@ function cerrarModalUsuario() {
 // Ir a perfil según tipo
 function irAPerfil(tipo) {
     if (tipo === 'vendedor') {
-        window.location.href = 'tiendas/ejemplo-tienda/admin.html';
+        window.location.href = 'tiendas/ejemplo-tienda/admin-final.html';
     } else {
-        window.location.href = 'perfil-comprador.html';
+        window.location.href = 'demo-buyer-interface.html';
     }
 }
 
