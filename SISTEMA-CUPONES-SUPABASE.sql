@@ -48,7 +48,7 @@ CREATE TABLE IF NOT EXISTS cupones (
 CREATE TABLE IF NOT EXISTS cupon_usos (
     id BIGSERIAL PRIMARY KEY,
     cupon_id BIGINT REFERENCES cupones(id) ON DELETE CASCADE,
-    comprador_id BIGINT REFERENCES compradores(id) ON DELETE SET NULL,
+    comprador_id UUID REFERENCES compradores(id) ON DELETE SET NULL, -- CORREGIDO: UUID en lugar de BIGINT
     user_id UUID REFERENCES auth.users(id) ON DELETE SET NULL, -- Para usuarios no registrados
     pedido_id BIGINT, -- Puede referenciar pedidos o compras
     tabla_pedido VARCHAR(50) DEFAULT 'pedidos', -- 'pedidos' o 'compras'
@@ -69,7 +69,7 @@ CREATE INDEX IF NOT EXISTS idx_cupon_usos_user ON cupon_usos(user_id);
 CREATE OR REPLACE FUNCTION validar_cupon(
     p_codigo VARCHAR(50),
     p_user_id UUID DEFAULT NULL,
-    p_comprador_id BIGINT DEFAULT NULL,
+    p_comprador_id UUID DEFAULT NULL, -- CORREGIDO: UUID en lugar de BIGINT
     p_monto_total DECIMAL(10,2) DEFAULT 0.00,
     p_productos_ids JSONB DEFAULT '[]'::jsonb
 ) RETURNS TABLE (
@@ -133,7 +133,7 @@ BEGIN
     IF p_comprador_id IS NOT NULL THEN
         SELECT COUNT(*) INTO v_usos_por_usuario
         FROM cupon_usos
-        WHERE cupon_id = v_cupon.id AND comprador_id = p_comprador_id;
+        WHERE cupon_id = v_cupon.id AND comprador_id = p_comprador_id::UUID;
         
         IF v_usos_por_usuario >= v_cupon.uso_maximo_por_usuario THEN
             RETURN QUERY SELECT false, 'Ya has usado este cupón el máximo de veces permitido'::TEXT, v_cupon;
@@ -156,7 +156,18 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql;
 
+-- ===== FUNCIÓN: Incrementar uso de cupón =====
+CREATE OR REPLACE FUNCTION incrementar_uso_cupon(p_cupon_id BIGINT) RETURNS VOID AS $$
+BEGIN
+    UPDATE cupones 
+    SET usos_actuales = usos_actuales + 1,
+        updated_at = NOW()
+    WHERE id = p_cupon_id;
+END;
+$$ LANGUAGE plpgsql;
+
 -- ===== COMENTARIOS =====
 COMMENT ON TABLE cupones IS 'Sistema de cupones y descuentos para la plataforma';
 COMMENT ON TABLE cupon_usos IS 'Registro de usos de cupones por pedidos';
 COMMENT ON FUNCTION validar_cupon IS 'Función para validar un cupón antes de aplicarlo a un pedido';
+COMMENT ON FUNCTION incrementar_uso_cupon IS 'Incrementa el contador de usos de un cupón';

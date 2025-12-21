@@ -243,7 +243,12 @@ const SistemaCupones = {
         }
         
         // Intentar obtener de elemento en DOM
-        const totalElement = document.querySelector('[id*="total"], [class*="total"]');
+        const totalContainer = document.querySelector('.producto-resumen-total');
+        if (totalContainer && totalContainer.dataset.originalTotal) {
+            return parseFloat(totalContainer.dataset.originalTotal) || 0;
+        }
+        
+        const totalElement = document.getElementById('precioTotalModal');
         if (totalElement) {
             const texto = totalElement.textContent.replace(/[^0-9,.-]/g, '');
             return parseFloat(texto.replace(',', '.')) || 0;

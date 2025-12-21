@@ -1083,7 +1083,7 @@ function mostrarModalPagoCarrito() {
     // Event listener para mostrar/ocultar campos de tarjeta
     document.querySelectorAll('input[name="metodoPago"]').forEach(radio => {
         radio.addEventListener('change', function() {
-            const camposTarjeta = document.getElementById('camposTarjetaProducto');
+            const camposTarjeta = document.getElementById('camposTarjetaCarrito');
             if (camposTarjeta) {
                 if (this.value === 'credito' || this.value === 'debito') {
                     camposTarjeta.style.display = 'block';
@@ -1093,6 +1093,13 @@ function mostrarModalPagoCarrito() {
             }
         });
     });
+    
+    // Agregar campo de cupón después de crear el formulario
+    setTimeout(() => {
+        if (typeof SistemaCupones !== 'undefined' && SistemaCupones.mostrarCampoCupon) {
+            SistemaCupones.mostrarCampoCupon('campo-cupon-checkout');
+        }
+    }, 200);
 }
 
 function mostrarModalPagoCarrito() {
@@ -1289,6 +1296,13 @@ function mostrarModalPagoCarrito() {
             manejarCamposTarjeta(this.value, 'Carrito');
         });
     });
+    
+    // Agregar campo de cupón si SistemaCupones está disponible
+    setTimeout(() => {
+        if (typeof SistemaCupones !== 'undefined' && SistemaCupones.mostrarCampoCupon) {
+            SistemaCupones.mostrarCampoCupon('formularioFacturacion');
+        }
+    }, 100);
 }
 
 function cerrarModalPago() {
@@ -1360,6 +1374,9 @@ function procesarCompra() {
         metodoPago = formData.get('metodoPago');
     }
     
+    // Obtener cupón aplicado si existe
+    const cuponAplicado = window.cuponAplicado || null;
+    
     const datosCompra = {
         tipoFactura: tipoFactura,
         nombreCliente: formData.get('nombreCliente'),
@@ -1377,7 +1394,12 @@ function procesarCompra() {
         esCompraCarrito: window.esCompraCarrito || false,
         carrito: window.carritoActual || [],
         producto: window.productoActual || null,
-        cantidad: window.cantidadActual || 1
+        cantidad: window.cantidadActual || 1,
+        cupon: cuponAplicado ? {
+            codigo: cuponAplicado.codigo,
+            descuento: cuponAplicado.descuento,
+            cupon_id: cuponAplicado.cupon?.id
+        } : null
     };
     
     console.log('Datos de entrega encontrados:', {

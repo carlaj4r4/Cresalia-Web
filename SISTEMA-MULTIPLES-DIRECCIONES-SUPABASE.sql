@@ -7,7 +7,7 @@
 -- Si no existe, crearla:
 CREATE TABLE IF NOT EXISTS direcciones_compradores (
     id BIGSERIAL PRIMARY KEY,
-    comprador_id BIGINT REFERENCES compradores(id) ON DELETE CASCADE,
+    comprador_id UUID REFERENCES compradores(id) ON DELETE CASCADE, -- CORREGIDO: UUID en lugar de BIGINT
     
     -- Información de la dirección
     alias VARCHAR(50) NOT NULL, -- "Casa", "Trabajo", "Casa de mamá", etc.

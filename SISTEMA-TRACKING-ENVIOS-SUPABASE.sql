@@ -3,6 +3,33 @@
 -- Mejoras a las tablas de pedidos/compras para tracking completo
 -- ============================================
 
+-- ===== PRIMERO: CREAR TABLA PEDIDOS SI NO EXISTE =====
+CREATE TABLE IF NOT EXISTS pedidos (
+    id BIGSERIAL PRIMARY KEY,
+    tienda_id VARCHAR(100) NOT NULL,
+    comprador_id UUID REFERENCES compradores(id) ON DELETE SET NULL,
+    numero_pedido VARCHAR(50) UNIQUE NOT NULL,
+    estado VARCHAR(20) DEFAULT 'pendiente' CHECK (estado IN ('pendiente', 'confirmado', 'procesando', 'enviado', 'entregado', 'cancelado')),
+    total DECIMAL(10,2) NOT NULL,
+    subtotal DECIMAL(10,2) NOT NULL,
+    impuestos DECIMAL(10,2) DEFAULT 0.00,
+    descuento DECIMAL(10,2) DEFAULT 0.00,
+    metodo_pago VARCHAR(50),
+    direccion_entrega JSONB,
+    notas TEXT,
+    fecha_pedido TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+    fecha_confirmacion TIMESTAMP WITH TIME ZONE,
+    fecha_entrega TIMESTAMP WITH TIME ZONE,
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+    updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);
+
+-- Índices para pedidos
+CREATE INDEX IF NOT EXISTS idx_pedidos_tienda_id ON pedidos(tienda_id);
+CREATE INDEX IF NOT EXISTS idx_pedidos_comprador_id ON pedidos(comprador_id);
+CREATE INDEX IF NOT EXISTS idx_pedidos_estado ON pedidos(estado);
+CREATE INDEX IF NOT EXISTS idx_pedidos_fecha ON pedidos(fecha_pedido);
+
 -- ===== 1. MEJORAR TABLA PEDIDOS CON TRACKING =====
 -- Agregar campos de tracking si no existen
 ALTER TABLE pedidos 
@@ -14,6 +41,46 @@ ADD COLUMN IF NOT EXISTS historial_tracking JSONB DEFAULT '[]'::jsonb; -- Histor
 
 -- ===== 2. MEJORAR TABLA COMPRAS CON TRACKING =====
 -- La tabla compras ya tiene numero_seguimiento, pero agreguemos campos adicionales
+-- PRIMERO verificar que compras existe, si no, crearla
+CREATE TABLE IF NOT EXISTS compras (
+    id BIGSERIAL PRIMARY KEY,
+    comprador_id UUID REFERENCES compradores(id) ON DELETE SET NULL,
+    tienda_id VARCHAR(50) NOT NULL,
+    numero_orden VARCHAR(100) UNIQUE NOT NULL,
+    estado VARCHAR(30) DEFAULT 'pendiente',
+    productos JSONB NOT NULL,
+    subtotal DECIMAL(10,2) NOT NULL,
+    descuentos DECIMAL(10,2) DEFAULT 0.00,
+    impuestos DECIMAL(10,2) DEFAULT 0.00,
+    costo_envio DECIMAL(10,2) DEFAULT 0.00,
+    total DECIMAL(10,2) NOT NULL,
+    moneda VARCHAR(3) DEFAULT 'ARS',
+    metodo_pago VARCHAR(50),
+    estado_pago VARCHAR(30) DEFAULT 'pendiente',
+    transaction_id VARCHAR(200),
+    fecha_pago TIMESTAMP WITH TIME ZONE,
+    tipo_entrega VARCHAR(50),
+    direccion_envio JSONB,
+    fecha_estimada_entrega DATE,
+    fecha_real_entrega TIMESTAMP WITH TIME ZONE,
+    numero_seguimiento VARCHAR(100),
+    notas_cliente TEXT,
+    notas_vendedor TEXT,
+    origen_compra VARCHAR(50) DEFAULT 'web',
+    dispositivo_usado VARCHAR(100),
+    ip_cliente INET,
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+    updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);
+
+-- Índices para compras
+CREATE INDEX IF NOT EXISTS idx_compras_comprador ON compras(comprador_id);
+CREATE INDEX IF NOT EXISTS idx_compras_tienda ON compras(tienda_id);
+CREATE INDEX IF NOT EXISTS idx_compras_numero_orden ON compras(numero_orden);
+CREATE INDEX IF NOT EXISTS idx_compras_estado ON compras(estado);
+CREATE INDEX IF NOT EXISTS idx_compras_fecha ON compras(created_at DESC);
+
+-- Agregar campos de tracking a compras
 ALTER TABLE compras 
 ADD COLUMN IF NOT EXISTS empresa_envio VARCHAR(100),
 ADD COLUMN IF NOT EXISTS tracking_url TEXT,
@@ -22,7 +89,7 @@ ADD COLUMN IF NOT EXISTS historial_tracking JSONB DEFAULT '[]'::jsonb;
 -- ===== 3. TABLA DE HISTORIAL DE TRACKING (OPCIONAL - Más detallado) =====
 CREATE TABLE IF NOT EXISTS tracking_historial (
     id BIGSERIAL PRIMARY KEY,
-    pedido_id BIGINT, -- Puede referenciar pedidos(id) o compras(id)
+    pedido_id TEXT, -- Usar TEXT para flexibilidad (puede ser BIGINT de pedidos/compras)
     tabla_origen VARCHAR(50) NOT NULL, -- 'pedidos' o 'compras'
     estado_anterior VARCHAR(50),
     estado_nuevo VARCHAR(50) NOT NULL,
@@ -62,7 +129,7 @@ BEGIN
             numero_seguimiento = COALESCE(p_numero_seguimiento, numero_seguimiento),
             empresa_envio = COALESCE(p_empresa_envio, empresa_envio),
             tracking_url = COALESCE(p_tracking_url, tracking_url),
-            historial_tracking = historial_tracking || jsonb_build_object(
+            historial_tracking = COALESCE(historial_tracking, '[]'::jsonb) || jsonb_build_object(
                 'fecha', NOW(),
                 'estado', p_estado_nuevo,
                 'ubicacion', p_ubicacion,
@@ -80,7 +147,7 @@ BEGIN
             numero_seguimiento = COALESCE(p_numero_seguimiento, numero_seguimiento),
             empresa_envio = COALESCE(p_empresa_envio, empresa_envio),
             tracking_url = COALESCE(p_tracking_url, tracking_url),
-            historial_tracking = historial_tracking || jsonb_build_object(
+            historial_tracking = COALESCE(historial_tracking, '[]'::jsonb) || jsonb_build_object(
                 'fecha', NOW(),
                 'estado', p_estado_nuevo,
                 'ubicacion', p_ubicacion,
@@ -100,7 +167,7 @@ BEGIN
         mensaje,
         actualizado_por
     ) VALUES (
-        p_pedido_id,
+        p_pedido_id::TEXT, -- Convertir a TEXT para tracking_historial
         p_tabla_origen,
         v_estado_anterior,
         p_estado_nuevo,
