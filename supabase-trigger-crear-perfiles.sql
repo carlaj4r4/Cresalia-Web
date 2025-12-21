@@ -100,6 +100,6 @@ CREATE TRIGGER trigger_crear_perfil_comprador
 CREATE TRIGGER trigger_crear_perfil_tienda
     AFTER INSERT ON auth.users
     FOR EACH ROW
-    WHEN (NEW.raw_user_meta_data->>'tipo_usuario' IN ('vendedor', 'emprendedor') OR NEW.raw_user_meta_data->>'nombre_tienda' IS NOT NULL)
+    WHEN (NEW.raw_user_meta_data->>'tipo_usuario' IN ('vendedor', 'emprendedor', 'servicios') OR NEW.raw_user_meta_data->>'nombre_tienda' IS NOT NULL)
     EXECUTE FUNCTION crear_perfil_tienda();
 

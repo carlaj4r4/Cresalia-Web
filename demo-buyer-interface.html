@@ -1229,6 +1229,20 @@
                     </div>
                 </div>
                 <div class="producto-card">
+                    <div class="producto-image" style="background: linear-gradient(135deg, #10B981, #059669); color: white;">
+                        <i class="fas fa-map-marker-alt fa-3x"></i>
+                    </div>
+                    <div class="producto-content">
+                        <h3 class="producto-title">Mis Direcciones</h3>
+                        <p class="producto-description">Gestiona tus direcciones de envío (Casa, Trabajo, etc.)</p>
+                        <div class="producto-actions">
+                            <button class="btn-view-store" onclick="SistemaDireccionesMultiples.mostrarGestionDirecciones()" style="width: 100%; text-align: center; border: none; cursor: pointer;">
+                                <i class="fas fa-map-marked-alt"></i> Gestionar Direcciones
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                <div class="producto-card">
                     <div class="producto-image" style="background: linear-gradient(135deg, #10B981, #14B8A6); color: white;">
                         <i class="fas fa-user-cog fa-3x"></i>
                     </div>
@@ -4029,6 +4043,146 @@
         window.abrirEditarPerfil = abrirEditarPerfil;
         window.cerrarEditarPerfil = cerrarEditarPerfil;
         window.guardarPerfil = guardarPerfil;
+        
+        // ===== SISTEMA DE TRACKING Y HISTORIAL DE COMPRAS =====
+        
+        async function mostrarHistorialCompras() {
+            try {
+                const supabase = await esperarInitSupabase();
+                if (!supabase) {
+                    alert('❌ No se pudo conectar a Supabase');
+                    return;
+                }
+                
+                const { data: { user }, error: userError } = await supabase.auth.getUser();
+                if (userError || !user) {
+                    alert('❌ Debes estar logueado para ver tu historial');
+                    return;
+                }
+                
+                // Obtener comprador_id
+                const { data: comprador } = await supabase
+                    .from('compradores')
+                    .select('id')
+                    .eq('user_id', user.id)
+                    .single();
+                
+                if (!comprador) {
+                    alert('❌ No se encontró tu perfil de comprador');
+                    return;
+                }
+                
+                // Cargar compras
+                const { data: compras, error } = await supabase
+                    .from('compras')
+                    .select('*')
+                    .eq('comprador_id', comprador.id)
+                    .order('created_at', { ascending: false });
+                
+                if (error) {
+                    console.error('Error:', error);
+                    alert('❌ Error al cargar tus compras');
+                    return;
+                }
+                
+                // Crear modal de historial
+                crearModalHistorialCompras(compras || []);
+                
+            } catch (error) {
+                console.error('Error en mostrarHistorialCompras:', error);
+                alert('❌ Error inesperado');
+            }
+        }
+        
+        function crearModalHistorialCompras(compras) {
+            // Cerrar modal existente si hay
+            const modalExistente = document.getElementById('modal-historial-compras');
+            if (modalExistente) modalExistente.remove();
+            
+            const modalHTML = `
+                <div id="modal-historial-compras" style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); z-index: 10000; display: flex; align-items: center; justify-content: center; padding: 20px; overflow-y: auto;">
+                    <div style="background: white; border-radius: 20px; max-width: 900px; width: 100%; max-height: 90vh; position: relative;">
+                        <!-- Header -->
+                        <div style="background: linear-gradient(135deg, #667eea, #764ba2); color: white; padding: 25px; border-radius: 20px 20px 0 0; position: sticky; top: 0; z-index: 10;">
+                            <button onclick="document.getElementById('modal-historial-compras').remove()" style="position: absolute; top: 15px; right: 15px; background: rgba(255,255,255,0.2); border: none; color: white; width: 35px; height: 35px; border-radius: 50%; cursor: pointer; font-size: 18px;">
+                                <i class="fas fa-times"></i>
+                            </button>
+                            <h2 style="margin: 0; font-size: 24px;">
+                                <i class="fas fa-shopping-bag"></i> Mis Compras
+                            </h2>
+                            <p style="margin: 10px 0 0 0; opacity: 0.9;">${compras.length} ${compras.length === 1 ? 'pedido' : 'pedidos'}</p>
+                        </div>
+                        
+                        <!-- Lista de Compras -->
+                        <div style="padding: 30px; max-height: calc(90vh - 120px); overflow-y: auto;">
+                            ${compras.length === 0 ? `
+                                <div style="text-align: center; padding: 60px 20px;">
+                                    <i class="fas fa-shopping-bag" style="font-size: 64px; color: #D1D5DB; margin-bottom: 20px;"></i>
+                                    <h3 style="color: #6B7280; margin-bottom: 10px;">No tienes compras aún</h3>
+                                    <p style="color: #9CA3AF;">Cuando realices una compra, aparecerá aquí.</p>
+                                </div>
+                            ` : compras.map(compra => {
+                                const estadoInfo = obtenerInfoEstadoCompra(compra.estado);
+                                return `
+                                    <div style="background: #F8FAFC; border-radius: 15px; padding: 20px; margin-bottom: 20px; border-left: 4px solid ${estadoInfo.color};">
+                                        <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 15px; flex-wrap: wrap; gap: 15px;">
+                                            <div>
+                                                <h3 style="margin: 0 0 5px 0; color: #1F2937;">Orden #${compra.numero_orden}</h3>
+                                                <p style="margin: 0; color: #6B7280; font-size: 14px;">${new Date(compra.created_at).toLocaleString('es-AR')}</p>
+                                            </div>
+                                            <div style="text-align: right;">
+                                                <div style="background: ${estadoInfo.colorFondo}; color: ${estadoInfo.colorTexto}; padding: 6px 12px; border-radius: 8px; display: inline-block; font-weight: 600; font-size: 14px;">
+                                                    ${estadoInfo.icono} ${estadoInfo.estado}
+                                                </div>
+                                                <p style="margin: 10px 0 0 0; font-size: 20px; font-weight: 700; color: #1F2937;">$${parseFloat(compra.total).toLocaleString('es-AR', {minimumFractionDigits: 2})}</p>
+                                            </div>
+                                        </div>
+                                        
+                                        <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+                                            <button onclick="SistemaTrackingEnvios.mostrarTrackingPedido(${compra.id}, '${compra.numero_orden}')" style="background: #667eea; color: white; border: none; padding: 10px 20px; border-radius: 8px; cursor: pointer; font-weight: 600;">
+                                                <i class="fas fa-shipping-fast"></i> Ver Seguimiento
+                                            </button>
+                                            ${compra.numero_seguimiento ? `
+                                                <button onclick="copiarSeguimiento('${compra.numero_seguimiento}')" style="background: #10B981; color: white; border: none; padding: 10px 20px; border-radius: 8px; cursor: pointer; font-weight: 600;">
+                                                    <i class="fas fa-copy"></i> Copiar N° Seguimiento
+                                                </button>
+                                            ` : ''}
+                                        </div>
+                                    </div>
+                                `;
+                            }).join('')}
+                        </div>
+                    </div>
+                </div>
+            `;
+            
+            document.body.insertAdjacentHTML('beforeend', modalHTML);
+        }
+        
+        function obtenerInfoEstadoCompra(estado) {
+            const estados = {
+                'pendiente': { estado: 'Pendiente', icono: '⏳', color: '#F59E0B', colorFondo: '#FEF3C7', colorTexto: '#92400E' },
+                'confirmada': { estado: 'Confirmada', icono: '✅', color: '#10B981', colorFondo: '#D1FAE5', colorTexto: '#065F46' },
+                'preparando': { estado: 'Preparando', icono: '📦', color: '#3B82F6', colorFondo: '#DBEAFE', colorTexto: '#1E40AF' },
+                'enviada': { estado: 'Enviada', icono: '🚚', color: '#8B5CF6', colorFondo: '#E0E7FF', colorTexto: '#3730A3' },
+                'entregada': { estado: 'Entregada', icono: '🎉', color: '#10B981', colorFondo: '#D1FAE5', colorTexto: '#065F46' },
+                'cancelada': { estado: 'Cancelada', icono: '❌', color: '#EF4444', colorFondo: '#FEE2E2', colorTexto: '#991B1B' }
+            };
+            return estados[estado] || { estado: estado || 'Desconocido', icono: '❓', color: '#6B7280', colorFondo: '#F3F4F6', colorTexto: '#374151' };
+        }
+        
+        function copiarSeguimiento(numero) {
+            navigator.clipboard.writeText(numero).then(() => {
+                alert('✅ Número de seguimiento copiado: ' + numero);
+            }).catch(() => {
+                alert('❌ Error al copiar');
+            });
+        }
+        
+        window.mostrarHistorialCompras = mostrarHistorialCompras;
     </script>
+    
+    <!-- Scripts de Tracking -->
+    <script src="/js/sistema-tracking-envios.js"></script>
 </body>
 </html>
