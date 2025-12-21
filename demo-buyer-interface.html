@@ -2169,6 +2169,24 @@
             }
         }
         
+        // Función auxiliar para ocultar secciones no relacionadas
+        function ocultarSeccionesNoRelacionadas(seccionActiva) {
+            const seccionesAOcultar = [
+                'historias-corazon',
+                'widget-comunidades-section',
+                'editar-perfil-section'
+            ];
+            
+            seccionesAOcultar.forEach(seccionId => {
+                if (seccionId !== seccionActiva) {
+                    const seccion = document.getElementById(seccionId);
+                    if (seccion) {
+                        seccion.style.display = 'none';
+                    }
+                }
+            });
+        }
+        
         // Demo de navegación suave
         document.querySelectorAll('.demo-nav a').forEach(link => {
             link.addEventListener('click', function(e) {
@@ -2178,31 +2196,28 @@
                     e.preventDefault();
                     const targetId = href.substring(1); // Remover el #
                     const target = document.getElementById(targetId);
+                    
                     if (target) {
-                        // Asegurarse de que otras secciones estén ocultas
-                        const historiasSection = document.getElementById('historias-corazon');
-                        if (historiasSection && targetId !== 'historias-corazon') {
-                            historiasSection.style.display = 'none';
-                        }
+                        // Ocultar todas las secciones no relacionadas
+                        ocultarSeccionesNoRelacionadas(targetId);
                         
                         // Si es mi-cuenta, asegurarse de que se muestre correctamente
                         if (targetId === 'mi-cuenta') {
                             target.style.display = 'block';
-                            // Ocultar otras secciones si están visibles
-                            const widgetComunidades = document.getElementById('widget-comunidades-section');
-                            if (widgetComunidades) {
-                                widgetComunidades.style.display = 'none';
-                            }
-                            const editarPerfil = document.getElementById('editar-perfil-section');
-                            if (editarPerfil) {
-                                editarPerfil.style.display = 'none';
-                            }
+                        }
+                        
+                        // Solo mostrar historias-corazon si el hash es explícitamente #historias-corazon o #compartidas
+                        if (targetId === 'historias-corazon' || targetId === 'compartidas') {
+                            target.style.display = 'block';
                         }
                         
                         target.scrollIntoView({
                             behavior: 'smooth',
                             block: 'start'
                         });
+                        
+                        // Actualizar el hash de la URL
+                        window.location.hash = targetId;
                     }
                 }
             });
@@ -2211,23 +2226,24 @@
         // Manejar cambios de hash en la URL para evitar redirecciones incorrectas
         window.addEventListener('hashchange', function() {
             const hash = window.location.hash.substring(1);
+            
             if (hash) {
                 const target = document.getElementById(hash);
+                
                 if (target) {
-                    // Si el hash es mi-cuenta, mostrar esa sección y ocultar otras
+                    // Ocultar todas las secciones no relacionadas
+                    ocultarSeccionesNoRelacionadas(hash);
+                    
+                    // Si el hash es mi-cuenta, mostrar esa sección
                     if (hash === 'mi-cuenta') {
-                        const historiasSection = document.getElementById('historias-corazon');
-                        if (historiasSection) {
-                            historiasSection.style.display = 'none';
-                        }
-                        const widgetComunidades = document.getElementById('widget-comunidades-section');
-                        if (widgetComunidades) {
-                            widgetComunidades.style.display = 'none';
-                        }
-                        const editarPerfil = document.getElementById('editar-perfil-section');
-                        if (editarPerfil) {
-                            editarPerfil.style.display = 'none';
-                        }
+                        target.style.display = 'block';
+                    }
+                    // Solo mostrar historias-corazon si el hash es explícitamente #historias-corazon o #compartidas
+                    else if (hash === 'historias-corazon' || hash === 'compartidas') {
+                        target.style.display = 'block';
+                    }
+                    // Para otras secciones, mostrar normalmente
+                    else {
                         target.style.display = 'block';
                     }
                     
@@ -2235,6 +2251,31 @@
                         behavior: 'smooth',
                         block: 'start'
                     });
+                }
+            } else {
+                // Si no hay hash, ocultar secciones especiales
+                ocultarSeccionesNoRelacionadas('');
+            }
+        });
+        
+        // Al cargar la página, verificar el hash inicial
+        document.addEventListener('DOMContentLoaded', function() {
+            const hash = window.location.hash.substring(1);
+            
+            // Si no hay hash o el hash no es historias-corazon/compartidas, ocultar historias
+            if (hash !== 'historias-corazon' && hash !== 'compartidas') {
+                const historiasSection = document.getElementById('historias-corazon');
+                if (historiasSection) {
+                    historiasSection.style.display = 'none';
+                }
+            }
+            
+            // Si el hash es mi-cuenta, asegurarse de que se muestre correctamente
+            if (hash === 'mi-cuenta') {
+                const target = document.getElementById('mi-cuenta');
+                if (target) {
+                    ocultarSeccionesNoRelacionadas('mi-cuenta');
+                    target.style.display = 'block';
                 }
             }
         });
@@ -3850,7 +3891,12 @@
         
         async function abrirEditarPerfil() {
             try {
-                // Ocultar widget de comunidades si está visible
+                // Ocultar todas las secciones no relacionadas
+                const historiasSection = document.getElementById('historias-corazon');
+                if (historiasSection) {
+                    historiasSection.style.display = 'none';
+                }
+                
                 const widgetComunidades = document.getElementById('widget-comunidades-section');
                 if (widgetComunidades) {
                     widgetComunidades.style.display = 'none';
@@ -3861,6 +3907,9 @@
                 if (seccion) {
                     seccion.style.display = 'block';
                     seccion.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                    
+                    // Actualizar hash sin disparar scroll
+                    window.history.replaceState(null, null, '#editar-perfil');
                     
                     // Cargar datos del usuario
                     await cargarDatosPerfil();
