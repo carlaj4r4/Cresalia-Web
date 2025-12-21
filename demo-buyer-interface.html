@@ -687,6 +687,37 @@
                 grid-template-columns: 1fr !important;
             }
             
+            /* PROTEGER widgets de Mi Cuenta en móvil pequeño - mantener tamaño adecuado */
+            #grid-mi-cuenta .producto-card {
+                width: 100% !important;
+                margin: 15px 0 !important;
+            }
+            
+            /* Proteger contenido interno de los cards de Mi Cuenta en móvil pequeño */
+            #grid-mi-cuenta .producto-card .producto-content {
+                padding: 24px 20px !important;
+            }
+            
+            #grid-mi-cuenta .producto-card .producto-image {
+                height: 160px !important;
+            }
+            
+            #grid-mi-cuenta .producto-card .producto-title {
+                font-size: 18px !important;
+                margin-bottom: 10px !important;
+            }
+            
+            #grid-mi-cuenta .producto-card .producto-description {
+                font-size: 13px !important;
+                margin-bottom: 18px !important;
+            }
+            
+            #grid-mi-cuenta.productos-grid {
+                grid-template-columns: 1fr !important;
+                gap: 18px !important;
+                padding: 18px 12px !important;
+            }
+            
             /* Widget de perfil en móvil pequeño */
             .widget-perfil-usuario {
                 padding: 18px !important;
