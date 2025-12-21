@@ -49,8 +49,16 @@ const HistoriasCorazon = {
             return;
         }
         
-        // Mostrar sección
-        seccion.style.display = 'block';
+        // Mostrar sección SOLO si el hash de la URL es #historias-corazon o si fue explícitamente solicitado
+        // Esto evita que se muestre automáticamente cuando el usuario navega a otras secciones
+        const hash = window.location.hash;
+        if (hash === '#historias-corazon' || hash === '#compartidas') {
+            seccion.style.display = 'block';
+        } else {
+            // No mostrar automáticamente - solo cuando el usuario navegue específicamente a esta sección
+            seccion.style.display = 'none';
+            return;
+        }
         sinHistorias.style.display = 'none';
         
         grid.innerHTML = this.historias.map(historia => `
@@ -96,11 +104,18 @@ const HistoriasCorazon = {
         
         if (!grid || !sinHistorias || !seccion) return;
         
-        // Solo mostrar si hay historias o si es la primera carga
-        if (this.historias.length === 0) {
-            seccion.style.display = 'block';
-            grid.innerHTML = '';
-            sinHistorias.style.display = 'block';
+        // NO mostrar automáticamente la sección - solo mostrar si el usuario navega específicamente a ella
+        // Verificar el hash de la URL antes de mostrar
+        const hash = window.location.hash;
+        if (hash === '#historias-corazon' || hash === '#compartidas') {
+            if (this.historias.length === 0) {
+                seccion.style.display = 'block';
+                grid.innerHTML = '';
+                sinHistorias.style.display = 'block';
+            }
+        } else {
+            // Si no estamos en la sección de historias, no mostrar nada
+            seccion.style.display = 'none';
         }
     },
     
