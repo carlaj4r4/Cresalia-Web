@@ -1130,7 +1130,7 @@
     <nav class="demo-nav">
         <ul>
             <li>
-                <a href="/index-cresalia.html" style="background: linear-gradient(135deg, #7C3AED, #EC4899); color: white; padding: 8px 16px; border-radius: 8px; font-weight: 600; transition: transform 0.3s;" onmouseover="this.style.transform='scale(1.05)'" onmouseout="this.style.transform='scale(1)'">
+                <a href="index-cresalia.html" style="background: linear-gradient(135deg, #7C3AED, #EC4899); color: white; padding: 8px 16px; border-radius: 8px; font-weight: 600; transition: transform 0.3s;" onmouseover="this.style.transform='scale(1.05)'" onmouseout="this.style.transform='scale(1)'">
                     <i class="fas fa-home"></i> Ir al Inicio
                 </a>
             </li>
@@ -1215,6 +1215,20 @@
                     </div>
                 </div>
                 <div class="producto-card">
+                    <div class="producto-image" style="background: linear-gradient(135deg, #3B82F6, #2563EB); color: white;">
+                        <i class="fas fa-edit fa-3x"></i>
+                    </div>
+                    <div class="producto-content">
+                        <h3 class="producto-title">Editar Mi Perfil</h3>
+                        <p class="producto-description">Actualiza tu domicilio, celular, DNI y correo electrónico.</p>
+                        <div class="producto-actions">
+                            <button class="btn-view-store" onclick="abrirEditarPerfil()" style="width: 100%; text-align: center; border: none; cursor: pointer;">
+                                <i class="fas fa-user-edit"></i> Editar Perfil
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                <div class="producto-card">
                     <div class="producto-image" style="background: linear-gradient(135deg, #10B981, #14B8A6); color: white;">
                         <i class="fas fa-user-cog fa-3x"></i>
                     </div>
@@ -1242,6 +1256,94 @@
                         </div>
                     </div>
                 </div>
+            </div>
+        </div>
+    </section>
+    
+    <!-- Sección de Editar Perfil -->
+    <section id="editar-perfil-section" class="productos-section" style="display: none;">
+        <div class="container">
+            <div class="section-header">
+                <h2><i class="fas fa-user-edit"></i> Editar Mi Perfil</h2>
+                <p>Actualiza tu información personal y de contacto</p>
+            </div>
+            
+            <div class="card" style="max-width: 800px; margin: 0 auto; padding: 30px;">
+                <form id="form-editar-perfil" onsubmit="guardarPerfil(event)">
+                    <!-- Correo Electrónico -->
+                    <div style="margin-bottom: 25px;">
+                        <label style="display: block; margin-bottom: 8px; font-weight: 600; color: #374151;">
+                            <i class="fas fa-envelope"></i> Correo Electrónico
+                        </label>
+                        <input type="email" id="perfil-email" readonly style="width: 100%; padding: 12px; border: 2px solid #E5E7EB; border-radius: 8px; font-size: 1rem; background: #F9FAFB; color: #6B7280;">
+                        <small style="color: #6B7280; font-size: 14px; margin-top: 5px; display: block;">
+                            El correo no se puede cambiar desde aquí. Contactá a soporte si necesitás modificarlo.
+                        </small>
+                    </div>
+
+                    <!-- DNI (Opcional) -->
+                    <div style="margin-bottom: 25px;">
+                        <label style="display: block; margin-bottom: 8px; font-weight: 600; color: #374151;">
+                            <i class="fas fa-id-card"></i> DNI (Opcional)
+                        </label>
+                        <input type="text" id="perfil-dni" placeholder="12345678" maxlength="20" style="width: 100%; padding: 12px; border: 2px solid #E5E7EB; border-radius: 8px; font-size: 1rem;">
+                        <small style="color: #6B7280; font-size: 14px; margin-top: 5px; display: block;">
+                            Solo se usa para facturación. Es opcional y se mantiene privado.
+                        </small>
+                    </div>
+
+                    <!-- Número de Celular -->
+                    <div style="margin-bottom: 25px;">
+                        <label style="display: block; margin-bottom: 8px; font-weight: 600; color: #374151;">
+                            <i class="fas fa-phone"></i> Número de Celular <span style="color: #EF4444;">*</span>
+                        </label>
+                        <input type="tel" id="perfil-telefono" placeholder="+54 9 11 1234-5678" required style="width: 100%; padding: 12px; border: 2px solid #E5E7EB; border-radius: 8px; font-size: 1rem;">
+                        <small style="color: #6B7280; font-size: 14px; margin-top: 5px; display: block;">
+                            Número de contacto principal (con código de país).
+                        </small>
+                    </div>
+
+                    <!-- Domicilio -->
+                    <div style="margin-bottom: 25px;">
+                        <label style="display: block; margin-bottom: 15px; font-weight: 600; color: #374151;">
+                            <i class="fas fa-map-marker-alt"></i> Domicilio <span style="color: #EF4444;">*</span>
+                        </label>
+                        
+                        <!-- Calle -->
+                        <div style="margin-bottom: 15px;">
+                            <label style="display: block; margin-bottom: 8px; font-weight: 500; color: #4B5563;">Calle y número</label>
+                            <input type="text" id="perfil-calle" placeholder="Av. Corrientes 1234" required style="width: 100%; padding: 12px; border: 2px solid #E5E7EB; border-radius: 8px; font-size: 1rem;">
+                        </div>
+
+                        <!-- Ciudad -->
+                        <div style="margin-bottom: 15px;">
+                            <label style="display: block; margin-bottom: 8px; font-weight: 500; color: #4B5563;">Ciudad</label>
+                            <input type="text" id="perfil-ciudad" placeholder="Ciudad Autónoma de Buenos Aires" required style="width: 100%; padding: 12px; border: 2px solid #E5E7EB; border-radius: 8px; font-size: 1rem;">
+                        </div>
+
+                        <!-- Provincia -->
+                        <div style="margin-bottom: 15px;">
+                            <label style="display: block; margin-bottom: 8px; font-weight: 500; color: #4B5563;">Provincia</label>
+                            <input type="text" id="perfil-provincia" placeholder="Buenos Aires" required style="width: 100%; padding: 12px; border: 2px solid #E5E7EB; border-radius: 8px; font-size: 1rem;">
+                        </div>
+
+                        <!-- Código Postal -->
+                        <div style="margin-bottom: 15px;">
+                            <label style="display: block; margin-bottom: 8px; font-weight: 500; color: #4B5563;">Código Postal</label>
+                            <input type="text" id="perfil-codigo-postal" placeholder="C1043AAX" style="width: 100%; padding: 12px; border: 2px solid #E5E7EB; border-radius: 8px; font-size: 1rem;">
+                        </div>
+                    </div>
+
+                    <!-- Botones de Acción -->
+                    <div style="display: flex; gap: 15px; margin-top: 30px;">
+                        <button type="button" onclick="cerrarEditarPerfil()" style="flex: 1; background: #6B7280; color: white; border: none; padding: 15px; border-radius: 8px; cursor: pointer; font-weight: 600; font-size: 1rem;">
+                            <i class="fas fa-times"></i> Cancelar
+                        </button>
+                        <button type="submit" style="flex: 1; background: linear-gradient(135deg, #3B82F6, #2563EB); color: white; border: none; padding: 15px; border-radius: 8px; cursor: pointer; font-weight: 600; font-size: 1rem;">
+                            <i class="fas fa-save"></i> Guardar Cambios
+                        </button>
+                    </div>
+                </form>
             </div>
         </div>
     </section>
@@ -2072,10 +2174,14 @@
                         // Si es mi-cuenta, asegurarse de que se muestre correctamente
                         if (targetId === 'mi-cuenta') {
                             target.style.display = 'block';
-                            // Ocultar widget de comunidades si está visible
+                            // Ocultar otras secciones si están visibles
                             const widgetComunidades = document.getElementById('widget-comunidades-section');
                             if (widgetComunidades) {
                                 widgetComunidades.style.display = 'none';
+                            }
+                            const editarPerfil = document.getElementById('editar-perfil-section');
+                            if (editarPerfil) {
+                                editarPerfil.style.display = 'none';
                             }
                         }
                         
@@ -2103,6 +2209,10 @@
                         const widgetComunidades = document.getElementById('widget-comunidades-section');
                         if (widgetComunidades) {
                             widgetComunidades.style.display = 'none';
+                        }
+                        const editarPerfil = document.getElementById('editar-perfil-section');
+                        if (editarPerfil) {
+                            editarPerfil.style.display = 'none';
                         }
                         target.style.display = 'block';
                     }
@@ -3482,11 +3592,14 @@
     <title>Acceso Directo - ${nombreComunidadLimpio}</title>
     <meta http-equiv="refresh" content="0; url=${widgetUrl}">
 </head>
-<body>
+<body style="margin: 0; padding: 0; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); min-height: 100vh; display: flex; align-items: center; justify-content: center; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;">
     <script>
         window.location.href = "${widgetUrl}";
     </script>
-    <p>Redirigiendo... <a href="${widgetUrl}">Haz clic aquí</a></p>
+    <div style="text-align: center; color: white; padding: 20px;">
+        <p style="font-size: 18px; margin-bottom: 15px;">Redirigiendo...</p>
+        <a href="${widgetUrl}" style="color: white; text-decoration: underline; font-size: 16px;">Si no redirige automáticamente, haz clic aquí</a>
+    </div>
 </body>
 </html>`;
                 
@@ -3718,6 +3831,204 @@
         // Hacer funciones globales
         window.cambiarAvatar = cambiarAvatar;
         window.cargarDatosUsuario = cargarDatosUsuario;
+        
+        // ===== FUNCIONES DE EDICIÓN DE PERFIL =====
+        
+        async function abrirEditarPerfil() {
+            try {
+                // Ocultar widget de comunidades si está visible
+                const widgetComunidades = document.getElementById('widget-comunidades-section');
+                if (widgetComunidades) {
+                    widgetComunidades.style.display = 'none';
+                }
+                
+                // Mostrar sección de editar perfil
+                const seccion = document.getElementById('editar-perfil-section');
+                if (seccion) {
+                    seccion.style.display = 'block';
+                    seccion.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                    
+                    // Cargar datos del usuario
+                    await cargarDatosPerfil();
+                }
+            } catch (error) {
+                console.error('Error abriendo editar perfil:', error);
+                alert('❌ Error al abrir el formulario de edición');
+            }
+        }
+        
+        function cerrarEditarPerfil() {
+            const seccion = document.getElementById('editar-perfil-section');
+            if (seccion) {
+                seccion.style.display = 'none';
+            }
+        }
+        
+        async function cargarDatosPerfil() {
+            try {
+                const supabase = await esperarInitSupabase();
+                if (!supabase) {
+                    console.warn('⚠️ initSupabase no disponible');
+                    return;
+                }
+                
+                const { data: { user }, error: userError } = await supabase.auth.getUser();
+                if (userError || !user) {
+                    alert('❌ Debes estar logueado para editar tu perfil');
+                    return;
+                }
+                
+                // Cargar email
+                document.getElementById('perfil-email').value = user.email || '';
+                
+                // Cargar datos del comprador desde Supabase
+                const { data: comprador, error: compradorError } = await supabase
+                    .from('compradores')
+                    .select('telefono, direccion_principal, dni')
+                    .eq('user_id', user.id)
+                    .single();
+                
+                if (comprador && !compradorError) {
+                    // Cargar teléfono
+                    document.getElementById('perfil-telefono').value = comprador.telefono || '';
+                    
+                    // Cargar DNI (si existe el campo, o desde metadata)
+                    const dni = comprador.dni || user.user_metadata?.dni || '';
+                    document.getElementById('perfil-dni').value = dni;
+                    
+                    // Cargar dirección
+                    if (comprador.direccion_principal) {
+                        const dir = comprador.direccion_principal;
+                        document.getElementById('perfil-calle').value = dir.calle || '';
+                        document.getElementById('perfil-ciudad').value = dir.ciudad || '';
+                        document.getElementById('perfil-provincia').value = dir.provincia || '';
+                        document.getElementById('perfil-codigo-postal').value = dir.codigo_postal || '';
+                    }
+                } else {
+                    console.log('No se encontraron datos del comprador, se crearán al guardar');
+                }
+                
+            } catch (error) {
+                console.error('Error cargando datos del perfil:', error);
+            }
+        }
+        
+        async function guardarPerfil(event) {
+            event.preventDefault();
+            
+            try {
+                const supabase = await esperarInitSupabase();
+                if (!supabase) {
+                    alert('❌ Error: No se pudo conectar a Supabase');
+                    return;
+                }
+                
+                const { data: { user }, error: userError } = await supabase.auth.getUser();
+                if (userError || !user) {
+                    alert('❌ Debes estar logueado para guardar cambios');
+                    return;
+                }
+                
+                // Obtener valores del formulario
+                const telefono = document.getElementById('perfil-telefono').value.trim();
+                const dni = document.getElementById('perfil-dni').value.trim();
+                const calle = document.getElementById('perfil-calle').value.trim();
+                const ciudad = document.getElementById('perfil-ciudad').value.trim();
+                const provincia = document.getElementById('perfil-provincia').value.trim();
+                const codigoPostal = document.getElementById('perfil-codigo-postal').value.trim();
+                
+                // Validar campos requeridos
+                if (!telefono) {
+                    alert('❌ Por favor, ingresa tu número de celular');
+                    return;
+                }
+                
+                if (!calle || !ciudad || !provincia) {
+                    alert('❌ Por favor, completa todos los campos de dirección requeridos');
+                    return;
+                }
+                
+                // Preparar dirección principal
+                const direccionPrincipal = {
+                    calle: calle,
+                    ciudad: ciudad,
+                    provincia: provincia,
+                    codigo_postal: codigoPostal,
+                    pais: 'Argentina'
+                };
+                
+                // Verificar si el comprador ya existe
+                const { data: compradorExistente } = await supabase
+                    .from('compradores')
+                    .select('id')
+                    .eq('user_id', user.id)
+                    .single();
+                
+                const datosActualizar = {
+                    telefono: telefono,
+                    direccion_principal: direccionPrincipal
+                };
+                
+                // Agregar DNI si existe (intentar guardarlo en la tabla, si falla se guarda en metadata)
+                if (dni) {
+                    // Intentar agregar DNI a datosActualizar (solo funcionará si la columna existe)
+                    try {
+                        datosActualizar.dni = dni;
+                    } catch (e) {
+                        // Si la columna no existe, se guardará en metadata
+                        console.log('Campo DNI no existe en tabla, se guardará en metadata');
+                    }
+                }
+                
+                let resultado;
+                if (compradorExistente) {
+                    // Actualizar comprador existente
+                    resultado = await supabase
+                        .from('compradores')
+                        .update(datosActualizar)
+                        .eq('user_id', user.id);
+                } else {
+                    // Crear nuevo registro de comprador
+                    datosActualizar.user_id = user.id;
+                    datosActualizar.nombre_completo = user.user_metadata?.nombre || user.email?.split('@')[0] || 'Usuario';
+                    datosActualizar.email = user.email;
+                    
+                    resultado = await supabase
+                        .from('compradores')
+                        .insert([datosActualizar]);
+                }
+                
+                if (resultado.error) {
+                    console.error('Error guardando perfil:', resultado.error);
+                    alert('❌ Error al guardar: ' + resultado.error.message);
+                    return;
+                }
+                
+                // Si se proporcionó DNI, también guardarlo en user_metadata
+                if (dni) {
+                    const { error: updateMetadataError } = await supabase.auth.updateUser({
+                        data: { dni: dni }
+                    });
+                    if (updateMetadataError) {
+                        console.warn('No se pudo guardar DNI en metadata:', updateMetadataError);
+                    }
+                }
+                
+                alert('✅ Perfil actualizado correctamente');
+                cerrarEditarPerfil();
+                
+                // Recargar datos del usuario en el widget
+                await cargarDatosUsuario();
+                
+            } catch (error) {
+                console.error('Error guardando perfil:', error);
+                alert('❌ Error inesperado al guardar: ' + error.message);
+            }
+        }
+        
+        window.abrirEditarPerfil = abrirEditarPerfil;
+        window.cerrarEditarPerfil = cerrarEditarPerfil;
+        window.guardarPerfil = guardarPerfil;
     </script>
 </body>
 </html>
