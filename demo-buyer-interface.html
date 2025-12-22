@@ -1267,7 +1267,7 @@
                         <h3 class="producto-title">Mis Direcciones</h3>
                         <p class="producto-description">Gestiona tus direcciones de envío (Casa, Trabajo, etc.)</p>
                         <div class="producto-actions">
-                            <button class="btn-view-store" onclick="SistemaDireccionesMultiples.mostrarGestionDirecciones()" style="width: 100%; text-align: center; border: none; cursor: pointer;">
+                            <button class="btn-view-store" onclick="if(typeof SistemaDireccionesMultiples !== 'undefined' && SistemaDireccionesMultiples.mostrarGestionDirecciones) { SistemaDireccionesMultiples.mostrarGestionDirecciones(); } else { alert('El sistema de direcciones se está cargando. Por favor, espera un momento y vuelve a intentar.'); }" style="width: 100%; text-align: center; border: none; cursor: pointer;">
                                 <i class="fas fa-map-marked-alt"></i> Gestionar Direcciones
                             </button>
                         </div>
@@ -1765,6 +1765,7 @@
     <!-- Scripts -->
     <script src="/js/elegant-notifications.js"></script>
     <script src="/js/historiales-sistema.js"></script>
+    <script src="/js/sistema-direcciones-multiples.js"></script>
     
     <!-- Sistema de Seguridad -->
     <script src="/security-system.js?v=2.0"></script>
