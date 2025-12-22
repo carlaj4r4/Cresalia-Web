@@ -1,0 +1,120 @@
+/* ===== LOGO CON GORRO NAVIDEÑO ===== */
+/* Solo activo durante la temporada festiva (20 dic - 7 ene) */
+
+/* Gorro navideño para logos en navbar */
+.logo-container::before,
+.navbar-logo-img::before,
+.logo-image::before,
+img[src*="logo-cresalia"]::before {
+    content: '';
+    position: absolute;
+    top: -15px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 0;
+    height: 0;
+    border-left: 12px solid transparent;
+    border-right: 12px solid transparent;
+    border-bottom: 20px solid #DC2626; /* Rojo navideño */
+    z-index: 10;
+    pointer-events: none;
+}
+
+/* Pompon blanco del gorro */
+.logo-container::after,
+.navbar-logo-img::after,
+.logo-image::after,
+img[src*="logo-cresalia"]::after {
+    content: '';
+    position: absolute;
+    top: -18px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 8px;
+    height: 8px;
+    background: white;
+    border-radius: 50%;
+    z-index: 11;
+    pointer-events: none;
+    box-shadow: 0 0 4px rgba(255, 255, 255, 0.8);
+}
+
+/* Asegurar que el logo tenga posición relativa */
+.logo-container,
+.navbar-logo-img,
+.logo-image,
+img[src*="logo-cresalia"] {
+    position: relative;
+}
+
+/* Animación suave del gorro */
+@keyframes gorritoNavideno {
+    0%, 100% {
+        transform: translateX(-50%) rotate(0deg);
+    }
+    25% {
+        transform: translateX(-50%) rotate(-5deg);
+    }
+    75% {
+        transform: translateX(-50%) rotate(5deg);
+    }
+}
+
+.logo-container:hover::before,
+.navbar-logo-img:hover::before,
+.logo-image:hover::before,
+img[src*="logo-cresalia"]:hover::before {
+    animation: gorritoNavideno 0.5s ease-in-out;
+}
+
+/* Para favicons y iconos del PWA - usando un overlay */
+.favicon-navideno {
+    position: relative;
+}
+
+.favicon-navideno::before {
+    content: '🎄';
+    position: absolute;
+    top: -8px;
+    right: -8px;
+    font-size: 16px;
+    z-index: 10;
+    pointer-events: none;
+    animation: gorritoNavideno 2s ease-in-out infinite;
+}
+
+/* Versión más grande para logos principales */
+.logo-principal-navideno::before {
+    border-left: 18px solid transparent;
+    border-right: 18px solid transparent;
+    border-bottom: 30px solid #DC2626;
+    top: -20px;
+}
+
+.logo-principal-navideno::after {
+    width: 12px;
+    height: 12px;
+    top: -24px;
+}
+
+/* Responsive - ocultar en pantallas muy pequeñas */
+@media (max-width: 480px) {
+    .logo-container::before,
+    .navbar-logo-img::before,
+    .logo-image::before,
+    img[src*="logo-cresalia"]::before {
+        border-left: 8px solid transparent;
+        border-right: 8px solid transparent;
+        border-bottom: 15px solid #DC2626;
+        top: -12px;
+    }
+    
+    .logo-container::after,
+    .navbar-logo-img::after,
+    .logo-image::after,
+    img[src*="logo-cresalia"]::after {
+        width: 6px;
+        height: 6px;
+        top: -15px;
+    }
+}
