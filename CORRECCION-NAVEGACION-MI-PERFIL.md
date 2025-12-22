@@ -92,3 +92,5 @@ Se agregó código en `DOMContentLoaded` para:
 ---
 
 **¡La navegación ahora funciona correctamente!** 😊💜
+
+
