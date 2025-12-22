@@ -1,12 +1,3 @@
 {
-  "crons": [
-    {
-      "path": "/api/cron/celebraciones",
-      "schedule": "0 3 * * *"
-    },
-    {
-      "path": "/api/cron/limpiar",
-      "schedule": "0 4 * * 0"
-    }
-  ]
+  "crons": []
 }
