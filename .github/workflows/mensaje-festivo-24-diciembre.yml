@@ -1,0 +1,42 @@
+name: 🎄 Mensaje Festivo 24 de Diciembre
+
+on:
+  schedule:
+    # Se ejecuta el 24 de diciembre a las 00:00 UTC (medianoche)
+    # Cron: minuto hora día mes día-semana
+    - cron: '0 0 24 12 *'
+  workflow_dispatch: # Permite ejecución manual
+
+jobs:
+  enviar-mensaje-festivo:
+    runs-on: ubuntu-latest
+    name: Enviar Mensaje Festivo a Todos los Usuarios
+    
+    steps:
+      - name: 📥 Checkout código
+        uses: actions/checkout@v4
+      
+      - name: 🔧 Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+      
+      - name: 🎄 Ejecutar envío de mensaje festivo
+        env:
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_ANON_KEY: ${{ secrets.SUPABASE_ANON_KEY }}
+          BREVO_API_KEY: ${{ secrets.BREVO_API_KEY }}
+          FROM_EMAIL: ${{ secrets.FROM_EMAIL || 'cresalia25@gmail.com' }}
+          FROM_NAME: ${{ secrets.FROM_NAME || 'Cresalia' }}
+        run: |
+          echo "🎄 Iniciando envío de mensaje festivo..."
+          node scripts/enviar-mensaje-festivo-24.js
+      
+      - name: 📝 Notificar resultado
+        if: always()
+        run: |
+          if [ ${{ job.status }} == 'success' ]; then
+            echo "✅ El mensaje festivo se envió correctamente"
+          else
+            echo "❌ Hubo un error al enviar el mensaje festivo"
+          fi
