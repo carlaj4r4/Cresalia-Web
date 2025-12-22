@@ -3,14 +3,15 @@
 // Envía alertas por email vía Brevo
 
 const ERROR_REPORTER_CONFIG = {
-    apiEndpoint: '/api/reportar-error',
+    apiEndpoint: '/api/enviar-email-brevo', // Usar endpoint de Brevo directamente
     enabled: true,
     // Solo reportar errores críticos y altos automáticamente
     reportOnLevel: ['critical', 'high'],
     // Cache de errores para evitar spam
     errorCache: new Map(),
     cacheTimeout: 5 * 60 * 1000, // 5 minutos
-    maxErrorsPerMinute: 10
+    maxErrorsPerMinute: 10,
+    adminEmail: 'cresalia25@gmail.com' // Email de destino para errores
 };
 
 // Contador de errores por minuto
@@ -145,38 +146,77 @@ function reportError(errorData) {
         // Ignorar errores al leer localStorage
     }
     
-    // Preparar datos para enviar
-    const payload = {
-        error: {
-            message: errorData.message || 'Unknown error',
-            stack: errorData.stack || null,
-            filename: errorData.filename || null,
-            lineno: errorData.lineno || null,
-            colno: errorData.colno || null,
-            type: errorData.type || 'error'
-        },
-        url: window.location.href,
-        userAgent: navigator.userAgent,
-        user: userData,
-        severity: errorData.severity || 'medium',
-        metadata: {
-            timestamp: new Date().toISOString(),
-            viewport: {
-                width: window.innerWidth,
-                height: window.innerHeight
-            },
-            platform: navigator.platform,
-            language: navigator.language
-        }
-    };
+    // Determinar severidad y configurar email
+    const severity = errorData.severity || 'medium';
+    const severityConfig = {
+        'critical': { subject: '🚨 ERROR CRÍTICO - Cresalia', priority: 'urgent' },
+        'high': { subject: '⚠️ Error Importante - Cresalia', priority: 'high' },
+        'medium': { subject: 'ℹ️ Error Moderado - Cresalia', priority: 'normal' },
+        'low': { subject: '📝 Error Menor - Cresalia', priority: 'low' }
+    }[severity] || { subject: '📝 Error - Cresalia', priority: 'normal' };
     
-    // Enviar al endpoint (usar fetch con manejo de errores)
+    // Solo enviar email para errores críticos y altos
+    if (severity !== 'critical' && severity !== 'high') {
+        return; // No enviar email para errores menores
+    }
+    
+    // Construir HTML del email
+    const emailBody = `
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <style>
+        body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; }
+        .header { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 20px; border-radius: 10px 10px 0 0; }
+        .content { background: #f9fafb; padding: 20px; border: 1px solid #e5e7eb; }
+        .error-box { background: white; padding: 15px; border-left: 4px solid #ef4444; margin: 15px 0; border-radius: 5px; }
+        .metadata { background: white; padding: 15px; margin: 15px 0; border-radius: 5px; border: 1px solid #e5e7eb; }
+        .label { font-weight: bold; color: #667eea; }
+        .footer { background: #1f2937; color: white; padding: 15px; text-align: center; border-radius: 0 0 10px 10px; font-size: 12px; }
+        pre { background: #1f2937; color: #10b981; padding: 15px; border-radius: 5px; overflow-x: auto; font-size: 12px; }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>${severityConfig.subject}</h1>
+        <p>Error detectado en Cresalia</p>
+    </div>
+    <div class="content">
+        <div class="error-box">
+            <h2>📋 Detalles del Error</h2>
+            <p><span class="label">Mensaje:</span> ${(errorData.message || 'Unknown error').replace(/</g, '&lt;').replace(/>/g, '&gt;')}</p>
+            <p><span class="label">Severidad:</span> ${severity.toUpperCase()}</p>
+            ${errorData.stack ? `<p><span class="label">Stack Trace:</span></p><pre>${errorData.stack.replace(/</g, '&lt;').replace(/>/g, '&gt;')}</pre>` : ''}
+        </div>
+        <div class="metadata">
+            <h3>📊 Información Adicional</h3>
+            <p><span class="label">URL:</span> ${window.location.href}</p>
+            <p><span class="label">User Agent:</span> ${navigator.userAgent}</p>
+            <p><span class="label">Usuario:</span> ${userData?.email || userData?.nombre || 'Anónimo'}</p>
+            <p><span class="label">Fecha:</span> ${new Date().toLocaleString('es-AR', { timeZone: 'America/Argentina/Buenos_Aires' })}</p>
+            ${errorData.filename ? `<p><span class="label">Archivo:</span> ${errorData.filename}:${errorData.lineno || '?'}:${errorData.colno || '?'}</p>` : ''}
+        </div>
+    </div>
+    <div class="footer">
+        <p>Este es un email automático del sistema de monitoreo de Cresalia</p>
+    </div>
+</body>
+</html>
+    `;
+    
+    // Enviar email usando el endpoint de Brevo
     fetch(ERROR_REPORTER_CONFIG.apiEndpoint, {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json'
         },
-        body: JSON.stringify(payload)
+        body: JSON.stringify({
+            to: ERROR_REPORTER_CONFIG.adminEmail,
+            to_name: 'Cresalia Admin',
+            subject: severityConfig.subject,
+            html_content: emailBody
+        })
     }).catch(err => {
         // Si falla el reporte, no hacer nada (no queremos crear un bucle infinito)
         console.warn('⚠️ No se pudo reportar el error:', err);

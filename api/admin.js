@@ -29,6 +29,10 @@ const PLAN_PRICES = {
     enterprise: 199
 };
 
+const BREVO_API_KEY = process.env.BREVO_API_KEY;
+const BREVO_API_URL = 'https://api.brevo.com/v3/smtp/email';
+const ADMIN_EMAIL = process.env.ADMIN_EMAIL || 'cresalia25@gmail.com';
+
 module.exports = async (req, res) => {
     applyCors(res);
 
@@ -44,6 +48,9 @@ module.exports = async (req, res) => {
         if (!action && req.url) {
             if (req.url.includes('/admin-reportes')) action = 'reportes';
             else if (req.url.includes('/admin-tenants')) action = 'tenants';
+            else if (req.url.includes('/reportes-maltrato') || req.url.includes('/api/reportes') && req.query?.type === 'maltrato') action = 'maltrato';
+            else if (req.url.includes('/alertas-servicios-enviar') || req.url.includes('/api/reportes') && req.query?.type === 'alertas') action = 'alertas';
+            else if (req.url.includes('/emergencias-enviar-emails') || req.url.includes('/api/reportes') && req.query?.type === 'emergencias') action = 'emergencias';
         }
         action = (action || 'tenants').toLowerCase();
 
@@ -52,8 +59,12 @@ module.exports = async (req, res) => {
                 return await handleTenants(supabase, req, res);
             case 'reportes':
                 return await handleReportes(supabase, req, res);
+            case 'maltrato':
+            case 'alertas':
+            case 'emergencias':
+                return await handleReportesEspeciales(supabase, req, res, action);
             default:
-                res.status(400).json({ success: false, error: `Acción "${action}" no válida. Use: tenants, reportes` });
+                res.status(400).json({ success: false, error: `Acción "${action}" no válida. Use: tenants, reportes, maltrato, alertas, emergencias` });
         }
     } catch (error) {
         console.error('❌ Error en API admin:', error);
