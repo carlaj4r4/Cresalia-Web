@@ -5,8 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Panel de Compradores</title>
     
-    <!-- Meta Security -->
-    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' cdnjs.cloudflare.com cdn.jsdelivr.net https://conversations-widget.brevo.com; script-src-elem 'self' 'unsafe-inline' cdnjs.cloudflare.com cdn.jsdelivr.net https://conversations-widget.brevo.com; style-src 'self' 'unsafe-inline' fonts.googleapis.com cdnjs.cloudflare.com cdn.jsdelivr.net; style-src-elem 'self' 'unsafe-inline' fonts.googleapis.com cdnjs.cloudflare.com cdn.jsdelivr.net; font-src 'self' fonts.gstatic.com cdnjs.cloudflare.com https:; img-src 'self' data: https:; connect-src 'self' https: https://conversations-widget.brevo.com https://api.brevo.com; frame-src 'self' https: https://conversations-widget.brevo.com; object-src 'none'; base-uri 'self'; form-action 'self';">
+    <!-- Meta Security - CSP actualizado para permitir todos los recursos necesarios -->
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self' data: blob: https:; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://cdnjs.cloudflare.com https://cdn.jsdelivr.net https://conversations-widget.brevo.com https://*.supabase.co https://supabase.co; script-src-elem 'self' 'unsafe-inline' https://cdnjs.cloudflare.com https://cdn.jsdelivr.net https://conversations-widget.brevo.com https://*.supabase.co https://supabase.co; style-src 'self' 'unsafe-inline' https: https://fonts.googleapis.com https://cdnjs.cloudflare.com https://cdn.jsdelivr.net https://*.cloudflare.com https://ajax.cloudflare.com; style-src-elem 'self' 'unsafe-inline' https: https://fonts.googleapis.com https://cdnjs.cloudflare.com https://cdn.jsdelivr.net https://*.cloudflare.com https://ajax.cloudflare.com; font-src 'self' https: data: https://fonts.gstatic.com https://cdnjs.cloudflare.com https://cdn.jsdelivr.net; img-src 'self' data: https: blob:; connect-src 'self' https: https://conversations-widget.brevo.com https://api.brevo.com https://*.brevo.com https://*.supabase.co https://supabase.co wss://*.supabase.co; frame-src 'self' https: https://conversations-widget.brevo.com; object-src 'none'; base-uri 'self'; form-action 'self'; worker-src 'self' blob:; child-src 'self' blob:; media-src 'self' data: blob:;">
     <meta http-equiv="X-Content-Type-Options" content="nosniff">
     <meta http-equiv="X-XSS-Protection" content="1; mode=block">
     <meta name="referrer" content="strict-origin-when-cross-origin">
@@ -3648,7 +3648,8 @@
                         previewLogo.src = avatarUrl;
                     } else {
                         const iniciales = nombreUsuario.substring(0, 2).toUpperCase();
-                        previewLogo.src = `data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' width='100' height='100'><rect width='100' height='100' fill='%237C3AED'/><text x='50%25' y='50%25' dominant-baseline='middle' text-anchor='middle' font-size='36' font-weight='bold' fill='white'>${iniciales}</text></svg>`;
+                        // Usar comillas dobles en el SVG para evitar conflictos con template literal
+                        previewLogo.src = `data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="100" height="100"><rect width="100" height="100" fill="%237C3AED"/><text x="50%25" y="50%25" dominant-baseline="middle" text-anchor="middle" font-size="36" font-weight="bold" fill="white">${iniciales}</text></svg>`;
                     }
                 }
                 
@@ -3669,25 +3670,37 @@
                     urlInput.value = widgetUrl;
                 }
                 
-                // Generar código HTML
-                const codigoHTMLCompleto = `<!DOCTYPE html>
-<html lang="es">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Acceso Directo - ${nombreComunidadLimpio}</title>
-    <meta http-equiv="refresh" content="0; url=${widgetUrl}">
-</head>
-<body style="margin: 0; padding: 0; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); min-height: 100vh; display: flex; align-items: center; justify-content: center; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;">
-    <script>
-        window.location.href = "${widgetUrl}";
-    </script>
-    <div style="text-align: center; color: white; padding: 20px;">
-        <p style="font-size: 18px; margin-bottom: 15px;">Redirigiendo...</p>
-        <a href="${widgetUrl}" style="color: white; text-decoration: underline; font-size: 16px;">Si no redirige automáticamente, haz clic aquí</a>
-    </div>
-</body>
-</html>`;
+                // Generar código HTML - Construir de forma segura usando función helper
+                const escaparHTML = (str) => String(str).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#39;');
+                const nombreComunidadEscapado = escaparHTML(nombreComunidadLimpio);
+                const widgetUrlEscapado = escaparHTML(widgetUrl);
+                const widgetUrlJS = JSON.stringify(widgetUrl);
+                
+                // Construir partes del HTML de forma segura
+                const partesHTML = [];
+                partesHTML.push('<!DOCTYPE html>');
+                partesHTML.push('<html lang="es">');
+                partesHTML.push('<head>');
+                partesHTML.push('    <meta charset="UTF-8">');
+                partesHTML.push('    <meta name="viewport" content="width=device-width, initial-scale=1.0">');
+                partesHTML.push('    <title>Acceso Directo - ' + nombreComunidadEscapado + '</title>');
+                partesHTML.push('    <meta http-equiv="refresh" content="0; url=' + widgetUrlEscapado + '">');
+                partesHTML.push('</head>');
+                partesHTML.push('<body style="margin:0;padding:0;background:linear-gradient(135deg,#667eea 0%,#764ba2 100%);min-height:100vh;display:flex;align-items:center;justify-content:center;font-family:Segoe UI,Tahoma,Geneva,Verdana,sans-serif">');
+                // Construir el script de forma segura - dividir </script> para evitar que el navegador lo interprete
+                const scriptTagClose = '</' + 'script>';
+                const scriptContent = '        window.location.href = ' + widgetUrlJS + ';';
+                partesHTML.push('    <script>');
+                partesHTML.push(scriptContent);
+                partesHTML.push('    ' + scriptTagClose);
+                partesHTML.push('    <div style="text-align:center;color:white;padding:20px">');
+                partesHTML.push('        <p style="font-size:18px;margin-bottom:15px">Redirigiendo...</p>');
+                partesHTML.push('        <a href="' + widgetUrlEscapado + '" style="color:white;text-decoration:underline;font-size:16px">Si no redirige automáticamente, haz clic aquí</a>');
+                partesHTML.push('    </div>');
+                partesHTML.push('</body>');
+                partesHTML.push('</html>');
+                
+                const codigoHTMLCompleto = partesHTML.join('\n');
                 
                 const codigoDiv = document.getElementById('codigo-html-widget-comunidad-comprador');
                 if (codigoDiv) {
@@ -3909,8 +3922,19 @@
             }
         }
         
+        // Variable para prevenir apertura automática del modal de compras (declarada temprano)
+        let modalComprasAbierto = false;
+        
         // Cargar datos al iniciar
         document.addEventListener('DOMContentLoaded', () => {
+            // Cerrar cualquier modal de compras que pueda estar abierto por error
+            const modalExistente = document.getElementById('modal-historial-compras');
+            if (modalExistente) {
+                modalExistente.remove();
+                document.body.style.overflow = '';
+                modalComprasAbierto = false;
+            }
+            
             setTimeout(cargarDatosUsuario, 1000);
         });
         
@@ -4127,16 +4151,25 @@
         // ===== SISTEMA DE TRACKING Y HISTORIAL DE COMPRAS =====
         
         async function mostrarHistorialCompras() {
+            // Prevenir múltiples aperturas simultáneas
+            if (modalComprasAbierto) {
+                return;
+            }
+            
             try {
+                modalComprasAbierto = true;
+                
                 const supabase = await esperarInitSupabase();
                 if (!supabase) {
                     alert('❌ No se pudo conectar a Supabase');
+                    modalComprasAbierto = false;
                     return;
                 }
                 
                 const { data: { user }, error: userError } = await supabase.auth.getUser();
                 if (userError || !user) {
                     alert('❌ Debes estar logueado para ver tu historial');
+                    modalComprasAbierto = false;
                     return;
                 }
                 
@@ -4149,6 +4182,7 @@
                 
                 if (!comprador) {
                     alert('❌ No se encontró tu perfil de comprador');
+                    modalComprasAbierto = false;
                     return;
                 }
                 
@@ -4162,6 +4196,7 @@
                 if (error) {
                     console.error('Error:', error);
                     alert('❌ Error al cargar tus compras');
+                    modalComprasAbierto = false;
                     return;
                 }
                 
@@ -4171,72 +4206,203 @@
             } catch (error) {
                 console.error('Error en mostrarHistorialCompras:', error);
                 alert('❌ Error inesperado');
+                modalComprasAbierto = false;
+            }
+        }
+        
+        function cerrarModalHistorialCompras() {
+            const modal = document.getElementById('modal-historial-compras');
+            if (modal) {
+                modal.style.opacity = '0';
+                modal.style.transition = 'opacity 0.3s ease';
+                setTimeout(() => {
+                    modal.remove();
+                    document.body.style.overflow = '';
+                    modalComprasAbierto = false;
+                }, 300);
+            } else {
+                modalComprasAbierto = false;
             }
         }
         
         function crearModalHistorialCompras(compras) {
             // Cerrar modal existente si hay
             const modalExistente = document.getElementById('modal-historial-compras');
-            if (modalExistente) modalExistente.remove();
+            if (modalExistente) {
+                cerrarModalHistorialCompras();
+                // Esperar a que se cierre antes de crear uno nuevo
+                setTimeout(() => {
+                    crearModalHistorialComprasInterno(compras);
+                }, 350);
+                return;
+            }
+            crearModalHistorialComprasInterno(compras);
+        }
+        
+        function crearModalHistorialComprasInterno(compras) {
+            // Asegurar que compras es un array
+            if (!Array.isArray(compras)) {
+                compras = [];
+            }
+            
+            // Generar contenido de compras de forma segura
+            let contenidoCompras = '';
+            if (compras.length === 0) {
+                contenidoCompras = `
+                    <div style="text-align: center; padding: 60px 20px;">
+                        <i class="fas fa-shopping-bag" style="font-size: 64px; color: #D1D5DB; margin-bottom: 20px;"></i>
+                        <h3 style="color: #6B7280; margin-bottom: 10px;">No tienes compras aún</h3>
+                        <p style="color: #9CA3AF;">Cuando realices una compra, aparecerá aquí.</p>
+                    </div>
+                `;
+            } else {
+                try {
+                    contenidoCompras = compras.map(compra => {
+                        const estadoInfo = obtenerInfoEstadoCompra(compra.estado || 'pendiente');
+                        const numeroOrden = compra.numero_orden || compra.id || 'N/A';
+                        const fecha = compra.created_at ? new Date(compra.created_at).toLocaleString('es-AR') : 'Fecha no disponible';
+                        const total = compra.total ? parseFloat(compra.total).toLocaleString('es-AR', {minimumFractionDigits: 2}) : '0.00';
+                        const compraId = compra.id || '';
+                        const numeroSeguimiento = compra.numero_seguimiento || '';
+                        
+                        // Escapar valores antes de usarlos en template literal
+                        const numeroOrdenEscapado = String(numeroOrden).replace(/"/g, '&quot;').replace(/'/g, '&#39;');
+                        const compraIdEscapado = String(compraId).replace(/"/g, '&quot;').replace(/'/g, '&#39;');
+                        
+                        let botonSeguimiento = '';
+                        if (numeroSeguimiento) {
+                            const numeroSeguimientoEscapado = String(numeroSeguimiento).replace(/"/g, '&quot;').replace(/'/g, '&#39;');
+                            botonSeguimiento = '<button class="btn-copiar-seguimiento" data-numero-seguimiento="' + numeroSeguimientoEscapado + '" style="background: #10B981; color: white; border: none; padding: 10px 20px; border-radius: 8px; cursor: pointer; font-weight: 600; margin-left: 10px;"><i class="fas fa-copy"></i> Copiar N° Seguimiento</button>';
+                        }
+                        
+                        return '<div style="background: #F8FAFC; border-radius: 15px; padding: 20px; margin-bottom: 20px; border-left: 4px solid ' + estadoInfo.color + '">' +
+                            '<div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 15px; flex-wrap: wrap; gap: 15px;">' +
+                            '<div><h3 style="margin: 0 0 5px 0; color: #1F2937;">Orden #' + numeroOrdenEscapado + '</h3>' +
+                            '<p style="margin: 0; color: #6B7280; font-size: 14px;">' + fecha + '</p></div>' +
+                            '<div style="text-align: right;">' +
+                            '<div style="background: ' + estadoInfo.colorFondo + '; color: ' + estadoInfo.colorTexto + '; padding: 6px 12px; border-radius: 8px; display: inline-block; font-weight: 600; font-size: 14px;">' +
+                            estadoInfo.icono + ' ' + estadoInfo.estado + '</div>' +
+                            '<p style="margin: 10px 0 0 0; font-size: 20px; font-weight: 700; color: #1F2937;">$' + total + '</p></div></div>' +
+                            '<div style="display: flex; gap: 10px; flex-wrap: wrap;">' +
+                            '<button class="btn-ver-seguimiento" data-compra-id="' + compraIdEscapado + '" data-numero-orden="' + numeroOrdenEscapado + '" style="background: #667eea; color: white; border: none; padding: 10px 20px; border-radius: 8px; cursor: pointer; font-weight: 600;">' +
+                            '<i class="fas fa-shipping-fast"></i> Ver Seguimiento</button>' +
+                            botonSeguimiento +
+                            '</div></div>';
+                    }).join('');
+                } catch (error) {
+                    console.error('Error generando contenido de compras:', error);
+                    contenidoCompras = `
+                        <div style="text-align: center; padding: 60px 20px;">
+                            <i class="fas fa-exclamation-triangle" style="font-size: 64px; color: #F59E0B; margin-bottom: 20px;"></i>
+                            <h3 style="color: #6B7280; margin-bottom: 10px;">Error al cargar compras</h3>
+                            <p style="color: #9CA3AF;">Por favor, intenta recargar la página.</p>
+                        </div>
+                    `;
+                }
+            }
+            
+            const numPedidos = compras.length;
+            const textoPedidos = numPedidos === 1 ? 'pedido' : 'pedidos';
             
             const modalHTML = `
-                <div id="modal-historial-compras" style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); z-index: 10000; display: flex; align-items: center; justify-content: center; padding: 20px; overflow-y: auto;">
-                    <div style="background: white; border-radius: 20px; max-width: 900px; width: 100%; max-height: 90vh; position: relative;">
+                <div id="modal-historial-compras" style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); z-index: 10000; display: flex; align-items: center; justify-content: center; padding: 20px; overflow-y: auto; opacity: 0; transition: opacity 0.3s ease;">
+                    <div id="modal-content-compras" style="background: white; border-radius: 20px; max-width: 900px; width: 100%; max-height: 90vh; position: relative; box-shadow: 0 20px 60px rgba(0,0,0,0.3);">
                         <!-- Header -->
                         <div style="background: linear-gradient(135deg, #667eea, #764ba2); color: white; padding: 25px; border-radius: 20px 20px 0 0; position: sticky; top: 0; z-index: 10;">
-                            <button onclick="document.getElementById('modal-historial-compras').remove()" style="position: absolute; top: 15px; right: 15px; background: rgba(255,255,255,0.2); border: none; color: white; width: 35px; height: 35px; border-radius: 50%; cursor: pointer; font-size: 18px;">
+                            <button id="btn-cerrar-modal-compras" style="position: absolute; top: 15px; right: 15px; background: rgba(255,255,255,0.2); border: none; color: white; width: 35px; height: 35px; border-radius: 50%; cursor: pointer; font-size: 18px; display: flex; align-items: center; justify-content: center; transition: background 0.2s;">
                                 <i class="fas fa-times"></i>
                             </button>
-                            <h2 style="margin: 0; font-size: 24px;">
+                            <h2 style="margin: 0; font-size: 24px; display: flex; align-items: center; gap: 10px;">
                                 <i class="fas fa-shopping-bag"></i> Mis Compras
                             </h2>
-                            <p style="margin: 10px 0 0 0; opacity: 0.9;">${compras.length} ${compras.length === 1 ? 'pedido' : 'pedidos'}</p>
+                            <p style="margin: 10px 0 0 0; opacity: 0.9;">${numPedidos} ${textoPedidos}</p>
                         </div>
                         
                         <!-- Lista de Compras -->
                         <div style="padding: 30px; max-height: calc(90vh - 120px); overflow-y: auto;">
-                            ${compras.length === 0 ? `
-                                <div style="text-align: center; padding: 60px 20px;">
-                                    <i class="fas fa-shopping-bag" style="font-size: 64px; color: #D1D5DB; margin-bottom: 20px;"></i>
-                                    <h3 style="color: #6B7280; margin-bottom: 10px;">No tienes compras aún</h3>
-                                    <p style="color: #9CA3AF;">Cuando realices una compra, aparecerá aquí.</p>
-                                </div>
-                            ` : compras.map(compra => {
-                                const estadoInfo = obtenerInfoEstadoCompra(compra.estado);
-                                return `
-                                    <div style="background: #F8FAFC; border-radius: 15px; padding: 20px; margin-bottom: 20px; border-left: 4px solid ${estadoInfo.color};">
-                                        <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 15px; flex-wrap: wrap; gap: 15px;">
-                                            <div>
-                                                <h3 style="margin: 0 0 5px 0; color: #1F2937;">Orden #${compra.numero_orden}</h3>
-                                                <p style="margin: 0; color: #6B7280; font-size: 14px;">${new Date(compra.created_at).toLocaleString('es-AR')}</p>
-                                            </div>
-                                            <div style="text-align: right;">
-                                                <div style="background: ${estadoInfo.colorFondo}; color: ${estadoInfo.colorTexto}; padding: 6px 12px; border-radius: 8px; display: inline-block; font-weight: 600; font-size: 14px;">
-                                                    ${estadoInfo.icono} ${estadoInfo.estado}
-                                                </div>
-                                                <p style="margin: 10px 0 0 0; font-size: 20px; font-weight: 700; color: #1F2937;">$${parseFloat(compra.total).toLocaleString('es-AR', {minimumFractionDigits: 2})}</p>
-                                            </div>
-                                        </div>
-                                        
-                                        <div style="display: flex; gap: 10px; flex-wrap: wrap;">
-                                            <button onclick="SistemaTrackingEnvios.mostrarTrackingPedido(${compra.id}, '${compra.numero_orden}')" style="background: #667eea; color: white; border: none; padding: 10px 20px; border-radius: 8px; cursor: pointer; font-weight: 600;">
-                                                <i class="fas fa-shipping-fast"></i> Ver Seguimiento
-                                            </button>
-                                            ${compra.numero_seguimiento ? `
-                                                <button onclick="copiarSeguimiento('${compra.numero_seguimiento}')" style="background: #10B981; color: white; border: none; padding: 10px 20px; border-radius: 8px; cursor: pointer; font-weight: 600;">
-                                                    <i class="fas fa-copy"></i> Copiar N° Seguimiento
-                                                </button>
-                                            ` : ''}
-                                        </div>
-                                    </div>
-                                `;
-                            }).join('')}
+                            ${contenidoCompras}
                         </div>
                     </div>
                 </div>
             `;
             
             document.body.insertAdjacentHTML('beforeend', modalHTML);
+            
+            // Prevenir scroll del body cuando el modal está abierto
+            document.body.style.overflow = 'hidden';
+            
+            // Hacer el modal visible con animación
+            const modal = document.getElementById('modal-historial-compras');
+            setTimeout(() => {
+                if (modal) {
+                    modal.style.opacity = '1';
+                }
+            }, 10);
+            
+            // Agregar event listeners para cerrar el modal
+            const btnCerrar = document.getElementById('btn-cerrar-modal-compras');
+            if (btnCerrar) {
+                btnCerrar.addEventListener('click', cerrarModalHistorialCompras);
+                // Agregar efectos hover con JavaScript en lugar de inline
+                btnCerrar.addEventListener('mouseenter', function() {
+                    this.style.background = 'rgba(255,255,255,0.3)';
+                });
+                btnCerrar.addEventListener('mouseleave', function() {
+                    this.style.background = 'rgba(255,255,255,0.2)';
+                });
+            }
+            
+            // Prevenir cierre al hacer click en el contenido del modal
+            const modalContent = document.getElementById('modal-content-compras');
+            if (modalContent) {
+                modalContent.addEventListener('click', function(e) {
+                    e.stopPropagation();
+                });
+            }
+            
+            // Cerrar al hacer click fuera del modal
+            modal.addEventListener('click', function(e) {
+                if (e.target === modal) {
+                    cerrarModalHistorialCompras();
+                }
+            });
+            
+            // Cerrar con tecla ESC
+            const handleEscape = function(e) {
+                if (e.key === 'Escape' && document.getElementById('modal-historial-compras')) {
+                    cerrarModalHistorialCompras();
+                    document.removeEventListener('keydown', handleEscape);
+                }
+            };
+            document.addEventListener('keydown', handleEscape);
+            
+            // Agregar event listeners para los botones de seguimiento y copiar
+            setTimeout(() => {
+                // Botones de ver seguimiento
+                const botonesSeguimiento = modal.querySelectorAll('.btn-ver-seguimiento');
+                botonesSeguimiento.forEach(btn => {
+                    btn.addEventListener('click', function() {
+                        const compraId = this.getAttribute('data-compra-id');
+                        const numeroOrden = this.getAttribute('data-numero-orden');
+                        if (window.SistemaTrackingEnvios && window.SistemaTrackingEnvios.mostrarTrackingPedido) {
+                            window.SistemaTrackingEnvios.mostrarTrackingPedido(compraId, numeroOrden);
+                        } else {
+                            alert('Sistema de tracking no disponible');
+                        }
+                    });
+                });
+                
+                // Botones de copiar seguimiento
+                const botonesCopiar = modal.querySelectorAll('.btn-copiar-seguimiento');
+                botonesCopiar.forEach(btn => {
+                    btn.addEventListener('click', function() {
+                        const numeroSeguimiento = this.getAttribute('data-numero-seguimiento');
+                        if (numeroSeguimiento) {
+                            copiarSeguimiento(numeroSeguimiento);
+                        }
+                    });
+                });
+            }, 50);
         }
         
         function obtenerInfoEstadoCompra(estado) {
@@ -4260,6 +4426,7 @@
         }
         
         window.mostrarHistorialCompras = mostrarHistorialCompras;
+        window.cerrarModalHistorialCompras = cerrarModalHistorialCompras;
     </script>
     
     <!-- Scripts de Tracking -->
