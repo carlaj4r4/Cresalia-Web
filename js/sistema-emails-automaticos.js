@@ -91,8 +91,16 @@ class SistemaEmailsAutomaticos {
         try {
             console.log('📧 Enviando email de bienvenida...');
             
+            // Verificar si estamos en temporada festiva
+            const ahora = new Date();
+            const mes = ahora.getMonth();
+            const dia = ahora.getDate();
+            const esFestivo = (mes === 11 && dia >= 20) || (mes === 0 && dia <= 7);
+            const mensajeFestivo = esFestivo ? '<div style="background:linear-gradient(135deg,#7C3AED 0%,#EC4899 100%);padding:20px;border-radius:12px;margin:20px 0;text-align:center;color:#ffffff;"><p style="margin:0 0 10px 0;font-size:18px;font-weight:600;">🎄 ¡Felices Fiestas! 🎉</p><p style="margin:0;font-size:14px;opacity:0.95;">Te deseamos un año lleno de buenas noticias, oportunidades y momentos especiales. Desde Cresalia, queremos que sepas que te esperan cosas increíbles. 🌟</p></div>' : '';
+            
             const htmlContent = `
                 <p>¡Bienvenido a Cresalia! Estamos muy contentos de tenerte con nosotros.</p>
+                ${mensajeFestivo}
                 <p>Como ${params.user_type === 'vendedor' ? 'vendedor' : 'comprador'}, podrás:</p>
                 <ul>
                     ${params.user_type === 'vendedor' 
