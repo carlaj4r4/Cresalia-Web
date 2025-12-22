@@ -3687,7 +3687,7 @@
                 partesHTML.push('    <meta http-equiv="refresh" content="0; url=' + widgetUrlEscapado + '">');
                 partesHTML.push('</head>');
                 partesHTML.push('<body style="margin:0;padding:0;background:linear-gradient(135deg,#667eea 0%,#764ba2 100%);min-height:100vh;display:flex;align-items:center;justify-content:center;font-family:Segoe UI,Tahoma,Geneva,Verdana,sans-serif">');
-                // Construir el script de forma segura - dividir </script> para evitar que el navegador lo interprete
+                // Construir script tag de forma segura
                 const scriptTagClose = '</' + 'script>';
                 const scriptContent = '        window.location.href = ' + widgetUrlJS + ';';
                 partesHTML.push('    <script>');
