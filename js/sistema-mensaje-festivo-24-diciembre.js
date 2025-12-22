@@ -312,19 +312,32 @@ class SistemaMensajeFestivo24Diciembre {
 
     // Inicializar verificación automática
     inicializar() {
-        // Verificar cada hora si es 24 de diciembre
+        // Verificar cada 15 minutos si es 24 de diciembre (más frecuente para asegurar ejecución)
         setInterval(() => {
             if (this.es24DeDiciembre() && !this.yaEnviado) {
                 console.log('🎄 Es 24 de diciembre, iniciando envío de mensajes festivos...');
                 this.procesarEnvioMasivo();
             }
-        }, 3600000); // Cada hora
+        }, 900000); // Cada 15 minutos
 
         // Verificar inmediatamente al cargar
         if (this.es24DeDiciembre() && !this.yaEnviado) {
             console.log('🎄 Es 24 de diciembre, iniciando envío de mensajes festivos...');
-            this.procesarEnvioMasivo();
+            // Esperar 2 segundos para asegurar que Supabase esté cargado
+            setTimeout(() => {
+                this.procesarEnvioMasivo();
+            }, 2000);
         }
+
+        // También verificar cuando la página se vuelve visible (usuario vuelve a la pestaña)
+        document.addEventListener('visibilitychange', () => {
+            if (!document.hidden && this.es24DeDiciembre() && !this.yaEnviado) {
+                console.log('🎄 Página visible en 24 de diciembre, verificando envío...');
+                setTimeout(() => {
+                    this.procesarEnvioMasivo();
+                }, 1000);
+            }
+        });
     }
 }
 
