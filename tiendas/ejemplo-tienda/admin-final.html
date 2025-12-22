@@ -9668,6 +9668,18 @@
         function abrirSistemaTurnos() {
             // Cargar FullCalendar.js si no está cargado
             if (!window.FullCalendar) {
+                // Verificar si ya se está cargando
+                if (document.querySelector('script[src*="fullcalendar"]')) {
+                    // Esperar a que termine de cargar
+                    const checkInterval = setInterval(() => {
+                        if (window.FullCalendar) {
+                            clearInterval(checkInterval);
+                            mostrarModalTurnos();
+                        }
+                    }, 100);
+                    return;
+                }
+                
                 const link = document.createElement('link');
                 link.href = 'https://cdn.jsdelivr.net/npm/fullcalendar@6.1.10/index.global.min.css';
                 link.rel = 'stylesheet';
@@ -9676,7 +9688,14 @@
                 const script = document.createElement('script');
                 script.src = 'https://cdn.jsdelivr.net/npm/fullcalendar@6.1.10/index.global.min.js';
                 script.onload = () => {
-                    mostrarModalTurnos();
+                    // Esperar un momento adicional para asegurar que FullCalendar esté completamente disponible
+                    setTimeout(() => {
+                        mostrarModalTurnos();
+                    }, 100);
+                };
+                script.onerror = () => {
+                    console.error('❌ Error cargando FullCalendar');
+                    mostrarNotificacion('Error al cargar el calendario. Por favor, recarga la página.', 'error');
                 };
                 document.head.appendChild(script);
             } else {
@@ -9746,15 +9765,52 @@
             `;
             document.body.appendChild(modal);
             
-            // Inicializar calendario
-            if (window.FullCalendar) {
-                inicializarCalendarioTurnos(turnos);
-            }
+            // Inicializar calendario después de que el modal esté en el DOM
+            setTimeout(() => {
+                const turnosData = JSON.parse(localStorage.getItem('turnos_reservados') || '[]');
+                if (window.FullCalendar && window.FullCalendar.Calendar) {
+                    inicializarCalendarioTurnos(turnosData);
+                } else {
+                    console.warn('⚠️ FullCalendar no está disponible aún, reintentando...');
+                    // Reintentar después de un momento
+                    setTimeout(() => {
+                        if (window.FullCalendar && window.FullCalendar.Calendar) {
+                            inicializarCalendarioTurnos(turnosData);
+                        } else {
+                            console.error('❌ No se pudo cargar FullCalendar');
+                            const calendarEl = document.getElementById('calendarioTurnos');
+                            if (calendarEl) {
+                                calendarEl.innerHTML = '<div style="text-align: center; padding: 40px; color: #6B7280;"><p>⚠️ Error al cargar el calendario. Por favor, recarga la página.</p></div>';
+                            }
+                        }
+                    }, 500);
+                }
+            }, 200);
         }
         
         function inicializarCalendarioTurnos(turnos) {
             const calendarEl = document.getElementById('calendarioTurnos');
-            if (!calendarEl) return;
+            if (!calendarEl) {
+                console.error('❌ Elemento calendarioTurnos no encontrado');
+                return;
+            }
+            
+            // Verificar que FullCalendar esté disponible
+            if (!window.FullCalendar || !window.FullCalendar.Calendar) {
+                console.error('❌ FullCalendar no está disponible');
+                calendarEl.innerHTML = '<div style="text-align: center; padding: 40px; color: #6B7280;"><p>⚠️ Error: FullCalendar no está cargado. Por favor, recarga la página.</p></div>';
+                return;
+            }
+            
+            // Destruir calendario anterior si existe
+            if (window.calendarioTurnosInstance) {
+                try {
+                    window.calendarioTurnosInstance.destroy();
+                } catch (e) {
+                    console.warn('⚠️ Error al destruir calendario anterior:', e);
+                }
+                window.calendarioTurnosInstance = null;
+            }
             
             // Convertir turnos a formato de FullCalendar
             const events = turnos.map(turno => {
@@ -9772,33 +9828,39 @@
                 };
             });
             
-            const calendar = new FullCalendar.Calendar(calendarEl, {
-                initialView: 'dayGridMonth',
-                locale: 'es',
-                headerToolbar: {
-                    left: 'prev,next today',
-                    center: 'title',
-                    right: 'dayGridMonth,timeGridWeek,timeGridDay'
-                },
-                events: events,
-                editable: true,
-                selectable: true,
-                selectMirror: true,
-                dayMaxEvents: true,
-                select: function(arg) {
-                    mostrarFormularioNuevoTurno(arg.startStr);
-                    calendar.unselect();
-                },
-                eventClick: function(arg) {
-                    mostrarDetallesTurno(arg.event.extendedProps);
-                },
-                eventDrop: function(arg) {
-                    actualizarFechaTurno(arg.event.id, arg.event.start);
-                }
-            });
-            
-            calendar.render();
-            window.calendarioTurnosInstance = calendar;
+            try {
+                const calendar = new FullCalendar.Calendar(calendarEl, {
+                    initialView: 'dayGridMonth',
+                    locale: 'es',
+                    headerToolbar: {
+                        left: 'prev,next today',
+                        center: 'title',
+                        right: 'dayGridMonth,timeGridWeek,timeGridDay'
+                    },
+                    events: events,
+                    editable: true,
+                    selectable: true,
+                    selectMirror: true,
+                    dayMaxEvents: true,
+                    select: function(arg) {
+                        mostrarFormularioNuevoTurno(arg.startStr);
+                        calendar.unselect();
+                    },
+                    eventClick: function(arg) {
+                        mostrarDetallesTurno(arg.event.extendedProps);
+                    },
+                    eventDrop: function(arg) {
+                        actualizarFechaTurno(arg.event.id, arg.event.start);
+                    }
+                });
+                
+                calendar.render();
+                window.calendarioTurnosInstance = calendar;
+                console.log('✅ Calendario inicializado correctamente con', events.length, 'eventos');
+            } catch (error) {
+                console.error('❌ Error al inicializar calendario:', error);
+                calendarEl.innerHTML = '<div style="text-align: center; padding: 40px; color: #EF4444;"><p>⚠️ Error al inicializar el calendario: ' + error.message + '</p></div>';
+            }
         }
         
         function mostrarVistaTurnos(vista) {
@@ -9812,6 +9874,15 @@
                 vistaLista.style.display = 'none';
                 btnCalendario.style.background = '#8B5CF6';
                 btnCalendario.style.color = 'white';
+                
+                // Si el calendario no está inicializado, inicializarlo ahora
+                if (!window.calendarioTurnosInstance && window.FullCalendar && window.FullCalendar.Calendar) {
+                    const turnos = JSON.parse(localStorage.getItem('turnos_reservados') || '[]');
+                    inicializarCalendarioTurnos(turnos);
+                } else if (window.calendarioTurnosInstance) {
+                    // Si ya existe, refrescar el calendario
+                    window.calendarioTurnosInstance.render();
+                }
                 btnLista.style.background = '#E5E7EB';
                 btnLista.style.color = '#374151';
             } else {
