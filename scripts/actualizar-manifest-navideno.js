@@ -6,7 +6,9 @@ const http = require('http');
 
 const manifestPath = path.join(__dirname, '..', 'manifest.json');
 const logoPath = path.join(__dirname, '..', 'assets', 'logo', 'logo-cresalia.png');
-const logoNavidenoPath = path.join(__dirname, '..', 'assets', 'logo', 'logo-cresalia-navideno.png');
+// Intentar primero JPG, luego PNG
+const logoNavidenoJPG = path.join(__dirname, '..', 'assets', 'logo', 'logo-cresalia-navideno.jpg');
+const logoNavidenoPNG = path.join(__dirname, '..', 'assets', 'logo', 'logo-cresalia-navideno.png');
 
 // Verificar si estamos en temporada navideña (20 dic - 7 ene)
 function esTemporadaNavidena() {
@@ -80,7 +82,7 @@ function actualizarManifest() {
                             ...icon,
                             src: icon.src.includes('logo-cresalia-navideno')
                                 ? icon.src
-                                : icon.src.replace('logo-cresalia.png', 'logo-cresalia-navideno.png?v=navideno')
+                                : icon.src.replace('logo-cresalia.png', `logo-cresalia-navideno.${extensionLogoNavideno}?v=navideno`)
                         }));
                     }
                     return shortcut;

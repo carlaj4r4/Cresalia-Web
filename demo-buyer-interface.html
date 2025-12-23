@@ -938,6 +938,43 @@
             font-size: 14px;
         }
         
+        /* Widget de Soporte (CresaliaSupportWidget) */
+        #cresalia-support-widget {
+            position: fixed;
+            bottom: 24px;
+            right: 24px;
+            z-index: 9999;
+        }
+        
+        .support-toggle {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #7C3AED, #A78BFA);
+            border: none;
+            color: white;
+            font-size: 24px;
+            cursor: pointer;
+            box-shadow: 0 4px 20px rgba(124, 58, 237, 0.4);
+            transition: all 0.3s ease;
+        }
+        
+        .support-toggle:hover {
+            transform: scale(1.1);
+            box-shadow: 0 6px 30px rgba(124, 58, 237, 0.6);
+        }
+        
+        .support-panel {
+            position: absolute;
+            bottom: 80px;
+            right: 0;
+            width: 420px;
+            height: 600px;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+        }
+        
         /* Modales de Chatbot - MEJOR POSICIONADOS */
         .ai-chatbot-modal {
             position: fixed;
