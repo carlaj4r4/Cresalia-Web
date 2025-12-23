@@ -38,10 +38,15 @@
     
     // Inyectar variables de Supabase
     if (typeof window !== 'undefined') {
+        // Supabase para Tiendas (proyecto principal)
         window.__SUPABASE_URL__ = getEnvVar('SUPABASE_URL', 'https://lvdgklwcgrmfbqwghxhl.supabase.co');
-        // Fallback con anon key pública del proyecto (segura para frontend)
         window.__SUPABASE_ANON_KEY__ = getEnvVar('SUPABASE_ANON_KEY', 'sb_publishable_m2TqrW1AqMOWIIyQM4oYkA_zeyAAhmR');
         window.__SUPABASE_SERVICE_ROLE_KEY__ = getEnvVar('SUPABASE_SERVICE_ROLE_KEY', null);
+        
+        // Supabase para Comunidades (proyecto separado)
+        window.__SUPABASE_URL_COMUNIDADES__ = getEnvVar('SUPABASE_URL_COMUNIDADES', 'https://zbomxayytvwjbdzbegcw.supabase.co');
+        window.__SUPABASE_ANON_KEY_COMUNIDADES__ = getEnvVar('SUPABASE_ANON_KEY_COMUNIDADES', '');
+        window.__SUPABASE_SERVICE_ROLE_KEY_COMUNIDADES__ = getEnvVar('SUPABASE_SERVICE_ROLE_KEY_COMUNIDADES', null);
         
         // Inyectar variables de Mercado Pago
         // ⚠️ IMPORTANTE: Solo PUBLIC_KEY en el cliente (ACCESS_TOKEN es privado y va en el servidor)

@@ -38,18 +38,44 @@ class SistemaForoComunidades {
     
     async init() {
         // Inicializar Supabase si está disponible
+        // PRIORIDAD: Usar configuración específica de comunidades
         if (typeof window.supabase !== 'undefined') {
             try {
-                // Intentar usar initSupabase primero
-                if (typeof window.initSupabase === 'function') {
-                    const client = window.initSupabase();
+                // 1. Intentar usar initSupabaseComunidades primero (configuración específica de comunidades)
+                if (typeof window.initSupabaseComunidades === 'function') {
+                    const client = window.initSupabaseComunidades();
                     if (client && typeof client.from === 'function') {
                         this.supabase = client;
-                        console.log('✅ Foro: Supabase inicializado desde initSupabase');
+                        console.log('✅ Foro: Supabase Comunidades inicializado desde initSupabaseComunidades');
+                        console.log('🔍 URL Comunidades:', window.SUPABASE_CONFIG_COMUNIDADES?.url || 'N/A');
                     }
                 }
                 
-                // Si no funcionó, intentar con configuración directa
+                // 2. Si no funcionó, intentar con configuración directa de comunidades
+                if (!this.supabase) {
+                    const configComunidades = window.SUPABASE_CONFIG_COMUNIDADES || {};
+                    
+                    if (configComunidades.url && configComunidades.anonKey && !configComunidades.anonKey.includes('REEMPLAZA') && !configComunidades.anonKey.includes('PEGA_AQUI')) {
+                        this.supabase = window.supabase.createClient(
+                            configComunidades.url,
+                            configComunidades.anonKey,
+                            { auth: configComunidades.auth || {} }
+                        );
+                        console.log('✅ Foro: Supabase Comunidades inicializado desde config directa');
+                        console.log('🔍 URL Comunidades:', configComunidades.url);
+                    }
+                }
+                
+                // 3. Fallback: Intentar usar initSupabase (configuración de tiendas) como último recurso
+                if (!this.supabase && typeof window.initSupabase === 'function') {
+                    const client = window.initSupabase();
+                    if (client && typeof client.from === 'function') {
+                        this.supabase = client;
+                        console.log('⚠️ Foro: Usando Supabase Tiendas como fallback (no recomendado)');
+                    }
+                }
+                
+                // 4. Si aún no funciona, intentar con configuración de tiendas
                 if (!this.supabase) {
                     const config = window.SUPABASE_CONFIG || {};
                     
@@ -59,7 +85,7 @@ class SistemaForoComunidades {
                             config.anonKey,
                             { auth: config.auth || {} }
                         );
-                        console.log('✅ Foro: Supabase inicializado desde config');
+                        console.log('⚠️ Foro: Usando Supabase Tiendas como fallback');
                     } else {
                         console.warn('⚠️ Foro: Supabase no configurado, usando modo local (localStorage)');
                     }
