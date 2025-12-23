@@ -27,25 +27,30 @@ function esTemporadaNavidena() {
 // Generar logo navideño usando Canvas (Node.js)
 function generarLogoNavideno() {
     // Nota: Para usar Canvas en Node.js necesitaríamos instalar 'canvas'
-    // Por ahora, vamos a actualizar el manifest para que use el logo normal
-    // pero con un parámetro de versión navideña
+    // Por ahora, simplemente verificamos si existe el logo navideño
     // En producción, se podría generar la imagen con moño navideño
     
-    console.log('🎄 Generando logo navideño para PWA...');
+    console.log('🎄 Verificando logo navideño para PWA...');
     
-    // Por ahora, simplemente copiamos el logo original
-    // En el futuro, se podría usar una librería como 'canvas' para dibujar el moño
-    if (fs.existsSync(logoPath)) {
+    // Verificar si ya existe el logo navideño (JPG o PNG)
+    if (fs.existsSync(logoNavidenoJPG)) {
+        console.log('✅ Logo navideño JPG ya existe');
+        return true;
+    } else if (fs.existsSync(logoNavidenoPNG)) {
+        console.log('✅ Logo navideño PNG ya existe');
+        return true;
+    } else if (fs.existsSync(logoPath)) {
+        // Si no existe, copiar el logo original como fallback
         try {
-            fs.copyFileSync(logoPath, logoNavidenoPath);
-            console.log('✅ Logo navideño preparado (usando logo base por ahora)');
+            fs.copyFileSync(logoPath, logoNavidenoPNG);
+            console.log('✅ Logo navideño preparado (usando logo base como fallback)');
             return true;
         } catch (error) {
             console.error('❌ Error copiando logo:', error.message);
             return false;
         }
     } else {
-        console.warn('⚠️ Logo original no encontrado, usando logo por defecto');
+        console.warn('⚠️ Logo original no encontrado');
         return false;
     }
 }
@@ -59,9 +64,29 @@ function actualizarManifest() {
         if (esNavideno) {
             console.log('🎄 Es temporada navideña, actualizando manifest con logo navideño...');
             
-            // Generar logo navideño si no existe
-            if (!fs.existsSync(logoNavidenoPath)) {
+            // Verificar qué formato de logo navideño existe (priorizar JPG)
+            let logoNavidenoExiste = false;
+            let extensionLogoNavideno = 'png';
+            
+            if (fs.existsSync(logoNavidenoJPG)) {
+                logoNavidenoExiste = true;
+                extensionLogoNavideno = 'jpg';
+                console.log('✅ Logo navideño JPG encontrado');
+            } else if (fs.existsSync(logoNavidenoPNG)) {
+                logoNavidenoExiste = true;
+                extensionLogoNavideno = 'png';
+                console.log('✅ Logo navideño PNG encontrado');
+            }
+            
+            if (!logoNavidenoExiste) {
+                console.log('⚠️ Logo navideño no encontrado, generando...');
                 generarLogoNavideno();
+                // Después de generar, verificar de nuevo
+                if (fs.existsSync(logoNavidenoJPG)) {
+                    extensionLogoNavideno = 'jpg';
+                } else if (fs.existsSync(logoNavidenoPNG)) {
+                    extensionLogoNavideno = 'png';
+                }
             }
             
             // Actualizar todas las referencias de iconos
@@ -70,7 +95,7 @@ function actualizarManifest() {
                     ...icon,
                     src: icon.src.includes('logo-cresalia-navideno') 
                         ? icon.src 
-                        : icon.src.replace('logo-cresalia.png', 'logo-cresalia-navideno.png?v=navideno')
+                        : icon.src.replace('logo-cresalia.png', `logo-cresalia-navideno.${extensionLogoNavideno}?v=navideno`)
                 }));
             }
             
