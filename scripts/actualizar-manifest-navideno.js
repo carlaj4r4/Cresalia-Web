@@ -124,7 +124,7 @@ function actualizarManifest() {
                 if (tieneNavideno) {
                     manifest.icons = manifest.icons.map(icon => ({
                         ...icon,
-                        src: icon.src.replace('logo-cresalia-navideno.png?v=navideno', 'logo-cresalia.png?v=6.0')
+                        src: icon.src.replace(/logo-cresalia-navideno\.(jpg|png)\?v=navideno/g, 'logo-cresalia.png?v=6.0')
                     }));
                     
                     if (manifest.shortcuts && Array.isArray(manifest.shortcuts)) {
@@ -132,7 +132,7 @@ function actualizarManifest() {
                             if (shortcut.icons && Array.isArray(shortcut.icons)) {
                                 shortcut.icons = shortcut.icons.map(icon => ({
                                     ...icon,
-                                    src: icon.src.replace('logo-cresalia-navideno.png?v=navideno', 'logo-cresalia.png')
+                                    src: icon.src.replace(/logo-cresalia-navideno\.(jpg|png)\?v=navideno/g, 'logo-cresalia.png')
                                 }));
                             }
                             return shortcut;
