@@ -140,12 +140,92 @@
             min-width: 220px;
             max-width: 250px;
             font-size: 0.85rem;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            overflow: hidden;
+        }
+        
+        /* Estado minimizado */
+        .calculadora-tiempo-real.minimizada {
+            min-width: auto;
+            max-width: auto;
+            width: auto;
+            padding: 0;
+            height: auto;
+        }
+        
+        .calculadora-tiempo-real.minimizada .calculadora-contenido {
+            display: none;
+        }
+        
+        .calculadora-tiempo-real.minimizada .calculadora-toggle-btn {
+            display: flex;
+        }
+        
+        /* Botón toggle (solo visible cuando está minimizada) */
+        .calculadora-toggle-btn {
+            display: none;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(135deg, #7C3AED, #EC4899);
+            color: white;
+            border: none;
+            border-radius: 50px;
+            padding: 12px 20px;
+            cursor: pointer;
+            box-shadow: 0 4px 15px rgba(124, 58, 237, 0.3);
+            transition: all 0.3s ease;
+            font-weight: 600;
+            font-size: 0.9rem;
+            gap: 8px;
+        }
+        
+        .calculadora-toggle-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(124, 58, 237, 0.4);
+        }
+        
+        .calculadora-toggle-btn i {
+            font-size: 1rem;
+        }
+        
+        /* Contenido de la calculadora */
+        .calculadora-contenido {
+            display: block;
+        }
+        
+        .calculadora-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
         }
         
         .calculadora-tiempo-real h4 {
-            margin: 0 0 10px 0;
+            margin: 0;
             color: #1F2937;
             font-size: 1rem;
+            flex: 1;
+        }
+        
+        .calculadora-btn-minimizar {
+            background: transparent;
+            border: none;
+            color: #6B7280;
+            cursor: pointer;
+            padding: 4px 8px;
+            border-radius: 6px;
+            transition: all 0.2s ease;
+            font-size: 1rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 28px;
+            height: 28px;
+        }
+        
+        .calculadora-btn-minimizar:hover {
+            background: #F3F4F6;
+            color: #1F2937;
         }
         
         .calculadora-tiempo-real input {
@@ -155,6 +235,7 @@
             border-radius: 6px;
             margin-bottom: 8px;
             font-size: 0.85rem;
+            box-sizing: border-box;
         }
         
         .calculadora-tiempo-real .resultado {
@@ -164,6 +245,21 @@
             font-weight: 600;
             color: #1F2937;
             font-size: 0.9rem;
+        }
+        
+        /* Responsive */
+        @media (max-width: 768px) {
+            .calculadora-tiempo-real {
+                bottom: 80px;
+                left: 10px;
+                right: 10px;
+                max-width: none;
+            }
+            
+            .calculadora-toggle-btn {
+                padding: 10px 16px;
+                font-size: 0.85rem;
+            }
         }
         
         /* Ocultar notificaciones molestas */
@@ -1757,11 +1853,25 @@
 
     <!-- Calculadora en Tiempo Real -->
     <div class="calculadora-tiempo-real" id="calculadora">
-        <h4>💰 Calculadora de Precios</h4>
-        <input type="number" id="precioBase" placeholder="Precio base" oninput="calcularPrecio()">
-        <input type="number" id="cantidad" placeholder="Cantidad" oninput="calcularPrecio()">
-        <input type="number" id="descuento" placeholder="Descuento %" oninput="calcularPrecio()">
-        <div class="resultado" id="resultadoCalculadora">Total: $0</div>
+        <!-- Botón toggle (solo visible cuando está minimizada) -->
+        <button class="calculadora-toggle-btn" onclick="toggleCalculadora()">
+            <i class="fas fa-calculator"></i>
+            <span>Calculadora</span>
+        </button>
+        
+        <!-- Contenido de la calculadora -->
+        <div class="calculadora-contenido">
+            <div class="calculadora-header">
+                <h4>💰 Calculadora de Precios</h4>
+                <button class="calculadora-btn-minimizar" onclick="toggleCalculadora()" title="Minimizar">
+                    <i class="fas fa-minus"></i>
+                </button>
+            </div>
+            <input type="number" id="precioBase" placeholder="Precio base" oninput="calcularPrecio()">
+            <input type="number" id="cantidad" placeholder="Cantidad" oninput="calcularPrecio()">
+            <input type="number" id="descuento" placeholder="Descuento %" oninput="calcularPrecio()">
+            <div class="resultado" id="resultadoCalculadora">Total: $0</div>
+        </div>
     </div>
 
     <!-- Scripts -->
@@ -3412,6 +3522,33 @@
             
             document.getElementById('resultadoCalculadora').textContent = `Total: $${total.toFixed(2)}`;
         }
+        
+        // ===== TOGGLE CALCULADORA (Minimizar/Maximizar) =====
+        function toggleCalculadora() {
+            const calculadora = document.getElementById('calculadora');
+            const estaMinimizada = calculadora.classList.contains('minimizada');
+            
+            if (estaMinimizada) {
+                // Expandir
+                calculadora.classList.remove('minimizada');
+                localStorage.setItem('calculadora-minimizada', 'false');
+            } else {
+                // Minimizar
+                calculadora.classList.add('minimizada');
+                localStorage.setItem('calculadora-minimizada', 'true');
+            }
+        }
+        
+        // Restaurar estado de la calculadora al cargar
+        document.addEventListener('DOMContentLoaded', function() {
+            const calculadora = document.getElementById('calculadora');
+            const estadoGuardado = localStorage.getItem('calculadora-minimizada');
+            
+            // Por defecto, mostrar expandida la primera vez
+            if (estadoGuardado === 'true') {
+                calculadora.classList.add('minimizada');
+            }
+        });
         
         // ===== FUNCIÓN PARA MOSTRAR STOCK =====
         function mostrarStock(cantidad) {
