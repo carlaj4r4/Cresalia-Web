@@ -151,7 +151,64 @@
         };
     }
     
+    // Función para actualizar el manifest del PWA (solo en cliente, no puede modificar archivo)
+    function actualizarManifestPWA() {
+        // Nota: No podemos modificar el manifest.json desde el cliente
+        // Pero podemos crear un manifest dinámico y actualizar el link
+        try {
+            // Crear un manifest dinámico con logo navideño
+            const manifestDinamico = {
+                name: "Cresalia",
+                short_name: "Cresalia",
+                description: "Plataforma para emprendedores. Crea tu tienda online, gestiona productos, servicios y crece con nosotros.",
+                start_url: "/",
+                display: "standalone",
+                background_color: "#8B5CF6",
+                theme_color: "#7C3AED",
+                orientation: "portrait-primary",
+                scope: "/",
+                lang: "es-ES",
+                dir: "ltr",
+                categories: ["business", "productivity", "shopping"],
+                icons: [
+                    { src: "/assets/logo/logo-cresalia.png?v=navideno", sizes: "72x72", type: "image/png", purpose: "any" },
+                    { src: "/assets/logo/logo-cresalia.png?v=navideno", sizes: "96x96", type: "image/png", purpose: "any" },
+                    { src: "/assets/logo/logo-cresalia.png?v=navideno", sizes: "128x128", type: "image/png", purpose: "any" },
+                    { src: "/assets/logo/logo-cresalia.png?v=navideno", sizes: "144x144", type: "image/png", purpose: "any" },
+                    { src: "/assets/logo/logo-cresalia.png?v=navideno", sizes: "152x152", type: "image/png", purpose: "any" },
+                    { src: "/assets/logo/logo-cresalia.png?v=navideno", sizes: "192x192", type: "image/png", purpose: "any" },
+                    { src: "/assets/logo/logo-cresalia.png?v=navideno", sizes: "384x384", type: "image/png", purpose: "any" },
+                    { src: "/assets/logo/logo-cresalia.png?v=navideno", sizes: "512x512", type: "image/png", purpose: "any" },
+                    { src: "/assets/logo/logo-cresalia.png?v=navideno", sizes: "192x192", type: "image/png", purpose: "maskable" },
+                    { src: "/assets/logo/logo-cresalia.png?v=navideno", sizes: "512x512", type: "image/png", purpose: "maskable" }
+                ]
+            };
+            
+            // Crear blob con el manifest
+            const blob = new Blob([JSON.stringify(manifestDinamico, null, 2)], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            
+            // Actualizar el link del manifest
+            let manifestLink = document.querySelector('link[rel="manifest"]');
+            if (!manifestLink) {
+                manifestLink = document.createElement('link');
+                manifestLink.rel = 'manifest';
+                document.head.appendChild(manifestLink);
+            }
+            
+            // Usar el manifest dinámico solo si estamos en temporada navideña
+            // Nota: Esto no funcionará completamente porque el PWA ya instalado usa el manifest original
+            // Pero ayudará para nuevos usuarios que instalen durante la temporada navideña
+            manifestLink.href = url;
+            
+            console.log('🎄 Manifest PWA actualizado dinámicamente (solo para nuevas instalaciones)');
+        } catch (error) {
+            console.warn('⚠️ No se pudo actualizar manifest PWA:', error.message);
+        }
+    }
+    
     // Exportar función para uso manual si es necesario
     window.aplicarLogoNavideno = aplicarLogoNavideno;
     window.actualizarFaviconNavideno = actualizarFaviconNavideno;
+    window.actualizarManifestPWA = actualizarManifestPWA;
 })();
