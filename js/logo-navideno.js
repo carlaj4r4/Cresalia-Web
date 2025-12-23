@@ -40,6 +40,13 @@
             if (getComputedStyle(logo).position === 'static') {
                 logo.style.position = 'relative';
             }
+            
+            // Agregar centro del moño (círculo dorado)
+            if (!logo.parentElement.querySelector('.logo-navideno-centro')) {
+                const centro = document.createElement('span');
+                centro.className = 'logo-navideno-centro';
+                logo.parentElement.appendChild(centro);
+            }
         });
         
         // Para logos principales (más grandes)
@@ -75,7 +82,7 @@
         subtree: true
     });
     
-    // Función para actualizar el favicon con gorro navideño
+    // Función para actualizar el favicon con moño navideño
     function actualizarFaviconNavideno() {
         const img = new Image();
         img.crossOrigin = 'anonymous';
@@ -91,19 +98,31 @@
             // Dibujar el logo
             ctx.drawImage(img, 0, 0, size, size);
             
-            // Dibujar gorro navideño (triángulo rojo)
+            // Dibujar moño navideño - Lazo izquierdo
+            const moñoSize = 12;
+            const moñoY = 5;
+            
+            // Lazo izquierdo
             ctx.fillStyle = '#DC2626';
             ctx.beginPath();
-            ctx.moveTo(size / 2, -5);
-            ctx.lineTo(size / 2 - 10, 15);
-            ctx.lineTo(size / 2 + 10, 15);
-            ctx.closePath();
+            ctx.ellipse(size / 2 - 8, moñoY, moñoSize, moñoSize * 1.2, 0, 0, Math.PI * 2);
             ctx.fill();
             
-            // Dibujar pompon blanco
-            ctx.fillStyle = 'white';
+            // Lazo derecho
             ctx.beginPath();
-            ctx.arc(size / 2, -8, 4, 0, Math.PI * 2);
+            ctx.ellipse(size / 2 + 8, moñoY, moñoSize, moñoSize * 1.2, 0, 0, Math.PI * 2);
+            ctx.fill();
+            
+            // Centro dorado del moño
+            ctx.fillStyle = '#FCD34D';
+            ctx.beginPath();
+            ctx.arc(size / 2, moñoY, 6, 0, Math.PI * 2);
+            ctx.fill();
+            
+            // Sombra del centro
+            ctx.fillStyle = '#F59E0B';
+            ctx.beginPath();
+            ctx.arc(size / 2, moñoY + 1, 4, 0, Math.PI * 2);
             ctx.fill();
             
             // Actualizar favicon
@@ -111,7 +130,20 @@
             link.type = 'image/png';
             link.rel = 'shortcut icon';
             link.href = canvas.toDataURL();
+            
+            // Remover favicon anterior si existe
+            const oldLink = document.querySelector("link[rel*='icon']");
+            if (oldLink && oldLink !== link) {
+                oldLink.remove();
+            }
+            
             document.getElementsByTagName('head')[0].appendChild(link);
+            
+            // También actualizar apple-touch-icon
+            const appleLink = document.querySelector("link[rel*='apple-touch-icon']") || document.createElement('link');
+            appleLink.rel = 'apple-touch-icon';
+            appleLink.href = canvas.toDataURL();
+            document.getElementsByTagName('head')[0].appendChild(appleLink);
         };
         
         img.onerror = function() {

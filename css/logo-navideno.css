@@ -1,43 +1,5 @@
-/* ===== LOGO CON GORRO NAVIDEÑO ===== */
+/* ===== LOGO CON MOÑO NAVIDEÑO ===== */
 /* Solo activo durante la temporada festiva (20 dic - 7 ene) */
-
-/* Gorro navideño para logos en navbar */
-.logo-container::before,
-.navbar-logo-img::before,
-.logo-image::before,
-img[src*="logo-cresalia"]::before {
-    content: '';
-    position: absolute;
-    top: -15px;
-    left: 50%;
-    transform: translateX(-50%);
-    width: 0;
-    height: 0;
-    border-left: 12px solid transparent;
-    border-right: 12px solid transparent;
-    border-bottom: 20px solid #DC2626; /* Rojo navideño */
-    z-index: 10;
-    pointer-events: none;
-}
-
-/* Pompon blanco del gorro */
-.logo-container::after,
-.navbar-logo-img::after,
-.logo-image::after,
-img[src*="logo-cresalia"]::after {
-    content: '';
-    position: absolute;
-    top: -18px;
-    left: 50%;
-    transform: translateX(-50%);
-    width: 8px;
-    height: 8px;
-    background: white;
-    border-radius: 50%;
-    z-index: 11;
-    pointer-events: none;
-    box-shadow: 0 0 4px rgba(255, 255, 255, 0.8);
-}
 
 /* Asegurar que el logo tenga posición relativa */
 .logo-container,
@@ -47,16 +9,80 @@ img[src*="logo-cresalia"] {
     position: relative;
 }
 
-/* Animación suave del gorro */
-@keyframes gorritoNavideno {
+/* Moño navideño - Lazo izquierdo */
+.logo-container::before,
+.navbar-logo-img::before,
+.logo-image::before,
+img[src*="logo-cresalia"]::before {
+    content: '';
+    position: absolute;
+    top: -25px;
+    left: calc(50% - 18px);
+    transform: translateX(-50%);
+    width: 20px;
+    height: 25px;
+    background: linear-gradient(135deg, #DC2626 0%, #B91C1C 100%); /* Rojo navideño */
+    border-radius: 50% 50% 50% 50% / 60% 60% 40% 40%;
+    z-index: 10;
+    pointer-events: none;
+    box-shadow: 0 3px 10px rgba(220, 38, 38, 0.5);
+    /* Crear forma de lazo izquierdo */
+    clip-path: polygon(0% 0%, 50% 0%, 50% 100%, 0% 100%);
+}
+
+/* Moño navideño - Lazo derecho */
+.logo-container::after,
+.navbar-logo-img::after,
+.logo-image::after,
+img[src*="logo-cresalia"]::after {
+    content: '';
+    position: absolute;
+    top: -25px;
+    left: calc(50% + 18px);
+    transform: translateX(-50%);
+    width: 20px;
+    height: 25px;
+    background: linear-gradient(135deg, #DC2626 0%, #B91C1C 100%);
+    border-radius: 50% 50% 50% 50% / 60% 60% 40% 40%;
+    z-index: 11;
+    pointer-events: none;
+    box-shadow: 0 3px 10px rgba(220, 38, 38, 0.5);
+    /* Crear forma de lazo derecho */
+    clip-path: polygon(50% 0%, 100% 0%, 100% 100%, 50% 100%);
+}
+
+/* Centro del moño (círculo dorado) usando un pseudo-elemento adicional */
+.logo-container,
+.navbar-logo-img,
+.logo-image {
+    position: relative;
+}
+
+/* Agregar centro del moño usando un span adicional (se agregará con JS) */
+.logo-navideno-centro {
+    position: absolute;
+    top: -22px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 14px;
+    height: 14px;
+    background: linear-gradient(135deg, #FCD34D 0%, #F59E0B 100%); /* Dorado */
+    border-radius: 50%;
+    z-index: 12;
+    pointer-events: none;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3), inset 0 1px 2px rgba(255, 255, 255, 0.3);
+}
+
+/* Animación suave del moño */
+@keyframes moñoNavideno {
     0%, 100% {
-        transform: translateX(-50%) rotate(0deg);
+        transform: translateX(-50%) rotate(0deg) scale(1);
     }
     25% {
-        transform: translateX(-50%) rotate(-5deg);
+        transform: translateX(-50%) rotate(-3deg) scale(1.05);
     }
     75% {
-        transform: translateX(-50%) rotate(5deg);
+        transform: translateX(-50%) rotate(3deg) scale(1.05);
     }
 }
 
@@ -64,57 +90,62 @@ img[src*="logo-cresalia"] {
 .navbar-logo-img:hover::before,
 .logo-image:hover::before,
 img[src*="logo-cresalia"]:hover::before {
-    animation: gorritoNavideno 0.5s ease-in-out;
+    animation: moñoNavideno 0.6s ease-in-out;
 }
 
-/* Para favicons y iconos del PWA - usando un overlay */
-.favicon-navideno {
-    position: relative;
-}
-
-.favicon-navideno::before {
-    content: '🎄';
-    position: absolute;
-    top: -8px;
-    right: -8px;
-    font-size: 16px;
-    z-index: 10;
-    pointer-events: none;
-    animation: gorritoNavideno 2s ease-in-out infinite;
+.logo-container:hover::after,
+.navbar-logo-img:hover::after,
+.logo-image:hover::after,
+img[src*="logo-cresalia"]:hover::after {
+    animation: moñoNavideno 0.6s ease-in-out;
 }
 
 /* Versión más grande para logos principales */
 .logo-principal-navideno::before {
-    border-left: 18px solid transparent;
-    border-right: 18px solid transparent;
-    border-bottom: 30px solid #DC2626;
-    top: -20px;
+    width: 30px;
+    height: 35px;
+    top: -30px;
+    left: calc(50% - 25px);
 }
 
 .logo-principal-navideno::after {
-    width: 12px;
-    height: 12px;
-    top: -24px;
+    width: 30px;
+    height: 35px;
+    top: -30px;
+    left: calc(50% + 25px);
 }
 
-/* Responsive - ocultar en pantallas muy pequeñas */
+.logo-principal-navideno .logo-navideno-centro {
+    width: 18px;
+    height: 18px;
+    top: -28px;
+}
+
+/* Responsive - ajustar tamaño en pantallas pequeñas */
 @media (max-width: 480px) {
     .logo-container::before,
     .navbar-logo-img::before,
     .logo-image::before,
     img[src*="logo-cresalia"]::before {
-        border-left: 8px solid transparent;
-        border-right: 8px solid transparent;
-        border-bottom: 15px solid #DC2626;
-        top: -12px;
+        width: 16px;
+        height: 20px;
+        top: -20px;
+        left: calc(50% - 14px);
     }
     
     .logo-container::after,
     .navbar-logo-img::after,
     .logo-image::after,
     img[src*="logo-cresalia"]::after {
-        width: 6px;
-        height: 6px;
-        top: -15px;
+        width: 16px;
+        height: 20px;
+        top: -20px;
+        left: calc(50% + 14px);
+    }
+    
+    .logo-navideno-centro {
+        width: 10px;
+        height: 10px;
+        top: -18px;
     }
 }
