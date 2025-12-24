@@ -1355,6 +1355,9 @@
             <li><a href="#" onclick="mostrarPanelPuntos(); return false;" style="color: #F59E0B; font-weight: 600;">
                 <i class="fas fa-star"></i> Mis Puntos
             </a></li>
+            <li><a href="#" onclick="mostrarPanelAlertasStock(); return false;" style="color: #3B82F6; font-weight: 600;">
+                <i class="fas fa-bell"></i> Alertas de Stock
+            </a></li>
             <li><a href="#mi-cuenta" style="color: #2563EB; font-weight: 600;">
                 <i class="fas fa-user-circle"></i> Mi Cuenta
             </a></li>
@@ -4965,6 +4968,77 @@
         window.mostrarCampoCodigoPuntos = mostrarCampoCodigoPuntos;
         window.aplicarCodigoPuntos = aplicarCodigoPuntos;
         window.copiarCodigoPuntos = copiarCodigoPuntos;
+        
+        // ===== PANEL DE ALERTAS DE STOCK =====
+        async function mostrarPanelAlertasStock() {
+            try {
+                const modalHTML = `
+                    <div id="modal-alertas-stock" style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); z-index: 10000; display: flex; align-items: center; justify-content: center; padding: 20px; overflow-y: auto;">
+                        <div style="background: white; border-radius: 20px; max-width: 800px; width: 100%; max-height: 90vh; position: relative; box-shadow: 0 20px 60px rgba(0,0,0,0.3);">
+                            <!-- Header -->
+                            <div style="background: linear-gradient(135deg, #3B82F6, #60A5FA); color: white; padding: 25px; border-radius: 20px 20px 0 0; position: sticky; top: 0; z-index: 10;">
+                                <button onclick="cerrarModalAlertasStock()" style="position: absolute; top: 15px; right: 15px; background: rgba(255,255,255,0.2); border: none; color: white; width: 35px; height: 35px; border-radius: 50%; cursor: pointer; font-size: 18px; display: flex; align-items: center; justify-content: center;">
+                                    <i class="fas fa-times"></i>
+                                </button>
+                                <h2 style="margin: 0; font-size: 24px; display: flex; align-items: center; gap: 10px;">
+                                    <i class="fas fa-bell"></i> Alertas de Stock
+                                </h2>
+                                <p style="margin: 10px 0 0 0; opacity: 0.9; font-size: 14px;">
+                                    Te notificaremos cuando los productos agotados vuelvan a estar disponibles
+                                </p>
+                            </div>
+                            
+                            <!-- Contenido -->
+                            <div style="padding: 30px;">
+                                <div id="panel-alertas-stock"></div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+                
+                // Remover modal existente
+                const modalExistente = document.getElementById('modal-alertas-stock');
+                if (modalExistente) {
+                    modalExistente.remove();
+                }
+                
+                // Agregar modal
+                document.body.insertAdjacentHTML('beforeend', modalHTML);
+                
+                // Cargar alertas
+                if (window.SistemaNotificacionesStock) {
+                    await window.SistemaNotificacionesStock.mostrarPanelAlertas('panel-alertas-stock');
+                }
+                
+                // Event listeners para cerrar
+                const modal = document.getElementById('modal-alertas-stock');
+                modal.addEventListener('click', (e) => {
+                    if (e.target === modal) {
+                        cerrarModalAlertasStock();
+                    }
+                });
+                
+                document.addEventListener('keydown', (e) => {
+                    if (e.key === 'Escape' && document.getElementById('modal-alertas-stock')) {
+                        cerrarModalAlertasStock();
+                    }
+                });
+                
+            } catch (error) {
+                console.error('Error mostrando panel de alertas:', error);
+                alert('❌ Error al cargar el panel de alertas');
+            }
+        }
+        
+        function cerrarModalAlertasStock() {
+            const modal = document.getElementById('modal-alertas-stock');
+            if (modal) {
+                modal.remove();
+            }
+        }
+        
+        window.mostrarPanelAlertasStock = mostrarPanelAlertasStock;
+        window.cerrarModalAlertasStock = cerrarModalAlertasStock;
     </script>
     
     <!-- Scripts de Tracking -->
@@ -4981,6 +5055,7 @@
     
     <!-- Sistema de Notificaciones de Stock -->
     <script src="/js/sistema-notificaciones-stock.js"></script>
+    <script src="/js/integrar-alertas-stock.js"></script>
     
     <!-- Integración de Productos Relacionados -->
     <script src="/js/integrar-productos-relacionados.js"></script>

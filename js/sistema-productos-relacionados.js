@@ -480,6 +480,48 @@ const SistemaProductosRelacionados = {
         return productos
             .filter(p => p.id !== productoActual.id && p.activo)
             .slice(0, opciones.limite || 6);
+    },
+    
+    /**
+     * Modo local para productos similares
+     */
+    obtenerProductosSimilaresLocal(productoActual, opciones) {
+        const productos = JSON.parse(localStorage.getItem('productos') || '[]');
+        return productos
+            .filter(p => {
+                if (p.id === productoActual.id || !p.activo) return false;
+                if (productoActual.categoria && p.categoria === productoActual.categoria) return true;
+                return false;
+            })
+            .slice(0, opciones.limite || 6);
+    },
+    
+    /**
+     * Renderizar sección de productos similares
+     */
+    async renderizarProductosSimilares(productoActual, containerId, opciones = {}) {
+        try {
+            const tipo = opciones.tipo || 'producto';
+            const productosSimilares = await this.obtenerProductosSimilares(productoActual, {
+                tipo,
+                limite: opciones.limite || 6
+            });
+            
+            if (productosSimilares.length === 0) {
+                return; // No mostrar si no hay productos similares
+            }
+            
+            this.renderizarProductosRelacionados(
+                productosSimilares,
+                containerId,
+                {
+                    tipo,
+                    titulo: opciones.titulo || 'Productos Similares'
+                }
+            );
+        } catch (error) {
+            console.error('Error renderizando productos similares:', error);
+        }
     }
 };
 
