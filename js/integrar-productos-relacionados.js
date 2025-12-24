@@ -1,0 +1,71 @@
+// ===== INTEGRACIÓN DE PRODUCTOS RELACIONADOS =====
+// Función helper para mostrar productos relacionados automáticamente
+
+/**
+ * Mostrar productos relacionados cuando se ve un producto
+ * @param {number|string} productoId - ID del producto actual
+ * @param {string} tipo - 'producto' o 'servicio'
+ * @param {string} containerId - ID del contenedor donde mostrar
+ * @param {Object} opciones - Opciones adicionales
+ */
+async function mostrarProductosRelacionados(productoId, tipo = 'producto', containerId = 'productos-relacionados', opciones = {}) {
+    try {
+        if (!window.SistemaProductosRelacionados) {
+            console.warn('⚠️ Sistema de productos relacionados no disponible');
+            return;
+        }
+        
+        // Obtener producto actual
+        const supabase = await esperarInitSupabase();
+        if (!supabase) {
+            console.warn('⚠️ Supabase no disponible');
+            return;
+        }
+        
+        const tabla = tipo === 'producto' ? 'productos' : 'servicios';
+        const { data: productoActual, error } = await supabase
+            .from(tabla)
+            .select('*')
+            .eq('id', productoId)
+            .single();
+        
+        if (error || !productoActual) {
+            console.error('Error obteniendo producto:', error);
+            return;
+        }
+        
+        // Obtener ubicación del usuario (opcional)
+        let ubicacionUsuario = null;
+        if (opciones.usarUbicacion !== false) {
+            ubicacionUsuario = await window.SistemaProductosRelacionados.obtenerUbicacionUsuario();
+        }
+        
+        // Obtener productos relacionados
+        const productosRelacionados = await window.SistemaProductosRelacionados.obtenerProductosRelacionados(
+            productoActual,
+            {
+                tipo,
+                filtroPrecio: opciones.filtroPrecio || 'similar',
+                filtroDistancia: opciones.filtroDistancia || 'similar',
+                limite: opciones.limite || 6,
+                ubicacionUsuario
+            }
+        );
+        
+        // Renderizar
+        window.SistemaProductosRelacionados.renderizarProductosRelacionados(
+            productosRelacionados,
+            containerId,
+            {
+                tipo,
+                titulo: opciones.titulo || (tipo === 'producto' ? 'Productos Relacionados' : 'Servicios Relacionados')
+            }
+        );
+        
+    } catch (error) {
+        console.error('Error en mostrarProductosRelacionados:', error);
+    }
+}
+
+// Hacer disponible globalmente
+window.mostrarProductosRelacionados = mostrarProductosRelacionados;

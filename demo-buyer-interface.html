@@ -2182,7 +2182,8 @@
                                     <h3 style="margin: 0 0 10px 0; color: #374151;">Tu carrito está vacío</h3>
                                     <p style="margin: 0;">¡Agrega algunos productos para comenzar!</p>
                                 </div>
-                            ` : carrito.map(item => `
+                            ` : `
+                                ${carrito.map(item => `
                                 <div style="display: flex; justify-content: space-between; align-items: center; padding: 15px; border: 1px solid #E5E7EB; border-radius: 8px; margin-bottom: 10px;">
                                     <div>
                                         <h4 style="margin: 0; color: #374151;">${item.nombre}</h4>
@@ -2232,6 +2233,16 @@
             // Agregar nuevo modal
             document.body.insertAdjacentHTML('beforeend', modalHTML);
             
+            // Inicializar campo de cupón si hay items en el carrito
+            if (carrito.length > 0 && window.SistemaCupones) {
+                setTimeout(() => {
+                    const container = document.getElementById('campo-cupon-carrito');
+                    if (container) {
+                        window.SistemaCupones.mostrarCampoCupon('campo-cupon-carrito');
+                    }
+                }, 100);
+            }
+
             // Agregar funcionalidad de cerrar al hacer click fuera del modal
             const modal = document.getElementById('cartModal');
             if (modal) {
@@ -4677,6 +4688,15 @@
     
     <!-- Scripts de Tracking -->
     <script src="/js/sistema-tracking-envios.js"></script>
+    
+    <!-- Sistema de Productos Relacionados -->
+    <script src="/js/sistema-productos-relacionados.js"></script>
+    
+    <!-- Sistema de Cupones -->
+    <script src="/js/sistema-cupones.js"></script>
+    
+    <!-- Integración de Productos Relacionados -->
+    <script src="/js/integrar-productos-relacionados.js"></script>
     
     <!-- Animación Festiva de Fin de Año -->
     <script src="/js/animacion-fiestas.js"></script>
