@@ -67,5 +67,50 @@ async function mostrarProductosRelacionados(productoId, tipo = 'producto', conta
     }
 }
 
+/**
+ * Mostrar productos similares cuando se ve un producto
+ */
+async function mostrarProductosSimilares(productoId, tipo = 'producto', containerId = 'productos-similares', opciones = {}) {
+    try {
+        if (!window.SistemaProductosRelacionados) {
+            console.warn('⚠️ Sistema de productos relacionados no disponible');
+            return;
+        }
+        
+        const supabase = await esperarInitSupabase();
+        if (!supabase) {
+            console.warn('⚠️ Supabase no disponible');
+            return;
+        }
+        
+        const tabla = tipo === 'producto' ? 'productos' : 'servicios';
+        const { data: productoActual, error } = await supabase
+            .from(tabla)
+            .select('*')
+            .eq('id', productoId)
+            .single();
+        
+        if (error || !productoActual) {
+            console.error('Error obteniendo producto:', error);
+            return;
+        }
+        
+        // Renderizar productos similares
+        await window.SistemaProductosRelacionados.renderizarProductosSimilares(
+            productoActual,
+            containerId,
+            {
+                tipo,
+                titulo: opciones.titulo || 'Productos Similares',
+                limite: opciones.limite || 6
+            }
+        );
+        
+    } catch (error) {
+        console.error('Error en mostrarProductosSimilares:', error);
+    }
+}
+
 // Hacer disponible globalmente
 window.mostrarProductosRelacionados = mostrarProductosRelacionados;
+window.mostrarProductosSimilares = mostrarProductosSimilares;

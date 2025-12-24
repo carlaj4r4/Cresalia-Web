@@ -4,6 +4,95 @@
 const SistemaProductosRelacionados = {
     
     /**
+     * Obtener productos similares (misma categoría, características similares)
+     */
+    async obtenerProductosSimilares(productoActual, opciones = {}) {
+        try {
+            const supabase = await esperarInitSupabase();
+            if (!supabase) {
+                return this.obtenerProductosSimilaresLocal(productoActual, opciones);
+            }
+            
+            const {
+                tipo = 'producto',
+                limite = 6
+            } = opciones;
+            
+            const tabla = tipo === 'producto' ? 'productos' : 'servicios';
+            
+            // Buscar productos de la misma categoría
+            let query = supabase
+                .from(tabla)
+                .select('*')
+                .eq('activo', true)
+                .neq('id', productoActual.id);
+            
+            // Filtrar por categoría
+            if (productoActual.categoria) {
+                query = query.eq('categoria', productoActual.categoria);
+            }
+            
+            // Excluir misma tienda para mostrar opciones
+            if (productoActual.tienda_id) {
+                query = query.neq('tienda_id', productoActual.tienda_id);
+            }
+            
+            const { data: productos, error } = await query.limit(limite * 2); // Obtener más para filtrar mejor
+            
+            if (error) {
+                console.error('Error obteniendo productos similares:', error);
+                return [];
+            }
+            
+            if (!productos || productos.length === 0) {
+                return [];
+            }
+            
+            // Calcular similitud basada en:
+            // 1. Categoría (máxima prioridad)
+            // 2. Precio similar (±30%)
+            // 3. Nombre/descripción similar
+            const productosConSimilitud = productos.map(producto => {
+                let score = 0;
+                
+                // Misma categoría = +50 puntos
+                if (producto.categoria === productoActual.categoria) {
+                    score += 50;
+                }
+                
+                // Precio similar (±30%) = +30 puntos
+                const precioActual = parseFloat(productoActual.precio) || 0;
+                const precio = parseFloat(producto.precio) || 0;
+                const diferencia = Math.abs(precio - precioActual) / precioActual;
+                if (diferencia <= 0.3) {
+                    score += 30;
+                }
+                
+                // Nombre similar = +20 puntos
+                const nombreActual = (productoActual.nombre || '').toLowerCase();
+                const nombre = (producto.nombre || '').toLowerCase();
+                const palabrasActual = nombreActual.split(' ');
+                const palabras = nombre.split(' ');
+                const palabrasComunes = palabrasActual.filter(p => palabras.includes(p)).length;
+                if (palabrasComunes > 0) {
+                    score += 20 * (palabrasComunes / Math.max(palabrasActual.length, palabras.length));
+                }
+                
+                return { ...producto, similitud: score };
+            });
+            
+            // Ordenar por similitud y limitar
+            return productosConSimilitud
+                .sort((a, b) => b.similitud - a.similitud)
+                .slice(0, limite);
+            
+        } catch (error) {
+            console.error('Error en obtenerProductosSimilares:', error);
+            return [];
+        }
+    },
+    
+    /**
      * Obtener productos relacionados
      * @param {Object} productoActual - Producto o servicio actual
      * @param {Object} opciones - Opciones de filtrado
