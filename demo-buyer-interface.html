@@ -128,44 +128,11 @@
             color: #991B1B;
         }
         
-        .calculadora-tiempo-real {
-            position: fixed;
-            bottom: 100px;
-            left: 20px;
-            background: white;
-            padding: 15px;
-            border-radius: 12px;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
-            z-index: 999;
-            min-width: 220px;
-            max-width: 250px;
-            font-size: 0.85rem;
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-            overflow: hidden;
-        }
-        
-        /* Estado minimizado */
-        .calculadora-tiempo-real.minimizada {
-            min-width: auto;
-            max-width: auto;
-            width: auto;
-            padding: 0;
-            height: auto;
-        }
-        
-        .calculadora-tiempo-real.minimizada .calculadora-contenido {
-            display: none;
-        }
-        
-        .calculadora-tiempo-real.minimizada .calculadora-toggle-btn {
-            display: flex;
-        }
-        
-        /* Botón toggle (solo visible cuando está minimizada) */
+        /* Botón flotante para activar calculadora */
         .calculadora-toggle-btn {
-            display: none;
-            align-items: center;
-            justify-content: center;
+            position: fixed;
+            bottom: 20px;
+            left: 20px;
             background: linear-gradient(135deg, #7C3AED, #EC4899);
             color: white;
             border: none;
@@ -177,6 +144,10 @@
             font-weight: 600;
             font-size: 0.9rem;
             gap: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 998;
         }
         
         .calculadora-toggle-btn:hover {
@@ -186,6 +157,28 @@
         
         .calculadora-toggle-btn i {
             font-size: 1rem;
+        }
+        
+        /* Calculadora (oculta por defecto) */
+        .calculadora-tiempo-real {
+            position: fixed;
+            bottom: 80px;
+            left: 20px;
+            background: white;
+            padding: 15px;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            z-index: 999;
+            min-width: 220px;
+            max-width: 250px;
+            font-size: 0.85rem;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            overflow: hidden;
+            display: none; /* Oculto por defecto */
+        }
+        
+        .calculadora-tiempo-real.visible {
+            display: block;
         }
         
         /* Contenido de la calculadora */
@@ -207,7 +200,7 @@
             flex: 1;
         }
         
-        .calculadora-btn-minimizar {
+        .calculadora-btn-cerrar {
             background: transparent;
             border: none;
             color: #6B7280;
@@ -215,17 +208,18 @@
             padding: 4px 8px;
             border-radius: 6px;
             transition: all 0.2s ease;
-            font-size: 1rem;
+            font-size: 1.2rem;
             display: flex;
             align-items: center;
             justify-content: center;
-            width: 28px;
-            height: 28px;
+            width: 32px;
+            height: 32px;
+            font-weight: 600;
         }
         
-        .calculadora-btn-minimizar:hover {
-            background: #F3F4F6;
-            color: #1F2937;
+        .calculadora-btn-cerrar:hover {
+            background: #FEE2E2;
+            color: #DC2626;
         }
         
         .calculadora-tiempo-real input {
@@ -1933,20 +1927,20 @@
         </div>
     </div>
 
+    <!-- Botón flotante para activar calculadora -->
+    <button class="calculadora-toggle-btn" id="calculadoraToggleBtn" onclick="mostrarCalculadora()">
+        <i class="fas fa-calculator"></i>
+        <span>Calculadora</span>
+    </button>
+    
     <!-- Calculadora en Tiempo Real -->
     <div class="calculadora-tiempo-real" id="calculadora">
-        <!-- Botón toggle (solo visible cuando está minimizada) -->
-        <button class="calculadora-toggle-btn" onclick="toggleCalculadora()">
-            <i class="fas fa-calculator"></i>
-            <span>Calculadora</span>
-        </button>
-        
         <!-- Contenido de la calculadora -->
         <div class="calculadora-contenido">
             <div class="calculadora-header">
                 <h4>💰 Calculadora de Precios</h4>
-                <button class="calculadora-btn-minimizar" onclick="toggleCalculadora()" title="Minimizar">
-                    <i class="fas fa-minus"></i>
+                <button class="calculadora-btn-cerrar" onclick="ocultarCalculadora()" title="Cerrar">
+                    ×
                 </button>
             </div>
             <input type="number" id="precioBase" placeholder="Precio base" oninput="calcularPrecio()">
@@ -3605,30 +3599,57 @@
             document.getElementById('resultadoCalculadora').textContent = `Total: $${total.toFixed(2)}`;
         }
         
-        // ===== TOGGLE CALCULADORA (Minimizar/Maximizar) =====
-        function toggleCalculadora() {
+        // ===== CALCULADORA - Mostrar/Ocultar =====
+        function mostrarCalculadora() {
             const calculadora = document.getElementById('calculadora');
-            const estaMinimizada = calculadora.classList.contains('minimizada');
+            const toggleBtn = document.getElementById('calculadoraToggleBtn');
             
-            if (estaMinimizada) {
-                // Expandir
-                calculadora.classList.remove('minimizada');
-                localStorage.setItem('calculadora-minimizada', 'false');
-            } else {
-                // Minimizar
-                calculadora.classList.add('minimizada');
-                localStorage.setItem('calculadora-minimizada', 'true');
+            if (calculadora) {
+                calculadora.classList.add('visible');
+                if (toggleBtn) {
+                    toggleBtn.style.display = 'none'; // Ocultar botón cuando la calculadora está visible
+                }
+                localStorage.setItem('calculadora-visible', 'true');
+                console.log('✅ Calculadora mostrada');
+            }
+        }
+        
+        function ocultarCalculadora() {
+            const calculadora = document.getElementById('calculadora');
+            const toggleBtn = document.getElementById('calculadoraToggleBtn');
+            
+            if (calculadora) {
+                calculadora.classList.remove('visible');
+                if (toggleBtn) {
+                    toggleBtn.style.display = 'flex'; // Mostrar botón cuando la calculadora está oculta
+                }
+                localStorage.setItem('calculadora-visible', 'false');
+                console.log('✅ Calculadora oculta');
             }
         }
         
         // Restaurar estado de la calculadora al cargar
         document.addEventListener('DOMContentLoaded', function() {
             const calculadora = document.getElementById('calculadora');
-            const estadoGuardado = localStorage.getItem('calculadora-minimizada');
+            const toggleBtn = document.getElementById('calculadoraToggleBtn');
+            const estadoGuardado = localStorage.getItem('calculadora-visible');
             
-            // Por defecto, mostrar expandida la primera vez
+            // Por defecto, la calculadora está oculta
             if (estadoGuardado === 'true') {
-                calculadora.classList.add('minimizada');
+                if (calculadora) {
+                    calculadora.classList.add('visible');
+                }
+                if (toggleBtn) {
+                    toggleBtn.style.display = 'none';
+                }
+            } else {
+                // Asegurar que esté oculta
+                if (calculadora) {
+                    calculadora.classList.remove('visible');
+                }
+                if (toggleBtn) {
+                    toggleBtn.style.display = 'flex';
+                }
             }
         });
         
