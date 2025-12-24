@@ -6,7 +6,7 @@
 -- ===== TABLA DE PUNTOS DE COMPRADORES =====
 CREATE TABLE IF NOT EXISTS puntos_comprador (
     id BIGSERIAL PRIMARY KEY,
-    comprador_id UUID REFERENCES compradores(id) ON DELETE CASCADE,
+    comprador_id UUID UNIQUE REFERENCES compradores(id) ON DELETE CASCADE,
     puntos_totales INTEGER DEFAULT 0, -- Puntos acumulados totales
     puntos_disponibles INTEGER DEFAULT 0, -- Puntos disponibles para canjear
     puntos_canjeados INTEGER DEFAULT 0, -- Puntos canjeados históricamente
