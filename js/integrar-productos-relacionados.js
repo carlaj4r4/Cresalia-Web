@@ -68,6 +68,43 @@ async function mostrarProductosRelacionados(productoId, tipo = 'producto', conta
 }
 
 /**
+ * Agregar botón de comparar a un producto
+ */
+function agregarBotonComparar(productoId, tiendaId, containerId) {
+    try {
+        if (!window.SistemaComparadorProductos) {
+            return;
+        }
+        
+        const container = document.getElementById(containerId);
+        if (!container) {
+            // Crear contenedor si no existe
+            const productoCard = document.querySelector(`[data-producto-id="${productoId}"]`);
+            if (productoCard) {
+                const nuevoContainer = document.createElement('div');
+                nuevoContainer.id = `comparar-producto-${productoId}`;
+                productoCard.appendChild(nuevoContainer);
+                window.SistemaComparadorProductos.renderizarBotonComparar(
+                    productoId,
+                    tiendaId,
+                    `comparar-producto-${productoId}`
+                );
+            }
+            return;
+        }
+        
+        window.SistemaComparadorProductos.renderizarBotonComparar(
+            productoId,
+            tiendaId,
+            containerId
+        );
+        
+    } catch (error) {
+        console.error('Error agregando botón de comparar:', error);
+    }
+}
+
+/**
  * Mostrar productos similares cuando se ve un producto
  */
 async function mostrarProductosSimilares(productoId, tipo = 'producto', containerId = 'productos-similares', opciones = {}) {
@@ -114,3 +151,4 @@ async function mostrarProductosSimilares(productoId, tipo = 'producto', containe
 // Hacer disponible globalmente
 window.mostrarProductosRelacionados = mostrarProductosRelacionados;
 window.mostrarProductosSimilares = mostrarProductosSimilares;
+window.agregarBotonComparar = agregarBotonComparar;
