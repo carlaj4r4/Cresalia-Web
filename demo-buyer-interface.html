@@ -1352,6 +1352,9 @@
             <li><a href="#" onclick="mostrarHistorialServicios(); return false;" style="color: #10B981; font-weight: 600;">
                 <i class="fas fa-cogs"></i> Mis Servicios
             </a></li>
+            <li><a href="#" onclick="mostrarPanelPuntos(); return false;" style="color: #F59E0B; font-weight: 600;">
+                <i class="fas fa-star"></i> Mis Puntos
+            </a></li>
             <li><a href="#mi-cuenta" style="color: #2563EB; font-weight: 600;">
                 <i class="fas fa-user-circle"></i> Mi Cuenta
             </a></li>
@@ -2242,6 +2245,16 @@
                     }
                 }, 100);
             }
+            
+            // Inicializar campo de código de puntos
+            if (carrito.length > 0 && window.SistemaPuntosComprador) {
+                setTimeout(async () => {
+                    const container = document.getElementById('campo-codigo-puntos-carrito');
+                    if (container) {
+                        await mostrarCampoCodigoPuntos('campo-codigo-puntos-carrito');
+                    }
+                }, 200);
+            }
 
             // Agregar funcionalidad de cerrar al hacer click fuera del modal
             const modal = document.getElementById('cartModal');
@@ -2297,12 +2310,12 @@
         }
         
         // Función para proceder al pago
-        function procederAlPago() {
+        async function procederAlPago() {
             cerrarModalCarrito();
             demoAction(`Procesando pago de $${cartTotal.toFixed(2)}...`);
-            
+
             // Simular proceso de pago
-            setTimeout(() => {
+            setTimeout(async () => {
                 // Crear objeto de compra para el agradecimiento
                 const compra = {
                     cliente: 'Cliente de Cresalia',
@@ -2314,7 +2327,19 @@
                     total: cartTotal.toFixed(2),
                     fecha: new Date().toLocaleDateString('es-ES')
                 };
-                
+
+                // Agregar puntos por compra (si el sistema está disponible)
+                if (window.SistemaPuntosComprador && cartTotal > 0) {
+                    try {
+                        // Nota: En producción, esto se haría después de confirmar el pago
+                        // Por ahora simulamos que la compra se completó
+                        console.log('💰 Agregando puntos por compra...');
+                        // await window.SistemaPuntosComprador.agregarPuntosPorCompra(compraId, cartTotal);
+                    } catch (error) {
+                        console.warn('No se pudieron agregar puntos:', error);
+                    }
+                }
+
                 // Limpiar carrito
                 carrito = [];
                 actualizarCarrito();
@@ -4684,6 +4709,262 @@
         
         window.mostrarHistorialCompras = mostrarHistorialCompras;
         window.cerrarModalHistorialCompras = cerrarModalHistorialCompras;
+        
+        // ===== SISTEMA DE PUNTOS =====
+        async function mostrarPanelPuntos() {
+            try {
+                // Crear modal
+                const modalHTML = `
+                    <div id="modal-puntos" style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); z-index: 10000; display: flex; align-items: center; justify-content: center; padding: 20px; overflow-y: auto;">
+                        <div style="background: white; border-radius: 20px; max-width: 800px; width: 100%; max-height: 90vh; position: relative; box-shadow: 0 20px 60px rgba(0,0,0,0.3);">
+                            <!-- Header -->
+                            <div style="background: linear-gradient(135deg, #F59E0B, #FCD34D); color: white; padding: 25px; border-radius: 20px 20px 0 0; position: sticky; top: 0; z-index: 10;">
+                                <button onclick="cerrarModalPuntos()" style="position: absolute; top: 15px; right: 15px; background: rgba(255,255,255,0.2); border: none; color: white; width: 35px; height: 35px; border-radius: 50%; cursor: pointer; font-size: 18px; display: flex; align-items: center; justify-content: center;">
+                                    <i class="fas fa-times"></i>
+                                </button>
+                                <h2 style="margin: 0; font-size: 24px; display: flex; align-items: center; gap: 10px;">
+                                    <i class="fas fa-star"></i> Sistema de Puntos y Recompensas
+                                </h2>
+                                <p style="margin: 10px 0 0 0; opacity: 0.9; font-size: 14px;">
+                                    Ganá puntos con cada compra y canjealos por descuentos
+                                </p>
+                            </div>
+                            
+                            <!-- Contenido -->
+                            <div style="padding: 30px;">
+                                <div id="panel-puntos"></div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+                
+                // Remover modal existente
+                const modalExistente = document.getElementById('modal-puntos');
+                if (modalExistente) {
+                    modalExistente.remove();
+                }
+                
+                // Agregar modal
+                document.body.insertAdjacentHTML('beforeend', modalHTML);
+                
+                // Cargar panel de puntos
+                if (window.SistemaPuntosComprador) {
+                    await window.SistemaPuntosComprador.mostrarPanelPuntos('panel-puntos');
+                }
+                
+                // Event listeners para cerrar
+                const modal = document.getElementById('modal-puntos');
+                modal.addEventListener('click', (e) => {
+                    if (e.target === modal) {
+                        cerrarModalPuntos();
+                    }
+                });
+                
+                document.addEventListener('keydown', (e) => {
+                    if (e.key === 'Escape' && document.getElementById('modal-puntos')) {
+                        cerrarModalPuntos();
+                    }
+                });
+                
+            } catch (error) {
+                console.error('Error mostrando panel de puntos:', error);
+                alert('❌ Error al cargar el panel de puntos');
+            }
+        }
+        
+        function cerrarModalPuntos() {
+            const modal = document.getElementById('modal-puntos');
+            if (modal) {
+                modal.remove();
+            }
+        }
+        
+        window.mostrarPanelPuntos = mostrarPanelPuntos;
+        window.cerrarModalPuntos = cerrarModalPuntos;
+        
+        // Función para mostrar campo de código de puntos
+        async function mostrarCampoCodigoPuntos(containerId) {
+            try {
+                const puntos = await window.SistemaPuntosComprador.obtenerMisPuntos();
+                if (puntos.error || !puntos.puntos_disponibles || puntos.puntos_disponibles < 100) {
+                    return; // No mostrar si no tiene puntos suficientes
+                }
+                
+                const container = document.getElementById(containerId);
+                if (!container) return;
+                
+                // Obtener canjes activos
+                const supabase = await esperarInitSupabase();
+                if (!supabase) return;
+                
+                const { data: { user } } = await supabase.auth.getUser();
+                if (!user) return;
+                
+                const { data: comprador } = await supabase
+                    .from('compradores')
+                    .select('id')
+                    .eq('user_id', user.id)
+                    .single();
+                
+                if (!comprador) return;
+                
+                const { data: canjesActivos } = await supabase
+                    .from('puntos_canjes')
+                    .select('codigo_canje, descuento_obtenido, fecha_expiracion')
+                    .eq('comprador_id', comprador.id)
+                    .eq('estado', 'activo')
+                    .gt('fecha_expiracion', new Date().toISOString())
+                    .order('created_at', { ascending: false })
+                    .limit(5);
+                
+                if (!canjesActivos || canjesActivos.length === 0) {
+                    return; // No mostrar si no tiene códigos activos
+                }
+                
+                const html = `
+                    <div style="background: #FEF3C7; border: 2px dashed #F59E0B; border-radius: 12px; padding: 20px; margin: 20px 0;">
+                        <h4 style="margin: 0 0 15px 0; color: #92400E;">
+                            <i class="fas fa-star"></i> ¿Tenés un código de puntos?
+                        </h4>
+                        <div style="display: flex; gap: 10px; align-items: center; margin-bottom: 15px;">
+                            <input type="text" id="codigo-puntos-input" placeholder="Ingresá tu código de canje" 
+                                   style="flex: 1; padding: 12px; border: 2px solid #E5E7EB; border-radius: 8px; font-size: 1rem;">
+                            <button onclick="aplicarCodigoPuntos()" id="btn-aplicar-puntos" 
+                                    style="background: #F59E0B; color: white; border: none; padding: 12px 24px; border-radius: 8px; font-weight: 600; cursor: pointer; white-space: nowrap;">
+                                Aplicar
+                            </button>
+                        </div>
+                        ${canjesActivos.length > 0 ? `
+                            <div style="margin-top: 15px;">
+                                <p style="margin: 0 0 10px 0; color: #92400E; font-size: 14px; font-weight: 600;">
+                                    Tus códigos activos:
+                                </p>
+                                <div style="display: flex; flex-direction: column; gap: 8px;">
+                                    ${canjesActivos.map(canje => `
+                                        <div style="display: flex; justify-content: space-between; align-items: center; background: white; padding: 10px; border-radius: 8px; border: 1px solid #FCD34D;">
+                                            <div>
+                                                <strong style="color: #92400E; font-family: monospace;">${canje.codigo_canje}</strong>
+                                                <p style="margin: 5px 0 0 0; color: #6B7280; font-size: 12px;">
+                                                    Descuento: $${parseFloat(canje.descuento_obtenido).toFixed(2)}
+                                                </p>
+                                            </div>
+                                            <button onclick="copiarCodigoPuntos('${canje.codigo_canje}')" 
+                                                    style="background: #F59E0B; color: white; border: none; padding: 6px 12px; border-radius: 6px; cursor: pointer; font-size: 12px;">
+                                                <i class="fas fa-copy"></i> Copiar
+                                            </button>
+                                        </div>
+                                    `).join('')}
+                                </div>
+                            </div>
+                        ` : ''}
+                        <div id="mensaje-codigo-puntos" style="margin-top: 10px;"></div>
+                    </div>
+                `;
+                
+                container.innerHTML = html;
+                
+            } catch (error) {
+                console.error('Error mostrando campo de código de puntos:', error);
+            }
+        }
+        
+        async function aplicarCodigoPuntos() {
+            const codigoInput = document.getElementById('codigo-puntos-input');
+            const mensajeDiv = document.getElementById('mensaje-codigo-puntos');
+            const btnAplicar = document.getElementById('btn-aplicar-puntos');
+            
+            if (!codigoInput || !mensajeDiv) return;
+            
+            const codigo = codigoInput.value.trim().toUpperCase();
+            if (!codigo) {
+                mensajeDiv.innerHTML = '<p style="color: #EF4444; margin: 0;">Por favor, ingresá un código</p>';
+                return;
+            }
+            
+            btnAplicar.disabled = true;
+            btnAplicar.textContent = 'Validando...';
+            mensajeDiv.innerHTML = '';
+            
+            try {
+                const supabase = await esperarInitSupabase();
+                if (!supabase) {
+                    throw new Error('Error de conexión');
+                }
+                
+                const { data: { user } } = await supabase.auth.getUser();
+                if (!user) {
+                    throw new Error('Usuario no autenticado');
+                }
+                
+                const { data: comprador } = await supabase
+                    .from('compradores')
+                    .select('id')
+                    .eq('user_id', user.id)
+                    .single();
+                
+                if (!comprador) {
+                    throw new Error('Comprador no encontrado');
+                }
+                
+                // Verificar código de canje
+                const { data: canje, error } = await supabase
+                    .from('puntos_canjes')
+                    .select('*')
+                    .eq('codigo_canje', codigo)
+                    .eq('comprador_id', comprador.id)
+                    .eq('estado', 'activo')
+                    .single();
+                
+                if (error || !canje) {
+                    mensajeDiv.innerHTML = '<p style="color: #EF4444; margin: 0;">❌ Código inválido o ya usado</p>';
+                    btnAplicar.disabled = false;
+                    btnAplicar.textContent = 'Aplicar';
+                    return;
+                }
+                
+                // Verificar expiración
+                if (new Date(canje.fecha_expiracion) < new Date()) {
+                    mensajeDiv.innerHTML = '<p style="color: #EF4444; margin: 0;">❌ Este código ha expirado</p>';
+                    btnAplicar.disabled = false;
+                    btnAplicar.textContent = 'Aplicar';
+                    return;
+                }
+                
+                // Aplicar descuento (similar a cupón)
+                window.codigoPuntosAplicado = {
+                    codigo: codigo,
+                    descuento: parseFloat(canje.descuento_obtenido),
+                    canje: canje
+                };
+                
+                // Actualizar totales
+                if (typeof actualizarTotalesConCupon === 'function') {
+                    actualizarTotalesConCupon(parseFloat(canje.descuento_obtenido));
+                }
+                
+                mensajeDiv.innerHTML = `<p style="color: #10B981; margin: 0;">✅ Código aplicado: Descuento de $${parseFloat(canje.descuento_obtenido).toFixed(2)}</p>`;
+                codigoInput.disabled = true;
+                btnAplicar.disabled = true;
+                
+            } catch (error) {
+                console.error('Error aplicando código de puntos:', error);
+                mensajeDiv.innerHTML = `<p style="color: #EF4444; margin: 0;">❌ ${error.message}</p>`;
+                btnAplicar.disabled = false;
+                btnAplicar.textContent = 'Aplicar';
+            }
+        }
+        
+        function copiarCodigoPuntos(codigo) {
+            navigator.clipboard.writeText(codigo).then(() => {
+                alert(`✅ Código copiado: ${codigo}`);
+            }).catch(() => {
+                alert('❌ Error al copiar');
+            });
+        }
+        
+        window.mostrarCampoCodigoPuntos = mostrarCampoCodigoPuntos;
+        window.aplicarCodigoPuntos = aplicarCodigoPuntos;
+        window.copiarCodigoPuntos = copiarCodigoPuntos;
     </script>
     
     <!-- Scripts de Tracking -->
@@ -4694,6 +4975,9 @@
     
     <!-- Sistema de Cupones -->
     <script src="/js/sistema-cupones.js"></script>
+    
+    <!-- Sistema de Puntos y Recompensas -->
+    <script src="/js/sistema-puntos-comprador.js"></script>
     
     <!-- Integración de Productos Relacionados -->
     <script src="/js/integrar-productos-relacionados.js"></script>
