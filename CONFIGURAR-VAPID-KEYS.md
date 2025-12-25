@@ -13,13 +13,15 @@ Las keys ya fueron generadas. Usa los valores mostrados arriba.
 
 **VAPID_PUBLIC_KEY**
 ```
-BIiM--w0U0zgdDY4LSkxP-mWkVT2d2egaB9AF79kFTi2Sftu2BgfmR0KhH9q6cpOeXt2fW3GT37EauLgUMNS95k
+[Pega aquí tu VAPID_PUBLIC_KEY generada]
 ```
 
 **VAPID_PRIVATE_KEY** (⚠️ NUNCA exponer esta en el frontend)
 ```
-zDDHE6MPQBGZjD6PQYGeD911XUVpifn4rnALhDWWmVQ
+[Pega aquí tu VAPID_PRIVATE_KEY generada]
 ```
+
+**⚠️ IMPORTANTE**: Las keys reales NO deben estar en este archivo. Ejecuta `node scripts/generar-vapid-keys.js` para generar nuevas keys y configúralas directamente en Vercel.
 
 4. Asegúrate de seleccionar todos los ambientes (Production, Preview, Development)
 5. Haz clic en "Save"
