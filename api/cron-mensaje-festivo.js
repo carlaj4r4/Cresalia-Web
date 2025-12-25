@@ -182,11 +182,10 @@ module.exports = async (req, res) => {
         const forzarEjecucion = req.query.forzar === 'true';
 
         console.log(`📅 Fecha actual: ${ahora.toISOString()}`);
+        console.log(`📅 Fecha local: ${ahora.toLocaleString('es-AR', { timeZone: 'America/Argentina/Buenos_Aires' })}`);
         console.log(`🎄 Es 24 de diciembre: ${es24DeDiciembre}`);
+        console.log(`🎄 Es 24-25 de diciembre: ${es24O25DeDiciembre}`);
         console.log(`🔧 Forzar ejecución: ${forzarEjecucion}`);
-
-        // Permitir ejecución si es 24 o 25 de diciembre (por si se ejecutó tarde)
-        const es24O25DeDiciembre = (ahora.getMonth() === 11 && (ahora.getDate() === 24 || ahora.getDate() === 25));
         
         if (!es24O25DeDiciembre && !forzarEjecucion) {
             console.log('⚠️ Cron job no ejecutado: No es 24-25 de diciembre y no se forzó');
