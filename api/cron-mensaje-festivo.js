@@ -5,7 +5,8 @@
 const { createClient } = require('@supabase/supabase-js');
 
 // Configuración desde variables de entorno de Vercel
-const SUPABASE_URL = process.env.SUPABASE_URL;
+// URL de Supabase para Tiendas (proyecto principal)
+const SUPABASE_URL = process.env.SUPABASE_URL || 'https://lvdgklwcgrmfbqwghxhl.supabase.co';
 const SUPABASE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.SUPABASE_ANON_KEY;
 const BREVO_API_KEY = process.env.BREVO_API_KEY;
 const FROM_EMAIL = process.env.FROM_EMAIL || 'cresalia25@gmail.com';
@@ -204,10 +205,15 @@ module.exports = async (req, res) => {
         // Verificar configuración
         console.log('🔍 Verificando configuración...');
         console.log('📧 BREVO_API_KEY:', BREVO_API_KEY ? '✅ Configurada' : '❌ No configurada');
-        console.log('🗄️ SUPABASE_URL:', SUPABASE_URL ? '✅ Configurada' : '❌ No configurada');
-        console.log('🔑 SUPABASE_KEY:', SUPABASE_KEY ? '✅ Configurada' : '❌ No configurada');
+        console.log('🗄️ SUPABASE_URL:', SUPABASE_URL ? `✅ Configurada (${SUPABASE_URL.substring(0, 30)}...)` : '❌ No configurada');
+        console.log('🔑 SUPABASE_KEY:', SUPABASE_KEY ? `✅ Configurada (${SUPABASE_KEY.substring(0, 20)}...)` : '❌ No configurada');
         console.log('🔑 VAPID_PUBLIC_KEY:', process.env.VAPID_PUBLIC_KEY ? '✅ Configurada' : '❌ No configurada');
         console.log('🔐 VAPID_PRIVATE_KEY:', process.env.VAPID_PRIVATE_KEY ? '✅ Configurada' : '❌ No configurada');
+        
+        // Debug: Mostrar todas las variables de entorno disponibles (sin valores sensibles)
+        console.log('🔍 Variables de entorno disponibles:', Object.keys(process.env).filter(key => 
+            key.includes('SUPABASE') || key.includes('BREVO') || key.includes('VAPID')
+        ).map(key => `${key}=${process.env[key] ? '***' : 'undefined'}`).join(', '));
 
         if (!BREVO_API_KEY) {
             console.error('❌ BREVO_API_KEY no configurada');
@@ -216,10 +222,14 @@ module.exports = async (req, res) => {
             });
         }
 
-        if (!SUPABASE_URL || !SUPABASE_KEY) {
-            console.error('❌ Supabase no configurado');
+        if (!SUPABASE_KEY) {
+            console.error('❌ SUPABASE_KEY no configurada');
+            console.error('💡 Verifica que SUPABASE_SERVICE_ROLE_KEY o SUPABASE_ANON_KEY estén configuradas en Vercel');
             return res.status(500).json({
-                error: 'SUPABASE_URL o SUPABASE_SERVICE_ROLE_KEY no configurados en Vercel'
+                error: 'SUPABASE_SERVICE_ROLE_KEY o SUPABASE_ANON_KEY no configurados en Vercel',
+                supabase_url: SUPABASE_URL,
+                tiene_url: !!SUPABASE_URL,
+                tiene_key: !!SUPABASE_KEY
             });
         }
 
