@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ejecutar Cron Mensaje Festivo - Cresalia</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+        .container {
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            max-width: 600px;
+            width: 100%;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+        }
+        h1 {
+            color: #667eea;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+        .info {
+            background: #f8fafc;
+            padding: 20px;
+            border-radius: 12px;
+            margin-bottom: 20px;
+            border-left: 4px solid #667eea;
+        }
+        .info p {
+            margin-bottom: 10px;
+            color: #4b5563;
+        }
+        .info strong {
+            color: #1f2937;
+        }
+        .btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 10px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            width: 100%;
+            margin-bottom: 15px;
+            transition: transform 0.2s;
+        }
+        .btn:hover {
+            transform: translateY(-2px);
+        }
+        .btn:active {
+            transform: translateY(0);
+        }
+        .btn-danger {
+            background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+        }
+        .resultado {
+            margin-top: 20px;
+            padding: 20px;
+            border-radius: 12px;
+            display: none;
+        }
+        .resultado.exito {
+            background: #d1fae5;
+            border-left: 4px solid #10b981;
+            color: #065f46;
+        }
+        .resultado.error {
+            background: #fee2e2;
+            border-left: 4px solid #ef4444;
+            color: #991b1b;
+        }
+        .resultado.info {
+            background: #dbeafe;
+            border-left: 4px solid #3b82f6;
+            color: #1e40af;
+        }
+        .loading {
+            display: none;
+            text-align: center;
+            margin-top: 20px;
+        }
+        .loading.active {
+            display: block;
+        }
+        .spinner {
+            border: 4px solid #f3f4f6;
+            border-top: 4px solid #667eea;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        pre {
+            background: #1f2937;
+            color: #f9fafb;
+            padding: 15px;
+            border-radius: 8px;
+            overflow-x: auto;
+            font-size: 12px;
+            margin-top: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🎄 Ejecutar Cron Mensaje Festivo</h1>
+        
+        <div class="info">
+            <p><strong>⚠️ Importante:</strong></p>
+            <p>Este cron envía emails y notificaciones push a TODOS los usuarios registrados.</p>
+            <p><strong>URL del endpoint:</strong></p>
+            <p id="endpoint-url" style="font-family: monospace; background: #e5e7eb; padding: 8px; border-radius: 6px; word-break: break-all;"></p>
+        </div>
+
+        <button class="btn" onclick="ejecutarCron()">
+            🚀 Ejecutar Cron Ahora (con forzar=true)
+        </button>
+
+        <button class="btn btn-danger" onclick="verificarEstado()">
+            🔍 Solo Verificar Estado (sin ejecutar)
+        </button>
+
+        <div class="loading" id="loading">
+            <div class="spinner"></div>
+            <p style="margin-top: 10px;">Ejecutando cron job...</p>
+        </div>
+
+        <div class="resultado" id="resultado"></div>
+    </div>
+
+    <script>
+        // Detectar URL del proyecto
+        const hostname = window.location.hostname;
+        let baseUrl = '';
+        
+        if (hostname.includes('vercel.app')) {
+            baseUrl = `https://${hostname}`;
+        } else if (hostname === 'localhost' || hostname === '127.0.0.1') {
+            baseUrl = 'https://cresalia-web.vercel.app'; // URL de producción
+        } else {
+            baseUrl = window.location.origin;
+        }
+        
+        const endpointUrl = `${baseUrl}/api/cron-mensaje-festivo`;
+        document.getElementById('endpoint-url').textContent = endpointUrl;
+
+        async function ejecutarCron() {
+            const loading = document.getElementById('loading');
+            const resultado = document.getElementById('resultado');
+            
+            loading.classList.add('active');
+            resultado.style.display = 'none';
+            resultado.className = 'resultado';
+
+            try {
+                console.log('🚀 Ejecutando cron job...');
+                const response = await fetch(`${endpointUrl}?forzar=true`, {
+                    method: 'GET',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                });
+
+                const data = await response.json();
+                
+                loading.classList.remove('active');
+                resultado.style.display = 'block';
+
+                if (response.ok && data.exito) {
+                    resultado.className = 'resultado exito';
+                    resultado.innerHTML = `
+                        <h3>✅ Éxito</h3>
+                        <p><strong>Mensaje:</strong> ${data.mensaje}</p>
+                        <p><strong>Total usuarios:</strong> ${data.total_usuarios || 0}</p>
+                        <p><strong>Emails enviados:</strong> ${data.emails_enviados || 0}</p>
+                        <p><strong>Emails con error:</strong> ${data.emails_error || 0}</p>
+                        <p><strong>Push notifications:</strong> ${data.notificaciones_push_enviadas || 0}</p>
+                        <p><strong>Fecha ejecución:</strong> ${data.fecha_ejecucion || 'N/A'}</p>
+                        <details style="margin-top: 15px;">
+                            <summary style="cursor: pointer; font-weight: 600;">Ver respuesta completa</summary>
+                            <pre>${JSON.stringify(data, null, 2)}</pre>
+                        </details>
+                    `;
+                } else {
+                    resultado.className = 'resultado error';
+                    resultado.innerHTML = `
+                        <h3>❌ Error</h3>
+                        <p><strong>Mensaje:</strong> ${data.mensaje || data.error || 'Error desconocido'}</p>
+                        <details style="margin-top: 15px;">
+                            <summary style="cursor: pointer; font-weight: 600;">Ver detalles del error</summary>
+                            <pre>${JSON.stringify(data, null, 2)}</pre>
+                        </details>
+                    `;
+                }
+            } catch (error) {
+                loading.classList.remove('active');
+                resultado.style.display = 'block';
+                resultado.className = 'resultado error';
+                resultado.innerHTML = `
+                    <h3>❌ Error de Conexión</h3>
+                    <p><strong>Error:</strong> ${error.message}</p>
+                    <p>Verifica que la URL sea correcta y que el endpoint esté desplegado.</p>
+                `;
+                console.error('Error ejecutando cron:', error);
+            }
+        }
+
+        async function verificarEstado() {
+            const loading = document.getElementById('loading');
+            const resultado = document.getElementById('resultado');
+            
+            loading.classList.add('active');
+            resultado.style.display = 'none';
+            resultado.className = 'resultado';
+
+            try {
+                const response = await fetch(endpointUrl, {
+                    method: 'GET',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                });
+
+                const data = await response.json();
+                
+                loading.classList.remove('active');
+                resultado.style.display = 'block';
+                resultado.className = 'resultado info';
+                
+                resultado.innerHTML = `
+                    <h3>ℹ️ Estado del Cron</h3>
+                    <p><strong>Mensaje:</strong> ${data.mensaje || 'Sin mensaje'}</p>
+                    <p><strong>Fecha actual:</strong> ${data.fecha_actual || 'N/A'}</p>
+                    ${data.mes ? `<p><strong>Mes:</strong> ${data.mes}</p>` : ''}
+                    ${data.dia ? `<p><strong>Día:</strong> ${data.dia}</p>` : ''}
+                    <p style="margin-top: 15px; font-weight: 600;">💡 Para ejecutar el cron, haz clic en "Ejecutar Cron Ahora"</p>
+                    <details style="margin-top: 15px;">
+                        <summary style="cursor: pointer; font-weight: 600;">Ver respuesta completa</summary>
+                        <pre>${JSON.stringify(data, null, 2)}</pre>
+                    </details>
+                `;
+            } catch (error) {
+                loading.classList.remove('active');
+                resultado.style.display = 'block';
+                resultado.className = 'resultado error';
+                resultado.innerHTML = `
+                    <h3>❌ Error de Conexión</h3>
+                    <p><strong>Error:</strong> ${error.message}</p>
+                `;
+            }
+        }
+    </script>
+</body>
+</html>

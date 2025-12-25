@@ -177,19 +177,26 @@ module.exports = async (req, res) => {
         // Verificar fecha (opcional: puede ejecutarse manualmente también)
         const ahora = new Date();
         const es24DeDiciembre = ahora.getMonth() === 11 && ahora.getDate() === 24;
+        // Permitir ejecución el 24 y 25 de diciembre (por si se ejecutó tarde o en diferentes zonas horarias)
+        const es24O25DeDiciembre = ahora.getMonth() === 11 && (ahora.getDate() === 24 || ahora.getDate() === 25);
         const forzarEjecucion = req.query.forzar === 'true';
 
         console.log(`📅 Fecha actual: ${ahora.toISOString()}`);
         console.log(`🎄 Es 24 de diciembre: ${es24DeDiciembre}`);
         console.log(`🔧 Forzar ejecución: ${forzarEjecucion}`);
 
-        if (!es24DeDiciembre && !forzarEjecucion) {
-            console.log('⚠️ Cron job no ejecutado: No es 24 de diciembre y no se forzó');
+        // Permitir ejecución si es 24 o 25 de diciembre (por si se ejecutó tarde)
+        const es24O25DeDiciembre = (ahora.getMonth() === 11 && (ahora.getDate() === 24 || ahora.getDate() === 25));
+        
+        if (!es24O25DeDiciembre && !forzarEjecucion) {
+            console.log('⚠️ Cron job no ejecutado: No es 24-25 de diciembre y no se forzó');
             return res.status(200).json({
-                mensaje: 'No es 24 de diciembre. Usa ?forzar=true para ejecutar manualmente.',
+                mensaje: 'No es 24-25 de diciembre. Usa ?forzar=true para ejecutar manualmente.',
                 fecha_actual: ahora.toISOString(),
                 mes: ahora.getMonth() + 1,
-                dia: ahora.getDate()
+                dia: ahora.getDate(),
+                hora_utc: ahora.getUTCHours(),
+                hora_local: ahora.getHours()
             });
         }
 
