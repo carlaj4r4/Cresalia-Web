@@ -225,15 +225,16 @@ module.exports = async (req, res) => {
                 );
                 emailsEnviados++;
 
-                // Registrar notificación push
+                // Enviar notificación push real
                 if (comprador.user_id) {
-                    await registrarNotificacionPush(
-                        supabase,
+                    const pushEnviado = await enviarNotificacionPushReal(
                         comprador.user_id,
                         comprador.nombre_completo || comprador.email.split('@')[0],
                         'comprador'
                     );
-                    notificacionesRegistradas++;
+                    if (pushEnviado) {
+                        notificacionesRegistradas++;
+                    }
                 }
 
                 // Pausa para no sobrecargar Brevo (100ms entre emails)
@@ -256,15 +257,16 @@ module.exports = async (req, res) => {
                 );
                 emailsEnviados++;
 
-                // Registrar notificación push
+                // Enviar notificación push real
                 if (vendedor.user_id) {
-                    await registrarNotificacionPush(
-                        supabase,
+                    const pushEnviado = await enviarNotificacionPushReal(
                         vendedor.user_id,
                         vendedor.nombre_tienda || vendedor.email.split('@')[0],
                         'vendedor'
                     );
-                    notificacionesRegistradas++;
+                    if (pushEnviado) {
+                        notificacionesRegistradas++;
+                    }
                 }
 
                 // Pausa para no sobrecargar Brevo

@@ -294,35 +294,38 @@ async function doBackgroundSync() {
 self.addEventListener('push', event => {
   console.log('📱 Service Worker: Notificación push recibida');
 
+  let data = {};
   if (event.data) {
-    const data = event.data.json();
+    try {
+      data = event.data.json();
+    } catch (e) {
+      // Si no es JSON, usar como texto
+      data = { body: event.data.text() || 'Nueva notificación de Cresalia' };
+    }
+  }
+
   const options = {
-      body: data.body || 'Nueva notificación de Cresalia',
-      icon: '/icons/icon-192x192.png',
-      badge: '/icons/icon-72x72.png',
-      vibrate: [200, 100, 200],
+    body: data.body || data.mensaje || 'Nueva notificación de Cresalia',
+    icon: data.icono || data.icon || '/icons/icon-192x192.png',
+    badge: '/icons/icon-72x72.png',
+    vibrate: [200, 100, 200],
     data: {
-        url: data.url || '/',
-        timestamp: Date.now()
+      url: data.url || '/',
+      timestamp: data.timestamp || Date.now()
     },
-    actions: [
-      {
-          action: 'open',
-          title: 'Abrir',
-          icon: '/icons/action-open.png'
-      },
-      {
-        action: 'close',
-        title: 'Cerrar',
-          icon: '/icons/action-close.png'
-      }
-    ]
+    tag: data.tag || 'cresalia-notification',
+    requireInteraction: false,
+    silent: true
   };
 
-  event.waitUntil(
-      self.registration.showNotification(data.title || 'Cresalia', options)
-  );
+  // Agregar acciones solo si están disponibles
+  if (data.actions && Array.isArray(data.actions)) {
+    options.actions = data.actions;
   }
+
+  event.waitUntil(
+    self.registration.showNotification(data.title || data.titulo || 'Cresalia', options)
+  );
 });
 
 // ============================================

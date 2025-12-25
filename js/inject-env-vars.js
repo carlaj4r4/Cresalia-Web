@@ -48,6 +48,9 @@
         window.__SUPABASE_ANON_KEY_COMUNIDADES__ = getEnvVar('SUPABASE_ANON_KEY_COMUNIDADES', '');
         window.__SUPABASE_SERVICE_ROLE_KEY_COMUNIDADES__ = getEnvVar('SUPABASE_SERVICE_ROLE_KEY_COMUNIDADES', null);
         
+        // VAPID Public Key para Push Notifications (segura de exponer públicamente)
+        window.__VAPID_PUBLIC_KEY__ = getEnvVar('VAPID_PUBLIC_KEY', null);
+        
         // Inyectar variables de Mercado Pago
         // ⚠️ IMPORTANTE: Solo PUBLIC_KEY en el cliente (ACCESS_TOKEN es privado y va en el servidor)
         window.__MERCADOPAGO_PUBLIC_KEY__ = getEnvVar('MERCADOPAGO_PUBLIC_KEY', null);

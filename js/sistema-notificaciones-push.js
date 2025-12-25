@@ -1,16 +1,18 @@
 // ===== SISTEMA DE NOTIFICACIONES PUSH CRESALIA =====
-// Sistema avanzado de notificaciones en tiempo real
+// Sistema avanzado de notificaciones en tiempo real con Push API
 
 class SistemaNotificacionesPush {
     constructor() {
         this.notificaciones = [];
         this.suscritos = [];
         this.configuracion = this.cargarConfiguracion();
+        this.serviceWorkerRegistration = null;
+        this.vapidPublicKey = null;
         this.inicializar();
     }
 
     // Inicializar el sistema
-    inicializar() {
+    async inicializar() {
         console.log('🔔 Inicializando Sistema de Notificaciones Push...');
         
         // Verificar soporte del navegador
@@ -19,11 +21,22 @@ class SistemaNotificacionesPush {
             return;
         }
 
+        // Cargar VAPID public key
+        this.vapidPublicKey = window.__VAPID_PUBLIC_KEY__ || null;
+        if (!this.vapidPublicKey) {
+            console.warn('⚠️ VAPID_PUBLIC_KEY no configurada. Las notificaciones push no funcionarán cuando la página esté cerrada.');
+        }
+
         // Solicitar permisos
-        this.solicitarPermisos();
+        await this.solicitarPermisos();
         
         // Configurar Service Worker
-        this.configurarServiceWorker();
+        await this.configurarServiceWorker();
+        
+        // Crear suscripción push (si es posible)
+        if (this.serviceWorkerRegistration) {
+            await this.crearSuscripcionPush();
+        }
         
         // Inicializar notificaciones en tiempo real
         this.inicializarTiempoReal();
@@ -66,19 +79,174 @@ class SistemaNotificacionesPush {
     }
 
     // Configurar Service Worker
-    configurarServiceWorker() {
+    async configurarServiceWorker() {
         // Solo registrar Service Worker si estamos en un servidor (no en file://)
         if ('serviceWorker' in navigator && window.location.protocol !== 'file:') {
-            navigator.serviceWorker.register('/sw.js')
-                .then(registration => {
-                    console.log('✅ Service Worker registrado');
-                })
-                .catch(error => {
-                    console.warn('⚠️ Service Worker no disponible en desarrollo local:', error.message);
-                });
+            try {
+                const registration = await navigator.serviceWorker.register('/sw.js');
+                this.serviceWorkerRegistration = registration;
+                console.log('✅ Service Worker registrado');
+            } catch (error) {
+                console.warn('⚠️ Service Worker no disponible:', error.message);
+            }
         } else {
             console.log('ℹ️ Service Worker no disponible en desarrollo local');
         }
+    }
+
+    // Crear suscripción push usando Push API
+    async crearSuscripcionPush() {
+        if (!this.serviceWorkerRegistration) {
+            console.warn('⚠️ Service Worker no registrado, no se puede crear suscripción push');
+            return;
+        }
+
+        if (!this.vapidPublicKey) {
+            console.warn('⚠️ VAPID_PUBLIC_KEY no configurada, no se puede crear suscripción push');
+            return;
+        }
+
+        if (Notification.permission !== 'granted') {
+            console.log('ℹ️ Permisos de notificación no concedidos aún');
+            return;
+        }
+
+        try {
+            // Convertir VAPID key de base64 a Uint8Array
+            const applicationServerKey = this.urlBase64ToUint8Array(this.vapidPublicKey);
+
+            // Crear suscripción
+            const subscription = await this.serviceWorkerRegistration.pushManager.subscribe({
+                userVisibleOnly: true,
+                applicationServerKey: applicationServerKey
+            });
+
+            console.log('✅ Push subscription creada exitosamente');
+
+            // Guardar suscripción en Supabase
+            await this.guardarSuscripcionEnSupabase(subscription);
+
+            return subscription;
+        } catch (error) {
+            if (error.name === 'NotAllowedError') {
+                console.warn('⚠️ Permisos de push denegados por el usuario');
+            } else {
+                console.error('❌ Error creando push subscription:', error);
+            }
+            return null;
+        }
+    }
+
+    // Convertir VAPID key de base64 URL-safe a Uint8Array
+    urlBase64ToUint8Array(base64String) {
+        const padding = '='.repeat((4 - base64String.length % 4) % 4);
+        const base64 = (base64String + padding)
+            .replace(/\-/g, '+')
+            .replace(/_/g, '/');
+
+        const rawData = window.atob(base64);
+        const outputArray = new Uint8Array(rawData.length);
+
+        for (let i = 0; i < rawData.length; ++i) {
+            outputArray[i] = rawData.charCodeAt(i);
+        }
+        return outputArray;
+    }
+
+    // Guardar suscripción en Supabase
+    async guardarSuscripcionEnSupabase(subscription) {
+        try {
+            const supabase = await this.obtenerSupabase();
+            if (!supabase) {
+                console.warn('⚠️ Supabase no disponible, no se guardó la suscripción');
+                return;
+            }
+
+            const { data: { user } } = await supabase.auth.getUser();
+            if (!user) {
+                console.warn('⚠️ Usuario no autenticado, no se guardó la suscripción');
+                return;
+            }
+
+            // Extraer datos de la suscripción
+            const subscriptionData = {
+                endpoint: subscription.endpoint,
+                keys: {
+                    p256dh: this.arrayBufferToBase64(subscription.getKey('p256dh')),
+                    auth: this.arrayBufferToBase64(subscription.getKey('auth'))
+                }
+            };
+
+            // Detectar dispositivo y navegador
+            const userAgent = navigator.userAgent;
+            const dispositivo = this.detectarDispositivo(userAgent);
+            const navegador = this.detectarNavegador(userAgent);
+
+            // Insertar o actualizar suscripción
+            const { data, error } = await supabase
+                .from('push_subscriptions')
+                .upsert({
+                    user_id: user.id,
+                    endpoint: subscriptionData.endpoint,
+                    p256dh: subscriptionData.keys.p256dh,
+                    auth: subscriptionData.keys.auth,
+                    user_agent: userAgent,
+                    dispositivo: dispositivo,
+                    navegador: navegador,
+                    activo: true,
+                    fecha_ultimo_uso: new Date().toISOString()
+                }, {
+                    onConflict: 'user_id,endpoint'
+                });
+
+            if (error) {
+                console.error('❌ Error guardando suscripción en Supabase:', error);
+            } else {
+                console.log('✅ Suscripción guardada en Supabase');
+            }
+        } catch (error) {
+            console.error('❌ Error en guardarSuscripcionEnSupabase:', error);
+        }
+    }
+
+    // Convertir ArrayBuffer a Base64
+    arrayBufferToBase64(buffer) {
+        const bytes = new Uint8Array(buffer);
+        let binary = '';
+        bytes.forEach((byte) => {
+            binary += String.fromCharCode(byte);
+        });
+        return window.btoa(binary);
+    }
+
+    // Detectar tipo de dispositivo
+    detectarDispositivo(userAgent) {
+        if (/mobile|android|iphone|ipad/i.test(userAgent)) {
+            return 'mobile';
+        } else if (/tablet|ipad/i.test(userAgent)) {
+            return 'tablet';
+        }
+        return 'desktop';
+    }
+
+    // Detectar navegador
+    detectarNavegador(userAgent) {
+        if (userAgent.includes('Chrome')) return 'chrome';
+        if (userAgent.includes('Firefox')) return 'firefox';
+        if (userAgent.includes('Safari')) return 'safari';
+        if (userAgent.includes('Edge')) return 'edge';
+        return 'other';
+    }
+
+    // Obtener cliente Supabase
+    async obtenerSupabase() {
+        if (typeof window.initSupabase === 'function') {
+            return await window.initSupabase();
+        }
+        if (typeof window.supabase !== 'undefined') {
+            return window.supabase;
+        }
+        return null;
     }
 
     // Inicializar notificaciones en tiempo real
@@ -92,7 +260,7 @@ class SistemaNotificacionesPush {
         // Simular notificaciones automáticas - MUY POCO FRECUENTES
         setInterval(() => {
             this.verificarNotificacionesAutomaticas();
-        }, 1800000); // Cada 30 minutos (antes era 5 minutos)
+        }, 1800000); // Cada 30 minutos
 
         // Notificaciones de turnos - Solo si están habilitadas
         if (this.configuracion.tipos.turnos) {
@@ -173,7 +341,7 @@ class SistemaNotificacionesPush {
         }
     }
 
-    // Enviar notificación
+    // Enviar notificación (usando Notification API cuando la página está abierta)
     enviarNotificacion(opciones) {
         // Verificar si el usuario ha deshabilitado las notificaciones
         if (!this.configuracion.activas) {
@@ -186,8 +354,8 @@ class SistemaNotificacionesPush {
                 body: opciones.mensaje,
                 icon: opciones.icono || '/favicon.ico',
                 tag: opciones.tag || 'cresalia',
-                requireInteraction: false, // NUNCA forzar interacción
-                silent: true, // SIEMPRE silenciosas
+                requireInteraction: false,
+                silent: true,
                 badge: '/favicon.ico'
             });
 
@@ -197,7 +365,7 @@ class SistemaNotificacionesPush {
                 notificacion.close();
             };
 
-            // Auto-cerrar después de 3 segundos (más rápido)
+            // Auto-cerrar después de 3 segundos
             setTimeout(() => {
                 notificacion.close();
             }, 3000);
@@ -224,7 +392,6 @@ class SistemaNotificacionesPush {
 
     // Mostrar notificación de bienvenida
     mostrarNotificacionBienvenida() {
-        // Solo mostrar bienvenida si el usuario no ha deshabilitado las notificaciones
         if (this.configuracion.activas && this.configuracion.tipos.general) {
             this.enviarNotificacion({
                 titulo: '🎉 ¡Bienvenido a Cresalia!',
@@ -288,13 +455,13 @@ class SistemaNotificacionesPush {
     cargarConfiguracion() {
         return JSON.parse(localStorage.getItem('configuracionNotificaciones') || JSON.stringify({
             activas: true,
-            sonido: false, // Por defecto sin sonido
-            vibrar: false, // Por defecto sin vibración
+            sonido: false,
+            vibrar: false,
             tipos: {
                 turnos: true,
-                pagos: false, // Por defecto menos notificaciones
-                ofertas: false, // Por defecto menos notificaciones
-                general: false // Por defecto menos notificaciones
+                pagos: false,
+                ofertas: false,
+                general: false
             }
         }));
     }
@@ -422,10 +589,11 @@ window.guardarConfiguracionNotificaciones = function() {
     window.sistemaNotificaciones.guardarConfiguracion();
     
     cerrarModal(document.querySelector('#notificacionesActivas').closest('.modal'));
-    mostrarNotificacion('✅ Configuración de notificaciones guardada', 'success');
+    if (typeof mostrarNotificacion === 'function') {
+        mostrarNotificacion('✅ Configuración de notificaciones guardada', 'success');
+    }
 };
 
-// Función para deshabilitar completamente las notificaciones
 window.deshabilitarNotificaciones = function() {
     window.sistemaNotificaciones.configuracion.activas = false;
     window.sistemaNotificaciones.guardarConfiguracion();
@@ -439,7 +607,6 @@ window.deshabilitarNotificaciones = function() {
     console.log('🔕 Usuario deshabilitó las notificaciones');
 };
 
-// Función para habilitar notificaciones
 window.habilitarNotificaciones = function() {
     window.sistemaNotificaciones.configuracion.activas = true;
     window.sistemaNotificaciones.guardarConfiguracion();
