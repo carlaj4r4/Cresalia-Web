@@ -24,7 +24,7 @@ try {
     console.log(vapidKeys.privateKey);
     console.log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n');
     
-    // Guardar en archivo .env.example (no en .env real por seguridad)
+    // Guardar en archivo .env.example (SIN las keys reales, solo placeholders)
     const envExamplePath = path.join(__dirname, '..', '.env.example');
     let envContent = '';
     
@@ -32,7 +32,7 @@ try {
         envContent = fs.readFileSync(envExamplePath, 'utf8');
     }
     
-    // Agregar o actualizar las keys en .env.example
+    // Agregar o actualizar las keys en .env.example (solo placeholders)
     const lines = envContent.split('\n');
     const newLines = [];
     let publicKeyFound = false;
@@ -40,10 +40,12 @@ try {
     
     lines.forEach(line => {
         if (line.startsWith('VAPID_PUBLIC_KEY=')) {
-            newLines.push(`VAPID_PUBLIC_KEY=${vapidKeys.publicKey}`);
+            // Solo guardar placeholder, no la key real
+            newLines.push(`VAPID_PUBLIC_KEY=[TU_VAPID_PUBLIC_KEY_AQUI]`);
             publicKeyFound = true;
         } else if (line.startsWith('VAPID_PRIVATE_KEY=')) {
-            newLines.push(`VAPID_PRIVATE_KEY=${vapidKeys.privateKey}`);
+            // Solo guardar placeholder, no la key real
+            newLines.push(`VAPID_PRIVATE_KEY=[TU_VAPID_PRIVATE_KEY_AQUI]`);
             privateKeyFound = true;
         } else {
             newLines.push(line);
@@ -52,14 +54,15 @@ try {
     
     if (!publicKeyFound) {
         newLines.push(`\n# VAPID Keys para Push Notifications`);
-        newLines.push(`VAPID_PUBLIC_KEY=${vapidKeys.publicKey}`);
+        newLines.push(`# ⚠️ IMPORTANTE: Reemplaza con tus keys reales (generadas arriba) pero NO commitees este archivo con keys reales`);
+        newLines.push(`VAPID_PUBLIC_KEY=[TU_VAPID_PUBLIC_KEY_AQUI]`);
     }
     if (!privateKeyFound) {
-        newLines.push(`VAPID_PRIVATE_KEY=${vapidKeys.privateKey}`);
+        newLines.push(`VAPID_PRIVATE_KEY=[TU_VAPID_PRIVATE_KEY_AQUI]`);
     }
     
     fs.writeFileSync(envExamplePath, newLines.join('\n'), 'utf8');
-    console.log('📝 Keys agregadas a .env.example (NO committear .env con keys reales)\n');
+    console.log('📝 Placeholders agregados a .env.example (NO incluye keys reales por seguridad)\n');
     
     // Crear archivo de documentación (SIN las keys reales por seguridad)
     const docPath = path.join(__dirname, '..', 'CONFIGURAR-VAPID-KEYS.md');
