@@ -104,29 +104,43 @@ async function enviarEmailConBrevo(email, nombre, tipo) {
     return await response.json();
 }
 
-// Enviar notificación push (se registra en base de datos para que el cliente la procese)
-async function registrarNotificacionPush(supabase, userId, nombre, tipo) {
+// Enviar notificación push real usando el endpoint de push notifications
+async function enviarNotificacionPushReal(userId, nombre, tipo) {
     try {
-        // Verificar si existe tabla de notificaciones push
-        const { error } = await supabase
-            .from('notificaciones_push')
-            .insert({
-                usuario_id: userId,
+        const baseUrl = process.env.VERCEL_URL 
+            ? `https://${process.env.VERCEL_URL}` 
+            : process.env.NEXT_PUBLIC_VERCEL_URL || 'https://cresalia-web.vercel.app';
+        
+        const response = await fetch(`${baseUrl}/api/enviar-push-notification`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                user_id: userId,
                 titulo: '🎄 ¡Felices Fiestas!',
                 mensaje: `${nombre}, desde Cresalia te deseamos unas felices fiestas y un año lleno de oportunidades increíbles. ¡Que tengas un 2026 maravilloso!`,
-                tipo: 'festivo',
-                icono: '🎄',
-                url: '/',
-                enviado: false,
-                fecha_envio: new Date().toISOString()
-            });
+                icono: '/icons/icon-192x192.png',
+                url: '/'
+            })
+        });
 
-        if (error && !error.message.includes('does not exist')) {
-            console.error('Error registrando notificación push:', error);
+        if (!response.ok) {
+            const errorData = await response.json().catch(() => ({}));
+            console.warn(`⚠️ Error enviando push a ${userId}:`, errorData.error || response.statusText);
+            return false;
         }
+
+        const result = await response.json();
+        if (result.enviadas > 0) {
+            console.log(`✅ Push enviado a ${nombre} (${result.enviadas} dispositivos)`);
+            return true;
+        }
+        
+        return false;
     } catch (error) {
-        // Si la tabla no existe, simplemente continuar sin error
-        console.log('Tabla de notificaciones push no disponible, continuando...');
+        console.error(`❌ Error enviando push notification a ${userId}:`, error.message);
+        return false;
     }
 }
 
