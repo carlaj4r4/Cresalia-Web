@@ -6,8 +6,16 @@ const { createClient } = require('@supabase/supabase-js');
 
 // Configuración desde variables de entorno de Vercel
 // URL de Supabase para Tiendas (proyecto principal)
-const SUPABASE_URL = process.env.SUPABASE_URL || 'https://lvdgklwcgrmfbqwghxhl.supabase.co';
-const SUPABASE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.SUPABASE_ANON_KEY;
+// Intentar múltiples nombres de variables para compatibilidad
+const SUPABASE_URL = process.env.SUPABASE_URL_TIENDAS 
+    || process.env.NEXT_PUBLIC_SUPABASE_URL_TIENDAS
+    || process.env.SUPABASE_URL 
+    || 'https://lvdgklwcgrmfbqwghxhl.supabase.co';
+    
+const SUPABASE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY_TIENDAS
+    || process.env.SUPABASE_SERVICE_ROLE_KEY
+    || process.env.SUPABASE_ANON_KEY_TIENDAS
+    || process.env.SUPABASE_ANON_KEY;
 const BREVO_API_KEY = process.env.BREVO_API_KEY;
 const FROM_EMAIL = process.env.FROM_EMAIL || 'cresalia25@gmail.com';
 const FROM_NAME = process.env.FROM_NAME || 'Cresalia';
@@ -211,9 +219,21 @@ module.exports = async (req, res) => {
         console.log('🔐 VAPID_PRIVATE_KEY:', process.env.VAPID_PRIVATE_KEY ? '✅ Configurada' : '❌ No configurada');
         
         // Debug: Mostrar todas las variables de entorno disponibles (sin valores sensibles)
-        console.log('🔍 Variables de entorno disponibles:', Object.keys(process.env).filter(key => 
+        const envKeys = Object.keys(process.env).filter(key => 
             key.includes('SUPABASE') || key.includes('BREVO') || key.includes('VAPID')
-        ).map(key => `${key}=${process.env[key] ? '***' : 'undefined'}`).join(', '));
+        );
+        console.log('🔍 Variables de entorno disponibles:', envKeys.map(key => 
+            `${key}=${process.env[key] ? '***' : 'undefined'}`
+        ).join(', '));
+        
+        // Debug específico: Verificar qué variables de Supabase Tiendas están disponibles
+        console.log('🔍 Verificando variables Supabase Tiendas:');
+        console.log('  - SUPABASE_URL_TIENDAS:', process.env.SUPABASE_URL_TIENDAS ? '✅' : '❌');
+        console.log('  - NEXT_PUBLIC_SUPABASE_URL_TIENDAS:', process.env.NEXT_PUBLIC_SUPABASE_URL_TIENDAS ? '✅' : '❌');
+        console.log('  - SUPABASE_SERVICE_ROLE_KEY_TIENDAS:', process.env.SUPABASE_SERVICE_ROLE_KEY_TIENDAS ? '✅' : '❌');
+        console.log('  - SUPABASE_ANON_KEY_TIENDAS:', process.env.SUPABASE_ANON_KEY_TIENDAS ? '✅' : '❌');
+        console.log('  - SUPABASE_URL (fallback):', process.env.SUPABASE_URL ? '✅' : '❌');
+        console.log('  - SUPABASE_SERVICE_ROLE_KEY (fallback):', process.env.SUPABASE_SERVICE_ROLE_KEY ? '✅' : '❌');
 
         if (!BREVO_API_KEY) {
             console.error('❌ BREVO_API_KEY no configurada');
@@ -224,12 +244,22 @@ module.exports = async (req, res) => {
 
         if (!SUPABASE_KEY) {
             console.error('❌ SUPABASE_KEY no configurada');
-            console.error('💡 Verifica que SUPABASE_SERVICE_ROLE_KEY o SUPABASE_ANON_KEY estén configuradas en Vercel');
+            console.error('💡 Verifica que alguna de estas variables esté configurada en Vercel:');
+            console.error('   - SUPABASE_SERVICE_ROLE_KEY_TIENDAS (recomendada)');
+            console.error('   - SUPABASE_SERVICE_ROLE_KEY');
+            console.error('   - SUPABASE_ANON_KEY_TIENDAS');
+            console.error('   - SUPABASE_ANON_KEY');
             return res.status(500).json({
-                error: 'SUPABASE_SERVICE_ROLE_KEY o SUPABASE_ANON_KEY no configurados en Vercel',
+                error: 'Ninguna clave de Supabase configurada en Vercel',
                 supabase_url: SUPABASE_URL,
                 tiene_url: !!SUPABASE_URL,
-                tiene_key: !!SUPABASE_KEY
+                tiene_key: !!SUPABASE_KEY,
+                variables_buscadas: [
+                    'SUPABASE_SERVICE_ROLE_KEY_TIENDAS',
+                    'SUPABASE_SERVICE_ROLE_KEY',
+                    'SUPABASE_ANON_KEY_TIENDAS',
+                    'SUPABASE_ANON_KEY'
+                ]
             });
         }
 
