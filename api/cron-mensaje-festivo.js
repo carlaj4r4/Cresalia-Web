@@ -320,12 +320,17 @@ module.exports = async (req, res) => {
             total_usuarios: totalUsuarios,
             emails_enviados: emailsEnviados,
             emails_error: emailsError,
-            notificaciones_registradas: notificacionesRegistradas,
-            porcentaje_exito: ((emailsEnviados / totalUsuarios) * 100).toFixed(2) + '%',
-            fecha_ejecucion: ahora.toISOString()
+            notificaciones_push_enviadas: notificacionesRegistradas,
+            porcentaje_exito: totalUsuarios > 0 ? ((emailsEnviados / totalUsuarios) * 100).toFixed(2) + '%' : '0%',
+            fecha_ejecucion: ahora.toISOString(),
+            configuracion: {
+                brevo_configurado: !!BREVO_API_KEY,
+                supabase_configurado: !!(SUPABASE_URL && SUPABASE_KEY),
+                vapid_configurado: !!(process.env.VAPID_PUBLIC_KEY && process.env.VAPID_PRIVATE_KEY)
+            }
         };
 
-        console.log('✅ Envío completado:', resultado);
+        console.log('✅ Envío masivo completado:', JSON.stringify(resultado, null, 2));
 
         return res.status(200).json(resultado);
 
