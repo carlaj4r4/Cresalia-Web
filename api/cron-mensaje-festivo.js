@@ -107,9 +107,19 @@ async function enviarEmailConBrevo(email, nombre, tipo) {
 // Enviar notificación push real usando el endpoint de push notifications
 async function enviarNotificacionPushReal(userId, nombre, tipo) {
     try {
-        const baseUrl = process.env.VERCEL_URL 
-            ? `https://${process.env.VERCEL_URL}` 
-            : process.env.NEXT_PUBLIC_VERCEL_URL || 'https://cresalia-web.vercel.app';
+        // Determinar la URL base del proyecto
+        let baseUrl = 'https://cresalia-web.vercel.app';
+        
+        if (process.env.VERCEL_URL) {
+            baseUrl = `https://${process.env.VERCEL_URL}`;
+        } else if (process.env.VERCEL) {
+            // En Vercel, podemos usar la URL del deployment
+            baseUrl = `https://${process.env.VERCEL}`;
+        } else if (process.env.NEXT_PUBLIC_VERCEL_URL) {
+            baseUrl = process.env.NEXT_PUBLIC_VERCEL_URL;
+        }
+        
+        console.log(`📤 Enviando push notification a ${nombre} (${userId}) desde ${baseUrl}`);
         
         const response = await fetch(`${baseUrl}/api/enviar-push-notification`, {
             method: 'POST',
@@ -135,9 +145,11 @@ async function enviarNotificacionPushReal(userId, nombre, tipo) {
         if (result.enviadas > 0) {
             console.log(`✅ Push enviado a ${nombre} (${result.enviadas} dispositivos)`);
             return true;
+        } else {
+            console.log(`ℹ️ Usuario ${nombre} no tiene suscripciones push activas`);
+            return false;
         }
         
-        return false;
     } catch (error) {
         console.error(`❌ Error enviando push notification a ${userId}:`, error.message);
         return false;
