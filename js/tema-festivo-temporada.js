@@ -47,11 +47,36 @@
             return;
         }
 
+        // Determinar la ruta correcta según la ubicación de la página
+        // Para comunidades: ../../css/tema-festivo-temporada.css
+        // Para páginas principales: css/tema-festivo-temporada.css
+        let cssPath = 'css/tema-festivo-temporada.css';
+        
+        // Detectar si estamos en una comunidad (buscar scripts que usen rutas ../../)
+        const scripts = document.querySelectorAll('script[src]');
+        for (let script of scripts) {
+            const src = script.getAttribute('src');
+            if (src && src.includes('../../')) {
+                cssPath = '../../css/tema-festivo-temporada.css';
+                break;
+            }
+        }
+        
+        // También verificar si ya hay algún link CSS con rutas relativas de comunidades
+        const existingLinks = document.querySelectorAll('link[rel="stylesheet"]');
+        for (let link of existingLinks) {
+            const href = link.getAttribute('href');
+            if (href && (href.includes('../../css/') || href.includes('../../../css/'))) {
+                cssPath = '../../css/tema-festivo-temporada.css';
+                break;
+            }
+        }
+
         // Crear link al CSS festivo
         const link = document.createElement('link');
         link.id = 'tema-festivo-css';
         link.rel = 'stylesheet';
-        link.href = 'css/tema-festivo-temporada.css';
+        link.href = cssPath;
         link.type = 'text/css';
         
         // Agregar al head
@@ -110,6 +135,19 @@
             if (!esTemporadaFestiva()) {
                 removerTemaFestivo();
             }
+        },
+        // Función helper para obtener la ruta correcta del CSS
+        obtenerRutaCSS: function() {
+            let cssPath = 'css/tema-festivo-temporada.css';
+            const scripts = document.querySelectorAll('script[src]');
+            for (let script of scripts) {
+                const src = script.getAttribute('src');
+                if (src && src.includes('../../')) {
+                    cssPath = '../../css/tema-festivo-temporada.css';
+                    break;
+                }
+            }
+            return cssPath;
         }
     };
 
