@@ -28,17 +28,43 @@ module.exports = async (req, res) => {
         const vapidPrivateKey = process.env.VAPID_PRIVATE_KEY;
 
         if (!vapidPublicKey || !vapidPrivateKey) {
+            console.error('❌ VAPID keys no configuradas');
             return res.status(500).json({
-                error: 'VAPID keys no configuradas. Configura VAPID_PUBLIC_KEY y VAPID_PRIVATE_KEY en Vercel.'
+                error: 'VAPID keys no configuradas. Configura VAPID_PUBLIC_KEY y VAPID_PRIVATE_KEY en Vercel.',
+                tiene_public_key: !!vapidPublicKey,
+                tiene_private_key: !!vapidPrivateKey
             });
         }
 
-        // Configurar VAPID keys
-        webpush.setVapidDetails(
-            'mailto:cresalia@cresalia.com', // Contact email (puedes cambiarlo)
-            vapidPublicKey,
-            vapidPrivateKey
-        );
+        // Validar formato de VAPID keys
+        // Public key debe ser base64url (87 caracteres típicamente)
+        // Private key debe ser base64url (43 caracteres típicamente)
+        const publicKeyLength = vapidPublicKey.length;
+        const privateKeyLength = vapidPrivateKey.length;
+        
+        console.log('🔍 Validando VAPID keys:');
+        console.log(`  - Public Key length: ${publicKeyLength} (esperado: ~87)`);
+        console.log(`  - Private Key length: ${privateKeyLength} (esperado: ~43)`);
+        console.log(`  - Public Key preview: ${vapidPublicKey.substring(0, 20)}...`);
+        console.log(`  - Private Key preview: ${vapidPrivateKey.substring(0, 20)}...`);
+
+        // Intentar configurar VAPID keys con mejor manejo de errores
+        try {
+            webpush.setVapidDetails(
+                'mailto:cresalia@cresalia.com', // Contact email
+                vapidPublicKey.trim(),
+                vapidPrivateKey.trim()
+            );
+            console.log('✅ VAPID keys configuradas correctamente');
+        } catch (vapidError) {
+            console.error('❌ Error configurando VAPID keys:', vapidError.message);
+            return res.status(500).json({
+                error: 'Error configurando VAPID keys',
+                detalles: vapidError.message,
+                public_key_length: publicKeyLength,
+                private_key_length: privateKeyLength
+            });
+        }
 
         // Obtener datos del request
         const { user_id, titulo, mensaje, icono, url } = req.body;
@@ -52,12 +78,30 @@ module.exports = async (req, res) => {
         // Obtener suscripciones del usuario desde Supabase
         const { createClient } = require('@supabase/supabase-js');
         
-        const supabaseUrl = process.env.SUPABASE_URL;
-        const supabaseKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
+        // Intentar múltiples nombres de variables para compatibilidad (igual que en cron-mensaje-festivo.js)
+        const supabaseUrl = process.env.SUPABASE_URL_TIENDAS 
+            || process.env.NEXT_PUBLIC_SUPABASE_URL_TIENDAS
+            || process.env.SUPABASE_URL 
+            || 'https://lvdgklwcgrmfbqwghxhl.supabase.co';
+            
+        const supabaseKey = process.env.SUPABASE_SERVICE_ROLE_KEY_TIENDAS
+            || process.env.SUPABASE_SERVICE_ROLE_KEY
+            || process.env.SUPABASE_ANON_KEY_TIENDAS
+            || process.env.SUPABASE_ANON_KEY;
 
-        if (!supabaseUrl || !supabaseKey) {
+        if (!supabaseKey) {
+            console.error('❌ Supabase KEY no configurada');
+            console.error('Variables buscadas:', [
+                'SUPABASE_SERVICE_ROLE_KEY_TIENDAS',
+                'SUPABASE_SERVICE_ROLE_KEY',
+                'SUPABASE_ANON_KEY_TIENDAS',
+                'SUPABASE_ANON_KEY'
+            ]);
             return res.status(500).json({
-                error: 'Supabase no configurado'
+                error: 'Supabase no configurado',
+                supabase_url: supabaseUrl,
+                tiene_url: !!supabaseUrl,
+                tiene_key: !!supabaseKey
             });
         }
 
@@ -109,8 +153,11 @@ module.exports = async (req, res) => {
                     }
                 };
 
+                console.log(`📤 Enviando push a suscripción ${subscription.id} (endpoint: ${subscription.endpoint.substring(0, 50)}...)`);
+
                 await webpush.sendNotification(pushSubscription, payload);
                 enviadas++;
+                console.log(`✅ Push enviado exitosamente a suscripción ${subscription.id}`);
 
                 // Actualizar fecha de último uso
                 await supabase
@@ -120,29 +167,45 @@ module.exports = async (req, res) => {
 
             } catch (error) {
                 errores++;
-                erroresDetalle.push({
+                const errorInfo = {
                     subscription_id: subscription.id,
-                    error: error.message
+                    error: error.message,
+                    statusCode: error.statusCode,
+                    endpoint: subscription.endpoint ? subscription.endpoint.substring(0, 50) : 'N/A'
+                };
+                erroresDetalle.push(errorInfo);
+
+                console.error(`❌ Error enviando push a suscripción ${subscription.id}:`, {
+                    message: error.message,
+                    statusCode: error.statusCode,
+                    code: error.code,
+                    endpoint: subscription.endpoint ? subscription.endpoint.substring(0, 50) : 'N/A'
                 });
 
                 // Si la suscripción expiró o es inválida, marcarla como inactiva
-                if (error.statusCode === 410 || error.statusCode === 404) {
+                if (error.statusCode === 410 || error.statusCode === 404 || error.statusCode === 401) {
+                    console.log(`⚠️ Marcando suscripción ${subscription.id} como inactiva (status: ${error.statusCode})`);
                     await supabase
                         .from('push_subscriptions')
                         .update({ activo: false })
                         .eq('id', subscription.id);
                 }
-
-                console.error(`Error enviando push a suscripción ${subscription.id}:`, error.message);
             }
         }
 
+        console.log(`\n📊 Resumen de envío:`);
+        console.log(`   - Total suscripciones: ${subscriptions.length}`);
+        console.log(`   - Enviadas exitosamente: ${enviadas}`);
+        console.log(`   - Errores: ${errores}`);
+        
         return res.status(200).json({
             success: true,
             enviadas: enviadas,
             errores: errores,
             total_suscripciones: subscriptions.length,
-            errores_detalle: erroresDetalle.length > 0 ? erroresDetalle : undefined
+            errores_detalle: erroresDetalle.length > 0 ? erroresDetalle : undefined,
+            vapid_configurado: !!(vapidPublicKey && vapidPrivateKey),
+            supabase_configurado: !!(supabaseUrl && supabaseKey)
         });
 
     } catch (error) {
