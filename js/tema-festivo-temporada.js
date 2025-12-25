@@ -42,9 +42,20 @@
      * Aplica el tema festivo inyectando el CSS
      */
     function aplicarTemaFestivo() {
-        // Verificar si ya se aplicó
+        // Verificar si ya existe un link al CSS festivo (por id o por href)
         if (document.getElementById('tema-festivo-css')) {
             return;
+        }
+        
+        // También verificar si ya existe algún link con el CSS festivo
+        const existingLinks = document.querySelectorAll('link[rel="stylesheet"]');
+        for (let link of existingLinks) {
+            const href = link.getAttribute('href');
+            if (href && href.includes('tema-festivo-temporada.css')) {
+                // Si ya existe, solo agregar la clase al body y salir
+                document.body.classList.add('tema-festivo-activo');
+                return;
+            }
         }
 
         // Determinar la ruta correcta según la ubicación de la página
