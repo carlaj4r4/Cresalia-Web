@@ -157,26 +157,49 @@ module.exports = async (req, res) => {
     }
 
     try {
+        // Log inicial para debugging
+        console.log('🚀 Cron job ejecutado:', new Date().toISOString());
+        console.log('📋 Query params:', req.query);
+        console.log('🔍 Method:', req.method);
+        
         // Verificar fecha (opcional: puede ejecutarse manualmente también)
         const ahora = new Date();
         const es24DeDiciembre = ahora.getMonth() === 11 && ahora.getDate() === 24;
         const forzarEjecucion = req.query.forzar === 'true';
 
+        console.log(`📅 Fecha actual: ${ahora.toISOString()}`);
+        console.log(`🎄 Es 24 de diciembre: ${es24DeDiciembre}`);
+        console.log(`🔧 Forzar ejecución: ${forzarEjecucion}`);
+
         if (!es24DeDiciembre && !forzarEjecucion) {
+            console.log('⚠️ Cron job no ejecutado: No es 24 de diciembre y no se forzó');
             return res.status(200).json({
                 mensaje: 'No es 24 de diciembre. Usa ?forzar=true para ejecutar manualmente.',
-                fecha_actual: ahora.toISOString()
+                fecha_actual: ahora.toISOString(),
+                mes: ahora.getMonth() + 1,
+                dia: ahora.getDate()
             });
         }
 
+        console.log('✅ Iniciando ejecución del cron job...');
+
         // Verificar configuración
+        console.log('🔍 Verificando configuración...');
+        console.log('📧 BREVO_API_KEY:', BREVO_API_KEY ? '✅ Configurada' : '❌ No configurada');
+        console.log('🗄️ SUPABASE_URL:', SUPABASE_URL ? '✅ Configurada' : '❌ No configurada');
+        console.log('🔑 SUPABASE_KEY:', SUPABASE_KEY ? '✅ Configurada' : '❌ No configurada');
+        console.log('🔑 VAPID_PUBLIC_KEY:', process.env.VAPID_PUBLIC_KEY ? '✅ Configurada' : '❌ No configurada');
+        console.log('🔐 VAPID_PRIVATE_KEY:', process.env.VAPID_PRIVATE_KEY ? '✅ Configurada' : '❌ No configurada');
+
         if (!BREVO_API_KEY) {
+            console.error('❌ BREVO_API_KEY no configurada');
             return res.status(500).json({
                 error: 'BREVO_API_KEY no configurada en Vercel'
             });
         }
 
         if (!SUPABASE_URL || !SUPABASE_KEY) {
+            console.error('❌ Supabase no configurado');
             return res.status(500).json({
                 error: 'SUPABASE_URL o SUPABASE_SERVICE_ROLE_KEY no configurados en Vercel'
             });
