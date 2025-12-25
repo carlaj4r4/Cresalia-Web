@@ -15,16 +15,21 @@
         const mes = ahora.getMonth(); // 0-11 (diciembre = 11, enero = 0)
         const dia = ahora.getDate();
         
+        console.log('🎄 Verificando temporada festiva:', { mes, dia, fecha: ahora.toISOString() });
+        
         // Del 20 de diciembre (mes 11, día 20) al 31 de diciembre
         if (mes === 11 && dia >= 20) {
+            console.log('✅ Es temporada festiva (diciembre)');
             return true;
         }
         
         // Del 1 de enero (mes 0, día 1) al 7 de enero
         if (mes === 0 && dia <= 7) {
+            console.log('✅ Es temporada festiva (enero)');
             return true;
         }
         
+        console.log('❌ No es temporada festiva');
         return false;
     }
 
@@ -48,7 +53,7 @@
         }
         
         // También verificar si ya existe algún link con el CSS festivo
-        const existingLinks = document.querySelectorAll('link[rel="stylesheet"]');
+        let existingLinks = document.querySelectorAll('link[rel="stylesheet"]');
         for (let link of existingLinks) {
             const href = link.getAttribute('href');
             if (href && href.includes('tema-festivo-temporada.css')) {
@@ -74,7 +79,7 @@
         }
         
         // También verificar si ya hay algún link CSS con rutas relativas de comunidades
-        const existingLinks = document.querySelectorAll('link[rel="stylesheet"]');
+        existingLinks = document.querySelectorAll('link[rel="stylesheet"]');
         for (let link of existingLinks) {
             const href = link.getAttribute('href');
             if (href && (href.includes('../../css/') || href.includes('../../../css/'))) {
@@ -115,10 +120,17 @@
      * Inicializa el sistema de tema festivo
      */
     function inicializarTemaFestivo() {
+        const esTemporada = esTemporadaFestiva();
+        const forzar = debeForzarFestivo();
+        
+        console.log('🎄 Inicializando tema festivo:', { esTemporada, forzar });
+        
         // Verificar si debemos aplicar el tema
-        if (esTemporadaFestiva() || debeForzarFestivo()) {
+        if (esTemporada || forzar) {
+            console.log('✅ Aplicando tema festivo...');
             aplicarTemaFestivo();
         } else {
+            console.log('❌ No es temporada festiva, removiendo tema si existe');
             // Si no es temporada, remover si está activo (por si quedó forzado)
             removerTemaFestivo();
         }

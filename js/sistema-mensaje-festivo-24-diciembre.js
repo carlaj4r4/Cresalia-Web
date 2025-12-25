@@ -67,22 +67,44 @@ class SistemaMensajeFestivo24Diciembre {
 
     // Obtener cliente Supabase
     async obtenerSupabase() {
-        // Esperar a que Supabase esté disponible
-        if (typeof window !== 'undefined' && window.supabase) {
+        // Intentar usar initSupabase si está disponible
+        if (typeof window !== 'undefined' && typeof window.initSupabase === 'function') {
+            try {
+                const supabase = await window.initSupabase();
+                if (supabase && typeof supabase.from === 'function') {
+                    return supabase;
+                }
+            } catch (error) {
+                console.warn('⚠️ Error inicializando Supabase con initSupabase:', error);
+            }
+        }
+
+        // Esperar a que Supabase esté disponible en window
+        if (typeof window !== 'undefined' && window.supabase && typeof window.supabase.from === 'function') {
             return window.supabase;
         }
 
-        // Intentar cargar desde auth/supabase-config.js
+        // Intentar cargar desde auth/supabase-config.js (función global)
         if (typeof initSupabase === 'function') {
-            return initSupabase();
+            try {
+                const supabase = await initSupabase();
+                if (supabase && typeof supabase.from === 'function') {
+                    return supabase;
+                }
+            } catch (error) {
+                console.warn('⚠️ Error con initSupabase global:', error);
+            }
         }
 
         // Esperar un poco y reintentar
         await new Promise(resolve => setTimeout(resolve, 1000));
         
-        if (typeof window !== 'undefined' && window.supabase) {
+        if (typeof window !== 'undefined' && window.supabase && typeof window.supabase.from === 'function') {
             return window.supabase;
         }
+        
+        console.error('❌ Supabase no está inicializado correctamente');
+        return null;
 
         return null;
     }
