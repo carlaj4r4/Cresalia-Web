@@ -50,19 +50,44 @@ module.exports = async (req, res) => {
 
         // Intentar configurar VAPID keys con mejor manejo de errores
         try {
+            // Limpiar las keys: remover espacios, saltos de línea, etc.
+            const cleanPublicKey = vapidPublicKey.trim().replace(/\s+/g, '');
+            const cleanPrivateKey = vapidPrivateKey.trim().replace(/\s+/g, '');
+            
+            // Validar que las keys no estén vacías después de limpiar
+            if (!cleanPublicKey || !cleanPrivateKey) {
+                throw new Error('VAPID keys están vacías después de limpiar');
+            }
+            
+            // Intentar decodificar la public key para validar formato
+            try {
+                const decoded = Buffer.from(cleanPublicKey, 'base64url');
+                if (decoded.length !== 65) {
+                    console.warn(`⚠️ Public key decodificada tiene ${decoded.length} bytes (esperado: 65)`);
+                    console.warn('💡 Esto puede causar problemas. Verifica que las keys sean correctas.');
+                }
+            } catch (decodeError) {
+                console.warn('⚠️ No se pudo decodificar la public key para validar:', decodeError.message);
+            }
+            
             webpush.setVapidDetails(
                 'mailto:cresalia@cresalia.com', // Contact email
-                vapidPublicKey.trim(),
-                vapidPrivateKey.trim()
+                cleanPublicKey,
+                cleanPrivateKey
             );
             console.log('✅ VAPID keys configuradas correctamente');
         } catch (vapidError) {
             console.error('❌ Error configurando VAPID keys:', vapidError.message);
+            console.error('💡 Sugerencias:');
+            console.error('   1. Verifica que las keys no tengan espacios extra');
+            console.error('   2. Verifica que las keys estén en formato base64url');
+            console.error('   3. Regenera las keys si es necesario usando: node scripts/generar-vapid-keys.js');
             return res.status(500).json({
                 error: 'Error configurando VAPID keys',
                 detalles: vapidError.message,
                 public_key_length: publicKeyLength,
-                private_key_length: privateKeyLength
+                private_key_length: privateKeyLength,
+                sugerencia: 'Verifica que las keys estén correctamente formateadas en Vercel (sin espacios, formato base64url)'
             });
         }
 
