@@ -131,18 +131,34 @@ function manejarLogin(event) {
 }
 
 function iniciarSesion() {
+    // Guardar sesión
+    const sessionData = {
+        timestamp: Date.now(),
+        user: 'Administrador CRESALIA',
+        authenticated: true,
+        role: 'admin'
+    };
+    localStorage.setItem('adminSession', JSON.stringify(sessionData));
+    
+    // Verificar si hay una URL de redirección guardada (desde paneles de moderación/auditoría)
+    const redirectUrl = sessionStorage.getItem('redirectAfterLogin');
+    
+    if (redirectUrl && redirectUrl !== window.location.href) {
+        // Limpiar la URL de redirección
+        sessionStorage.removeItem('redirectAfterLogin');
+        
+        // Redirigir a la página original
+        console.log('🔄 Redirigiendo a:', redirectUrl);
+        window.location.href = redirectUrl;
+        return; // Salir para que no muestre el panel admin
+    }
+    
+    // Si no hay redirección, mostrar panel admin normalmente
     // Ocultar pantalla de login
     document.getElementById('loginScreen').style.display = 'none';
     
     // Mostrar panel de administración
     document.getElementById('adminPanel').style.display = 'block';
-    
-    // Guardar sesión
-    const sessionData = {
-        timestamp: Date.now(),
-        user: 'Administrador CRESALIA'
-    };
-    localStorage.setItem('adminSession', JSON.stringify(sessionData));
     
     // Iniciar timer de sesión
     iniciarTimerSesion();

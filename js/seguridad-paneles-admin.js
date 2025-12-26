@@ -52,14 +52,43 @@ class SeguridadPanelesAdmin {
     
     // ===== VERIFICACIÓN DE AUTENTICACIÓN =====
     verificarAutenticacion() {
-        const sessionData = this.obtenerSesion();
+        // Paneles que requieren autenticación específica
+        const panelesEspeciales = [
+            'panel-moderacion-foro-comunidades',
+            'panel-moderacion-chat-seguro',
+            'panel-auditoria',
+            'panel-comunidad-vendedores',
+            'panel-comunidad-compradores',
+            'panel-master-cresalia'
+        ];
         
-        if (!sessionData || !sessionData.authenticated) {
-            this.redirigirALogin();
-            return false;
+        const esPanelEspecial = panelesEspeciales.some(panel => 
+            window.location.pathname.includes(panel) || 
+            window.location.href.includes(panel)
+        );
+        
+        // Si es un panel especial, verificar autenticación de admin/master
+        if (esPanelEspecial) {
+            const sessionData = this.obtenerSesion();
+            const esAdmin = this.verificarEsAdmin();
+            
+            if (!sessionData || !sessionData.authenticated || !esAdmin) {
+                // Para paneles especiales, redirigir a login de admin/master
+                this.redirigirALoginAdmin();
+                return false;
+            }
+        } else {
+            // Para otros paneles, verificar sesión normal
+            const sessionData = this.obtenerSesion();
+            
+            if (!sessionData || !sessionData.authenticated) {
+                this.redirigirALogin();
+                return false;
+            }
         }
         
         // Verificar expiración de sesión
+        const sessionData = this.obtenerSesion();
         const tiempoTranscurrido = Date.now() - sessionData.timestamp;
         if (tiempoTranscurrido > this.config.sessionTimeout) {
             this.cerrarSesion();
@@ -71,6 +100,41 @@ class SeguridadPanelesAdmin {
         this.state.sessionStartTime = sessionData.timestamp;
         
         return true;
+    }
+    
+    verificarEsAdmin() {
+        // Verificar si el usuario es admin/master
+        const userData = localStorage.getItem('cresalia_user_data');
+        const adminSession = localStorage.getItem('adminSession');
+        
+        if (adminSession) {
+            try {
+                const session = JSON.parse(adminSession);
+                return session.authenticated && (session.role === 'admin' || session.role === 'master');
+            } catch (e) {
+                return false;
+            }
+        }
+        
+        if (userData) {
+            try {
+                const user = JSON.parse(userData);
+                return user.tipo === 'admin' || user.tipo === 'master' || user.role === 'admin' || user.role === 'master';
+            } catch (e) {
+                return false;
+            }
+        }
+        
+        return false;
+    }
+    
+    redirigirALoginAdmin() {
+        // Guardar la URL actual para redirigir después del login
+        const currentUrl = window.location.href;
+        sessionStorage.setItem('redirectAfterLogin', currentUrl);
+        
+        // Redirigir a login de admin/master
+        window.location.href = 'admin-cresalia.html';
     }
     
     obtenerSesion() {
