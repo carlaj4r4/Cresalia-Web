@@ -3129,10 +3129,18 @@ class SistemaForoComunidades {
     // ===== MOSTRAR MI HISTORIAL =====
     mostrarMiHistorial(posts) {
         // Buscar contenedor (puede tener diferentes IDs según la comunidad)
-        const container = document.getElementById('mi-historial-foro-lista') || 
+        const container = document.getElementById('mi-historial-foro-lista') ||
                          document.getElementById('mi-historial-lista');
         if (!container) {
             console.warn('⚠️ Contenedor de historial no encontrado');
+            return;
+        }
+        
+        // Asegurar que el modal NO se abra automáticamente al cargar el historial
+        // Solo mostrar el historial si el modal ya está visible
+        const modal = document.getElementById('modal-mi-historial');
+        if (modal && modal.style.display !== 'flex' && modal.style.display !== 'block') {
+            // El modal no está abierto, no mostrar el historial automáticamente
             return;
         }
         

@@ -1083,6 +1083,14 @@
             }, 1000);
         });
         
+        // Asegurar que el modal esté cerrado al cargar la página
+        document.addEventListener('DOMContentLoaded', () => {
+            const modal = document.getElementById('modal-mi-historial');
+            if (modal) {
+                modal.style.display = 'none';
+            }
+        });
+        
         // Funciones para historial
         function mostrarHistorialForo() {
             const modal = document.getElementById('modal-mi-historial');
