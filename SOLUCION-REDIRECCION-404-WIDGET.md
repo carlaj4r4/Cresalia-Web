@@ -16,16 +16,25 @@ El problema ocurre cuando:
 
 El problema puede estar en que hay una URL incorrecta guardada en `localStorage`. Para limpiarlo:
 
+**Método Rápido:**
 1. **Abre la consola del navegador** (F12)
-2. **Ejecuta:**
+2. **Copia y pega este código:**
 ```javascript
+// Limpiar URLs inválidas
+localStorage.removeItem('cresalia_redirect_after_login');
 localStorage.removeItem('cresalia_widget_acceso_activo');
 localStorage.removeItem('cresalia_widget_comunidad_activo');
-localStorage.removeItem('cresalia_redirect_after_login');
 sessionStorage.clear();
-localStorage.clear(); // Si quieres limpiar todo
+console.log('✅ URLs inválidas eliminadas');
 ```
-3. **Recarga la página** (F5)
+3. **Recarga la página** (Ctrl + Shift + R para limpiar caché también)
+
+**O usa el script de limpieza:**
+1. Abre `LIMPIAR-URL-INVALIDA.js` en tu editor
+2. Copia todo el contenido
+3. Pégalo en la consola del navegador (F12)
+4. Presiona Enter
+5. Recarga la página
 
 ### **Opción 2: Usar la URL Correcta del Widget**
 
@@ -81,3 +90,4 @@ Para verificar que el problema está resuelto:
 ## 💡 Nota Importante
 
 El código HTML generado en `admin-final.html` es para **copiar y pegar en otra página web**, NO para guardarlo como archivo en tu proyecto. Si lo guardas como archivo, las variables no se procesarán y causarán errores 404.
+
