@@ -12573,6 +12573,19 @@ Precio: $${precio.toLocaleString('es-AR')} ARS/mes
         // ============================================
         
         document.addEventListener('DOMContentLoaded', function() {
+            // Limpiar URLs inválidas guardadas que contengan variables sin procesar
+            const urlGuardada = localStorage.getItem('cresalia_redirect_after_login');
+            if (urlGuardada) {
+                if (urlGuardada.includes('{widgetUrl}') || 
+                    urlGuardada.includes('$%7BwidgetUrl%7D') || 
+                    urlGuardada.includes('widgetUrl') ||
+                    urlGuardada.includes('${') ||
+                    (urlGuardada.includes('%7B') && urlGuardada.includes('%7D'))) {
+                    console.warn('⚠️ Limpiando URL inválida guardada:', urlGuardada);
+                    localStorage.removeItem('cresalia_redirect_after_login');
+                }
+            }
+            
             console.log('🚀 Cresalia - Panel Final Inicializado');
             console.log('✅ Todas las funcionalidades cargadas');
             console.log('💜 Sistema de bienestar emocional activo');

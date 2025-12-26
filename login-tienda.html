@@ -413,10 +413,48 @@
                 return;
             }
             
+            // Verificar si hay una URL guardada para redirección
+            let urlRedireccion = localStorage.getItem('cresalia_redirect_after_login');
+            
+            // Validar que la URL no contenga variables sin procesar
+            if (urlRedireccion) {
+                // Verificar si la URL contiene variables sin procesar
+                if (urlRedireccion.includes('{widgetUrl}') || 
+                    urlRedireccion.includes('$%7BwidgetUrl%7D') || 
+                    urlRedireccion.includes('widgetUrl') ||
+                    urlRedireccion.includes('${') ||
+                    urlRedireccion.includes('%7B') && urlRedireccion.includes('%7D')) {
+                    console.warn('⚠️ URL guardada contiene variables sin procesar, usando URL por defecto');
+                    console.warn('URL inválida:', urlRedireccion);
+                    // Limpiar la URL inválida
+                    localStorage.removeItem('cresalia_redirect_after_login');
+                    urlRedireccion = null;
+                } else {
+                    // Verificar que la URL sea válida (empiece con http://, https://, o sea relativa válida)
+                    try {
+                        new URL(urlRedireccion, window.location.origin);
+                        console.log('✅ Usando URL guardada:', urlRedireccion);
+                    } catch (e) {
+                        console.warn('⚠️ URL guardada no es válida, usando URL por defecto');
+                        localStorage.removeItem('cresalia_redirect_after_login');
+                        urlRedireccion = null;
+                    }
+                }
+            }
+            
+            // Usar URL guardada si es válida, sino usar URL por defecto
+            const urlFinal = urlRedireccion || 'tiendas/ejemplo-tienda/admin-final.html';
+            
+            // Limpiar la URL guardada después de usarla
+            if (urlRedireccion) {
+                localStorage.removeItem('cresalia_redirect_after_login');
+            }
+            
             // Todos los clientes usan el mismo panel admin
             // pero verán sus propios datos personalizados
             console.log('🚀 Redirigiendo al panel admin...');
-            window.location.replace('tiendas/ejemplo-tienda/admin-final.html');
+            console.log('📍 URL destino:', urlFinal);
+            window.location.replace(urlFinal);
         }
         
         function mostrarNotificacion(mensaje, tipo) {

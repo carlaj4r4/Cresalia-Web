@@ -206,8 +206,22 @@ class AuthGuard {
     // Redirigir al login
     redirigirALogin() {
         // Guardar la URL actual para redirección post-login
+        // PERO solo si no contiene variables sin procesar
         const urlActual = window.location.href;
-        localStorage.setItem('cresalia_redirect_after_login', urlActual);
+        
+        // Validar que la URL no contenga variables sin procesar
+        if (urlActual && 
+            !urlActual.includes('{widgetUrl}') && 
+            !urlActual.includes('$%7BwidgetUrl%7D') && 
+            !urlActual.includes('widgetUrl') &&
+            !urlActual.includes('${') &&
+            !(urlActual.includes('%7B') && urlActual.includes('%7D'))) {
+            localStorage.setItem('cresalia_redirect_after_login', urlActual);
+        } else {
+            // Si la URL contiene variables sin procesar, no guardarla
+            console.warn('⚠️ URL actual contiene variables sin procesar, no se guardará para redirección');
+            localStorage.removeItem('cresalia_redirect_after_login');
+        }
         
         // Redirigir
         setTimeout(() => {
