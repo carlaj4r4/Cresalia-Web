@@ -133,11 +133,28 @@
     <script>
         // Obtener parámetros de la URL
         const params = new URLSearchParams(window.location.search);
-        const comunidadUrl = params.get('url') || 'comunidades/mujeres-sobrevivientes/index.html';
+        let comunidadUrl = params.get('url') || '';
         const logoUrl = params.get('logo') || '';
         const nombreTienda = params.get('tienda') || 'Mi Tienda';
         const nombreComunidad = params.get('comunidad') || 'Comunidad';
         const iconoComunidad = params.get('icono') || '👥';
+        
+        // Validar que comunidadUrl no contenga variables sin procesar
+        if (!comunidadUrl || comunidadUrl.includes('{') || comunidadUrl.includes('$%7B') || comunidadUrl.includes('widgetUrl')) {
+            // Si no hay URL válida o contiene variables sin procesar, usar URL relativa por defecto
+            comunidadUrl = '../../comunidades/mujeres-sobrevivientes/index.html';
+            console.warn('⚠️ URL de la comunidad no válida o contiene variables sin procesar. Usando URL por defecto.');
+        }
+        
+        // Asegurar que la URL sea absoluta si es necesario
+        if (comunidadUrl && !comunidadUrl.startsWith('http://') && !comunidadUrl.startsWith('https://') && !comunidadUrl.startsWith('/') && !comunidadUrl.startsWith('../')) {
+            // Si es una ruta relativa sin ../, agregar ../../
+            if (comunidadUrl.startsWith('comunidades/')) {
+                comunidadUrl = '../../' + comunidadUrl;
+            } else {
+                comunidadUrl = '../../' + comunidadUrl;
+            }
+        }
         
         // Configurar logo y nombre
         document.getElementById('logo-tienda').src = logoUrl || 'data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="120" height="120"><rect width="120" height="120" fill="%237C3AED"/><text x="50%25" y="50%25" dominant-baseline="middle" text-anchor="middle" font-size="48" font-weight="bold" fill="white">' + nombreTienda.substring(0, 2).toUpperCase() + '</text></svg>';
@@ -145,7 +162,18 @@
         document.getElementById('comunidad-badge').innerHTML = iconoComunidad + ' ' + nombreComunidad;
         
         function irAComunidad() {
-            window.location.href = comunidadUrl;
+            if (!comunidadUrl || comunidadUrl.includes('{') || comunidadUrl.includes('$%7B') || comunidadUrl.includes('widgetUrl')) {
+                console.error('❌ URL de la comunidad no válida:', comunidadUrl);
+                alert('Error: La URL de la comunidad no es válida. Por favor, contacta al administrador.');
+                return;
+            }
+            
+            try {
+                window.location.href = comunidadUrl;
+            } catch (error) {
+                console.error('❌ Error al redirigir:', error);
+                alert('Error al redirigir a la comunidad. Por favor, intenta acceder directamente.');
+            }
         }
         
         // Auto-redirigir después de 3 segundos (opcional)

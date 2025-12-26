@@ -121,16 +121,44 @@
     <script>
         // Obtener parámetros de la URL
         const params = new URLSearchParams(window.location.search);
-        const panelUrl = params.get('url') || 'tiendas/ejemplo-tienda/admin-final.html';
+        let panelUrl = params.get('url') || '';
         const logoUrl = params.get('logo') || '';
         const nombre = params.get('nombre') || 'Mi Tienda';
+        
+        // Validar que panelUrl no contenga variables sin procesar
+        if (!panelUrl || panelUrl.includes('{') || panelUrl.includes('$%7B') || panelUrl.includes('widgetUrl')) {
+            // Si no hay URL válida o contiene variables sin procesar, usar URL relativa por defecto
+            panelUrl = '../../tiendas/ejemplo-tienda/admin-final.html';
+            console.warn('⚠️ URL del panel no válida o contiene variables sin procesar. Usando URL por defecto.');
+        }
+        
+        // Asegurar que la URL sea absoluta si es necesario
+        if (panelUrl && !panelUrl.startsWith('http://') && !panelUrl.startsWith('https://') && !panelUrl.startsWith('/') && !panelUrl.startsWith('../')) {
+            // Si es una ruta relativa sin ../, agregar ../../
+            if (panelUrl.startsWith('tiendas/')) {
+                panelUrl = '../../' + panelUrl;
+            } else {
+                panelUrl = '../../' + panelUrl;
+            }
+        }
         
         // Configurar logo y nombre
         document.getElementById('logo-tienda').src = logoUrl || 'data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="120" height="120"><rect width="120" height="120" fill="%237C3AED"/><text x="50%25" y="50%25" dominant-baseline="middle" text-anchor="middle" font-size="48" font-weight="bold" fill="white">' + nombre.substring(0, 2).toUpperCase() + '</text></svg>';
         document.getElementById('tienda-nombre').textContent = nombre;
         
         function irAPanel() {
-            window.location.href = panelUrl;
+            if (!panelUrl || panelUrl.includes('{') || panelUrl.includes('$%7B') || panelUrl.includes('widgetUrl')) {
+                console.error('❌ URL del panel no válida:', panelUrl);
+                alert('Error: La URL del panel no es válida. Por favor, contacta al administrador.');
+                return;
+            }
+            
+            try {
+                window.location.href = panelUrl;
+            } catch (error) {
+                console.error('❌ Error al redirigir:', error);
+                alert('Error al redirigir al panel. Por favor, intenta acceder directamente.');
+            }
         }
         
         // Auto-redirigir después de 3 segundos (opcional)
