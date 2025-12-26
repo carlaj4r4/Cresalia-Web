@@ -56,6 +56,64 @@ function crearModalNotificacionesComprador() {
     `;
     
     modal.innerHTML = `
+        <style>
+            /* Estilos para switches de notificaciones */
+            .switch-notif {
+                position: relative;
+                display: inline-block;
+                width: 60px;
+                height: 34px;
+            }
+            
+            .switch-notif input[type="checkbox"] {
+                opacity: 0;
+                width: 0;
+                height: 0;
+                position: absolute;
+            }
+            
+            .slider-notif {
+                position: absolute;
+                cursor: pointer;
+                top: 0;
+                left: 0;
+                right: 0;
+                bottom: 0;
+                background-color: #ccc;
+                transition: .4s;
+                border-radius: 34px;
+            }
+            
+            .slider-notif:before {
+                position: absolute;
+                content: "";
+                height: 26px;
+                width: 26px;
+                left: 4px;
+                bottom: 4px;
+                background-color: white;
+                transition: .4s;
+                border-radius: 50%;
+                box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+            }
+            
+            .switch-notif input[type="checkbox"]:checked + .slider-notif {
+                background-color: #10B981;
+            }
+            
+            .switch-notif input[type="checkbox"]:checked + .slider-notif:before {
+                transform: translateX(26px);
+            }
+            
+            .switch-notif input[type="checkbox"]:focus + .slider-notif {
+                box-shadow: 0 0 1px #10B981;
+            }
+            
+            .switch-notif input[type="checkbox"]:disabled + .slider-notif {
+                opacity: 0.5;
+                cursor: not-allowed;
+            }
+        </style>
         <div style="background: white; border-radius: 20px; max-width: 800px; width: 100%; max-height: 90vh; overflow-y: auto; box-shadow: 0 20px 60px rgba(0,0,0,0.3); position: relative;">
             <div style="position: sticky; top: 0; background: linear-gradient(135deg, #EC4899, #F43F5E); color: white; padding: 30px; text-align: center; border-radius: 20px 20px 0 0; z-index: 10;">
                 <button onclick="cerrarModalNotificacionesComprador()" style="position: absolute; top: 20px; right: 20px; background: rgba(255,255,255,0.2); border: none; color: white; font-size: 24px; cursor: pointer; width: 40px; height: 40px; border-radius: 50%; display: flex; align-items: center; justify-content: center; transition: all 0.3s;">×</button>
@@ -80,9 +138,9 @@ function crearModalNotificacionesComprador() {
                                 Recibe alertas en tiempo real sobre tus compras y ofertas
                             </p>
                         </div>
-                        <label class="switch-notif" style="position: relative; display: inline-block; width: 60px; height: 34px;">
+                        <label class="switch-notif">
                             <input type="checkbox" id="notificacionesActivasGeneralComprador" onchange="toggleNotificacionesGeneralesComprador(this.checked)">
-                            <span class="slider-notif" style="position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: #ccc; transition: .4s; border-radius: 34px;"></span>
+                            <span class="slider-notif"></span>
                         </label>
                     </div>
                 </div>
@@ -105,9 +163,9 @@ function crearModalNotificacionesComprador() {
                                     </div>
                                 </div>
                             </div>
-                            <label class="switch-notif" style="position: relative; display: inline-block; width: 60px; height: 34px;">
+                            <label class="switch-notif">
                                 <input type="checkbox" id="notifOfertasComprador" checked onchange="guardarPreferenciasNotifComprador()">
-                                <span class="slider-notif" style="position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: #ccc; transition: .4s; border-radius: 34px;"></span>
+                                <span class="slider-notif"></span>
                             </label>
                         </div>
                         
