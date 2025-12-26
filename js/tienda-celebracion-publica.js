@@ -51,7 +51,7 @@
         if (email) params.append('email', email);
 
         try {
-            const respuesta = await fetch(`${baseUrl}/api/aniversarios-celebracion?${params.toString()}`);
+            const respuesta = await fetch(`${baseUrl}/api/celebraciones?tipo=aniversario&action=celebracion&${params.toString()}`);
             if (!respuesta.ok) throw new Error(`Error ${respuesta.status}`);
             const data = await respuesta.json();
             

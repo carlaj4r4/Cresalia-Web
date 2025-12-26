@@ -59,7 +59,7 @@
         const baseUrl = (window.location.protocol === 'file:') ? 'https://cresalia-web.vercel.app' : '';
 
         try {
-            const respuesta = await fetch(`${baseUrl}/api/aniversarios-celebracion?${params.toString()}`);
+            const respuesta = await fetch(`${baseUrl}/api/celebraciones?tipo=aniversario&action=celebracion&${params.toString()}`);
             if (!respuesta.ok) {
                 // Silenciar error 404 (API no implementada aún)
                 if (respuesta.status === 404) {

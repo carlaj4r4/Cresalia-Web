@@ -85,7 +85,7 @@
     }
 
     async function fetchPreferencias(email) {
-        const url = `${baseUrl}/api/compradores-cumple-consent?email=${encodeURIComponent(email)}`;
+        const url = `${baseUrl}/api/celebraciones?tipo=cumpleanos&action=consent&email=${encodeURIComponent(email)}`;
         const resp = await fetch(url, {
             headers: {
                 'Accept': 'application/json'
