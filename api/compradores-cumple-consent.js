@@ -124,11 +124,17 @@ module.exports = async (req, res) => {
             }
 
             // Preparar datos para actualizar
+            // Intentar actualizar ambas versiones de nombres de columnas para compatibilidad
             const datosActualizar = {
+                fecha_nacimiento: fecha_nacimiento || null,
+                // Nombres estándar
                 acepta_publico: acepta_publico === true || acepta_publico === 'true',
                 acepta_descuento: acepta_descuento === true || acepta_descuento === 'true',
-                fecha_nacimiento: fecha_nacimiento || null,
                 mensaje_publico: mensaje_publico || null,
+                // Nombres alternativos (para compatibilidad)
+                acepta_cumple_publico: acepta_publico === true || acepta_publico === 'true',
+                acepta_cumple_descuento: acepta_descuento === true || acepta_descuento === 'true',
+                mensaje_cumple_publico: mensaje_publico || null,
                 fecha_actualizacion: new Date().toISOString()
             };
 
@@ -154,10 +160,10 @@ module.exports = async (req, res) => {
                 message: 'Preferencias guardadas correctamente',
                 data: {
                     email: compradorActualizado.email,
-                    acepta_publico: compradorActualizado.acepta_publico,
-                    acepta_descuento: compradorActualizado.acepta_descuento,
-                    fecha_nacimiento: compradorActualizado.fecha_nacimiento,
-                    mensaje_publico: compradorActualizado.mensaje_publico
+                    acepta_publico: compradorActualizado.acepta_publico || compradorActualizado.acepta_cumple_publico || false,
+                    acepta_descuento: compradorActualizado.acepta_descuento || compradorActualizado.acepta_cumple_descuento || false,
+                    fecha_nacimiento: compradorActualizado.fecha_nacimiento || null,
+                    mensaje_publico: compradorActualizado.mensaje_publico || compradorActualizado.mensaje_cumple_publico || null
                 }
             });
         }
