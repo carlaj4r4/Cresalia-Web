@@ -134,7 +134,7 @@ module.exports = async (req, res) => {
         
             // Procesar según el tipo de notificación
             // Manejar diferentes formatos de webhook de MercadoPago
-            const notificationType = type || action;
+            // notificationType ya está declarado arriba (línea 119)
             
             if (notificationType === 'payment' || notificationType === 'payment.created' || notificationType === 'payment.updated') {
                 const paymentId = data?.id || id;
