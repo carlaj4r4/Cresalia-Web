@@ -610,7 +610,7 @@
             
             <!-- Botones de acción -->
             <div style="display: flex; gap: 15px; justify-content: center; margin-bottom: 30px; flex-wrap: wrap;">
-                <button id="btn-crear-post" class="btn-primary" style="padding: 15px 30px; font-size: 1.1rem; border-radius: 25px;">
+                <button id="btn-crear-post" class="btn-primary" style="padding: 15px 30px; font-size: 1.1rem; border-radius: 25px;" onclick="abrirModalCrearPost()">
                     <i class="fas fa-plus-circle"></i> Crear Publicación
                 </button>
                 <button id="btn-mi-historial" class="btn-secondary" style="padding: 15px 30px; font-size: 1.1rem; border-radius: 25px;" onclick="mostrarHistorialForo()">
@@ -635,7 +635,7 @@
                         <i class="fas fa-edit" style="color: #667eea;"></i> 
                         Crear Publicación
                     </h3>
-                    <button id="cerrar-form-post" class="close-btn" style="background: none; border: none; font-size: 28px; color: #666; cursor: pointer; padding: 0; width: 35px; height: 35px; display: flex; align-items: center; justify-content: center; border-radius: 50%; transition: all 0.3s;">
+                    <button onclick="cerrarModalCrearPost()" class="close-btn" style="background: none; border: none; font-size: 28px; color: #666; cursor: pointer; padding: 0; width: 35px; height: 35px; display: flex; align-items: center; justify-content: center; border-radius: 50%; transition: all 0.3s;">
                         &times;
                     </button>
                 </div>
@@ -1083,13 +1083,42 @@
             }, 1000);
         });
         
-        // Asegurar que el modal esté cerrado al cargar la página
-        document.addEventListener('DOMContentLoaded', () => {
-            const modal = document.getElementById('modal-mi-historial');
+        // Asegurar que los modales estén cerrados al cargar la página
+        function cerrarModalesAlCargar() {
+            const modalHistorial = document.getElementById('modal-mi-historial');
+            if (modalHistorial) {
+                modalHistorial.style.display = 'none';
+            }
+            const modalCrearPost = document.getElementById('modal-crear-post');
+            if (modalCrearPost) {
+                modalCrearPost.style.display = 'none';
+            }
+        }
+        
+        // Ejecutar inmediatamente y también en DOMContentLoaded
+        cerrarModalesAlCargar();
+        document.addEventListener('DOMContentLoaded', cerrarModalesAlCargar);
+        window.addEventListener('load', cerrarModalesAlCargar);
+        
+        // Función para abrir modal de crear post
+        function abrirModalCrearPost() {
+            const modal = document.getElementById('modal-crear-post');
+            if (modal) {
+                modal.style.display = 'flex';
+                // Si hay sistema de foro, usar su función
+                if (window.foroComunidadVendedores && typeof window.foroComunidadVendedores.mostrarFormularioPost === 'function') {
+                    window.foroComunidadVendedores.mostrarFormularioPost();
+                }
+            }
+        }
+        
+        // Función para cerrar modal de crear post
+        function cerrarModalCrearPost() {
+            const modal = document.getElementById('modal-crear-post');
             if (modal) {
                 modal.style.display = 'none';
             }
-        });
+        }
         
         // Funciones para historial
         function mostrarHistorialForo() {
