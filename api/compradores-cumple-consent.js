@@ -72,13 +72,14 @@ module.exports = async (req, res) => {
                 });
             }
 
-            // Extraer preferencias de cumpleaños (pueden estar en un campo JSONB o en columnas separadas)
+            // Extraer preferencias de cumpleaños
+            // Nota: Los nombres de columnas pueden variar según el esquema SQL usado
             const preferencias = {
                 email: comprador.email,
-                acepta_publico: comprador.acepta_publico || false,
-                acepta_descuento: comprador.acepta_descuento || false,
+                acepta_publico: comprador.acepta_publico || comprador.acepta_cumple_publico || false,
+                acepta_descuento: comprador.acepta_descuento || comprador.acepta_cumple_descuento || false,
                 fecha_nacimiento: comprador.fecha_nacimiento || null,
-                mensaje_publico: comprador.mensaje_publico || null
+                mensaje_publico: comprador.mensaje_publico || comprador.mensaje_cumple_publico || null
             };
 
             return res.status(200).json({

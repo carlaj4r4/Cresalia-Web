@@ -2,11 +2,17 @@
 -- Ejecuta este SQL en Supabase SQL Editor si las columnas no existen
 
 -- Agregar columnas si no existen
+-- Nota: Se agregan ambos nombres para compatibilidad con diferentes esquemas
 ALTER TABLE compradores
     ADD COLUMN IF NOT EXISTS fecha_nacimiento DATE,
+    -- Nombres estándar (preferidos)
     ADD COLUMN IF NOT EXISTS acepta_publico BOOLEAN DEFAULT false,
     ADD COLUMN IF NOT EXISTS acepta_descuento BOOLEAN DEFAULT false,
     ADD COLUMN IF NOT EXISTS mensaje_publico TEXT,
+    -- Nombres alternativos (para compatibilidad con esquemas existentes)
+    ADD COLUMN IF NOT EXISTS acepta_cumple_publico BOOLEAN DEFAULT false,
+    ADD COLUMN IF NOT EXISTS acepta_cumple_descuento BOOLEAN DEFAULT false,
+    ADD COLUMN IF NOT EXISTS mensaje_cumple_publico TEXT,
     ADD COLUMN IF NOT EXISTS fecha_actualizacion TIMESTAMP WITH TIME ZONE DEFAULT NOW();
 
 -- Crear índice para búsquedas por fecha de nacimiento (útil para cumpleaños)
