@@ -53,7 +53,7 @@
         }
         
         // También verificar si ya existe algún link con el CSS festivo
-        let existingLinks = document.querySelectorAll('link[rel="stylesheet"]');
+        const existingLinks = document.querySelectorAll('link[rel="stylesheet"]');
         for (let link of existingLinks) {
             const href = link.getAttribute('href');
             if (href && href.includes('tema-festivo-temporada.css')) {
@@ -79,8 +79,8 @@
         }
         
         // También verificar si ya hay algún link CSS con rutas relativas de comunidades
-        existingLinks = document.querySelectorAll('link[rel="stylesheet"]');
-        for (let link of existingLinks) {
+        const allStyleLinks = document.querySelectorAll('link[rel="stylesheet"]');
+        for (let link of allStyleLinks) {
             const href = link.getAttribute('href');
             if (href && (href.includes('../../css/') || href.includes('../../../css/'))) {
                 cssPath = '../../css/tema-festivo-temporada.css';
