@@ -1,0 +1,410 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Probar Endpoints - Cresalia</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+        }
+        h1 {
+            color: #667eea;
+            margin-bottom: 30px;
+            text-align: center;
+        }
+        .endpoint-card {
+            background: #f8fafc;
+            border-left: 4px solid #667eea;
+            padding: 20px;
+            margin-bottom: 20px;
+            border-radius: 8px;
+        }
+        .endpoint-card h3 {
+            color: #1f2937;
+            margin-bottom: 10px;
+        }
+        .endpoint-url {
+            font-family: monospace;
+            background: #e5e7eb;
+            padding: 10px;
+            border-radius: 6px;
+            margin: 10px 0;
+            word-break: break-all;
+            font-size: 14px;
+        }
+        .btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            margin-top: 10px;
+            transition: transform 0.2s;
+        }
+        .btn:hover {
+            transform: translateY(-2px);
+        }
+        .resultado {
+            margin-top: 15px;
+            padding: 15px;
+            border-radius: 8px;
+            display: none;
+        }
+        .resultado.exito {
+            background: #d1fae5;
+            border-left: 4px solid #10b981;
+            color: #065f46;
+        }
+        .resultado.error {
+            background: #fee2e2;
+            border-left: 4px solid #ef4444;
+            color: #991b1b;
+        }
+        .resultado.info {
+            background: #dbeafe;
+            border-left: 4px solid #3b82f6;
+            color: #1e40af;
+        }
+        pre {
+            background: #1f2937;
+            color: #f9fafb;
+            padding: 15px;
+            border-radius: 8px;
+            overflow-x: auto;
+            font-size: 12px;
+            margin-top: 10px;
+        }
+        .loading {
+            display: none;
+            text-align: center;
+            margin-top: 10px;
+        }
+        .loading.active {
+            display: block;
+        }
+        .spinner {
+            border: 3px solid #f3f4f6;
+            border-top: 3px solid #667eea;
+            border-radius: 50%;
+            width: 30px;
+            height: 30px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        .summary {
+            background: #f0f9ff;
+            border-left: 4px solid #0ea5e9;
+            padding: 20px;
+            margin-bottom: 30px;
+            border-radius: 8px;
+        }
+        .summary h2 {
+            color: #0c4a6e;
+            margin-bottom: 10px;
+        }
+        .summary p {
+            color: #075985;
+            margin: 5px 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🧪 Probar Endpoints de Cresalia</h1>
+        
+        <div class="summary">
+            <h2>📊 Resumen</h2>
+            <p><strong>Total endpoints:</strong> 11 (dentro del límite de 12)</p>
+            <p><strong>Base URL:</strong> <span id="base-url"></span></p>
+            <p><strong>Estado:</strong> <span id="estado-general">Verificando...</span></p>
+        </div>
+
+        <div class="endpoint-card">
+            <h3>1. Celebraciones (Cumpleaños)</h3>
+            <div class="endpoint-url" id="url-celebraciones-cumple"></div>
+            <button class="btn" onclick="probarEndpoint('celebraciones-cumple')">Probar</button>
+            <div class="loading" id="loading-celebraciones-cumple">
+                <div class="spinner"></div>
+            </div>
+            <div class="resultado" id="resultado-celebraciones-cumple"></div>
+        </div>
+
+        <div class="endpoint-card">
+            <h3>2. Celebraciones (Aniversarios)</h3>
+            <div class="endpoint-url" id="url-celebraciones-aniversario"></div>
+            <button class="btn" onclick="probarEndpoint('celebraciones-aniversario')">Probar</button>
+            <div class="loading" id="loading-celebraciones-aniversario">
+                <div class="spinner"></div>
+            </div>
+            <div class="resultado" id="resultado-celebraciones-aniversario"></div>
+        </div>
+
+        <div class="endpoint-card">
+            <h3>3. Celebraciones (Historias)</h3>
+            <div class="endpoint-url" id="url-celebraciones-historias"></div>
+            <button class="btn" onclick="probarEndpoint('celebraciones-historias')">Probar</button>
+            <div class="loading" id="loading-celebraciones-historias">
+                <div class="spinner"></div>
+            </div>
+            <div class="resultado" id="resultado-celebraciones-historias"></div>
+        </div>
+
+        <div class="endpoint-card">
+            <h3>4. Admin</h3>
+            <div class="endpoint-url" id="url-admin"></div>
+            <button class="btn" onclick="probarEndpoint('admin')">Probar</button>
+            <div class="loading" id="loading-admin">
+                <div class="spinner"></div>
+            </div>
+            <div class="resultado" id="resultado-admin"></div>
+        </div>
+
+        <div class="endpoint-card">
+            <h3>5. AI Chat</h3>
+            <div class="endpoint-url" id="url-ai-chat"></div>
+            <button class="btn" onclick="probarEndpoint('ai-chat')">Probar</button>
+            <div class="loading" id="loading-ai-chat">
+                <div class="spinner"></div>
+            </div>
+            <div class="resultado" id="resultado-ai-chat"></div>
+        </div>
+
+        <div class="endpoint-card">
+            <h3>6. Comunidades API</h3>
+            <div class="endpoint-url" id="url-comunidades"></div>
+            <button class="btn" onclick="probarEndpoint('comunidades')">Probar</button>
+            <div class="loading" id="loading-comunidades">
+                <div class="spinner"></div>
+            </div>
+            <div class="resultado" id="resultado-comunidades"></div>
+        </div>
+
+        <div class="endpoint-card">
+            <h3>7. Support</h3>
+            <div class="endpoint-url" id="url-support"></div>
+            <button class="btn" onclick="probarEndpoint('support')">Probar</button>
+            <div class="loading" id="loading-support">
+                <div class="spinner"></div>
+            </div>
+            <div class="resultado" id="resultado-support"></div>
+        </div>
+
+        <div class="endpoint-card">
+            <h3>8. Jobs</h3>
+            <div class="endpoint-url" id="url-jobs"></div>
+            <button class="btn" onclick="probarEndpoint('jobs')">Probar</button>
+            <div class="loading" id="loading-jobs">
+                <div class="spinner"></div>
+            </div>
+            <div class="resultado" id="resultado-jobs"></div>
+        </div>
+
+        <div class="endpoint-card">
+            <h3>9. Mantenimiento</h3>
+            <div class="endpoint-url" id="url-mantenimiento"></div>
+            <button class="btn" onclick="probarEndpoint('mantenimiento')">Probar</button>
+            <div class="loading" id="loading-mantenimiento">
+                <div class="spinner"></div>
+            </div>
+            <div class="resultado" id="resultado-mantenimiento"></div>
+        </div>
+
+        <div class="endpoint-card">
+            <h3>10. Mercado Pago Preference</h3>
+            <div class="endpoint-url" id="url-mercadopago"></div>
+            <button class="btn" onclick="probarEndpoint('mercadopago')">Probar</button>
+            <div class="loading" id="loading-mercadopago">
+                <div class="spinner"></div>
+            </div>
+            <div class="resultado" id="resultado-mercadopago"></div>
+        </div>
+
+        <div class="endpoint-card">
+            <h3>11. Webhook Mercado Pago</h3>
+            <div class="endpoint-url" id="url-webhook"></div>
+            <button class="btn" onclick="probarEndpoint('webhook')">Probar</button>
+            <div class="loading" id="loading-webhook">
+                <div class="spinner"></div>
+            </div>
+            <div class="resultado" id="resultado-webhook"></div>
+        </div>
+
+        <div style="margin-top: 30px; text-align: center;">
+            <button class="btn" onclick="probarTodos()" style="padding: 15px 30px; font-size: 16px;">
+                🚀 Probar Todos los Endpoints
+            </button>
+        </div>
+    </div>
+
+    <script>
+        const hostname = window.location.hostname;
+        let baseUrl = '';
+        
+        if (hostname.includes('vercel.app')) {
+            baseUrl = `https://${hostname}`;
+        } else if (hostname === 'localhost' || hostname === '127.0.0.1') {
+            baseUrl = 'https://cresalia-web.vercel.app';
+        } else {
+            baseUrl = window.location.origin;
+        }
+        
+        document.getElementById('base-url').textContent = baseUrl;
+
+        const endpoints = {
+            'celebraciones-cumple': {
+                url: `${baseUrl}/api/celebraciones?tipo=cumpleanos&action=consent&email=test@test.com`,
+                method: 'GET'
+            },
+            'celebraciones-aniversario': {
+                url: `${baseUrl}/api/celebraciones?tipo=aniversario&action=celebracion&tipo=tienda&slug=ejemplo-tienda`,
+                method: 'GET'
+            },
+            'celebraciones-historias': {
+                url: `${baseUrl}/api/celebraciones?tipo=historia&action=listar&publicas=true`,
+                method: 'GET'
+            },
+            'admin': {
+                url: `${baseUrl}/api/admin`,
+                method: 'GET'
+            },
+            'ai-chat': {
+                url: `${baseUrl}/api/ai-chat`,
+                method: 'POST',
+                body: JSON.stringify({ mensaje: 'test' })
+            },
+            'comunidades': {
+                url: `${baseUrl}/api/comunidades-api`,
+                method: 'GET'
+            },
+            'support': {
+                url: `${baseUrl}/api/support`,
+                method: 'GET'
+            },
+            'jobs': {
+                url: `${baseUrl}/api/jobs`,
+                method: 'GET'
+            },
+            'mantenimiento': {
+                url: `${baseUrl}/api/mantenimiento`,
+                method: 'GET'
+            },
+            'mercadopago': {
+                url: `${baseUrl}/api/mercadopago-preference`,
+                method: 'POST',
+                body: JSON.stringify({ items: [] })
+            },
+            'webhook': {
+                url: `${baseUrl}/api/webhook-mercadopago`,
+                method: 'POST',
+                body: JSON.stringify({ type: 'test' })
+            }
+        };
+
+        // Mostrar URLs
+        Object.keys(endpoints).forEach(key => {
+            const urlElement = document.getElementById(`url-${key}`);
+            if (urlElement) {
+                urlElement.textContent = endpoints[key].url;
+            }
+        });
+
+        async function probarEndpoint(key) {
+            const endpoint = endpoints[key];
+            const loading = document.getElementById(`loading-${key}`);
+            const resultado = document.getElementById(`resultado-${key}`);
+            
+            loading.classList.add('active');
+            resultado.style.display = 'none';
+            resultado.className = 'resultado';
+
+            try {
+                const options = {
+                    method: endpoint.method,
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                };
+
+                if (endpoint.body) {
+                    options.body = endpoint.body;
+                }
+
+                const response = await fetch(endpoint.url, options);
+                const data = await response.json();
+                
+                loading.classList.remove('active');
+                resultado.style.display = 'block';
+
+                if (response.ok) {
+                    resultado.className = 'resultado exito';
+                    resultado.innerHTML = `
+                        <h4>✅ Éxito (${response.status})</h4>
+                        <pre>${JSON.stringify(data, null, 2)}</pre>
+                    `;
+                } else {
+                    resultado.className = 'resultado error';
+                    resultado.innerHTML = `
+                        <h4>❌ Error (${response.status})</h4>
+                        <pre>${JSON.stringify(data, null, 2)}</pre>
+                    `;
+                }
+            } catch (error) {
+                loading.classList.remove('active');
+                resultado.style.display = 'block';
+                resultado.className = 'resultado error';
+                resultado.innerHTML = `
+                    <h4>❌ Error de Conexión</h4>
+                    <p>${error.message}</p>
+                `;
+            }
+        }
+
+        async function probarTodos() {
+            const keys = Object.keys(endpoints);
+            for (const key of keys) {
+                await probarEndpoint(key);
+                await new Promise(resolve => setTimeout(resolve, 500)); // Pausa entre requests
+            }
+            
+            document.getElementById('estado-general').textContent = 'Pruebas completadas';
+        }
+
+        // Verificar estado general al cargar
+        window.addEventListener('load', async () => {
+            try {
+                const response = await fetch(`${baseUrl}/api/mantenimiento`);
+                if (response.ok) {
+                    document.getElementById('estado-general').textContent = '✅ Endpoints activos';
+                } else {
+                    document.getElementById('estado-general').textContent = '⚠️ Algunos endpoints pueden tener problemas';
+                }
+            } catch (error) {
+                document.getElementById('estado-general').textContent = '❌ No se pudo conectar';
+            }
+        });
+    </script>
+</body>
+</html>
