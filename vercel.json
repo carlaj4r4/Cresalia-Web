@@ -1,8 +1,3 @@
 {
-  "crons": [
-    {
-      "path": "/api/cron-mensaje-festivo",
-      "schedule": "0 0 24 12 *"
-    }
-  ]
+  "crons": []
 }
