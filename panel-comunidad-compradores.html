@@ -1667,6 +1667,13 @@
         }
         
         function cambiarTabHistorial(tabId) {
+            // Verificar que el modal esté abierto antes de cargar contenido
+            const modal = document.getElementById('modal-mi-historial');
+            if (!modal || (modal.style.display !== 'flex' && modal.style.display !== 'block')) {
+                // El modal no está abierto, no cargar contenido
+                return;
+            }
+            
             // Ocultar todos los contenidos
             document.querySelectorAll('.historial-tab-content').forEach(content => {
                 content.style.display = 'none';
@@ -1693,8 +1700,8 @@
                 btn.style.color = '#667eea';
             }
             
-            // Cargar contenido según tab
-            if (window.foroComunidadCompradores) {
+            // Cargar contenido según tab (solo si el modal está abierto)
+            if (window.foroComunidadCompradores && modal.style.display === 'flex') {
                 if (tabId === 'mis-posts') {
                     window.foroComunidadCompradores.cargarMiHistorial();
                 } else if (tabId === 'vistos') {
