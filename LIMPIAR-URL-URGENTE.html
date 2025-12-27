@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Limpieza Urgente - URLs Inválidas</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 600px;
+            margin: 50px auto;
+            padding: 20px;
+            background: #f5f5f5;
+        }
+        .box {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            text-align: center;
+        }
+        h1 { color: #8B5CF6; }
+        .success { color: green; font-weight: bold; }
+        .error { color: red; }
+        button {
+            background: #8B5CF6;
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            margin: 10px;
+        }
+        button:hover {
+            background: #7C3AED;
+        }
+        pre {
+            background: #f0f0f0;
+            padding: 15px;
+            border-radius: 5px;
+            text-align: left;
+            overflow-x: auto;
+        }
+    </style>
+</head>
+<body>
+    <div class="box">
+        <h1>🧹 Limpieza Urgente de URLs</h1>
+        <p>Este script limpiará todas las URLs inválidas que contengan variables sin procesar.</p>
+        
+        <button onclick="limpiarTodo()">🔧 Limpiar Todo Ahora</button>
+        <button onclick="verEstado()">👁️ Ver Estado Actual</button>
+        <button onclick="irALogin()">🔐 Ir a Login</button>
+        
+        <div id="resultado" style="margin-top: 20px;"></div>
+    </div>
+    
+    <script>
+        function limpiarTodo() {
+            const resultado = document.getElementById('resultado');
+            resultado.innerHTML = '<p>Limpiando...</p>';
+            
+            let limpiados = [];
+            let encontrados = [];
+            
+            // Lista de keys a verificar
+            const keysToCheck = [
+                'cresalia_redirect_after_login',
+                'cresalia_widget_acceso_activo',
+                'cresalia_widget_comunidad_activo',
+                'redirectAfterLogin'
+            ];
+            
+            // Limpiar localStorage
+            keysToCheck.forEach(key => {
+                const value = localStorage.getItem(key);
+                if (value) {
+                    encontrados.push(`${key}: ${value}`);
+                    
+                    // Verificar si contiene variables sin procesar
+                    if (value.includes('{widgetUrl}') || 
+                        value.includes('$%7BwidgetUrl%7D') || 
+                        value.includes('widgetUrl') ||
+                        value.includes('${') ||
+                        (value.includes('%7B') && value.includes('%7D'))) {
+                        localStorage.removeItem(key);
+                        limpiados.push(key);
+                    }
+                }
+            });
+            
+            // Limpiar sessionStorage
+            try {
+                const sessionRedirect = sessionStorage.getItem('redirectAfterLogin');
+                if (sessionRedirect && (
+                    sessionRedirect.includes('{widgetUrl}') || 
+                    sessionRedirect.includes('$%7BwidgetUrl%7D') || 
+                    sessionRedirect.includes('widgetUrl'))) {
+                    sessionStorage.removeItem('redirectAfterLogin');
+                    limpiados.push('redirectAfterLogin (sessionStorage)');
+                }
+            } catch (e) {
+                // Ignorar
+            }
+            
+            // Limpiar TODAS las URLs que contengan estos patrones
+            for (let i = 0; i < localStorage.length; i++) {
+                const key = localStorage.key(i);
+                const value = localStorage.getItem(key);
+                if (value && typeof value === 'string' && (
+                    value.includes('$%7BwidgetUrl%7D') || 
+                    value.includes('{widgetUrl}'))) {
+                    localStorage.removeItem(key);
+                    limpiados.push(key + ' (auto-detectado)');
+                }
+            }
+            
+            // Mostrar resultado
+            let html = '<div class="success">✅ Limpieza completada</div>';
+            html += '<p><strong>Keys eliminados:</strong> ' + limpiados.length + '</p>';
+            
+            if (limpiados.length > 0) {
+                html += '<pre>';
+                limpiados.forEach(key => {
+                    html += '❌ ' + key + '\n';
+                });
+                html += '</pre>';
+            } else {
+                html += '<p>No se encontraron URLs inválidas.</p>';
+            }
+            
+            if (encontrados.length > 0) {
+                html += '<p><strong>URLs encontradas (antes de limpiar):</strong></p>';
+                html += '<pre>';
+                encontrados.forEach(item => {
+                    html += item + '\n';
+                });
+                html += '</pre>';
+            }
+            
+            resultado.innerHTML = html;
+        }
+        
+        function verEstado() {
+            const resultado = document.getElementById('resultado');
+            let html = '<h3>Estado Actual:</h3>';
+            html += '<pre>';
+            
+            const keysToCheck = [
+                'cresalia_redirect_after_login',
+                'cresalia_widget_acceso_activo',
+                'cresalia_widget_comunidad_activo',
+                'redirectAfterLogin'
+            ];
+            
+            keysToCheck.forEach(key => {
+                const value = localStorage.getItem(key);
+                if (value) {
+                    const esInvalido = value.includes('{widgetUrl}') || 
+                                      value.includes('$%7BwidgetUrl%7D') || 
+                                      value.includes('widgetUrl');
+                    html += key + ': ' + (esInvalido ? '❌ INVÁLIDO' : '✅ Válido') + '\n';
+                    html += '  Valor: ' + value + '\n';
+                } else {
+                    html += key + ': (no existe)\n';
+                }
+            });
+            
+            html += '</pre>';
+            resultado.innerHTML = html;
+        }
+        
+        function irALogin() {
+            window.location.href = 'login-tienda.html';
+        }
+        
+        // Auto-limpiar al cargar
+        window.addEventListener('load', () => {
+            limpiarTodo();
+        });
+    </script>
+</body>
+</html>
