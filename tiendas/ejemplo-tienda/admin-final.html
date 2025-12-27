@@ -13446,7 +13446,14 @@ Precio: $${precio.toLocaleString('es-AR')} ARS/mes
                 
                 const codigoDiv = document.getElementById('codigo-html-widget');
                 if (codigoDiv) {
-                    codigoDiv.textContent = codigoHTMLCompleto;
+                    // IMPORTANTE: Usar textContent, NO innerHTML, para evitar ejecución de código
+                    // Y validar que no contenga variables sin procesar
+                    if (codigoHTMLCompleto.includes('{widgetUrl}') || codigoHTMLCompleto.includes('$%7BwidgetUrl%7D')) {
+                        console.error('❌ Código HTML contiene variables sin procesar, no se guardará');
+                        codigoDiv.textContent = 'Error: No se pudo generar el código. Por favor, recarga la página.';
+                    } else {
+                        codigoDiv.textContent = codigoHTMLCompleto;
+                    }
                 }
                 
             } catch (error) {
@@ -13617,7 +13624,14 @@ Precio: $${precio.toLocaleString('es-AR')} ARS/mes
                 
                 const codigoDiv = document.getElementById('codigo-html-widget-comunidad');
                 if (codigoDiv) {
-                    codigoDiv.textContent = codigoHTMLCompleto;
+                    // IMPORTANTE: Usar textContent, NO innerHTML, para evitar ejecución de código
+                    // Y validar que no contenga variables sin procesar
+                    if (codigoHTMLCompleto.includes('{widgetUrl}') || codigoHTMLCompleto.includes('$%7BwidgetUrl%7D')) {
+                        console.error('❌ Código HTML contiene variables sin procesar, no se guardará');
+                        codigoDiv.textContent = 'Error: No se pudo generar el código. Por favor, recarga la página.';
+                    } else {
+                        codigoDiv.textContent = codigoHTMLCompleto;
+                    }
                 }
                 
             } catch (error) {
