@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Verificar admin-final.html</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 50px auto;
+            padding: 20px;
+            background: #f5f5f5;
+        }
+        .test-box {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            margin: 20px 0;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .success { color: green; }
+        .error { color: red; }
+        .info { color: blue; }
+        button {
+            background: #8B5CF6;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            margin: 5px;
+        }
+        button:hover {
+            background: #7C3AED;
+        }
+        pre {
+            background: #f0f0f0;
+            padding: 10px;
+            border-radius: 5px;
+            overflow-x: auto;
+        }
+    </style>
+</head>
+<body>
+    <h1>🔍 Verificación de admin-final.html</h1>
+    
+    <div class="test-box">
+        <h2>1. Verificar Archivo</h2>
+        <p id="fileCheck">Verificando...</p>
+        <button onclick="verificarArchivo()">Verificar Archivo</button>
+    </div>
+    
+    <div class="test-box">
+        <h2>2. Verificar Rutas</h2>
+        <p id="pathCheck">Verificando...</p>
+        <button onclick="verificarRutas()">Verificar Rutas</button>
+    </div>
+    
+    <div class="test-box">
+        <h2>3. Probar Acceso</h2>
+        <p id="accessCheck">Listo para probar...</p>
+        <button onclick="probarAcceso()">Probar Acceso Directo</button>
+        <button onclick="probarAccesoRelativo()">Probar Acceso Relativo</button>
+        <button onclick="probarAccesoAbsoluto()">Probar Acceso Absoluto</button>
+    </div>
+    
+    <div class="test-box">
+        <h2>4. Limpiar localStorage</h2>
+        <p id="cleanCheck">Listo para limpiar...</p>
+        <button onclick="limpiarStorage()">Limpiar Todo</button>
+    </div>
+    
+    <div class="test-box">
+        <h2>5. Información del Sistema</h2>
+        <pre id="systemInfo"></pre>
+        <button onclick="mostrarInfo()">Mostrar Info</button>
+    </div>
+    
+    <script>
+        function verificarArchivo() {
+            const check = document.getElementById('fileCheck');
+            check.innerHTML = '<span class="info">Verificando existencia del archivo...</span>';
+            
+            // Intentar cargar el archivo
+            fetch('tiendas/ejemplo-tienda/admin-final.html', { method: 'HEAD' })
+                .then(response => {
+                    if (response.ok) {
+                        check.innerHTML = '<span class="success">✅ Archivo existe y es accesible</span><br>' +
+                            '<span class="info">Status: ' + response.status + '</span><br>' +
+                            '<span class="info">Content-Type: ' + response.headers.get('content-type') + '</span>';
+                    } else {
+                        check.innerHTML = '<span class="error">❌ Archivo no accesible</span><br>' +
+                            '<span class="error">Status: ' + response.status + '</span>';
+                    }
+                })
+                .catch(error => {
+                    check.innerHTML = '<span class="error">❌ Error al verificar: ' + error.message + '</span><br>' +
+                        '<span class="info">Esto es normal si estás abriendo el archivo directamente (file://)</span>';
+                });
+        }
+        
+        function verificarRutas() {
+            const check = document.getElementById('pathCheck');
+            const rutas = [
+                'tiendas/ejemplo-tienda/admin-final.html',
+                '/tiendas/ejemplo-tienda/admin-final.html',
+                window.location.origin + '/tiendas/ejemplo-tienda/admin-final.html',
+                '../../tiendas/ejemplo-tienda/admin-final.html'
+            ];
+            
+            let html = '<h3>Rutas a verificar:</h3><ul>';
+            rutas.forEach(ruta => {
+                html += '<li><code>' + ruta + '</code></li>';
+            });
+            html += '</ul>';
+            html += '<p class="info">Ruta actual: <code>' + window.location.href + '</code></p>';
+            html += '<p class="info">Origin: <code>' + window.location.origin + '</code></p>';
+            html += '<p class="info">Pathname: <code>' + window.location.pathname + '</code></p>';
+            
+            check.innerHTML = html;
+        }
+        
+        function probarAcceso() {
+            const check = document.getElementById('accessCheck');
+            check.innerHTML = '<span class="info">Intentando abrir directamente...</span>';
+            
+            window.open('tiendas/ejemplo-tienda/admin-final.html', '_blank');
+            
+            setTimeout(() => {
+                check.innerHTML = '<span class="success">✅ Ventana abierta. Verifica si se cargó correctamente.</span>';
+            }, 1000);
+        }
+        
+        function probarAccesoRelativo() {
+            const check = document.getElementById('accessCheck');
+            check.innerHTML = '<span class="info">Redirigiendo con ruta relativa...</span>';
+            
+            window.location.href = 'tiendas/ejemplo-tienda/admin-final.html';
+        }
+        
+        function probarAccesoAbsoluto() {
+            const check = document.getElementById('accessCheck');
+            const urlAbsoluta = window.location.origin + '/tiendas/ejemplo-tienda/admin-final.html';
+            check.innerHTML = '<span class="info">Redirigiendo con URL absoluta: <code>' + urlAbsoluta + '</code></span>';
+            
+            window.location.href = urlAbsoluta;
+        }
+        
+        function limpiarStorage() {
+            const check = document.getElementById('cleanCheck');
+            
+            // Limpiar localStorage
+            const keys = [
+                'cresalia_redirect_after_login',
+                'cresalia_widget_acceso_activo',
+                'cresalia_widget_comunidad_activo',
+                'cresalia_sesion_activa',
+                'cresalia_session_token'
+            ];
+            
+            let limpiados = [];
+            keys.forEach(key => {
+                if (localStorage.getItem(key)) {
+                    localStorage.removeItem(key);
+                    limpiados.push(key);
+                }
+            });
+            
+            // Limpiar sessionStorage
+            sessionStorage.clear();
+            
+            check.innerHTML = '<span class="success">✅ Storage limpiado</span><br>' +
+                '<span class="info">Keys eliminados: ' + (limpiados.length > 0 ? limpiados.join(', ') : 'ninguno') + '</span><br>' +
+                '<span class="info">sessionStorage: limpiado</span>';
+        }
+        
+        function mostrarInfo() {
+            const info = document.getElementById('systemInfo');
+            const datos = {
+                'URL Actual': window.location.href,
+                'Origin': window.location.origin,
+                'Pathname': window.location.pathname,
+                'Protocol': window.location.protocol,
+                'Host': window.location.host,
+                'User Agent': navigator.userAgent,
+                'localStorage Keys': Object.keys(localStorage).join(', '),
+                'sessionStorage Keys': Object.keys(sessionStorage).join(', ')
+            };
+            
+            let html = '';
+            for (let key in datos) {
+                html += key + ': ' + datos[key] + '\n';
+            }
+            
+            info.textContent = html;
+        }
+        
+        // Auto-verificar al cargar
+        window.addEventListener('load', () => {
+            verificarRutas();
+            mostrarInfo();
+        });
+    </script>
+</body>
+</html>
