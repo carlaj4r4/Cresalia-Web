@@ -13399,9 +13399,47 @@ Precio: $${precio.toLocaleString('es-AR')} ARS/mes
                 
                 const nombreTienda = tienda?.nombre_tienda || user.user_metadata?.nombre_tienda || 'Mi Tienda';
                 const logoUrl = tienda?.configuracion?.avatar_url || localStorage.getItem('cresalia_avatar_tienda_url') || '';
-                const panelUrl = window.location.href.split('/').slice(0, -1).join('/') + '/admin-final.html';
-                const baseUrl = window.location.origin;
-                const widgetUrl = `${baseUrl}/tiendas/ejemplo-tienda/widget-acceso-directo.html?url=${encodeURIComponent(panelUrl)}&logo=${encodeURIComponent(logoUrl)}&nombre=${encodeURIComponent(nombreTienda)}`;
+                // Construir panelUrl de forma segura
+                let panelUrl;
+                if (window.location.protocol === 'file:') {
+                    const currentPath = window.location.pathname;
+                    const baseDir = currentPath.substring(0, currentPath.lastIndexOf('/'));
+                    panelUrl = baseDir + '/admin-final.html';
+                } else {
+                    panelUrl = window.location.origin + '/tiendas/ejemplo-tienda/admin-final.html';
+                }
+                
+                // Construir baseUrl de forma segura
+                let baseUrl;
+                if (window.location.protocol === 'file:') {
+                    // Para file://, no podemos usar origin, usar una ruta relativa
+                    baseUrl = '';
+                } else {
+                    baseUrl = window.location.origin || window.location.protocol + '//' + window.location.host;
+                }
+                
+                // VALIDAR que baseUrl no contenga variables sin procesar
+                if (baseUrl && (baseUrl.includes('{') || baseUrl.includes('$%7B') || baseUrl.includes('widgetUrl'))) {
+                    console.error('❌ baseUrl inválido:', baseUrl);
+                    alert('Error: No se pudo generar la URL del widget. Por favor, recarga la página.');
+                    return;
+                }
+                
+                // Construir widgetUrl
+                let widgetUrl;
+                if (baseUrl) {
+                    widgetUrl = `${baseUrl}/tiendas/ejemplo-tienda/widget-acceso-directo.html?url=${encodeURIComponent(panelUrl)}&logo=${encodeURIComponent(logoUrl)}&nombre=${encodeURIComponent(nombreTienda)}`;
+                } else {
+                    // Para file://, usar ruta relativa
+                    widgetUrl = `tiendas/ejemplo-tienda/widget-acceso-directo.html?url=${encodeURIComponent(panelUrl)}&logo=${encodeURIComponent(logoUrl)}&nombre=${encodeURIComponent(nombreTienda)}`;
+                }
+                
+                // VALIDAR que widgetUrl sea válido antes de usar
+                if (widgetUrl.includes('{widgetUrl}') || widgetUrl.includes('$%7BwidgetUrl%7D') || widgetUrl.includes('${widgetUrl}')) {
+                    console.error('❌ widgetUrl contiene variables sin procesar:', widgetUrl);
+                    alert('Error: No se pudo generar la URL del widget correctamente. Por favor, recarga la página.');
+                    return;
+                }
                 
                 // Actualizar preview
                 const previewLogo = document.getElementById('preview-logo-tienda');
@@ -13571,8 +13609,38 @@ Precio: $${precio.toLocaleString('es-AR')} ARS/mes
                 
                 const nombreTienda = tienda?.nombre_tienda || user.user_metadata?.nombre_tienda || 'Mi Tienda';
                 const logoUrl = tienda?.configuracion?.avatar_url || localStorage.getItem('cresalia_avatar_tienda_url') || '';
-                const baseUrl = window.location.origin;
-                const widgetUrl = `${baseUrl}/tiendas/ejemplo-tienda/widget-acceso-comunidad.html?url=${encodeURIComponent(urlComunidad)}&logo=${encodeURIComponent(logoUrl)}&tienda=${encodeURIComponent(nombreTienda)}&comunidad=${encodeURIComponent(nombreComunidadLimpio)}&icono=${encodeURIComponent(iconoComunidad)}`;
+                
+                // Construir baseUrl de forma segura
+                let baseUrl;
+                if (window.location.protocol === 'file:') {
+                    // Para file://, no podemos usar origin, usar una ruta relativa
+                    baseUrl = '';
+                } else {
+                    baseUrl = window.location.origin || window.location.protocol + '//' + window.location.host;
+                }
+                
+                // VALIDAR que baseUrl no contenga variables sin procesar
+                if (baseUrl && (baseUrl.includes('{') || baseUrl.includes('$%7B') || baseUrl.includes('widgetUrl'))) {
+                    console.error('❌ baseUrl inválido:', baseUrl);
+                    alert('Error: No se pudo generar la URL del widget. Por favor, recarga la página.');
+                    return;
+                }
+                
+                // Construir widgetUrl
+                let widgetUrl;
+                if (baseUrl) {
+                    widgetUrl = `${baseUrl}/tiendas/ejemplo-tienda/widget-acceso-comunidad.html?url=${encodeURIComponent(urlComunidad)}&logo=${encodeURIComponent(logoUrl)}&tienda=${encodeURIComponent(nombreTienda)}&comunidad=${encodeURIComponent(nombreComunidadLimpio)}&icono=${encodeURIComponent(iconoComunidad)}`;
+                } else {
+                    // Para file://, usar ruta relativa
+                    widgetUrl = `tiendas/ejemplo-tienda/widget-acceso-comunidad.html?url=${encodeURIComponent(urlComunidad)}&logo=${encodeURIComponent(logoUrl)}&tienda=${encodeURIComponent(nombreTienda)}&comunidad=${encodeURIComponent(nombreComunidadLimpio)}&icono=${encodeURIComponent(iconoComunidad)}`;
+                }
+                
+                // VALIDAR que widgetUrl sea válido antes de usar
+                if (widgetUrl.includes('{widgetUrl}') || widgetUrl.includes('$%7BwidgetUrl%7D') || widgetUrl.includes('${widgetUrl}')) {
+                    console.error('❌ widgetUrl contiene variables sin procesar:', widgetUrl);
+                    alert('Error: No se pudo generar la URL del widget correctamente. Por favor, recarga la página.');
+                    return;
+                }
                 
                 // Actualizar preview
                 const previewLogo = document.getElementById('preview-logo-tienda-comunidad');
