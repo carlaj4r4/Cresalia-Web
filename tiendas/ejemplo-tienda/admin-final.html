@@ -12573,6 +12573,61 @@ Precio: $${precio.toLocaleString('es-AR')} ARS/mes
         // ============================================
         
         document.addEventListener('DOMContentLoaded', function() {
+            // PREVENIR REDIRECCIONES AUTOMÁTICAS DURANTE LA CARGA
+            console.log('🔒 Bloqueando redirecciones automáticas durante la carga...');
+            let redireccionesBloqueadas = false;
+            const originalLocationHref = Object.getOwnPropertyDescriptor(window, 'location').get;
+            const originalLocationReplace = window.location.replace;
+            const originalLocationAssign = window.location.assign;
+            
+            // Bloquear redirecciones por 3 segundos después de cargar
+            const bloquearRedirecciones = () => {
+                redireccionesBloqueadas = true;
+                console.log('🛡️ Redirecciones bloqueadas temporalmente');
+                
+                setTimeout(() => {
+                    redireccionesBloqueadas = false;
+                    console.log('✅ Redirecciones desbloqueadas');
+                }, 3000);
+            };
+            
+            // Interceptar window.location.href
+            Object.defineProperty(window.location, 'href', {
+                get: function() {
+                    return originalLocationHref.call(window.location);
+                },
+                set: function(url) {
+                    if (redireccionesBloqueadas) {
+                        console.warn('⚠️ Redirección bloqueada temporalmente:', url);
+                        console.trace('Stack trace de la redirección bloqueada:');
+                        return;
+                    }
+                    originalLocationHref.call(window.location).href = url;
+                }
+            });
+            
+            // Interceptar window.location.replace
+            window.location.replace = function(url) {
+                if (redireccionesBloqueadas) {
+                    console.warn('⚠️ location.replace bloqueado temporalmente:', url);
+                    console.trace('Stack trace de la redirección bloqueada:');
+                    return;
+                }
+                return originalLocationReplace.call(window.location, url);
+            };
+            
+            // Interceptar window.location.assign
+            window.location.assign = function(url) {
+                if (redireccionesBloqueadas) {
+                    console.warn('⚠️ location.assign bloqueado temporalmente:', url);
+                    console.trace('Stack trace de la redirección bloqueada:');
+                    return;
+                }
+                return originalLocationAssign.call(window.location, url);
+            };
+            
+            bloquearRedirecciones();
+            
             // Limpiar URLs inválidas guardadas que contengan variables sin procesar
             const urlGuardada = localStorage.getItem('cresalia_redirect_after_login');
             if (urlGuardada) {
