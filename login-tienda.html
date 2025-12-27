@@ -443,22 +443,50 @@
             }
             
             // Usar URL guardada si es válida, sino usar URL por defecto
-            // Usar ruta absoluta desde la raíz del proyecto para evitar problemas
+            // Detectar si estamos en file:// o http:// y construir la ruta correctamente
             let urlFinal = urlRedireccion;
             
             if (!urlFinal) {
-                // Construir URL absoluta desde la raíz
-                const baseUrl = window.location.origin;
-                urlFinal = baseUrl + '/tiendas/ejemplo-tienda/admin-final.html';
+                // Detectar el contexto (file:// o http://)
+                const isFileProtocol = window.location.protocol === 'file:';
+                
+                if (isFileProtocol) {
+                    // Para file://, construir la ruta completa desde el directorio actual
+                    const currentPath = window.location.pathname;
+                    // Obtener el directorio base (sin el nombre del archivo)
+                    const baseDir = currentPath.substring(0, currentPath.lastIndexOf('/'));
+                    // Construir la ruta relativa desde login-tienda.html
+                    // login-tienda.html está en la raíz, admin-final.html está en tiendas/ejemplo-tienda/
+                    urlFinal = baseDir + '/tiendas/ejemplo-tienda/admin-final.html';
+                } else {
+                    // Para http:// o https://, usar URL absoluta
+                    const baseUrl = window.location.origin;
+                    urlFinal = baseUrl + '/tiendas/ejemplo-tienda/admin-final.html';
+                }
             } else {
                 // Si la URL guardada es relativa, convertirla a absoluta
-                if (!urlFinal.startsWith('http://') && !urlFinal.startsWith('https://')) {
-                    // Si empieza con /, es relativa a la raíz
-                    if (urlFinal.startsWith('/')) {
-                        urlFinal = window.location.origin + urlFinal;
+                if (!urlFinal.startsWith('http://') && !urlFinal.startsWith('https://') && !urlFinal.startsWith('file://')) {
+                    const isFileProtocol = window.location.protocol === 'file:';
+                    
+                    if (isFileProtocol) {
+                        // Para file://, construir ruta relativa desde el directorio actual
+                        const currentPath = window.location.pathname;
+                        const baseDir = currentPath.substring(0, currentPath.lastIndexOf('/'));
+                        
+                        if (urlFinal.startsWith('/')) {
+                            // Ruta absoluta desde la raíz del proyecto
+                            urlFinal = baseDir + urlFinal;
+                        } else {
+                            // Ruta relativa
+                            urlFinal = baseDir + '/' + urlFinal;
+                        }
                     } else {
-                        // Si es relativa, construir desde la raíz
-                        urlFinal = window.location.origin + '/' + urlFinal;
+                        // Para http:// o https://, usar origin
+                        if (urlFinal.startsWith('/')) {
+                            urlFinal = window.location.origin + urlFinal;
+                        } else {
+                            urlFinal = window.location.origin + '/' + urlFinal;
+                        }
                     }
                 }
             }
@@ -492,8 +520,20 @@
             } catch (error) {
                 console.error('❌ Error: URL inválida:', urlFinal);
                 console.error('Error details:', error);
-                // Fallback a URL por defecto absoluta
-                const fallbackUrl = window.location.origin + '/tiendas/ejemplo-tienda/admin-final.html';
+                // Fallback a URL por defecto
+                let fallbackUrl;
+                const isFileProtocol = window.location.protocol === 'file:';
+                
+                if (isFileProtocol) {
+                    // Para file://, construir ruta relativa
+                    const currentPath = window.location.pathname;
+                    const baseDir = currentPath.substring(0, currentPath.lastIndexOf('/'));
+                    fallbackUrl = baseDir + '/tiendas/ejemplo-tienda/admin-final.html';
+                } else {
+                    // Para http:// o https://, usar URL absoluta
+                    fallbackUrl = window.location.origin + '/tiendas/ejemplo-tienda/admin-final.html';
+                }
+                
                 console.log('🔄 Usando URL de respaldo:', fallbackUrl);
                 
                 // Intentar con replace primero
