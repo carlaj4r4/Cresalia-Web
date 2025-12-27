@@ -12572,25 +12572,109 @@ Precio: $${precio.toLocaleString('es-AR')} ARS/mes
         // INICIALIZACIÓN
         // ============================================
         
-        // PREVENIR REDIRECCIONES AUTOMÁTICAS Y VALIDAR window.location.origin - EJECUTAR INMEDIATAMENTE
+        // PREVENIR REDIRECCIONES AUTOMÁTICAS Y BLOQUEAR CARGAS DE RECURSOS INVÁLIDOS - EJECUTAR INMEDIATAMENTE
         (function() {
-            console.log('🔒 Inicializando protección contra redirecciones automáticas...');
+            // LIMPIAR localStorage COMPLETAMENTE AL CARGAR (por seguridad)
+            try {
+                const keysToRemove = [];
+                for (let i = 0; i < localStorage.length; i++) {
+                    const key = localStorage.key(i);
+                    const value = localStorage.getItem(key);
+                    if (value && typeof value === 'string' && (
+                        value.includes('$%7BwidgetUrl%7D') || 
+                        value.includes('{widgetUrl}') ||
+                        value.includes('widgetUrl'))) {
+                        keysToRemove.push(key);
+                    }
+                }
+                keysToRemove.forEach(key => localStorage.removeItem(key));
+                if (keysToRemove.length > 0) {
+                    // Mostrar mensaje visual sin usar console
+                    const msg = document.createElement('div');
+                    msg.style.cssText = 'position:fixed;top:20px;right:20px;background:#ff4444;color:white;padding:15px;border-radius:8px;z-index:99999;max-width:300px;';
+                    msg.textContent = '⚠️ URLs inválidas detectadas y eliminadas. Recarga la página.';
+                    document.body.appendChild(msg);
+                    setTimeout(() => msg.remove(), 5000);
+                }
+            } catch (e) {
+                // Ignorar errores
+            }
             
             // VALIDAR window.location.origin inmediatamente
             if (window.location.origin && (
                 window.location.origin.includes('{widgetUrl}') || 
                 window.location.origin.includes('$%7BwidgetUrl%7D') ||
                 window.location.origin.includes('widgetUrl'))) {
-                console.error('❌ window.location.origin contiene variables sin procesar:', window.location.origin);
-                console.error('⚠️ Esto puede causar errores. Limpiando localStorage...');
                 
                 // Limpiar localStorage completamente
-                localStorage.clear();
-                sessionStorage.clear();
+                try {
+                    localStorage.clear();
+                    sessionStorage.clear();
+                } catch (e) {}
                 
-                alert('Error detectado: URL inválida. Se ha limpiado el almacenamiento. Por favor, recarga la página.');
+                // Mostrar alerta visual
+                const alertDiv = document.createElement('div');
+                alertDiv.style.cssText = 'position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.8);z-index:999999;display:flex;align-items:center;justify-content:center;';
+                alertDiv.innerHTML = '<div style="background:white;padding:30px;border-radius:10px;max-width:400px;text-align:center;"><h2 style="color:#ff4444;">⚠️ Error Detectado</h2><p>URL inválida detectada. Se ha limpiado el almacenamiento.</p><p><strong>Por favor, recarga la página.</strong></p><button onclick="location.reload()" style="background:#8B5CF6;color:white;border:none;padding:10px 20px;border-radius:5px;cursor:pointer;margin-top:15px;">Recargar Página</button></div>';
+                document.body.appendChild(alertDiv);
                 return;
             }
+            
+            // INTERCEPTAR createElement para prevenir creación de elementos con URLs inválidas
+            const originalCreateElement = document.createElement.bind(document);
+            document.createElement = function(tagName, options) {
+                const element = originalCreateElement(tagName, options);
+                
+                // Interceptar src y href después de que se establezcan
+                if (tagName === 'script' || tagName === 'link' || tagName === 'iframe' || tagName === 'img') {
+                    const originalSetAttribute = element.setAttribute.bind(element);
+                    element.setAttribute = function(name, value) {
+                        if ((name === 'src' || name === 'href') && value && typeof value === 'string') {
+                            if (value.includes('$%7BwidgetUrl%7D') || value.includes('{widgetUrl}') || value.includes('widgetUrl')) {
+                                // Bloquear la carga
+                                const msg = document.createElement('div');
+                                msg.style.cssText = 'position:fixed;top:20px;right:20px;background:#ff4444;color:white;padding:15px;border-radius:8px;z-index:99999;max-width:300px;';
+                                msg.textContent = '⚠️ Intento de cargar recurso inválido bloqueado: ' + value.substring(0, 50);
+                                document.body.appendChild(msg);
+                                setTimeout(() => msg.remove(), 5000);
+                                return; // No establecer el atributo
+                            }
+                        }
+                        return originalSetAttribute(name, value);
+                    };
+                }
+                
+                return element;
+            };
+            
+            // INTERCEPTAR innerHTML para prevenir inserción de HTML con URLs inválidas
+            const elements = ['script', 'link', 'iframe', 'img', 'a'];
+            elements.forEach(tag => {
+                const proto = document.createElement(tag).constructor.prototype;
+                if (proto && proto.__defineSetter__) {
+                    const originalInnerHTML = Object.getOwnPropertyDescriptor(proto, 'innerHTML');
+                    if (originalInnerHTML && originalInnerHTML.set) {
+                        Object.defineProperty(proto, 'innerHTML', {
+                            set: function(value) {
+                                if (value && typeof value === 'string' && (
+                                    value.includes('$%7BwidgetUrl%7D') || 
+                                    value.includes('{widgetUrl}'))) {
+                                    // Bloquear la inserción
+                                    const msg = document.createElement('div');
+                                    msg.style.cssText = 'position:fixed;top:20px;right:20px;background:#ff4444;color:white;padding:15px;border-radius:8px;z-index:99999;max-width:300px;';
+                                    msg.textContent = '⚠️ Intento de insertar HTML inválido bloqueado';
+                                    document.body.appendChild(msg);
+                                    setTimeout(() => msg.remove(), 5000);
+                                    return; // No insertar el HTML
+                                }
+                                return originalInnerHTML.set.call(this, value);
+                            },
+                            get: originalInnerHTML.get,
+                            configurable: true
+                        });
+                    }
+                }
+            });
             
             let redireccionesBloqueadas = true;
             const redireccionesIntentadas = [];
