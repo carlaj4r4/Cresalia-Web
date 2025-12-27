@@ -12572,62 +12572,71 @@ Precio: $${precio.toLocaleString('es-AR')} ARS/mes
         // INICIALIZACIÓN
         // ============================================
         
-        document.addEventListener('DOMContentLoaded', function() {
-            // PREVENIR REDIRECCIONES AUTOMÁTICAS DURANTE LA CARGA
-            console.log('🔒 Bloqueando redirecciones automáticas durante la carga...');
-            let redireccionesBloqueadas = false;
-            const originalLocationHref = Object.getOwnPropertyDescriptor(window, 'location').get;
-            const originalLocationReplace = window.location.replace;
-            const originalLocationAssign = window.location.assign;
+        // PREVENIR REDIRECCIONES AUTOMÁTICAS - EJECUTAR INMEDIATAMENTE
+        (function() {
+            console.log('🔒 Inicializando protección contra redirecciones automáticas...');
+            let redireccionesBloqueadas = true;
+            const redireccionesIntentadas = [];
             
-            // Bloquear redirecciones por 3 segundos después de cargar
-            const bloquearRedirecciones = () => {
-                redireccionesBloqueadas = true;
-                console.log('🛡️ Redirecciones bloqueadas temporalmente');
-                
-                setTimeout(() => {
-                    redireccionesBloqueadas = false;
-                    console.log('✅ Redirecciones desbloqueadas');
-                }, 3000);
-            };
+            // Guardar funciones originales
+            const originalReplace = window.location.replace.bind(window.location);
+            const originalAssign = window.location.assign.bind(window.location);
             
-            // Interceptar window.location.href
-            Object.defineProperty(window.location, 'href', {
-                get: function() {
-                    return originalLocationHref.call(window.location);
-                },
-                set: function(url) {
-                    if (redireccionesBloqueadas) {
-                        console.warn('⚠️ Redirección bloqueada temporalmente:', url);
-                        console.trace('Stack trace de la redirección bloqueada:');
-                        return;
-                    }
-                    originalLocationHref.call(window.location).href = url;
-                }
-            });
-            
-            // Interceptar window.location.replace
+            // Interceptar replace
             window.location.replace = function(url) {
                 if (redireccionesBloqueadas) {
-                    console.warn('⚠️ location.replace bloqueado temporalmente:', url);
-                    console.trace('Stack trace de la redirección bloqueada:');
+                    const stack = new Error().stack;
+                    console.warn('⚠️ Redirección bloqueada (replace):', url);
+                    console.warn('Stack trace:', stack);
+                    redireccionesIntentadas.push({ tipo: 'replace', url: url, stack: stack });
                     return;
                 }
-                return originalLocationReplace.call(window.location, url);
+                return originalReplace(url);
             };
             
-            // Interceptar window.location.assign
+            // Interceptar assign
             window.location.assign = function(url) {
                 if (redireccionesBloqueadas) {
-                    console.warn('⚠️ location.assign bloqueado temporalmente:', url);
-                    console.trace('Stack trace de la redirección bloqueada:');
+                    const stack = new Error().stack;
+                    console.warn('⚠️ Redirección bloqueada (assign):', url);
+                    console.warn('Stack trace:', stack);
+                    redireccionesIntentadas.push({ tipo: 'assign', url: url, stack: stack });
                     return;
                 }
-                return originalLocationAssign.call(window.location, url);
+                return originalAssign(url);
             };
             
-            bloquearRedirecciones();
+            // Interceptar href (más complejo)
+            let hrefDescriptor = Object.getOwnPropertyDescriptor(window.location, 'href');
+            if (hrefDescriptor && hrefDescriptor.set) {
+                const originalHrefSet = hrefDescriptor.set;
+                Object.defineProperty(window.location, 'href', {
+                    get: hrefDescriptor.get,
+                    set: function(url) {
+                        if (redireccionesBloqueadas) {
+                            const stack = new Error().stack;
+                            console.warn('⚠️ Redirección bloqueada (href):', url);
+                            console.warn('Stack trace:', stack);
+                            redireccionesIntentadas.push({ tipo: 'href', url: url, stack: stack });
+                            return;
+                        }
+                        return originalHrefSet.call(window.location, url);
+                    },
+                    configurable: true
+                });
+            }
             
+            // Desbloquear después de 5 segundos
+            setTimeout(() => {
+                redireccionesBloqueadas = false;
+                console.log('✅ Redirecciones desbloqueadas');
+                if (redireccionesIntentadas.length > 0) {
+                    console.log('📋 Redirecciones que fueron bloqueadas:', redireccionesIntentadas);
+                }
+            }, 5000);
+        })();
+        
+        document.addEventListener('DOMContentLoaded', function() {
             // Limpiar URLs inválidas guardadas que contengan variables sin procesar
             const urlGuardada = localStorage.getItem('cresalia_redirect_after_login');
             if (urlGuardada) {
