@@ -423,7 +423,7 @@
                     urlRedireccion.includes('$%7BwidgetUrl%7D') || 
                     urlRedireccion.includes('widgetUrl') ||
                     urlRedireccion.includes('${') ||
-                    urlRedireccion.includes('%7B') && urlRedireccion.includes('%7D')) {
+                    (urlRedireccion.includes('%7B') && urlRedireccion.includes('%7D'))) {
                     console.warn('⚠️ URL guardada contiene variables sin procesar, usando URL por defecto');
                     console.warn('URL inválida:', urlRedireccion);
                     // Limpiar la URL inválida
@@ -532,29 +532,30 @@
                 } catch (error) {
                     console.error('❌ Error: URL inválida:', urlFinal);
                     console.error('Error details:', error);
-                // Fallback a URL por defecto
-                let fallbackUrl;
-                const isFileProtocol = window.location.protocol === 'file:';
-                
-                if (isFileProtocol) {
-                    // Para file://, construir ruta relativa
-                    const currentPath = window.location.pathname;
-                    const baseDir = currentPath.substring(0, currentPath.lastIndexOf('/'));
-                    fallbackUrl = baseDir + '/tiendas/ejemplo-tienda/admin-final.html';
-                } else {
-                    // Para http:// o https://, usar URL absoluta
-                    fallbackUrl = window.location.origin + '/tiendas/ejemplo-tienda/admin-final.html';
-                }
-                
-                console.log('🔄 Usando URL de respaldo:', fallbackUrl);
-                
-                // Intentar con replace primero
-                try {
-                    window.location.replace(fallbackUrl);
-                } catch (e) {
-                    // Si falla, usar href
-                    console.warn('⚠️ Replace falló, usando href...');
-                    window.location.href = fallbackUrl;
+                    // Fallback a URL por defecto
+                    let fallbackUrl;
+                    const isFileProtocolFallback = window.location.protocol === 'file:';
+                    
+                    if (isFileProtocolFallback) {
+                        // Para file://, construir ruta relativa
+                        const currentPath = window.location.pathname;
+                        const baseDir = currentPath.substring(0, currentPath.lastIndexOf('/'));
+                        fallbackUrl = baseDir + '/tiendas/ejemplo-tienda/admin-final.html';
+                    } else {
+                        // Para http:// o https://, usar URL absoluta
+                        fallbackUrl = window.location.origin + '/tiendas/ejemplo-tienda/admin-final.html';
+                    }
+                    
+                    console.log('🔄 Usando URL de respaldo:', fallbackUrl);
+                    
+                    // Intentar con replace primero
+                    try {
+                        window.location.replace(fallbackUrl);
+                    } catch (e) {
+                        // Si falla, usar href
+                        console.warn('⚠️ Replace falló, usando href...');
+                        window.location.href = fallbackUrl;
+                    }
                 }
             }
         }
