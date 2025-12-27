@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Solución Definitiva - Widget URL</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: Arial, sans-serif;
+            background: linear-gradient(135deg, #8B5CF6 0%, #A78BFA 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+        .container {
+            background: white;
+            padding: 40px;
+            border-radius: 20px;
+            max-width: 600px;
+            width: 100%;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+        }
+        h1 {
+            color: #8B5CF6;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+        .step {
+            background: #f5f5f5;
+            padding: 20px;
+            border-radius: 10px;
+            margin: 15px 0;
+            border-left: 4px solid #8B5CF6;
+        }
+        .step h3 {
+            color: #8B5CF6;
+            margin-bottom: 10px;
+        }
+        button {
+            background: #8B5CF6;
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 16px;
+            width: 100%;
+            margin: 10px 0;
+            transition: all 0.3s;
+        }
+        button:hover {
+            background: #7C3AED;
+            transform: translateY(-2px);
+        }
+        .success {
+            background: #10B981;
+            color: white;
+            padding: 15px;
+            border-radius: 8px;
+            margin: 15px 0;
+            display: none;
+        }
+        .error {
+            background: #EF4444;
+            color: white;
+            padding: 15px;
+            border-radius: 8px;
+            margin: 15px 0;
+            display: none;
+        }
+        pre {
+            background: #1F2937;
+            color: #10B981;
+            padding: 15px;
+            border-radius: 8px;
+            overflow-x: auto;
+            margin: 10px 0;
+            font-size: 12px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🔧 Solución Definitiva - Widget URL</h1>
+        
+        <div class="step">
+            <h3>Paso 1: Limpieza Completa</h3>
+            <p>Elimina todas las URLs inválidas del almacenamiento.</p>
+            <button onclick="limpiarTodo()">🧹 Limpiar Todo</button>
+            <div id="resultado1"></div>
+        </div>
+        
+        <div class="step">
+            <h3>Paso 2: Deshabilitar Widgets</h3>
+            <p>Deshabilita completamente los widgets para evitar problemas.</p>
+            <button onclick="deshabilitarWidgets()">🚫 Deshabilitar Widgets</button>
+            <div id="resultado2"></div>
+        </div>
+        
+        <div class="step">
+            <h3>Paso 3: Verificar Estado</h3>
+            <p>Verifica que todo esté limpio.</p>
+            <button onclick="verificarEstado()">✅ Verificar Estado</button>
+            <div id="resultado3"></div>
+        </div>
+        
+        <div class="step">
+            <h3>Paso 4: Ir a Login</h3>
+            <p>Una vez limpio, intenta hacer login de nuevo.</p>
+            <button onclick="irALogin()">🔐 Ir a Login</button>
+        </div>
+        
+        <div id="codigoManual" style="display: none; margin-top: 20px;">
+            <h3>📋 Código para Ejecutar Manualmente (si lo anterior no funciona):</h3>
+            <pre id="codigoTexto"></pre>
+            <button onclick="copiarCodigo()">📋 Copiar Código</button>
+        </div>
+    </div>
+    
+    <script>
+        function mostrarResultado(elementId, mensaje, tipo) {
+            const div = document.getElementById(elementId);
+            div.className = tipo;
+            div.textContent = mensaje;
+            div.style.display = 'block';
+            setTimeout(() => {
+                div.style.display = 'none';
+            }, 5000);
+        }
+        
+        function limpiarTodo() {
+            let eliminados = 0;
+            let encontrados = [];
+            
+            // Limpiar localStorage
+            try {
+                const keysToRemove = [];
+                for (let i = 0; i < localStorage.length; i++) {
+                    const key = localStorage.key(i);
+                    const value = localStorage.getItem(key);
+                    encontrados.push({ key: key, value: value });
+                    
+                    if (value && typeof value === 'string' && (
+                        value.includes('$%7BwidgetUrl%7D') || 
+                        value.includes('{widgetUrl}') ||
+                        value.includes('widgetUrl'))) {
+                        keysToRemove.push(key);
+                    }
+                }
+                
+                keysToRemove.forEach(key => {
+                    localStorage.removeItem(key);
+                    eliminados++;
+                });
+                
+                // También limpiar keys específicas del widget
+                ['cresalia_widget_acceso_activo', 'cresalia_widget_comunidad_activo', 'cresalia_redirect_after_login'].forEach(key => {
+                    if (localStorage.getItem(key)) {
+                        localStorage.removeItem(key);
+                        eliminados++;
+                    }
+                });
+            } catch (e) {
+                mostrarResultado('resultado1', 'Error al limpiar localStorage: ' + e.message, 'error');
+                return;
+            }
+            
+            // Limpiar sessionStorage
+            try {
+                sessionStorage.clear();
+            } catch (e) {}
+            
+            mostrarResultado('resultado1', `✅ Limpieza completada. ${eliminados} items eliminados.`, 'success');
+        }
+        
+        function deshabilitarWidgets() {
+            try {
+                localStorage.setItem('cresalia_widget_acceso_activo', 'false');
+                localStorage.setItem('cresalia_widget_comunidad_activo', 'false');
+                localStorage.removeItem('cresalia_redirect_after_login');
+                mostrarResultado('resultado2', '✅ Widgets deshabilitados correctamente.', 'success');
+            } catch (e) {
+                mostrarResultado('resultado2', 'Error: ' + e.message, 'error');
+            }
+        }
+        
+        function verificarEstado() {
+            const problemas = [];
+            const ok = [];
+            
+            // Verificar localStorage
+            for (let i = 0; i < localStorage.length; i++) {
+                const key = localStorage.key(i);
+                const value = localStorage.getItem(key);
+                if (value && typeof value === 'string' && (
+                    value.includes('$%7BwidgetUrl%7D') || 
+                    value.includes('{widgetUrl}'))) {
+                    problemas.push(key);
+                } else if (key.includes('widget') || key.includes('redirect')) {
+                    ok.push(key + ': ' + (value ? 'OK' : 'vacío'));
+                }
+            }
+            
+            let mensaje = '';
+            if (problemas.length > 0) {
+                mensaje = '❌ Problemas encontrados: ' + problemas.join(', ');
+            } else {
+                mensaje = '✅ No se encontraron problemas. Estado: ' + (ok.length > 0 ? ok.join('; ') : 'Limpio');
+            }
+            
+            mostrarResultado('resultado3', mensaje, problemas.length > 0 ? 'error' : 'success');
+        }
+        
+        function irALogin() {
+            window.location.href = 'login-tienda.html';
+        }
+        
+        function copiarCodigo() {
+            const codigo = `// Ejecuta esto en la consola (F12) si la protección anti-devtools lo permite
+localStorage.clear();
+sessionStorage.clear();
+for (let i = 0; i < localStorage.length; i++) {
+    const key = localStorage.key(i);
+    const value = localStorage.getItem(key);
+    if (value && typeof value === 'string' && (value.includes('$%7BwidgetUrl%7D') || value.includes('{widgetUrl}'))) {
+        localStorage.removeItem(key);
+    }
+}
+localStorage.setItem('cresalia_widget_acceso_activo', 'false');
+localStorage.setItem('cresalia_widget_comunidad_activo', 'false');
+alert('Limpieza completada. Recarga la página.');`;
+            
+            const textarea = document.createElement('textarea');
+            textarea.value = codigo;
+            document.body.appendChild(textarea);
+            textarea.select();
+            document.execCommand('copy');
+            document.body.removeChild(textarea);
+            
+            alert('✅ Código copiado al portapapeles');
+        }
+        
+        // Auto-ejecutar limpieza al cargar
+        window.addEventListener('load', () => {
+            limpiarTodo();
+            deshabilitarWidgets();
+            
+            // Mostrar código manual
+            document.getElementById('codigoManual').style.display = 'block';
+            document.getElementById('codigoTexto').textContent = `// Ejecuta esto en la consola si es necesario
+localStorage.clear();
+sessionStorage.clear();
+localStorage.setItem('cresalia_widget_acceso_activo', 'false');
+localStorage.setItem('cresalia_widget_comunidad_activo', 'false');
+location.reload();`;
+        });
+    </script>
+</body>
+</html>
