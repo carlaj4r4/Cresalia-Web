@@ -13642,8 +13642,21 @@ Precio: $${precio.toLocaleString('es-AR')} ARS/mes
             
             if (!checkbox) return;
             
-            // Cargar estado guardado
-            const widgetActivo = localStorage.getItem('cresalia_widget_comunidad_activo') === 'true';
+            // VERIFICAR si hay URLs inválidas guardadas - SI HAY, DESHABILITAR WIDGET COMPLETAMENTE
+            const widgetActivoGuardado = localStorage.getItem('cresalia_widget_comunidad_activo');
+            if (widgetActivoGuardado && typeof widgetActivoGuardado === 'string' && (
+                widgetActivoGuardado.includes('$%7BwidgetUrl%7D') || 
+                widgetActivoGuardado.includes('{widgetUrl}'))) {
+                // Limpiar y deshabilitar
+                localStorage.removeItem('cresalia_widget_comunidad_activo');
+                checkbox.checked = false;
+                if (contenidoActivo) contenidoActivo.style.display = 'none';
+                if (contenidoInactivo) contenidoInactivo.style.display = 'block';
+                return; // NO inicializar el widget
+            }
+            
+            // Cargar estado guardado (solo si es válido)
+            const widgetActivo = widgetActivoGuardado === 'true';
             checkbox.checked = widgetActivo;
             
             if (widgetActivo) {
