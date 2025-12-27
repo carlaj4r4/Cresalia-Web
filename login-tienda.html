@@ -502,24 +502,36 @@
             console.log('📍 URL destino:', urlFinal);
             
             // Verificar que la URL final sea válida antes de redirigir
-            try {
-                const urlTest = new URL(urlFinal);
-                console.log('✅ URL válida, redirigiendo...');
-                console.log('📍 URL completa:', urlFinal);
+            const isFileProtocol = window.location.protocol === 'file:';
+            
+            // Para file://, no validar con URL() porque puede fallar
+            if (isFileProtocol) {
+                console.log('✅ Contexto file:// detectado');
+                console.log('📍 URL destino:', urlFinal);
+                console.log('🚀 Redirigiendo...');
                 
-                // Intentar redirigir
-                window.location.replace(urlFinal);
-                
-                // Si después de 2 segundos no se redirigió, intentar con href
-                setTimeout(() => {
-                    if (window.location.href !== urlFinal) {
-                        console.warn('⚠️ Redirección con replace falló, intentando con href...');
-                        window.location.href = urlFinal;
-                    }
-                }, 2000);
-            } catch (error) {
-                console.error('❌ Error: URL inválida:', urlFinal);
-                console.error('Error details:', error);
+                // Para file://, usar href directamente
+                window.location.href = urlFinal;
+            } else {
+                // Para http:// o https://, validar con URL()
+                try {
+                    const urlTest = new URL(urlFinal);
+                    console.log('✅ URL válida, redirigiendo...');
+                    console.log('📍 URL completa:', urlFinal);
+                    
+                    // Intentar redirigir
+                    window.location.replace(urlFinal);
+                    
+                    // Si después de 2 segundos no se redirigió, intentar con href
+                    setTimeout(() => {
+                        if (window.location.href !== urlFinal) {
+                            console.warn('⚠️ Redirección con replace falló, intentando con href...');
+                            window.location.href = urlFinal;
+                        }
+                    }, 2000);
+                } catch (error) {
+                    console.error('❌ Error: URL inválida:', urlFinal);
+                    console.error('Error details:', error);
                 // Fallback a URL por defecto
                 let fallbackUrl;
                 const isFileProtocol = window.location.protocol === 'file:';
