@@ -309,6 +309,49 @@
     <script src="auth/security-enhanced.js"></script>
     
     <script>
+        // LIMPIAR URLs INVÁLIDAS INMEDIATAMENTE AL CARGAR
+        (function() {
+            console.log('🧹 Limpiando URLs inválidas...');
+            
+            // Limpiar cualquier URL que contenga variables sin procesar
+            const keysToCheck = [
+                'cresalia_redirect_after_login',
+                'cresalia_widget_acceso_activo',
+                'cresalia_widget_comunidad_activo'
+            ];
+            
+            keysToCheck.forEach(key => {
+                const value = localStorage.getItem(key);
+                if (value) {
+                    // Verificar si contiene variables sin procesar
+                    if (value.includes('{widgetUrl}') || 
+                        value.includes('$%7BwidgetUrl%7D') || 
+                        value.includes('widgetUrl') ||
+                        value.includes('${') ||
+                        (value.includes('%7B') && value.includes('%7D'))) {
+                        console.warn('⚠️ Eliminando ' + key + ' con valor inválido:', value);
+                        localStorage.removeItem(key);
+                    }
+                }
+            });
+            
+            // También verificar en sessionStorage
+            try {
+                const sessionRedirect = sessionStorage.getItem('redirectAfterLogin');
+                if (sessionRedirect && (
+                    sessionRedirect.includes('{widgetUrl}') || 
+                    sessionRedirect.includes('$%7BwidgetUrl%7D') || 
+                    sessionRedirect.includes('widgetUrl'))) {
+                    console.warn('⚠️ Eliminando redirectAfterLogin de sessionStorage con valor inválido');
+                    sessionStorage.removeItem('redirectAfterLogin');
+                }
+            } catch (e) {
+                // Ignorar errores
+            }
+            
+            console.log('✅ Limpieza completada');
+        })();
+        
         // Inicializar al cargar
         document.addEventListener('DOMContentLoaded', async function() {
             initSupabase();
@@ -416,7 +459,19 @@
             // Verificar si hay una URL guardada para redirección
             let urlRedireccion = localStorage.getItem('cresalia_redirect_after_login');
             
-            // Validar que la URL no contenga variables sin procesar
+            // VALIDACIÓN ESTRICTA: Si contiene cualquier variable sin procesar, eliminar inmediatamente
+            if (urlRedireccion && (
+                urlRedireccion.includes('{widgetUrl}') || 
+                urlRedireccion.includes('$%7BwidgetUrl%7D') || 
+                urlRedireccion.includes('widgetUrl') ||
+                urlRedireccion.includes('${') ||
+                (urlRedireccion.includes('%7B') && urlRedireccion.includes('%7D')))) {
+                console.error('❌ URL inválida detectada y eliminada:', urlRedireccion);
+                localStorage.removeItem('cresalia_redirect_after_login');
+                urlRedireccion = null;
+            }
+            
+            // Validar que la URL no contenga variables sin procesar (doble verificación)
             if (urlRedireccion) {
                 // Verificar si la URL contiene variables sin procesar
                 if (urlRedireccion.includes('{widgetUrl}') || 
