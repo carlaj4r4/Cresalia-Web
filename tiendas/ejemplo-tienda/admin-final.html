@@ -12572,9 +12572,26 @@ Precio: $${precio.toLocaleString('es-AR')} ARS/mes
         // INICIALIZACIÓN
         // ============================================
         
-        // PREVENIR REDIRECCIONES AUTOMÁTICAS - EJECUTAR INMEDIATAMENTE
+        // PREVENIR REDIRECCIONES AUTOMÁTICAS Y VALIDAR window.location.origin - EJECUTAR INMEDIATAMENTE
         (function() {
             console.log('🔒 Inicializando protección contra redirecciones automáticas...');
+            
+            // VALIDAR window.location.origin inmediatamente
+            if (window.location.origin && (
+                window.location.origin.includes('{widgetUrl}') || 
+                window.location.origin.includes('$%7BwidgetUrl%7D') ||
+                window.location.origin.includes('widgetUrl'))) {
+                console.error('❌ window.location.origin contiene variables sin procesar:', window.location.origin);
+                console.error('⚠️ Esto puede causar errores. Limpiando localStorage...');
+                
+                // Limpiar localStorage completamente
+                localStorage.clear();
+                sessionStorage.clear();
+                
+                alert('Error detectado: URL inválida. Se ha limpiado el almacenamiento. Por favor, recarga la página.');
+                return;
+            }
+            
             let redireccionesBloqueadas = true;
             const redireccionesIntentadas = [];
             
