@@ -530,26 +530,6 @@
                     console.log('⚠️ Usando URL fallback:', fallbackUrl);
                     window.location.href = fallbackUrl;
                 }
-                        // Para file://, construir ruta relativa
-                        const currentPath = window.location.pathname;
-                        const baseDir = currentPath.substring(0, currentPath.lastIndexOf('/'));
-                        fallbackUrl = baseDir + '/tiendas/ejemplo-tienda/admin-final.html';
-                    } else {
-                        // Para http:// o https://, usar URL absoluta
-                        fallbackUrl = window.location.origin + '/tiendas/ejemplo-tienda/admin-final.html';
-                    }
-                    
-                    console.log('🔄 Usando URL de respaldo:', fallbackUrl);
-                    
-                    // Intentar con replace primero
-                    try {
-                        window.location.replace(fallbackUrl);
-                    } catch (e) {
-                        // Si falla, usar href
-                        console.warn('⚠️ Replace falló, usando href...');
-                        window.location.href = fallbackUrl;
-                    }
-                }
             }
         }
         
