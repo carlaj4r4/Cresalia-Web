@@ -131,6 +131,52 @@
     </div>
     
     <script>
+        // ===== LIMPIEZA DE URLs INVÁLIDAS =====
+        (function() {
+            try {
+                // Limpiar localStorage y sessionStorage de URLs inválidas
+                const keysToRemove = [];
+                for (let i = 0; i < localStorage.length; i++) {
+                    const key = localStorage.key(i);
+                    if (key) {
+                        const value = localStorage.getItem(key);
+                        if (value && typeof value === 'string') {
+                            if (value.includes('{widgetUrl}') || 
+                                value.includes('$%7BwidgetUrl%7D') || 
+                                value.includes('${widgetUrl}') ||
+                                value.includes('widgetUrl') ||
+                                value.includes('{panelUrl}') ||
+                                value.includes('${panelUrl}')) {
+                                keysToRemove.push(key);
+                            }
+                        }
+                    }
+                }
+                keysToRemove.forEach(key => localStorage.removeItem(key));
+                
+                const sessionKeysToRemove = [];
+                for (let i = 0; i < sessionStorage.length; i++) {
+                    const key = sessionStorage.key(i);
+                    if (key) {
+                        const value = sessionStorage.getItem(key);
+                        if (value && typeof value === 'string') {
+                            if (value.includes('{widgetUrl}') || 
+                                value.includes('$%7BwidgetUrl%7D') || 
+                                value.includes('${widgetUrl}') ||
+                                value.includes('widgetUrl') ||
+                                value.includes('{panelUrl}') ||
+                                value.includes('${panelUrl}')) {
+                                sessionKeysToRemove.push(key);
+                            }
+                        }
+                    }
+                }
+                sessionKeysToRemove.forEach(key => sessionStorage.removeItem(key));
+            } catch (e) {
+                console.warn('⚠️ Error limpiando storage:', e);
+            }
+        })();
+        
         // Obtener parámetros de la URL
         const params = new URLSearchParams(window.location.search);
         let comunidadUrl = params.get('url') || '';
@@ -139,20 +185,38 @@
         const nombreComunidad = params.get('comunidad') || 'Comunidad';
         const iconoComunidad = params.get('icono') || '👥';
         
+        // Detectar si estamos en producción (Vercel)
+        const isProduction = window.location.hostname.includes('vercel.app') || 
+                             window.location.hostname.includes('cresalia') ||
+                             window.location.protocol === 'https:';
+        
         // Validar que comunidadUrl no contenga variables sin procesar
         if (!comunidadUrl || comunidadUrl.includes('{') || comunidadUrl.includes('$%7B') || comunidadUrl.includes('widgetUrl')) {
-            // Si no hay URL válida o contiene variables sin procesar, usar URL relativa por defecto
-            comunidadUrl = '../../comunidades/mujeres-sobrevivientes/index.html';
-            console.warn('⚠️ URL de la comunidad no válida o contiene variables sin procesar. Usando URL por defecto.');
-        }
-        
-        // Asegurar que la URL sea absoluta si es necesario
-        if (comunidadUrl && !comunidadUrl.startsWith('http://') && !comunidadUrl.startsWith('https://') && !comunidadUrl.startsWith('/') && !comunidadUrl.startsWith('../')) {
-            // Si es una ruta relativa sin ../, agregar ../../
-            if (comunidadUrl.startsWith('comunidades/')) {
-                comunidadUrl = '../../' + comunidadUrl;
+            // Si no hay URL válida o contiene variables sin procesar, usar URL por defecto
+            if (isProduction) {
+                comunidadUrl = 'https://cresalia-web.vercel.app/panel-comunidad-vendedores.html';
             } else {
-                comunidadUrl = '../../' + comunidadUrl;
+                comunidadUrl = '../../panel-comunidad-vendedores.html';
+            }
+            console.warn('⚠️ URL de la comunidad no válida o contiene variables sin procesar. Usando URL por defecto.');
+        } else {
+            // Si la URL es relativa y estamos en producción, convertirla a absoluta
+            if (isProduction && !comunidadUrl.startsWith('http://') && !comunidadUrl.startsWith('https://')) {
+                // Si es una ruta relativa, convertirla a absoluta
+                if (comunidadUrl.startsWith('../')) {
+                    // Remover ../ y construir URL absoluta
+                    const cleanPath = comunidadUrl.replace(/^\.\.\//g, '');
+                    comunidadUrl = 'https://cresalia-web.vercel.app/' + cleanPath;
+                } else if (comunidadUrl.startsWith('/')) {
+                    comunidadUrl = 'https://cresalia-web.vercel.app' + comunidadUrl;
+                } else {
+                    comunidadUrl = 'https://cresalia-web.vercel.app/' + comunidadUrl;
+                }
+            } else if (!isProduction && !comunidadUrl.startsWith('http://') && !comunidadUrl.startsWith('https://') && !comunidadUrl.startsWith('/') && !comunidadUrl.startsWith('../')) {
+                // En desarrollo, asegurar que tenga ../ si es necesario
+                if (comunidadUrl.startsWith('comunidades/') || comunidadUrl.startsWith('panel-')) {
+                    comunidadUrl = '../../' + comunidadUrl;
+                }
             }
         }
         
@@ -162,9 +226,17 @@
         document.getElementById('comunidad-badge').innerHTML = iconoComunidad + ' ' + nombreComunidad;
         
         function irAComunidad() {
+            // Validar URL antes de redirigir
             if (!comunidadUrl || comunidadUrl.includes('{') || comunidadUrl.includes('$%7B') || comunidadUrl.includes('widgetUrl')) {
                 console.error('❌ URL de la comunidad no válida:', comunidadUrl);
-                alert('Error: La URL de la comunidad no es válida. Por favor, contacta al administrador.');
+                
+                // Usar fallback seguro
+                const fallbackUrl = isProduction 
+                    ? 'https://cresalia-web.vercel.app/panel-comunidad-vendedores.html'
+                    : '../../panel-comunidad-vendedores.html';
+                
+                alert('Error: La URL de la comunidad no es válida. Redirigiendo a la página por defecto.');
+                window.location.href = fallbackUrl;
                 return;
             }
             
@@ -172,7 +244,14 @@
                 window.location.href = comunidadUrl;
             } catch (error) {
                 console.error('❌ Error al redirigir:', error);
-                alert('Error al redirigir a la comunidad. Por favor, intenta acceder directamente.');
+                
+                // Fallback seguro
+                const fallbackUrl = isProduction 
+                    ? 'https://cresalia-web.vercel.app/panel-comunidad-vendedores.html'
+                    : '../../panel-comunidad-vendedores.html';
+                
+                alert('Error al redirigir a la comunidad. Redirigiendo a la página por defecto.');
+                window.location.href = fallbackUrl;
             }
         }
         

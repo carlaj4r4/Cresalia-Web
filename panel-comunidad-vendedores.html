@@ -482,7 +482,7 @@
 </head>
 <body>
     <div class="container-main">
-        <a href="tiendas/ejemplo-tienda/admin.html" class="back-btn">
+        <a href="#" id="back-to-admin-btn" class="back-btn" onclick="volverAlPanel(event)">
             <i class="fas fa-arrow-left"></i> Volver al Panel
         </a>
         
@@ -765,6 +765,57 @@
     <script src="js/sistema-alertas-emergencia-global.js"></script>
     
     <script>
+        // ===== LIMPIEZA DE URLs INVÁLIDAS =====
+        (function() {
+            try {
+                // Limpiar localStorage
+                const keysToRemove = [];
+                for (let i = 0; i < localStorage.length; i++) {
+                    const key = localStorage.key(i);
+                    if (key) {
+                        const value = localStorage.getItem(key);
+                        if (value && typeof value === 'string') {
+                            if (value.includes('{widgetUrl}') || 
+                                value.includes('$%7BwidgetUrl%7D') || 
+                                value.includes('${widgetUrl}') ||
+                                value.includes('widgetUrl') ||
+                                value.includes('{panelUrl}') ||
+                                value.includes('${panelUrl}')) {
+                                console.warn('⚠️ Eliminando de localStorage:', key, value);
+                                keysToRemove.push(key);
+                            }
+                        }
+                    }
+                }
+                keysToRemove.forEach(key => localStorage.removeItem(key));
+                
+                // Limpiar sessionStorage
+                const sessionKeysToRemove = [];
+                for (let i = 0; i < sessionStorage.length; i++) {
+                    const key = sessionStorage.key(i);
+                    if (key) {
+                        const value = sessionStorage.getItem(key);
+                        if (value && typeof value === 'string') {
+                            if (value.includes('{widgetUrl}') || 
+                                value.includes('$%7BwidgetUrl%7D') || 
+                                value.includes('${widgetUrl}') ||
+                                value.includes('widgetUrl') ||
+                                value.includes('{panelUrl}') ||
+                                value.includes('${panelUrl}')) {
+                                console.warn('⚠️ Eliminando de sessionStorage:', key, value);
+                                sessionKeysToRemove.push(key);
+                            }
+                        }
+                    }
+                }
+                sessionKeysToRemove.forEach(key => sessionStorage.removeItem(key));
+                
+                console.log('✅ Limpieza de URLs inválidas completada');
+            } catch (e) {
+                console.warn('⚠️ Error limpiando storage:', e);
+            }
+        })();
+        
         // ===== FUNCIONALIDADES DEL PANEL =====
         
         // Función para convertir archivos a base64
@@ -1046,6 +1097,50 @@
                 console.log('✅ Comunidad de vendedores inicializada');
             }
         }
+        
+        // Función para volver al panel admin
+        function volverAlPanel(event) {
+            event.preventDefault();
+            
+            // Detectar si estamos en producción (Vercel)
+            const isProduction = window.location.hostname.includes('vercel.app') || 
+                                 window.location.hostname.includes('cresalia') ||
+                                 window.location.protocol === 'https:';
+            
+            let adminUrl;
+            if (isProduction) {
+                // Usar URL absoluta en producción
+                adminUrl = 'https://cresalia-web.vercel.app/tiendas/ejemplo-tienda/admin-final.html';
+            } else {
+                // Usar URL relativa en desarrollo
+                adminUrl = 'tiendas/ejemplo-tienda/admin-final.html';
+            }
+            
+            // Validar URL antes de redirigir
+            if (adminUrl && !adminUrl.includes('{') && !adminUrl.includes('$%7B') && !adminUrl.includes('widgetUrl')) {
+                window.location.href = adminUrl;
+            } else {
+                console.error('❌ URL del panel no válida:', adminUrl);
+                // Fallback seguro
+                window.location.href = 'tiendas/ejemplo-tienda/admin-final.html';
+            }
+        }
+        
+        // Configurar el href del botón al cargar
+        document.addEventListener('DOMContentLoaded', function() {
+            const backBtn = document.getElementById('back-to-admin-btn');
+            if (backBtn) {
+                const isProduction = window.location.hostname.includes('vercel.app') || 
+                                     window.location.hostname.includes('cresalia') ||
+                                     window.location.protocol === 'https:';
+                
+                if (isProduction) {
+                    backBtn.href = 'https://cresalia-web.vercel.app/tiendas/ejemplo-tienda/admin-final.html';
+                } else {
+                    backBtn.href = 'tiendas/ejemplo-tienda/admin-final.html';
+                }
+            }
+        });
         
         // Ejecutar cuando esté listo
         if (document.readyState === 'loading') {
