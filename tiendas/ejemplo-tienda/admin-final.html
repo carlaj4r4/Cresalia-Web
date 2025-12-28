@@ -1623,7 +1623,7 @@
                                 <button id="tab-panel" onclick="mostrarTabWidget('panel')" style="flex: 1; padding: 12px; border: none; background: transparent; color: #7C3AED; font-weight: 600; border-bottom: 3px solid #7C3AED; cursor: pointer;">
                                     <i class="fas fa-tachometer-alt"></i> Panel Admin
                                 </button>
-                                <button id="tab-comunidad" onclick="mostrarTabWidget('comunidad')" style="flex: 1; padding: 12px; border: none; background: transparent; color: #6B7280; font-weight: 600; cursor: pointer;">
+                                <button id="tab-comunidad" onclick="alert('⚠️ Widgets deshabilitados temporalmente');" style="flex: 1; padding: 12px; border: none; background: transparent; color: #6B7280; font-weight: 600; cursor: pointer;">
                                     <i class="fas fa-users"></i> Comunidades
                                 </button>
                             </div>
@@ -1656,7 +1656,7 @@
                                         <label style="display: block; margin-bottom: 10px; font-weight: 600; color: #374151;">
                                             <i class="fas fa-users"></i> Selecciona una Comunidad
                                         </label>
-                                        <select id="select-comunidad" style="width: 100%; padding: 12px; border: 2px solid #E5E7EB; border-radius: 8px; font-size: 14px; background: white; cursor: pointer;" onchange="generarWidgetComunidad()">
+                                        <select id="select-comunidad" style="width: 100%; padding: 12px; border: 2px solid #E5E7EB; border-radius: 8px; font-size: 14px; background: white; cursor: pointer;" onchange="alert('⚠️ Widgets deshabilitados temporalmente');">
                                             <option value="">-- Selecciona una comunidad --</option>
                                             <option value="mujeres-sobrevivientes|comunidades/mujeres-sobrevivientes/index.html|💜 Mujeres Sobrevivientes">💜 Mujeres Sobrevivientes</option>
                                             <option value="hombres-sobrevivientes|comunidades/hombres-sobrevivientes/index.html|💙 Hombres Sobrevivientes">💙 Hombres Sobrevivientes</option>
@@ -13468,35 +13468,17 @@ Precio: $${precio.toLocaleString('es-AR')} ARS/mes
             const widgetActivo = widgetActivoGuardado === 'true';
             checkbox.checked = widgetActivo;
             
-            if (widgetActivo) {
-                contenidoWidget.style.display = 'block';
-                widgetDesactivado.style.display = 'none';
-                generarWidgetAccesoDirecto();
-            } else {
-                contenidoWidget.style.display = 'none';
-                widgetDesactivado.style.display = 'block';
-            }
+            // Widget deshabilitado - siempre ocultar y desmarcar
+            checkbox.checked = false;
+            contenidoWidget.style.display = 'none';
+            if (widgetDesactivado) widgetDesactivado.style.display = 'block';
+            localStorage.setItem('cresalia_widget_acceso_activo', 'false');
             
-            // Listener para cambios
+            // Listener para cambios - mostrar mensaje de deshabilitado
             checkbox.addEventListener('change', async function() {
-                const activado = this.checked;
-                localStorage.setItem('cresalia_widget_acceso_activo', activado ? 'true' : 'false');
-                
-                if (activado) {
-                    // Consultar al usuario si quiere activarlo
-                    const confirmar = confirm('¿Deseas activar el Widget de Acceso Directo?\n\nEsto generará una URL personalizada con tu logo para acceder rápidamente a tu panel.');
-                    if (confirmar) {
-                        contenidoWidget.style.display = 'block';
-                        widgetDesactivado.style.display = 'none';
-                        await generarWidgetAccesoDirecto();
-                    } else {
-                        this.checked = false;
-                        localStorage.setItem('cresalia_widget_acceso_activo', 'false');
-                    }
-                } else {
-                    contenidoWidget.style.display = 'none';
-                    widgetDesactivado.style.display = 'block';
-                }
+                this.checked = false; // Siempre mantener desmarcado
+                alert('⚠️ Los widgets están temporalmente deshabilitados para evitar problemas. Por favor, accede directamente al panel.');
+                localStorage.setItem('cresalia_widget_acceso_activo', 'false');
             });
         }
         
