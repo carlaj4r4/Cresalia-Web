@@ -12738,6 +12738,11 @@ Precio: $${precio.toLocaleString('es-AR')} ARS/mes
         })();
         
         document.addEventListener('DOMContentLoaded', function() {
+            // LIMPIAR COMPLETAMENTE TODOS LOS WIDGETS AL CARGAR
+            localStorage.removeItem('cresalia_widget_acceso_activo');
+            localStorage.removeItem('cresalia_widget_comunidad_activo');
+            localStorage.removeItem('cresalia_redirect_after_login');
+            
             // Limpiar URLs inválidas guardadas que contengan variables sin procesar
             const urlGuardada = localStorage.getItem('cresalia_redirect_after_login');
             if (urlGuardada) {
@@ -12752,6 +12757,7 @@ Precio: $${precio.toLocaleString('es-AR')} ARS/mes
             }
             
             console.log('🚀 Cresalia - Panel Final Inicializado');
+            console.log('⚠️ Widgets deshabilitados temporalmente para evitar problemas');
             console.log('✅ Todas las funcionalidades cargadas');
             console.log('💜 Sistema de bienestar emocional activo');
             console.log('🤖 Bot IA disponible para plan PRO');
