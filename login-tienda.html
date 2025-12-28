@@ -433,6 +433,13 @@
         });
         
         function redirigirAAdmin(tienda) {
+            // LIMPIAR COMPLETAMENTE cualquier URL guardada - NO USAR NUNCA URLs guardadas
+            // Esto previene cualquier problema con URLs inválidas
+            localStorage.removeItem('cresalia_redirect_after_login');
+            sessionStorage.removeItem('redirectAfterLogin');
+            localStorage.removeItem('cresalia_widget_acceso_activo');
+            localStorage.removeItem('cresalia_widget_comunidad_activo');
+            
             // Guardar info de la tienda antes de redirigir
             if (tienda) {
                 localStorage.setItem('tienda_actual', JSON.stringify(tienda));
@@ -451,115 +458,46 @@
             }
             
             // Prevenir redirecciones múltiples
-            if (window.location.pathname.includes('admin.html')) {
+            if (window.location.pathname.includes('admin-final.html') || window.location.pathname.includes('admin.html')) {
                 console.log('✅ Ya estamos en el panel admin');
                 return;
             }
             
-            // Verificar si hay una URL guardada para redirección
-            let urlRedireccion = localStorage.getItem('cresalia_redirect_after_login');
-            
-            // VALIDACIÓN ESTRICTA: Si contiene cualquier variable sin procesar, eliminar inmediatamente
-            if (urlRedireccion && (
-                urlRedireccion.includes('{widgetUrl}') || 
-                urlRedireccion.includes('$%7BwidgetUrl%7D') || 
-                urlRedireccion.includes('widgetUrl') ||
-                urlRedireccion.includes('${') ||
-                (urlRedireccion.includes('%7B') && urlRedireccion.includes('%7D')))) {
-                console.error('❌ URL inválida detectada y eliminada:', urlRedireccion);
-                localStorage.removeItem('cresalia_redirect_after_login');
-                urlRedireccion = null;
-            }
-            
-            // Validar que la URL no contenga variables sin procesar (doble verificación)
-            if (urlRedireccion) {
-                // Verificar si la URL contiene variables sin procesar
-                if (urlRedireccion.includes('{widgetUrl}') || 
-                    urlRedireccion.includes('$%7BwidgetUrl%7D') || 
-                    urlRedireccion.includes('widgetUrl') ||
-                    urlRedireccion.includes('${') ||
-                    (urlRedireccion.includes('%7B') && urlRedireccion.includes('%7D'))) {
-                    console.warn('⚠️ URL guardada contiene variables sin procesar, usando URL por defecto');
-                    console.warn('URL inválida:', urlRedireccion);
-                    // Limpiar la URL inválida
-                    localStorage.removeItem('cresalia_redirect_after_login');
-                    urlRedireccion = null;
-                } else {
-                    // Verificar que la URL sea válida (empiece con http://, https://, o sea relativa válida)
-                    try {
-                        new URL(urlRedireccion, window.location.origin);
-                        console.log('✅ Usando URL guardada:', urlRedireccion);
-                    } catch (e) {
-                        console.warn('⚠️ URL guardada no es válida, usando URL por defecto');
-                        localStorage.removeItem('cresalia_redirect_after_login');
-                        urlRedireccion = null;
-                    }
-                }
-            }
-            
-            // Usar URL guardada si es válida, sino usar URL por defecto
+            // SIEMPRE usar URL por defecto - NO usar URLs guardadas
             // Detectar si estamos en file:// o http:// y construir la ruta correctamente
-            let urlFinal = urlRedireccion;
+            const isFileProtocol = window.location.protocol === 'file:';
             
-            if (!urlFinal) {
-                // Detectar el contexto (file:// o http://)
-                const isFileProtocol = window.location.protocol === 'file:';
-                
-                if (isFileProtocol) {
-                    // Para file://, construir la ruta completa desde el directorio actual
-                    const currentPath = window.location.pathname;
-                    // Obtener el directorio base (sin el nombre del archivo)
-                    const baseDir = currentPath.substring(0, currentPath.lastIndexOf('/'));
-                    // Construir la ruta relativa desde login-tienda.html
-                    // login-tienda.html está en la raíz, admin-final.html está en tiendas/ejemplo-tienda/
-                    urlFinal = baseDir + '/tiendas/ejemplo-tienda/admin-final.html';
-                } else {
-                    // Para http:// o https://, usar URL absoluta
-                    const baseUrl = window.location.origin;
-                    urlFinal = baseUrl + '/tiendas/ejemplo-tienda/admin-final.html';
-                }
+            if (isFileProtocol) {
+                // Para file://, construir la ruta completa desde el directorio actual
+                const currentPath = window.location.pathname;
+                // Obtener el directorio base (sin el nombre del archivo)
+                const baseDir = currentPath.substring(0, currentPath.lastIndexOf('/'));
+                // Construir la ruta relativa desde login-tienda.html
+                // login-tienda.html está en la raíz, admin-final.html está en tiendas/ejemplo-tienda/
+                urlFinal = baseDir + '/tiendas/ejemplo-tienda/admin-final.html';
             } else {
-                // Si la URL guardada es relativa, convertirla a absoluta
-                if (!urlFinal.startsWith('http://') && !urlFinal.startsWith('https://') && !urlFinal.startsWith('file://')) {
-                    const isFileProtocol = window.location.protocol === 'file:';
-                    
-                    if (isFileProtocol) {
-                        // Para file://, construir ruta relativa desde el directorio actual
-                        const currentPath = window.location.pathname;
-                        const baseDir = currentPath.substring(0, currentPath.lastIndexOf('/'));
-                        
-                        if (urlFinal.startsWith('/')) {
-                            // Ruta absoluta desde la raíz del proyecto
-                            urlFinal = baseDir + urlFinal;
-                        } else {
-                            // Ruta relativa
-                            urlFinal = baseDir + '/' + urlFinal;
-                        }
-                    } else {
-                        // Para http:// o https://, usar origin
-                        if (urlFinal.startsWith('/')) {
-                            urlFinal = window.location.origin + urlFinal;
-                        } else {
-                            urlFinal = window.location.origin + '/' + urlFinal;
-                        }
-                    }
-                }
-            }
-            
-            // Limpiar la URL guardada después de usarla
-            if (urlRedireccion) {
-                localStorage.removeItem('cresalia_redirect_after_login');
+                // Para http:// o https://, usar URL absoluta
+                const baseUrl = window.location.origin;
+                urlFinal = baseUrl + '/tiendas/ejemplo-tienda/admin-final.html';
             }
             
             // Todos los clientes usan el mismo panel admin
             // pero verán sus propios datos personalizados
-            console.log('🚀 Redirigiendo al panel admin...');
+            console.log('🚀 Redirigiendo al panel admin (URL por defecto)...');
             console.log('📍 URL destino:', urlFinal);
             
-            // Verificar que la URL final sea válida antes de redirigir
-            const isFileProtocol = window.location.protocol === 'file:';
+            // Validar que la URL final NO contenga variables sin procesar (triple verificación)
+            if (urlFinal.includes('{widgetUrl}') || 
+                urlFinal.includes('$%7BwidgetUrl%7D') || 
+                urlFinal.includes('widgetUrl') ||
+                urlFinal.includes('${') ||
+                (urlFinal.includes('%7B') && urlFinal.includes('%7D'))) {
+                console.error('❌ ERROR CRÍTICO: URL final contiene variables sin procesar:', urlFinal);
+                alert('❌ Error: URL inválida detectada. Por favor, contacta soporte.');
+                return;
+            }
             
-            // Para file://, no validar con URL() porque puede fallar
+            // Para file://, usar href directamente
             if (isFileProtocol) {
                 console.log('✅ Contexto file:// detectado');
                 console.log('📍 URL destino:', urlFinal);
@@ -568,7 +506,7 @@
                 // Para file://, usar href directamente
                 window.location.href = urlFinal;
             } else {
-                // Para http:// o https://, validar con URL()
+                // Para http:// o https://, validar con URL() y redirigir
                 try {
                     const urlTest = new URL(urlFinal);
                     console.log('✅ URL válida, redirigiendo...');
@@ -587,11 +525,11 @@
                 } catch (error) {
                     console.error('❌ Error: URL inválida:', urlFinal);
                     console.error('Error details:', error);
-                    // Fallback a URL por defecto
-                    let fallbackUrl;
-                    const isFileProtocolFallback = window.location.protocol === 'file:';
-                    
-                    if (isFileProtocolFallback) {
+                    // Fallback a URL por defecto absoluta
+                    const fallbackUrl = window.location.origin + '/tiendas/ejemplo-tienda/admin-final.html';
+                    console.log('⚠️ Usando URL fallback:', fallbackUrl);
+                    window.location.href = fallbackUrl;
+                }
                         // Para file://, construir ruta relativa
                         const currentPath = window.location.pathname;
                         const baseDir = currentPath.substring(0, currentPath.lastIndexOf('/'));
