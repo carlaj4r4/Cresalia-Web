@@ -13440,7 +13440,11 @@ Precio: $${precio.toLocaleString('es-AR')} ARS/mes
         window.cargarDatosTienda = cargarDatosTienda;
         
         // ===== WIDGET DE ACCESO DIRECTO =====
+        // DESHABILITADO TEMPORALMENTE - Causaba problemas con URLs inválidas
         function inicializarWidgetAccesoDirecto() {
+            // Widget deshabilitado - no hacer nada
+            console.log('⚠️ Widget de Acceso Directo deshabilitado temporalmente');
+            return;
             const checkbox = document.getElementById('activar-widget-acceso');
             const contenidoWidget = document.getElementById('contenido-widget');
             const widgetDesactivado = document.getElementById('widget-desactivado');
@@ -13497,6 +13501,12 @@ Precio: $${precio.toLocaleString('es-AR')} ARS/mes
         }
         
         async function generarWidgetAccesoDirecto() {
+            // Widget deshabilitado - no hacer nada
+            console.log('⚠️ Generación de Widget de Acceso Directo deshabilitada temporalmente');
+            alert('⚠️ Los widgets están temporalmente deshabilitados para evitar problemas. Por favor, accede directamente al panel.');
+            return;
+            
+            /* COMENTADO TEMPORALMENTE
             try {
                 const supabase = initSupabase();
                 if (!supabase) return;
@@ -13636,7 +13646,11 @@ Precio: $${precio.toLocaleString('es-AR')} ARS/mes
         }
         
         // ===== WIDGET DE ACCESO DIRECTO A COMUNIDADES =====
+        // DESHABILITADO TEMPORALMENTE - Causaba problemas con URLs inválidas
         function inicializarWidgetComunidad() {
+            // Widget deshabilitado - no hacer nada
+            console.log('⚠️ Widget de Comunidad deshabilitado temporalmente');
+            return;
             const checkbox = document.getElementById('activar-widget-comunidad');
             const contenidoActivo = document.getElementById('contenido-widget-comunidad-activo');
             
@@ -13685,6 +13699,11 @@ Precio: $${precio.toLocaleString('es-AR')} ARS/mes
         }
         
         function mostrarTabWidget(tab) {
+            // Widget deshabilitado - mostrar mensaje
+            alert('⚠️ Los widgets están temporalmente deshabilitados para evitar problemas. Por favor, accede directamente al panel.');
+            return;
+            
+            /* COMENTADO TEMPORALMENTE
             const tabPanel = document.getElementById('tab-panel');
             const tabComunidad = document.getElementById('tab-comunidad');
             const contenidoWidget = document.getElementById('contenido-widget');
@@ -13706,9 +13725,16 @@ Precio: $${precio.toLocaleString('es-AR')} ARS/mes
                 contenidoComunidad.style.display = 'block';
                 inicializarWidgetComunidad();
             }
+            */
         }
         
         async function generarWidgetComunidad() {
+            // Widget deshabilitado - no hacer nada
+            console.log('⚠️ Generación de Widget de Comunidad deshabilitada temporalmente');
+            alert('⚠️ Los widgets están temporalmente deshabilitados para evitar problemas. Por favor, accede directamente al panel.');
+            return;
+            
+            /* COMENTADO TEMPORALMENTE
             const select = document.getElementById('select-comunidad');
             if (!select || !select.value) {
                 document.getElementById('preview-widget-comunidad-container').style.display = 'none';
@@ -13832,6 +13858,7 @@ Precio: $${precio.toLocaleString('es-AR')} ARS/mes
             } catch (error) {
                 console.error('Error generando widget comunidad:', error);
             }
+            */
         }
         
         function copiarUrlWidgetComunidad() {
@@ -13857,6 +13884,8 @@ Precio: $${precio.toLocaleString('es-AR')} ARS/mes
         }
         
         // Interceptar mostrarSeccion para inicializar widget cuando se muestre
+        // DESHABILITADO TEMPORALMENTE
+        /*
         const originalMostrarSeccion = window.mostrarSeccion;
         window.mostrarSeccion = function(seccionId) {
             originalMostrarSeccion(seccionId);
@@ -13867,6 +13896,7 @@ Precio: $${precio.toLocaleString('es-AR')} ARS/mes
                 }, 100);
             }
         };
+        */
     </script>
 </body>
 </html>
