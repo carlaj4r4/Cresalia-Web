@@ -2319,6 +2319,47 @@
     
     <!-- Sistema de Detección de Sesión para Nav -->
     <script>
+        // ============================================
+        // LIMPIEZA GLOBAL DE URLs PROBLEMÁTICAS
+        // ============================================
+        (function limpiarUrlsProblematicas() {
+            console.log('🧹 Limpiando URLs problemáticas al cargar index...');
+            
+            // Limpiar localStorage
+            try {
+                const keysToRemove = [];
+                for (let i = 0; i < localStorage.length; i++) {
+                    const key = localStorage.key(i);
+                    if (key) {
+                        const value = localStorage.getItem(key);
+                        if (value && typeof value === 'string') {
+                            // Verificar si contiene URLs con variables sin procesar
+                            if ((value.includes('/tiendas/') || value.includes('admin-final') || value.includes('widget')) &&
+                                (value.includes('{widgetUrl}') || 
+                                 value.includes('$%7BwidgetUrl%7D') || 
+                                 value.includes('${widgetUrl}') ||
+                                 value.includes('widgetUrl') ||
+                                 value.includes('${') ||
+                                 (value.includes('%7B') && value.includes('%7D')))) {
+                                keysToRemove.push(key);
+                            }
+                        }
+                    }
+                }
+                
+                keysToRemove.forEach(key => {
+                    console.warn('⚠️ Eliminando URL problemática:', key);
+                    localStorage.removeItem(key);
+                });
+                
+                if (keysToRemove.length > 0) {
+                    console.log('✅ Limpieza completada:', keysToRemove.length, 'items eliminados');
+                }
+            } catch (e) {
+                console.warn('⚠️ Error limpiando localStorage:', e);
+            }
+        })();
+        
         // Verificar sesión al cargar la página
         async function verificarSesionNav() {
             try {
@@ -2376,19 +2417,83 @@
                     
                     // Actualizar link de "Mi Cuenta" según tipo de usuario
                     const btnMiCuenta = document.querySelector('#btnMiCuenta a');
-                    if (esVendedor) {
-                        btnMiCuenta.href = 'tiendas/ejemplo-tienda/admin-final.html';
-                        // Para vendedores, mostrar "Configuración" en lugar de "Mis Compras"
-                        document.getElementById('btnMisCompras').style.display = 'none';
-                        if (document.getElementById('btnConfiguracion')) {
-                            document.getElementById('btnConfiguracion').style.display = 'block';
+                    if (btnMiCuenta) {
+                        // LIMPIAR cualquier URL problemática antes de establecer
+                        let urlFinal;
+                        const protocolo = window.location.protocol;
+                        const hostname = window.location.hostname;
+                        const origin = window.location.origin;
+                        
+                        // En producción (Vercel) o con servidor, usar URL absoluta
+                        // En file://, usar ruta relativa
+                        if (hostname.includes('vercel.app') || hostname.includes('localhost') || protocolo === 'https:') {
+                            // URL absoluta para producción
+                            if (esVendedor) {
+                                urlFinal = origin + '/tiendas/ejemplo-tienda/admin-final.html';
+                            } else {
+                                urlFinal = origin + '/demo-buyer-interface.html';
+                            }
+                        } else {
+                            // Ruta relativa para file://
+                            if (esVendedor) {
+                                urlFinal = 'tiendas/ejemplo-tienda/admin-final.html';
+                            } else {
+                                urlFinal = 'demo-buyer-interface.html';
+                            }
                         }
-                    } else {
-                        btnMiCuenta.href = 'demo-buyer-interface.html';
-                        // Para compradores, mostrar "Mis Compras"
-                        document.getElementById('btnMisCompras').style.display = 'block';
-                        if (document.getElementById('btnConfiguracion')) {
-                            document.getElementById('btnConfiguracion').style.display = 'none';
+                        
+                        // VALIDAR que la URL no contenga variables sin procesar
+                        if (urlFinal.includes('{widgetUrl}') || 
+                            urlFinal.includes('$%7BwidgetUrl%7D') || 
+                            urlFinal.includes('${widgetUrl}') ||
+                            urlFinal.includes('widgetUrl') ||
+                            urlFinal.includes('${') ||
+                            (urlFinal.includes('%7B') && urlFinal.includes('%7D'))) {
+                            console.error('❌ ERROR: URL contiene variables sin procesar:', urlFinal);
+                            // Usar URL por defecto segura (absoluta)
+                            if (esVendedor) {
+                                urlFinal = origin + '/tiendas/ejemplo-tienda/admin-final.html';
+                            } else {
+                                urlFinal = origin + '/demo-buyer-interface.html';
+                            }
+                        }
+                        
+                        // Establecer href y agregar event listener para validar antes de navegar
+                        btnMiCuenta.href = urlFinal;
+                        btnMiCuenta.setAttribute('data-url-segura', urlFinal);
+                        
+                        // Interceptar clic para validar URL
+                        btnMiCuenta.addEventListener('click', function(e) {
+                            const hrefActual = this.href || this.getAttribute('href');
+                            const urlSegura = this.getAttribute('data-url-segura');
+                            
+                            // Si el href actual contiene variables sin procesar, usar URL segura
+                            if (hrefActual && (
+                                hrefActual.includes('{widgetUrl}') || 
+                                hrefActual.includes('$%7BwidgetUrl%7D') || 
+                                hrefActual.includes('${widgetUrl}') ||
+                                hrefActual.includes('widgetUrl'))) {
+                                console.warn('⚠️ URL inválida detectada, usando URL segura');
+                                e.preventDefault();
+                                window.location.href = urlSegura || urlFinal;
+                                return false;
+                            }
+                        });
+                        
+                        console.log('✅ URL de Mi Cuenta establecida:', urlFinal);
+                        
+                        if (esVendedor) {
+                            // Para vendedores, mostrar "Configuración" en lugar de "Mis Compras"
+                            document.getElementById('btnMisCompras').style.display = 'none';
+                            if (document.getElementById('btnConfiguracion')) {
+                                document.getElementById('btnConfiguracion').style.display = 'block';
+                            }
+                        } else {
+                            // Para compradores, mostrar "Mis Compras"
+                            document.getElementById('btnMisCompras').style.display = 'block';
+                            if (document.getElementById('btnConfiguracion')) {
+                                document.getElementById('btnConfiguracion').style.display = 'none';
+                            }
                         }
                     }
                     

@@ -126,16 +126,43 @@
         const nombre = params.get('nombre') || 'Mi Tienda';
         
         // Validar que panelUrl no contenga variables sin procesar
-        if (!panelUrl || panelUrl.includes('{') || panelUrl.includes('$%7B') || panelUrl.includes('widgetUrl')) {
-            // Si no hay URL válida o contiene variables sin procesar, usar URL relativa por defecto
-            panelUrl = '../../tiendas/ejemplo-tienda/admin-final.html';
-            console.warn('⚠️ URL del panel no válida o contiene variables sin procesar. Usando URL por defecto.');
+        if (!panelUrl || 
+            panelUrl.includes('{widgetUrl}') || 
+            panelUrl.includes('$%7BwidgetUrl%7D') || 
+            panelUrl.includes('${widgetUrl}') ||
+            panelUrl.includes('widgetUrl') ||
+            panelUrl.includes('${') ||
+            (panelUrl.includes('%7B') && panelUrl.includes('%7D'))) {
+            // Si no hay URL válida o contiene variables sin procesar, usar URL por defecto
+            const protocolo = window.location.protocol;
+            const hostname = window.location.hostname;
+            
+            if (hostname.includes('vercel.app') || hostname.includes('localhost') || protocolo === 'https:') {
+                // En producción o localhost con servidor, usar URL absoluta
+                panelUrl = window.location.origin + '/tiendas/ejemplo-tienda/admin-final.html';
+            } else {
+                // En file://, usar ruta relativa
+                panelUrl = '../../tiendas/ejemplo-tienda/admin-final.html';
+            }
+            console.warn('⚠️ URL del panel no válida o contiene variables sin procesar. Usando URL por defecto:', panelUrl);
         }
         
-        // Asegurar que la URL sea absoluta si es necesario
+        // Validar nuevamente después de construir la URL por defecto
+        if (panelUrl.includes('{widgetUrl}') || 
+            panelUrl.includes('$%7BwidgetUrl%7D') || 
+            panelUrl.includes('${widgetUrl}') ||
+            panelUrl.includes('widgetUrl')) {
+            console.error('❌ ERROR CRÍTICO: URL por defecto también contiene variables sin procesar');
+            // Último recurso: URL absoluta hardcodeada
+            panelUrl = 'https://cresalia-web.vercel.app/tiendas/ejemplo-tienda/admin-final.html';
+        }
+        
+        // Asegurar que la URL sea absoluta si estamos en producción
         if (panelUrl && !panelUrl.startsWith('http://') && !panelUrl.startsWith('https://') && !panelUrl.startsWith('/') && !panelUrl.startsWith('../')) {
-            // Si es una ruta relativa sin ../, agregar ../../
-            if (panelUrl.startsWith('tiendas/')) {
+            // Si es una ruta relativa sin ../, construir URL absoluta
+            if (window.location.hostname.includes('vercel.app') || window.location.protocol === 'https:') {
+                panelUrl = window.location.origin + '/' + panelUrl;
+            } else if (panelUrl.startsWith('tiendas/')) {
                 panelUrl = '../../' + panelUrl;
             } else {
                 panelUrl = '../../' + panelUrl;

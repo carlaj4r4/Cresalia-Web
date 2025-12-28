@@ -3,6 +3,14 @@
 
 class ProteccionDevToolsAvanzada {
     constructor() {
+        // DESACTIVAR PROTECCIÓN EN LOCALHOST PARA DESARROLLO
+        this.esLocalhost = this.detectarLocalhost();
+        
+        if (this.esLocalhost) {
+            console.log('🔓 Protección DevTools DESACTIVADA (localhost detectado)');
+            return; // No inicializar protección en localhost
+        }
+        
         this.devToolsAbierto = false;
         this.attempts = 0;
         this.maxAttempts = 3;
@@ -10,7 +18,26 @@ class ProteccionDevToolsAvanzada {
         this.init();
     }
 
+    // Detectar si estamos en localhost
+    detectarLocalhost() {
+        if (typeof window === 'undefined') return false;
+        
+        const hostname = window.location.hostname;
+        const protocol = window.location.protocol;
+        
+        // Detectar localhost, 127.0.0.1, o cualquier IP local
+        return hostname === 'localhost' || 
+               hostname === '127.0.0.1' || 
+               hostname.startsWith('192.168.') ||
+               hostname.startsWith('10.') ||
+               hostname.startsWith('172.') ||
+               protocol === 'file:'; // También desactivar en file://
+    }
+
     init() {
+        // Si estamos en localhost, no hacer nada
+        if (this.esLocalhost) return;
+        
         // Múltiples métodos de detección
         this.detectarDevToolsMultiples();
         this.bloquearAtajosCompletos();
@@ -69,6 +96,9 @@ class ProteccionDevToolsAvanzada {
 
     // Bloqueo completo de atajos
     bloquearAtajosCompletos() {
+        // No bloquear en localhost
+        if (this.esLocalhost) return;
+        
         document.addEventListener('keydown', (e) => {
             // F12
             if (e.key === 'F12') {

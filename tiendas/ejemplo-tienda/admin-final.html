@@ -2611,13 +2611,36 @@
         // ============================================
         // SEGURIDAD CRESALIA: BLOQUEO Y PROTECCIÓN
         // (Aplica a TODOS los planes por igual)
+        // DESACTIVADO EN LOCALHOST PARA DESARROLLO
         // ============================================
 
-        // 1) Bloqueo de clic derecho y atajos comunes de devtools
-        document.addEventListener('contextmenu', (e) => {
-            e.preventDefault();
-        });
+        // Detectar si estamos en localhost
+        const esLocalhost = (() => {
+            if (typeof window === 'undefined') return false;
+            const hostname = window.location.hostname;
+            const protocol = window.location.protocol;
+            return hostname === 'localhost' || 
+                   hostname === '127.0.0.1' || 
+                   hostname.startsWith('192.168.') ||
+                   hostname.startsWith('10.') ||
+                   protocol === 'file:';
+        })();
+
+        if (esLocalhost) {
+            console.log('🔓 Protección DevTools DESACTIVADA (localhost detectado)');
+        }
+
+        // 1) Bloqueo de clic derecho y atajos comunes de devtools (SOLO si NO es localhost)
+        if (!esLocalhost) {
+            document.addEventListener('contextmenu', (e) => {
+                e.preventDefault();
+            });
+        }
+        
         document.addEventListener('keydown', (e) => {
+            // Permitir DevTools en localhost
+            if (esLocalhost) return;
+            
             const key = e.key?.toLowerCase();
             const ctrl = e.ctrlKey || e.metaKey;
             // F12, Ctrl+Shift+I/J/C/U
@@ -2632,9 +2655,12 @@
             }
         }, true);
 
-        // 2) Detección de DevTools (heurísticas de tamaño/performance)
+        // 2) Detección de DevTools (heurísticas de tamaño/performance) - SOLO si NO es localhost
         let devtoolsActivo = false;
         function detectarDevtools() {
+            // No detectar en localhost
+            if (esLocalhost) return;
+            
             const threshold = 160; // ancho alto diferencial típico al abrir panel
             const abiertoPorTamano = (
                 (window.outerWidth - window.innerWidth) > threshold ||
@@ -2654,7 +2680,10 @@
                 // Mantener bloqueado hasta recarga para evitar fuga de información
             }
         }
-        setInterval(detectarDevtools, 1500);
+        // Solo ejecutar detección si NO es localhost
+        if (!esLocalhost) {
+            setInterval(detectarDevtools, 1500);
+        }
 
         // 3) Overlay de bloqueo y difuminado de la interfaz
         function activarBloqueoSeguridad(motivo) {
@@ -12707,24 +12736,33 @@ Precio: $${precio.toLocaleString('es-AR')} ARS/mes
                 return originalAssign(url);
             };
             
-            // Interceptar href (más complejo)
-            let hrefDescriptor = Object.getOwnPropertyDescriptor(window.location, 'href');
-            if (hrefDescriptor && hrefDescriptor.set) {
-                const originalHrefSet = hrefDescriptor.set;
-                Object.defineProperty(window.location, 'href', {
-                    get: hrefDescriptor.get,
-                    set: function(url) {
-                        if (redireccionesBloqueadas) {
-                            const stack = new Error().stack;
-                            console.warn('⚠️ Redirección bloqueada (href):', url);
-                            console.warn('Stack trace:', stack);
-                            redireccionesIntentadas.push({ tipo: 'href', url: url, stack: stack });
-                            return;
-                        }
-                        return originalHrefSet.call(window.location, url);
-                    },
-                    configurable: true
-                });
+            // Interceptar href (más complejo) - SOLO si no está ya interceptado
+            try {
+                let hrefDescriptor = Object.getOwnPropertyDescriptor(window.location, 'href');
+                if (hrefDescriptor && hrefDescriptor.set && hrefDescriptor.configurable) {
+                    // Verificar si ya fue interceptado (marcado con propiedad personalizada)
+                    if (!window.location._hrefInterceptado) {
+                        const originalHrefSet = hrefDescriptor.set;
+                        Object.defineProperty(window.location, 'href', {
+                            get: hrefDescriptor.get,
+                            set: function(url) {
+                                if (redireccionesBloqueadas) {
+                                    const stack = new Error().stack;
+                                    console.warn('⚠️ Redirección bloqueada (href):', url);
+                                    console.warn('Stack trace:', stack);
+                                    redireccionesIntentadas.push({ tipo: 'href', url: url, stack: stack });
+                                    return;
+                                }
+                                return originalHrefSet.call(window.location, url);
+                            },
+                            configurable: true
+                        });
+                        window.location._hrefInterceptado = true;
+                    }
+                }
+            } catch (e) {
+                // Si no se puede interceptar href (no es configurable), solo usar assign y replace
+                console.warn('⚠️ No se pudo interceptar window.location.href (no es configurable), usando assign/replace solamente');
             }
             
             // Desbloquear después de 5 segundos
@@ -12742,6 +12780,41 @@ Precio: $${precio.toLocaleString('es-AR')} ARS/mes
             localStorage.removeItem('cresalia_widget_acceso_activo');
             localStorage.removeItem('cresalia_widget_comunidad_activo');
             localStorage.removeItem('cresalia_redirect_after_login');
+            
+            // LIMPIEZA COMPLETA DE URLs PROBLEMÁTICAS (especialmente importante en producción/Vercel)
+            try {
+                // Limpiar todas las keys que puedan contener URLs inválidas
+                const keysToRemove = [];
+                for (let i = 0; i < localStorage.length; i++) {
+                    const key = localStorage.key(i);
+                    if (key) {
+                        const value = localStorage.getItem(key);
+                        if (value && typeof value === 'string') {
+                            // Verificar si contiene URLs con variables sin procesar
+                            if ((value.includes('/tiendas/') || value.includes('admin-final') || value.includes('widget')) &&
+                                (value.includes('{widgetUrl}') || 
+                                 value.includes('$%7BwidgetUrl%7D') || 
+                                 value.includes('${widgetUrl}') ||
+                                 value.includes('widgetUrl') ||
+                                 value.includes('${') ||
+                                 (value.includes('%7B') && value.includes('%7D')))) {
+                                keysToRemove.push(key);
+                                console.warn('⚠️ Limpiando URL inválida de localStorage:', key, value.substring(0, 100));
+                            }
+                        }
+                    }
+                }
+                
+                keysToRemove.forEach(key => {
+                    localStorage.removeItem(key);
+                });
+                
+                if (keysToRemove.length > 0) {
+                    console.log('✅ Limpieza completada:', keysToRemove.length, 'URLs inválidas eliminadas');
+                }
+            } catch (e) {
+                console.warn('⚠️ Error limpiando localStorage:', e);
+            }
             
             // Limpiar URLs inválidas guardadas que contengan variables sin procesar
             const urlGuardada = localStorage.getItem('cresalia_redirect_after_login');
@@ -13494,121 +13567,9 @@ Precio: $${precio.toLocaleString('es-AR')} ARS/mes
             alert('⚠️ Los widgets están temporalmente deshabilitados para evitar problemas. Por favor, accede directamente al panel.');
             return;
             
-            /* COMENTADO TEMPORALMENTE
-            try {
-                const supabase = initSupabase();
-                if (!supabase) return;
-                
-                const { data: { user } } = await supabase.auth.getUser();
-                if (!user) return;
-                
-                // Obtener datos de la tienda
-                const { data: tienda } = await supabase
-                    .from('tiendas')
-                    .select('nombre_tienda, configuracion')
-                    .eq('user_id', user.id)
-                    .single();
-                
-                const nombreTienda = tienda?.nombre_tienda || user.user_metadata?.nombre_tienda || 'Mi Tienda';
-                const logoUrl = tienda?.configuracion?.avatar_url || localStorage.getItem('cresalia_avatar_tienda_url') || '';
-                // Construir panelUrl de forma segura
-                let panelUrl;
-                if (window.location.protocol === 'file:') {
-                    const currentPath = window.location.pathname;
-                    const baseDir = currentPath.substring(0, currentPath.lastIndexOf('/'));
-                    panelUrl = baseDir + '/admin-final.html';
-                } else {
-                    panelUrl = window.location.origin + '/tiendas/ejemplo-tienda/admin-final.html';
-                }
-                
-                // Construir baseUrl de forma segura
-                let baseUrl;
-                if (window.location.protocol === 'file:') {
-                    // Para file://, no podemos usar origin, usar una ruta relativa
-                    baseUrl = '';
-                } else {
-                    baseUrl = window.location.origin || window.location.protocol + '//' + window.location.host;
-                }
-                
-                // VALIDAR que baseUrl no contenga variables sin procesar
-                if (baseUrl && (baseUrl.includes('{') || baseUrl.includes('$%7B') || baseUrl.includes('widgetUrl'))) {
-                    console.error('❌ baseUrl inválido:', baseUrl);
-                    alert('Error: No se pudo generar la URL del widget. Por favor, recarga la página.');
-                    return;
-                }
-                
-                // Construir widgetUrl
-                let widgetUrl;
-                if (baseUrl) {
-                    widgetUrl = `${baseUrl}/tiendas/ejemplo-tienda/widget-acceso-directo.html?url=${encodeURIComponent(panelUrl)}&logo=${encodeURIComponent(logoUrl)}&nombre=${encodeURIComponent(nombreTienda)}`;
-                } else {
-                    // Para file://, usar ruta relativa
-                    widgetUrl = `tiendas/ejemplo-tienda/widget-acceso-directo.html?url=${encodeURIComponent(panelUrl)}&logo=${encodeURIComponent(logoUrl)}&nombre=${encodeURIComponent(nombreTienda)}`;
-                }
-                
-                // VALIDAR que widgetUrl sea válido antes de usar
-                if (widgetUrl.includes('{widgetUrl}') || widgetUrl.includes('$%7BwidgetUrl%7D') || widgetUrl.includes('${widgetUrl}')) {
-                    console.error('❌ widgetUrl contiene variables sin procesar:', widgetUrl);
-                    alert('Error: No se pudo generar la URL del widget correctamente. Por favor, recarga la página.');
-                    return;
-                }
-                
-                // Actualizar preview
-                const previewLogo = document.getElementById('preview-logo-tienda');
-                const previewNombre = document.getElementById('preview-nombre-tienda');
-                
-                if (previewLogo) {
-                    if (logoUrl) {
-                        previewLogo.src = logoUrl;
-                    } else {
-                        const iniciales = nombreTienda.substring(0, 2).toUpperCase();
-                        previewLogo.src = `data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' width='100' height='100'><rect width='100' height='100' fill='%237C3AED'/><text x='50%25' y='50%25' dominant-baseline='middle' text-anchor='middle' font-size='36' font-weight='bold' fill='white'>${iniciales}</text></svg>`;
-                    }
-                }
-                
-                if (previewNombre) {
-                    previewNombre.textContent = nombreTienda;
-                }
-                
-                // Actualizar URL
-                const urlInput = document.getElementById('url-widget');
-                if (urlInput) {
-                    urlInput.value = widgetUrl;
-                }
-                
-                // Generar código HTML
-                const codigoHTML = `<iframe src="${widgetUrl}" width="400" height="500" frameborder="0" style="border-radius: 15px; box-shadow: 0 10px 40px rgba(0,0,0,0.2);"></iframe>`;
-                const codigoHTMLCompleto = `<!DOCTYPE html>
-<html lang="es">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Acceso Directo - ${nombreTienda}</title>
-    <meta http-equiv="refresh" content="0; url=${widgetUrl}">
-</head>
-<body>
-    <script>
-        window.location.href = "${widgetUrl}";
-    </script>
-    <p>Redirigiendo... <a href="${widgetUrl}">Haz clic aquí</a></p>
-</body>
-</html>`;
-                
-                const codigoDiv = document.getElementById('codigo-html-widget');
-                if (codigoDiv) {
-                    // IMPORTANTE: Usar textContent, NO innerHTML, para evitar ejecución de código
-                    // Y validar que no contenga variables sin procesar
-                    if (codigoHTMLCompleto.includes('{widgetUrl}') || codigoHTMLCompleto.includes('$%7BwidgetUrl%7D')) {
-                        console.error('❌ Código HTML contiene variables sin procesar, no se guardará');
-                        codigoDiv.textContent = 'Error: No se pudo generar el código. Por favor, recarga la página.';
-                    } else {
-                        codigoDiv.textContent = codigoHTMLCompleto;
-                    }
-                }
-                
-            } catch (error) {
-                console.error('Error generando widget:', error);
-            }
+            // COMENTADO TEMPORALMENTE - Todo el código de generación de widget está deshabilitado
+            // para evitar problemas con URLs que contienen variables sin procesar (${widgetUrl})
+            // Este código se puede reactivar cuando se solucione el problema de las URLs inválidas
         }
         
         function copiarUrlWidget() {
@@ -13691,29 +13652,7 @@ Precio: $${precio.toLocaleString('es-AR')} ARS/mes
             alert('⚠️ Los widgets están temporalmente deshabilitados para evitar problemas. Por favor, accede directamente al panel.');
             return;
             
-            /* COMENTADO TEMPORALMENTE
-            const tabPanel = document.getElementById('tab-panel');
-            const tabComunidad = document.getElementById('tab-comunidad');
-            const contenidoWidget = document.getElementById('contenido-widget');
-            const contenidoComunidad = document.getElementById('contenido-widget-comunidad');
-            
-            if (tab === 'panel') {
-                tabPanel.style.color = '#7C3AED';
-                tabPanel.style.borderBottom = '3px solid #7C3AED';
-                tabComunidad.style.color = '#6B7280';
-                tabComunidad.style.borderBottom = 'none';
-                contenidoWidget.style.display = 'block';
-                contenidoComunidad.style.display = 'none';
-            } else {
-                tabPanel.style.color = '#6B7280';
-                tabPanel.style.borderBottom = 'none';
-                tabComunidad.style.color = '#10B981';
-                tabComunidad.style.borderBottom = '3px solid #10B981';
-                contenidoWidget.style.display = 'none';
-                contenidoComunidad.style.display = 'block';
-                inicializarWidgetComunidad();
-            }
-            */
+            // COMENTADO TEMPORALMENTE - Código deshabilitado
         }
         
         async function generarWidgetComunidad() {
@@ -13722,131 +13661,8 @@ Precio: $${precio.toLocaleString('es-AR')} ARS/mes
             alert('⚠️ Los widgets están temporalmente deshabilitados para evitar problemas. Por favor, accede directamente al panel.');
             return;
             
-            /* COMENTADO TEMPORALMENTE
-            const select = document.getElementById('select-comunidad');
-            if (!select || !select.value) {
-                document.getElementById('preview-widget-comunidad-container').style.display = 'none';
-                return;
-            }
-            
-            const [nombreComunidad, urlComunidad, labelComunidad] = select.value.split('|');
-            const partesLabel = labelComunidad.split(' ');
-            const iconoComunidad = partesLabel[0];
-            const nombreComunidadLimpio = partesLabel.slice(1).join(' ');
-            
-            try {
-                const supabase = initSupabase();
-                if (!supabase) return;
-                
-                const { data: { user } } = await supabase.auth.getUser();
-                if (!user) return;
-                
-                // Obtener datos de la tienda
-                const { data: tienda } = await supabase
-                    .from('tiendas')
-                    .select('nombre_tienda, configuracion')
-                    .eq('user_id', user.id)
-                    .single();
-                
-                const nombreTienda = tienda?.nombre_tienda || user.user_metadata?.nombre_tienda || 'Mi Tienda';
-                const logoUrl = tienda?.configuracion?.avatar_url || localStorage.getItem('cresalia_avatar_tienda_url') || '';
-                
-                // Construir baseUrl de forma segura
-                let baseUrl;
-                if (window.location.protocol === 'file:') {
-                    // Para file://, no podemos usar origin, usar una ruta relativa
-                    baseUrl = '';
-                } else {
-                    baseUrl = window.location.origin || window.location.protocol + '//' + window.location.host;
-                }
-                
-                // VALIDAR que baseUrl no contenga variables sin procesar
-                if (baseUrl && (baseUrl.includes('{') || baseUrl.includes('$%7B') || baseUrl.includes('widgetUrl'))) {
-                    console.error('❌ baseUrl inválido:', baseUrl);
-                    alert('Error: No se pudo generar la URL del widget. Por favor, recarga la página.');
-                    return;
-                }
-                
-                // Construir widgetUrl
-                let widgetUrl;
-                if (baseUrl) {
-                    widgetUrl = `${baseUrl}/tiendas/ejemplo-tienda/widget-acceso-comunidad.html?url=${encodeURIComponent(urlComunidad)}&logo=${encodeURIComponent(logoUrl)}&tienda=${encodeURIComponent(nombreTienda)}&comunidad=${encodeURIComponent(nombreComunidadLimpio)}&icono=${encodeURIComponent(iconoComunidad)}`;
-                } else {
-                    // Para file://, usar ruta relativa
-                    widgetUrl = `tiendas/ejemplo-tienda/widget-acceso-comunidad.html?url=${encodeURIComponent(urlComunidad)}&logo=${encodeURIComponent(logoUrl)}&tienda=${encodeURIComponent(nombreTienda)}&comunidad=${encodeURIComponent(nombreComunidadLimpio)}&icono=${encodeURIComponent(iconoComunidad)}`;
-                }
-                
-                // VALIDAR que widgetUrl sea válido antes de usar
-                if (widgetUrl.includes('{widgetUrl}') || widgetUrl.includes('$%7BwidgetUrl%7D') || widgetUrl.includes('${widgetUrl}')) {
-                    console.error('❌ widgetUrl contiene variables sin procesar:', widgetUrl);
-                    alert('Error: No se pudo generar la URL del widget correctamente. Por favor, recarga la página.');
-                    return;
-                }
-                
-                // Actualizar preview
-                const previewLogo = document.getElementById('preview-logo-tienda-comunidad');
-                const previewNombre = document.getElementById('preview-nombre-comunidad');
-                const previewBadge = document.getElementById('preview-comunidad-badge');
-                
-                if (previewLogo) {
-                    if (logoUrl) {
-                        previewLogo.src = logoUrl;
-                    } else {
-                        const iniciales = nombreTienda.substring(0, 2).toUpperCase();
-                        previewLogo.src = `data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' width='100' height='100'><rect width='100' height='100' fill='%237C3AED'/><text x='50%25' y='50%25' dominant-baseline='middle' text-anchor='middle' font-size='36' font-weight='bold' fill='white'>${iniciales}</text></svg>`;
-                    }
-                }
-                
-                if (previewNombre) {
-                    previewNombre.textContent = nombreComunidadLimpio;
-                }
-                
-                if (previewBadge) {
-                    previewBadge.innerHTML = iconoComunidad + ' ' + nombreComunidadLimpio;
-                }
-                
-                // Mostrar preview
-                document.getElementById('preview-widget-comunidad-container').style.display = 'block';
-                
-                // Actualizar URL
-                const urlInput = document.getElementById('url-widget-comunidad');
-                if (urlInput) {
-                    urlInput.value = widgetUrl;
-                }
-                
-                // Generar código HTML
-                const codigoHTMLCompleto = `<!DOCTYPE html>
-<html lang="es">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Acceso Directo - ${nombreComunidadLimpio}</title>
-    <meta http-equiv="refresh" content="0; url=${widgetUrl}">
-</head>
-<body>
-    <script>
-        window.location.href = "${widgetUrl}";
-    </script>
-    <p>Redirigiendo... <a href="${widgetUrl}">Haz clic aquí</a></p>
-</body>
-</html>`;
-                
-                const codigoDiv = document.getElementById('codigo-html-widget-comunidad');
-                if (codigoDiv) {
-                    // IMPORTANTE: Usar textContent, NO innerHTML, para evitar ejecución de código
-                    // Y validar que no contenga variables sin procesar
-                    if (codigoHTMLCompleto.includes('{widgetUrl}') || codigoHTMLCompleto.includes('$%7BwidgetUrl%7D')) {
-                        console.error('❌ Código HTML contiene variables sin procesar, no se guardará');
-                        codigoDiv.textContent = 'Error: No se pudo generar el código. Por favor, recarga la página.';
-                    } else {
-                        codigoDiv.textContent = codigoHTMLCompleto;
-                    }
-                }
-                
-            } catch (error) {
-                console.error('Error generando widget comunidad:', error);
-            }
-            */
+            // COMENTADO TEMPORALMENTE - Todo el código de generación de widget de comunidad está deshabilitado
+            // para evitar problemas con URLs que contienen variables sin procesar
         }
         
         function copiarUrlWidgetComunidad() {
