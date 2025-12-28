@@ -194,9 +194,9 @@
         if (!comunidadUrl || comunidadUrl.includes('{') || comunidadUrl.includes('$%7B') || comunidadUrl.includes('widgetUrl')) {
             // Si no hay URL válida o contiene variables sin procesar, usar URL por defecto
             if (isProduction) {
-                comunidadUrl = 'https://cresalia-web.vercel.app/panel-comunidad-vendedores.html';
+                comunidadUrl = 'https://cresalia-web.vercel.app/panel-comunidad-vendedores-LIMPIO.html';
             } else {
-                comunidadUrl = '../../panel-comunidad-vendedores.html';
+                comunidadUrl = '../../panel-comunidad-vendedores-LIMPIO.html';
             }
             console.warn('⚠️ URL de la comunidad no válida o contiene variables sin procesar. Usando URL por defecto.');
         } else {
@@ -232,8 +232,8 @@
                 
                 // Usar fallback seguro
                 const fallbackUrl = isProduction 
-                    ? 'https://cresalia-web.vercel.app/panel-comunidad-vendedores.html'
-                    : '../../panel-comunidad-vendedores.html';
+                    ? 'https://cresalia-web.vercel.app/panel-comunidad-vendedores-LIMPIO.html'
+                    : '../../panel-comunidad-vendedores-LIMPIO.html';
                 
                 alert('Error: La URL de la comunidad no es válida. Redirigiendo a la página por defecto.');
                 window.location.href = fallbackUrl;
