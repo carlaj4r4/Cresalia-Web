@@ -1392,8 +1392,8 @@ class SistemaForoComunidades {
                 this.pedirAlias();
             }
             
-            // Configurar selector de avatares (solo para comunidades de desahogo)
-            if (!this.esComunidadAyuda) {
+            // Configurar selector de avatares (solo para comunidades de desahogo, NO para Jobs)
+            if (!this.esComunidadAyuda && this.comunidadSlug !== 'cresalia-jobs') {
                 setTimeout(() => {
                     this.configurarSelectorAvatares();
                 }, 100);
@@ -1421,8 +1421,8 @@ class SistemaForoComunidades {
                             <label for="autor-alias">Tu nombre o alias (opcional)</label>
                             <input type="text" id="autor-alias" placeholder="Ej: Anónimo, María, etc.">
                         </div>
-                        ${!this.esComunidadAyuda ? `
-                        <!-- Selector de Avatar (solo para comunidades de desahogo) -->
+                        ${!this.esComunidadAyuda && this.comunidadSlug !== 'cresalia-jobs' ? `
+                        <!-- Selector de Avatar (solo para comunidades de desahogo, NO para Jobs) -->
                         <div class="form-group">
                             <label>Elegí un avatar (opcional)</label>
                             <div class="avatar-selector" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(80px, 1fr)); gap: 15px; margin-top: 10px;">
@@ -1535,8 +1535,8 @@ class SistemaForoComunidades {
             });
         }
         
-        // Configurar selector de avatares (solo para comunidades de desahogo)
-        if (!this.esComunidadAyuda) {
+        // Configurar selector de avatares (solo para comunidades de desahogo, NO para Jobs)
+        if (!this.esComunidadAyuda && this.comunidadSlug !== 'cresalia-jobs') {
             this.configurarSelectorAvatares();
         }
         
@@ -2043,9 +2043,9 @@ class SistemaForoComunidades {
             }
         }
         
-        // Obtener avatar del post (solo para comunidades de desahogo)
+        // Obtener avatar del post (solo para comunidades de desahogo, NO para Jobs)
         const avatarEmoji = this.obtenerAvatarEmoji(post.avatar);
-        const mostrarAvatar = !this.esComunidadAyuda && post.avatar && post.avatar !== 'ninguno';
+        const mostrarAvatar = !this.esComunidadAyuda && this.comunidadSlug !== 'cresalia-jobs' && post.avatar && post.avatar !== 'ninguno';
         
         return `
             <div class="post" data-post-id="${post.id}" data-pais="${ubicacionInfo ? this.escapeHtml(ubicacionInfo.pais) : ''}" data-provincia="${ubicacionInfo ? this.escapeHtml(ubicacionInfo.provincia) : ''}" data-zona="${ubicacionInfo ? this.escapeHtml(ubicacionInfo.zona) : ''}">
