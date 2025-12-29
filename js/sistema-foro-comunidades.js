@@ -1392,6 +1392,13 @@ class SistemaForoComunidades {
                 this.pedirAlias();
             }
             
+            // Configurar selector de avatares (solo para comunidades de desahogo)
+            if (!this.esComunidadAyuda) {
+                setTimeout(() => {
+                    this.configurarSelectorAvatares();
+                }, 100);
+            }
+            
             console.log('✅ Modal de crear post mostrado');
         } else {
             console.error('❌ No se encontró el modal modal-crear-post');
@@ -1414,6 +1421,46 @@ class SistemaForoComunidades {
                             <label for="autor-alias">Tu nombre o alias (opcional)</label>
                             <input type="text" id="autor-alias" placeholder="Ej: Anónimo, María, etc.">
                         </div>
+                        ${!this.esComunidadAyuda ? `
+                        <!-- Selector de Avatar (solo para comunidades de desahogo) -->
+                        <div class="form-group">
+                            <label>Elegí un avatar (opcional)</label>
+                            <div class="avatar-selector" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(80px, 1fr)); gap: 15px; margin-top: 10px;">
+                                <button type="button" class="avatar-option" data-avatar="ninguno" style="padding: 10px; border: 2px solid #E5E7EB; border-radius: 12px; background: white; cursor: pointer; transition: all 0.3s; text-align: center;">
+                                    <div style="font-size: 1.5rem; margin-bottom: 5px;">👤</div>
+                                    <div style="font-size: 0.75rem; color: #6B7280;">Ninguno</div>
+                                </button>
+                                <button type="button" class="avatar-option" data-avatar="tierno1" style="padding: 10px; border: 2px solid #E5E7EB; border-radius: 12px; background: white; cursor: pointer; transition: all 0.3s; text-align: center;">
+                                    <div style="font-size: 1.5rem; margin-bottom: 5px;">🐻</div>
+                                    <div style="font-size: 0.75rem; color: #6B7280;">Tierno</div>
+                                </button>
+                                <button type="button" class="avatar-option" data-avatar="tierno2" style="padding: 10px; border: 2px solid #E5E7EB; border-radius: 12px; background: white; cursor: pointer; transition: all 0.3s; text-align: center;">
+                                    <div style="font-size: 1.5rem; margin-bottom: 5px;">🐰</div>
+                                    <div style="font-size: 0.75rem; color: #6B7280;">Tierno</div>
+                                </button>
+                                <button type="button" class="avatar-option" data-avatar="tierno3" style="padding: 10px; border: 2px solid #E5E7EB; border-radius: 12px; background: white; cursor: pointer; transition: all 0.3s; text-align: center;">
+                                    <div style="font-size: 1.5rem; margin-bottom: 5px;">🦊</div>
+                                    <div style="font-size: 0.75rem; color: #6B7280;">Tierno</div>
+                                </button>
+                                <button type="button" class="avatar-option" data-avatar="serio1" style="padding: 10px; border: 2px solid #E5E7EB; border-radius: 12px; background: white; cursor: pointer; transition: all 0.3s; text-align: center;">
+                                    <div style="font-size: 1.5rem; margin-bottom: 5px;">👔</div>
+                                    <div style="font-size: 0.75rem; color: #6B7280;">Serio</div>
+                                </button>
+                                <button type="button" class="avatar-option" data-avatar="serio2" style="padding: 10px; border: 2px solid #E5E7EB; border-radius: 12px; background: white; cursor: pointer; transition: all 0.3s; text-align: center;">
+                                    <div style="font-size: 1.5rem; margin-bottom: 5px;">🎩</div>
+                                    <div style="font-size: 0.75rem; color: #6B7280;">Serio</div>
+                                </button>
+                                <button type="button" class="avatar-option" data-avatar="serio3" style="padding: 10px; border: 2px solid #E5E7EB; border-radius: 12px; background: white; cursor: pointer; transition: all 0.3s; text-align: center;">
+                                    <div style="font-size: 1.5rem; margin-bottom: 5px;">🧢</div>
+                                    <div style="font-size: 0.75rem; color: #6B7280;">Serio</div>
+                                </button>
+                            </div>
+                            <input type="hidden" id="post-avatar" value="ninguno">
+                            <small style="color: #6B7280; font-size: 0.85rem; display: block; margin-top: 8px;">
+                                Elegí un avatar que te represente o dejá "Ninguno" si preferís no usar uno
+                            </small>
+                        </div>
+                        ` : ''}
                         <div class="form-group">
                             <label for="post-titulo">Título (opcional)</label>
                             <input type="text" id="post-titulo" placeholder="Un título breve para tu post">
@@ -1488,10 +1535,59 @@ class SistemaForoComunidades {
             });
         }
         
+        // Configurar selector de avatares (solo para comunidades de desahogo)
+        if (!this.esComunidadAyuda) {
+            this.configurarSelectorAvatares();
+        }
+        
         // Mostrar el modal después de crearlo
         setTimeout(() => {
             this.mostrarFormularioPost();
         }, 100);
+    }
+    
+    configurarSelectorAvatares() {
+        const avatarOptions = document.querySelectorAll('.avatar-option');
+        avatarOptions.forEach(option => {
+            option.addEventListener('click', () => {
+                // Remover selección anterior
+                avatarOptions.forEach(opt => {
+                    opt.style.borderColor = '#E5E7EB';
+                    opt.style.background = 'white';
+                    opt.style.transform = 'scale(1)';
+                });
+                
+                // Seleccionar nuevo avatar
+                option.style.borderColor = '#667eea';
+                option.style.background = 'linear-gradient(135deg, rgba(102, 126, 234, 0.1), rgba(236, 72, 153, 0.1))';
+                option.style.transform = 'scale(1.05)';
+                
+                // Guardar selección
+                const avatarInput = document.getElementById('post-avatar');
+                if (avatarInput) {
+                    avatarInput.value = option.getAttribute('data-avatar');
+                }
+            });
+        });
+        
+        // Seleccionar "ninguno" por defecto
+        const ningunoOption = document.querySelector('.avatar-option[data-avatar="ninguno"]');
+        if (ningunoOption) {
+            ningunoOption.click();
+        }
+    }
+    
+    obtenerAvatarEmoji(avatarTipo) {
+        const avatares = {
+            'ninguno': '👤',
+            'tierno1': '🐻',
+            'tierno2': '🐰',
+            'tierno3': '🦊',
+            'serio1': '👔',
+            'serio2': '🎩',
+            'serio3': '🧢'
+        };
+        return avatares[avatarTipo] || '👤';
     }
     
     mostrarMensajeRestriccionEscritura() {
@@ -1602,6 +1698,15 @@ class SistemaForoComunidades {
         const contenido = contenidoInput.value.trim();
         const alias = aliasInput.value.trim() || 'Anónimo';
         
+        // Obtener avatar seleccionado (solo para comunidades de desahogo)
+        let avatarSeleccionado = 'ninguno';
+        if (!this.esComunidadAyuda) {
+            const avatarInput = document.getElementById('post-avatar');
+            if (avatarInput) {
+                avatarSeleccionado = avatarInput.value || 'ninguno';
+            }
+        }
+        
         // Obtener datos de ubicación si es comunidad de ayuda
         let ubicacion = null;
         if (this.esComunidadAyuda) {
@@ -1646,7 +1751,8 @@ class SistemaForoComunidades {
             titulo: titulo || null,
             contenido: contenido,
             estado: 'publicado',
-            ubicacion: ubicacion ? JSON.stringify(ubicacion) : null
+            ubicacion: ubicacion ? JSON.stringify(ubicacion) : null,
+            avatar: avatarSeleccionado || 'ninguno' // Avatar seleccionado (solo para comunidades de desahogo)
         };
         
         try {
@@ -1680,6 +1786,7 @@ class SistemaForoComunidades {
                 const nuevoPost = {
                     id: 'local_' + Date.now(),
                     ...postData,
+                    avatar: avatarSeleccionado || 'ninguno', // Incluir avatar en modo local
                     created_at: new Date().toISOString(),
                     fecha: new Date().toISOString(), // Duplicar para compatibilidad
                     num_comentarios: 0,
@@ -1936,12 +2043,19 @@ class SistemaForoComunidades {
             }
         }
         
+        // Obtener avatar del post (solo para comunidades de desahogo)
+        const avatarEmoji = this.obtenerAvatarEmoji(post.avatar);
+        const mostrarAvatar = !this.esComunidadAyuda && post.avatar && post.avatar !== 'ninguno';
+        
         return `
             <div class="post" data-post-id="${post.id}" data-pais="${ubicacionInfo ? this.escapeHtml(ubicacionInfo.pais) : ''}" data-provincia="${ubicacionInfo ? this.escapeHtml(ubicacionInfo.provincia) : ''}" data-zona="${ubicacionInfo ? this.escapeHtml(ubicacionInfo.zona) : ''}">
                 <div class="post-header">
-                    <div class="post-autor">
-                        <strong>${this.escapeHtml(post.autor_alias || 'Anónimo')}${badgeVerificado}${badgeLeidoAdmin}</strong>
-                        <span class="post-fecha">${fecha}</span>
+                    <div class="post-autor" style="display: flex; align-items: center; gap: 10px;">
+                        ${mostrarAvatar ? `<span class="post-avatar" style="font-size: 1.8rem; line-height: 1; display: inline-block;">${avatarEmoji}</span>` : ''}
+                        <div>
+                            <strong>${this.escapeHtml(post.autor_alias || 'Anónimo')}${badgeVerificado}${badgeLeidoAdmin}</strong>
+                            <span class="post-fecha" style="display: block; font-size: 0.85rem; color: #6B7280; margin-top: 2px;">${fecha}</span>
+                        </div>
                     </div>
                     <div class="post-acciones">
                         ${botonesAutor}
