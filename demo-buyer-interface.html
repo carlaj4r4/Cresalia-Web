@@ -1508,8 +1508,9 @@
                         <h3 class="producto-title">Acceso Directo a Comunidades</h3>
                         <p class="producto-description">Crea un acceso directo personalizado a tus comunidades favoritas.</p>
                         <div class="producto-actions">
-                            <button class="btn-view-store" onclick="abrirWidgetComunidades()" style="width: 100%; text-align: center; border: none; cursor: pointer;">
-                                <i class="fas fa-users"></i> Crear Acceso Directo
+                            <!-- Widget de comunidades deshabilitado temporalmente - Implementación futura -->
+                            <button class="btn-view-store" onclick="alert('⚠️ Widgets de comunidades deshabilitados temporalmente. Esta funcionalidad estará disponible en una futura actualización.');" style="width: 100%; text-align: center; border: none; cursor: pointer; opacity: 0.6;">
+                                <i class="fas fa-users"></i> Crear Acceso Directo (Próximamente)
                             </button>
                         </div>
                     </div>
@@ -1606,8 +1607,8 @@
         </div>
     </section>
     
-    <!-- Sección de Widget de Acceso Directo a Comunidades -->
-    <section id="widget-comunidades-section" class="productos-section" style="display: none;">
+    <!-- Sección de Widget de Acceso Directo a Comunidades - DESHABILITADA TEMPORALMENTE -->
+    <section id="widget-comunidades-section" class="productos-section" style="display: none !important;">
         <div class="container">
             <div class="section-header">
                 <h2><i class="fas fa-rocket"></i> Acceso Directo a Comunidades</h2>
@@ -3894,49 +3895,20 @@
             setTimeout(verificarYActualizarCardLogin, 1500);
         });
         
-        // ===== WIDGET DE ACCESO DIRECTO A COMUNIDADES (PARA COMPRADORES) =====
+        // ===== WIDGET DE ACCESO DIRECTO A COMUNIDADES (PARA COMPRADORES) - DESHABILITADO TEMPORALMENTE =====
         function abrirWidgetComunidades() {
-            document.getElementById('widget-comunidades-section').style.display = 'block';
-            document.getElementById('widget-comunidades-section').scrollIntoView({ behavior: 'smooth' });
-            inicializarWidgetComunidadComprador();
+            alert('⚠️ Widgets de comunidades deshabilitados temporalmente. Esta funcionalidad estará disponible en una futura actualización.');
+            return;
         }
         
         function inicializarWidgetComunidadComprador() {
-            const checkbox = document.getElementById('activar-widget-comunidad-comprador');
-            const contenidoActivo = document.getElementById('contenido-widget-comunidad-comprador');
-            
-            if (!checkbox) return;
-            
-            // Cargar estado guardado
-            const widgetActivo = localStorage.getItem('cresalia_widget_comunidad_comprador_activo') === 'true';
-            checkbox.checked = widgetActivo;
-            
-            if (widgetActivo) {
-                contenidoActivo.style.display = 'block';
-            } else {
-                contenidoActivo.style.display = 'none';
-            }
-            
-            // Listener para cambios
-            checkbox.addEventListener('change', function() {
-                const activado = this.checked;
-                localStorage.setItem('cresalia_widget_comunidad_comprador_activo', activado ? 'true' : 'false');
-                
-                if (activado) {
-                    const confirmar = confirm('¿Deseas activar el Widget de Acceso Directo a Comunidades?\n\nEsto te permitirá generar URLs personalizadas para acceder rápidamente a cualquier comunidad de Cresalia.');
-                    if (confirmar) {
-                        contenidoActivo.style.display = 'block';
-                    } else {
-                        this.checked = false;
-                        localStorage.setItem('cresalia_widget_comunidad_comprador_activo', 'false');
-                    }
-                } else {
-                    contenidoActivo.style.display = 'none';
-                }
-            });
+            // Función deshabilitada temporalmente - Implementación futura
+            return;
         }
         
         async function generarWidgetComunidadComprador() {
+            alert('⚠️ Widgets de comunidades deshabilitados temporalmente. Esta funcionalidad estará disponible en una futura actualización.');
+            return;
             const select = document.getElementById('select-comunidad-comprador');
             if (!select || !select.value) {
                 document.getElementById('preview-widget-comunidad-comprador-container').style.display = 'none';
@@ -4031,16 +4003,13 @@
         }
         
         function copiarUrlWidgetComunidadComprador() {
-            const urlInput = document.getElementById('url-widget-comunidad-comprador');
-            if (urlInput) {
-                urlInput.select();
-                document.execCommand('copy');
-                alert('✅ URL copiada al portapapeles');
-            }
+            alert('⚠️ Widgets de comunidades deshabilitados temporalmente. Esta funcionalidad estará disponible en una futura actualización.');
+            return;
         }
         
         function copiarCodigoWidgetComunidadComprador() {
-            const codigoDiv = document.getElementById('codigo-html-widget-comunidad-comprador');
+            alert('⚠️ Widgets de comunidades deshabilitados temporalmente. Esta funcionalidad estará disponible en una futura actualización.');
+            return;
             if (codigoDiv) {
                 const textarea = document.createElement('textarea');
                 textarea.value = codigoDiv.textContent;

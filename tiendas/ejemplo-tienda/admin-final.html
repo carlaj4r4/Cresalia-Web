@@ -1623,13 +1623,14 @@
                                 <button id="tab-panel" onclick="mostrarTabWidget('panel')" style="flex: 1; padding: 12px; border: none; background: transparent; color: #7C3AED; font-weight: 600; border-bottom: 3px solid #7C3AED; cursor: pointer;">
                                     <i class="fas fa-tachometer-alt"></i> Panel Admin
                                 </button>
-                                <button id="tab-comunidad" onclick="alert('⚠️ Widgets deshabilitados temporalmente');" style="flex: 1; padding: 12px; border: none; background: transparent; color: #6B7280; font-weight: 600; cursor: pointer;">
-                                    <i class="fas fa-users"></i> Comunidades
+                                <!-- Tab de Comunidades deshabilitado temporalmente - Implementación futura -->
+                                <button id="tab-comunidad" onclick="alert('⚠️ Widgets de comunidades deshabilitados temporalmente. Esta funcionalidad estará disponible en una futura actualización.');" style="flex: 1; padding: 12px; border: none; background: transparent; color: #9CA3AF; font-weight: 600; cursor: pointer; opacity: 0.6; text-decoration: line-through;">
+                                    <i class="fas fa-users"></i> Comunidades (Próximamente)
                                 </button>
                             </div>
                             
-                            <!-- Contenido de Widget Comunidades -->
-                            <div id="contenido-widget-comunidad" style="display: none;">
+                            <!-- Contenido de Widget Comunidades - DESHABILITADO TEMPORALMENTE -->
+                            <div id="contenido-widget-comunidad" style="display: none !important;">
                                 <div style="background: linear-gradient(135deg, #ECFDF5, #D1FAE5); padding: 25px; border-radius: 15px; margin-bottom: 25px; border-left: 4px solid #10B981;">
                                     <h3 style="color: #065F46; margin-bottom: 15px; display: flex; align-items: center; gap: 10px;">
                                         <i class="fas fa-info-circle"></i> Widget de Acceso Directo a Comunidades
@@ -13739,25 +13740,13 @@ Precio: $${precio.toLocaleString('es-AR')} ARS/mes
         }
         
         function copiarUrlWidgetComunidad() {
-            const urlInput = document.getElementById('url-widget-comunidad');
-            if (urlInput) {
-                urlInput.select();
-                document.execCommand('copy');
-                alert('✅ URL copiada al portapapeles');
-            }
+            alert('⚠️ Widgets de comunidades deshabilitados temporalmente. Esta funcionalidad estará disponible en una futura actualización.');
+            return;
         }
         
         function copiarCodigoWidgetComunidad() {
-            const codigoDiv = document.getElementById('codigo-html-widget-comunidad');
-            if (codigoDiv) {
-                const textarea = document.createElement('textarea');
-                textarea.value = codigoDiv.textContent;
-                document.body.appendChild(textarea);
-                textarea.select();
-                document.execCommand('copy');
-                document.body.removeChild(textarea);
-                alert('✅ Código copiado al portapapeles');
-            }
+            alert('⚠️ Widgets de comunidades deshabilitados temporalmente. Esta funcionalidad estará disponible en una futura actualización.');
+            return;
         }
         
         // Interceptar mostrarSeccion para inicializar widget cuando se muestre
