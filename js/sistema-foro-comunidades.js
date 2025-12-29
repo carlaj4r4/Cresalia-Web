@@ -1454,6 +1454,26 @@ class SistemaForoComunidades {
                                     <div style="font-size: 1.5rem; margin-bottom: 5px;">🧢</div>
                                     <div style="font-size: 0.75rem; color: #6B7280;">Serio</div>
                                 </button>
+                                <button type="button" class="avatar-option" data-avatar="serioFem1" style="padding: 10px; border: 2px solid #E5E7EB; border-radius: 12px; background: white; cursor: pointer; transition: all 0.3s; text-align: center;">
+                                    <div style="font-size: 1.5rem; margin-bottom: 5px;">👩‍💼</div>
+                                    <div style="font-size: 0.75rem; color: #6B7280;">Serio Femenino</div>
+                                </button>
+                                <button type="button" class="avatar-option" data-avatar="serioFem2" style="padding: 10px; border: 2px solid #E5E7EB; border-radius: 12px; background: white; cursor: pointer; transition: all 0.3s; text-align: center;">
+                                    <div style="font-size: 1.5rem; margin-bottom: 5px;">💼</div>
+                                    <div style="font-size: 0.75rem; color: #6B7280;">Serio Femenino</div>
+                                </button>
+                                <button type="button" class="avatar-option" data-avatar="serioFem3" style="padding: 10px; border: 2px solid #E5E7EB; border-radius: 12px; background: white; cursor: pointer; transition: all 0.3s; text-align: center;">
+                                    <div style="font-size: 1.5rem; margin-bottom: 5px;">👩‍⚖️</div>
+                                    <div style="font-size: 0.75rem; color: #6B7280;">Serio Femenino</div>
+                                </button>
+                                <button type="button" class="avatar-option" data-avatar="serioFem4" style="padding: 10px; border: 2px solid #E5E7EB; border-radius: 12px; background: white; cursor: pointer; transition: all 0.3s; text-align: center;">
+                                    <div style="font-size: 1.5rem; margin-bottom: 5px;">👩‍🔬</div>
+                                    <div style="font-size: 0.75rem; color: #6B7280;">Serio Femenino</div>
+                                </button>
+                                <button type="button" class="avatar-option" data-avatar="serioFem5" style="padding: 10px; border: 2px solid #E5E7EB; border-radius: 12px; background: white; cursor: pointer; transition: all 0.3s; text-align: center;">
+                                    <div style="font-size: 1.5rem; margin-bottom: 5px;">👩‍💻</div>
+                                    <div style="font-size: 0.75rem; color: #6B7280;">Serio Femenino</div>
+                                </button>
                             </div>
                             <input type="hidden" id="post-avatar" value="ninguno">
                             <small style="color: #6B7280; font-size: 0.85rem; display: block; margin-top: 8px;">
@@ -1585,7 +1605,12 @@ class SistemaForoComunidades {
             'tierno3': '🦊',
             'serio1': '👔',
             'serio2': '🎩',
-            'serio3': '🧢'
+            'serio3': '🧢',
+            'serioFem1': '👩‍💼',
+            'serioFem2': '💼',
+            'serioFem3': '👩‍⚖️',
+            'serioFem4': '👩‍🔬',
+            'serioFem5': '👩‍💻'
         };
         return avatares[avatarTipo] || '👤';
     }
