@@ -62,6 +62,39 @@ const SistemaBusquedaMapaCompradores = {
                 return;
             }
             
+            // Verificar si ya hay una ubicación guardada reciente (menos de 1 hora)
+            const ubicacionGuardada = localStorage.getItem('cresalia_ubicacion_usuario');
+            if (ubicacionGuardada) {
+                try {
+                    const ubicacion = JSON.parse(ubicacionGuardada);
+                    const fechaGuardada = new Date(ubicacion.fecha);
+                    const ahora = new Date();
+                    const horasTranscurridas = (ahora - fechaGuardada) / (1000 * 60 * 60);
+                    
+                    // Si la ubicación tiene menos de 1 hora, usarla (evita solicitar permiso de nuevo)
+                    if (horasTranscurridas < 1) {
+                        this.ubicacionUsuario = {
+                            lat: ubicacion.latitud || ubicacion.lat,
+                            lng: ubicacion.longitud || ubicacion.lng
+                        };
+                        console.log('✅ Ubicación cargada desde cache (evita solicitar permiso de nuevo):', this.ubicacionUsuario);
+                        resolve(this.ubicacionUsuario);
+                        return;
+                    }
+                } catch (error) {
+                    console.log('⚠️ Error cargando ubicación guardada:', error);
+                }
+            }
+            
+            // Verificar si ya se concedió permiso anteriormente
+            const consentimiento = localStorage.getItem('cresalia_geolocalizacion_consentimiento');
+            if (consentimiento === 'denegado' || consentimiento === 'denied') {
+                console.log('ℹ️ Usuario denegó permiso de ubicación anteriormente, usando ubicación por defecto');
+                this.ubicacionUsuario = { lat: -34.6037, lng: -58.3816 };
+                resolve(this.ubicacionUsuario);
+                return;
+            }
+            
             navigator.geolocation.getCurrentPosition(
                 (position) => {
                     this.ubicacionUsuario = {
@@ -69,10 +102,23 @@ const SistemaBusquedaMapaCompradores = {
                         lng: position.coords.longitude
                     };
                     console.log('✅ Ubicación del usuario obtenida:', this.ubicacionUsuario);
+                    
+                    // Guardar ubicación para reutilizar
+                    const ubicacion = {
+                        latitud: position.coords.latitude,
+                        longitud: position.coords.longitude,
+                        fecha: new Date().toISOString()
+                    };
+                    localStorage.setItem('cresalia_ubicacion_usuario', JSON.stringify(ubicacion));
+                    
                     resolve(this.ubicacionUsuario);
                 },
                 (error) => {
                     console.warn('⚠️ Error obteniendo ubicación:', error);
+                    // Si el usuario deniega, guardar para no volver a pedir
+                    if (error.code === error.PERMISSION_DENIED) {
+                        localStorage.setItem('cresalia_geolocalizacion_consentimiento', 'denegado');
+                    }
                     // Usar ubicación por defecto
                     this.ubicacionUsuario = { lat: -34.6037, lng: -58.3816 };
                     resolve(this.ubicacionUsuario);

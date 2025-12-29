@@ -21,21 +21,41 @@ class SistemaNotificacionesPush {
             return;
         }
 
+        // Verificar si el permiso ya fue denegado anteriormente (evitar errores en móviles)
+        const permisoAnterior = localStorage.getItem('cresalia_notificaciones_permiso');
+        if (permisoAnterior === 'denied' && Notification.permission === 'denied') {
+            console.log('ℹ️ Permiso de notificaciones denegado anteriormente, no se intentará solicitar de nuevo');
+            return;
+        }
+
         // Cargar VAPID public key
         this.vapidPublicKey = window.__VAPID_PUBLIC_KEY__ || null;
         if (!this.vapidPublicKey) {
             console.warn('⚠️ VAPID_PUBLIC_KEY no configurada. Las notificaciones push no funcionarán cuando la página esté cerrada.');
         }
 
-        // Solicitar permisos
-        await this.solicitarPermisos();
+        // Solicitar permisos (solo si no están denegados)
+        try {
+            await this.solicitarPermisos();
+        } catch (error) {
+            console.warn('⚠️ Error al solicitar permisos de notificación (puede ser normal en algunos móviles):', error);
+            // No detener la inicialización si falla la solicitud de permisos
+        }
         
         // Configurar Service Worker
-        await this.configurarServiceWorker();
+        try {
+            await this.configurarServiceWorker();
+        } catch (error) {
+            console.warn('⚠️ Error configurando Service Worker:', error);
+        }
         
         // Crear suscripción push (si es posible)
         if (this.serviceWorkerRegistration) {
-            await this.crearSuscripcionPush();
+            try {
+                await this.crearSuscripcionPush();
+            } catch (error) {
+                console.warn('⚠️ Error creando suscripción push:', error);
+            }
         }
         
         // Inicializar notificaciones en tiempo real
@@ -46,16 +66,31 @@ class SistemaNotificacionesPush {
 
     // Solicitar permisos de notificación (solo una vez, centralizado)
     async solicitarPermisos() {
-        // Verificar si ya se solicitó en esta sesión
-        const yaSolicitado = sessionStorage.getItem('notificaciones_permiso_solicitado');
-        if (yaSolicitado === 'true') {
-            console.log('ℹ️ Permisos de notificación ya fueron solicitados en esta sesión');
+        // Verificar si el permiso ya está concedido o denegado (persiste entre sesiones)
+        if (Notification.permission !== 'default') {
+            console.log(`ℹ️ Permiso de notificaciones: ${Notification.permission}`);
+            // Si ya está concedido, no hacer nada más
+            if (Notification.permission === 'granted') {
+                return;
+            }
+            // Si está denegado, guardar en localStorage para no volver a intentar
+            if (Notification.permission === 'denied') {
+                localStorage.setItem('cresalia_notificaciones_permiso', 'denied');
+                return;
+            }
+        }
+
+        // Verificar si ya se solicitó anteriormente y fue denegado
+        const permisoAnterior = localStorage.getItem('cresalia_notificaciones_permiso');
+        if (permisoAnterior === 'denied') {
+            console.log('ℹ️ Usuario denegó permiso de notificaciones anteriormente');
             return;
         }
 
-        // Verificar si el permiso ya está concedido o denegado
-        if (Notification.permission !== 'default') {
-            console.log(`ℹ️ Permiso de notificaciones: ${Notification.permission}`);
+        // Verificar si ya se solicitó en esta sesión (evitar múltiples solicitudes simultáneas)
+        const yaSolicitado = sessionStorage.getItem('notificaciones_permiso_solicitado');
+        if (yaSolicitado === 'true') {
+            console.log('ℹ️ Permisos de notificación ya fueron solicitados en esta sesión');
             return;
         }
 
@@ -67,6 +102,10 @@ class SistemaNotificacionesPush {
 
         try {
             const permission = await Notification.requestPermission();
+            
+            // Guardar el resultado en localStorage para persistir entre sesiones
+            localStorage.setItem('cresalia_notificaciones_permiso', permission);
+            
             if (permission === 'granted') {
                 console.log('✅ Permisos de notificación concedidos');
                 this.mostrarNotificacionBienvenida();
@@ -75,6 +114,11 @@ class SistemaNotificacionesPush {
             }
         } catch (error) {
             console.warn('⚠️ Error al solicitar permisos de notificación:', error);
+            // En móviles, algunos navegadores pueden lanzar errores
+            // Guardar como denegado para no volver a intentar
+            if (error.name === 'NotAllowedError' || error.name === 'TypeError') {
+                localStorage.setItem('cresalia_notificaciones_permiso', 'denied');
+            }
         }
     }
 
