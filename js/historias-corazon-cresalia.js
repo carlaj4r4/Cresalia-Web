@@ -61,8 +61,12 @@ const HistoriasCorazon = {
         }
         sinHistorias.style.display = 'none';
         
-        grid.innerHTML = this.historias.map(historia => `
-            <div class="historia-card">
+        grid.innerHTML = this.historias.map(historia => {
+            const historiaId = historia.id || `historia-${Date.now()}-${Math.random()}`;
+            const reacciones = this.obtenerReacciones(historiaId);
+            
+            return `
+            <div class="historia-card" data-historia-id="${historiaId}">
                 <div class="historia-header">
                     ${historia.foto_url ? 
                         `<img src="${historia.foto_url}" alt="${historia.nombre_negocio || 'Cliente'}" class="historia-avatar">` :
@@ -93,8 +97,48 @@ const HistoriasCorazon = {
                         <i class="fas fa-calendar"></i> ${new Date(historia.fecha_publicacion).toLocaleDateString('es-AR')}
                     </p>` : ''
                 }
+                
+                <!-- Sistema de Reacciones -->
+                <div class="historia-reacciones" style="margin-top: 20px; padding-top: 15px; border-top: 1px solid #E5E7EB; display: flex; align-items: center; gap: 10px; flex-wrap: wrap;">
+                    <div class="reacciones-botones" style="display: flex; gap: 8px; flex-wrap: wrap;">
+                        <button class="btn-reaccion ${reacciones.meGusta ? 'activa' : ''}" 
+                                onclick="HistoriasCorazon.reaccionar('${historiaId}', 'meGusta')"
+                                title="Me gusta">
+                            <span class="emoji-reaccion">👍</span>
+                            <span class="contador-reaccion" data-tipo="meGusta">${reacciones.meGusta || 0}</span>
+                        </button>
+                        <button class="btn-reaccion ${reacciones.corazon ? 'activa' : ''}" 
+                                onclick="HistoriasCorazon.reaccionar('${historiaId}', 'corazon')"
+                                title="Me encanta">
+                            <span class="emoji-reaccion">💜</span>
+                            <span class="contador-reaccion" data-tipo="corazon">${reacciones.corazon || 0}</span>
+                        </button>
+                        <button class="btn-reaccion ${reacciones.aplausos ? 'activa' : ''}" 
+                                onclick="HistoriasCorazon.reaccionar('${historiaId}', 'aplausos')"
+                                title="Aplausos">
+                            <span class="emoji-reaccion">👏</span>
+                            <span class="contador-reaccion" data-tipo="aplausos">${reacciones.aplausos || 0}</span>
+                        </button>
+                        <button class="btn-reaccion ${reacciones.inspirador ? 'activa' : ''}" 
+                                onclick="HistoriasCorazon.reaccionar('${historiaId}', 'inspirador')"
+                                title="Inspirador">
+                            <span class="emoji-reaccion">✨</span>
+                            <span class="contador-reaccion" data-tipo="inspirador">${reacciones.inspirador || 0}</span>
+                        </button>
+                        <button class="btn-reaccion ${reacciones.fuerza ? 'activa' : ''}" 
+                                onclick="HistoriasCorazon.reaccionar('${historiaId}', 'fuerza')"
+                                title="Mucha fuerza">
+                            <span class="emoji-reaccion">💪</span>
+                            <span class="contador-reaccion" data-tipo="fuerza">${reacciones.fuerza || 0}</span>
+                        </button>
+                    </div>
+                </div>
             </div>
-        `).join('');
+        `;
+        }).join('');
+        
+        // Agregar estilos para las reacciones si no existen
+        this.agregarEstilosReacciones();
     },
     
     mostrarSinHistorias() {
@@ -123,6 +167,167 @@ const HistoriasCorazon = {
         const div = document.createElement('div');
         div.textContent = text;
         return div.innerHTML;
+    },
+    
+    obtenerReacciones(historiaId) {
+        try {
+            const todasReacciones = JSON.parse(localStorage.getItem('historiasCorazonReacciones') || '{}');
+            return todasReacciones[historiaId] || {
+                meGusta: 0,
+                corazon: 0,
+                aplausos: 0,
+                inspirador: 0,
+                fuerza: 0
+            };
+        } catch (error) {
+            console.warn('Error leyendo reacciones:', error);
+            return {
+                meGusta: 0,
+                corazon: 0,
+                aplausos: 0,
+                inspirador: 0,
+                fuerza: 0
+            };
+        }
+    },
+    
+    guardarReacciones(historiaId, reacciones) {
+        try {
+            const todasReacciones = JSON.parse(localStorage.getItem('historiasCorazonReacciones') || '{}');
+            todasReacciones[historiaId] = reacciones;
+            localStorage.setItem('historiasCorazonReacciones', JSON.stringify(todasReacciones));
+        } catch (error) {
+            console.warn('Error guardando reacciones:', error);
+        }
+    },
+    
+    reaccionar(historiaId, tipo) {
+        const card = document.querySelector(`[data-historia-id="${historiaId}"]`);
+        if (!card) return;
+        
+        const reacciones = this.obtenerReacciones(historiaId);
+        const boton = card.querySelector(`[onclick*="'${tipo}'"]`);
+        const contador = card.querySelector(`[data-tipo="${tipo}"]`);
+        
+        if (!boton || !contador) return;
+        
+        // Verificar si el usuario ya reaccionó con este tipo
+        const yaReacciono = boton.classList.contains('activa');
+        
+        if (yaReacciono) {
+            // Quitar reacción
+            reacciones[tipo] = Math.max(0, (reacciones[tipo] || 0) - 1);
+            boton.classList.remove('activa');
+        } else {
+            // Agregar reacción
+            reacciones[tipo] = (reacciones[tipo] || 0) + 1;
+            boton.classList.add('activa');
+        }
+        
+        // Actualizar contador
+        contador.textContent = reacciones[tipo] || 0;
+        
+        // Guardar reacciones
+        this.guardarReacciones(historiaId, reacciones);
+        
+        // Intentar guardar en el servidor (opcional, no bloquea si falla)
+        this.enviarReaccionAlServidor(historiaId, tipo, !yaReacciono).catch(err => {
+            console.warn('No se pudo guardar reacción en servidor (continuando con localStorage):', err);
+        });
+    },
+    
+    async enviarReaccionAlServidor(historiaId, tipo, agregar) {
+        try {
+            const response = await fetch('/api/historias-corazon/reacciones', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    historia_id: historiaId,
+                    tipo: tipo,
+                    accion: agregar ? 'agregar' : 'quitar'
+                })
+            });
+            
+            if (!response.ok) {
+                throw new Error('Error en servidor');
+            }
+        } catch (error) {
+            // No es crítico si falla, las reacciones se guardan en localStorage
+            throw error;
+        }
+    },
+    
+    agregarEstilosReacciones() {
+        // Verificar si los estilos ya existen
+        if (document.getElementById('estilos-reacciones-historias')) return;
+        
+        const style = document.createElement('style');
+        style.id = 'estilos-reacciones-historias';
+        style.textContent = `
+            .historia-reacciones {
+                margin-top: 20px;
+                padding-top: 15px;
+                border-top: 1px solid #E5E7EB;
+            }
+            
+            .reacciones-botones {
+                display: flex;
+                gap: 8px;
+                flex-wrap: wrap;
+            }
+            
+            .btn-reaccion {
+                display: flex;
+                align-items: center;
+                gap: 6px;
+                padding: 8px 12px;
+                border: 2px solid #E5E7EB;
+                border-radius: 20px;
+                background: white;
+                cursor: pointer;
+                transition: all 0.3s ease;
+                font-size: 0.9rem;
+                font-weight: 500;
+                color: #64748b;
+            }
+            
+            .btn-reaccion:hover {
+                border-color: #667eea;
+                background: #F0F9FF;
+                transform: translateY(-2px);
+                box-shadow: 0 4px 12px rgba(102, 126, 234, 0.2);
+            }
+            
+            .btn-reaccion.activa {
+                border-color: #EC4899;
+                background: linear-gradient(135deg, rgba(236, 72, 153, 0.1), rgba(199, 38, 211, 0.1));
+                color: #EC4899;
+            }
+            
+            .btn-reaccion.activa:hover {
+                border-color: #C026D3;
+                background: linear-gradient(135deg, rgba(236, 72, 153, 0.15), rgba(199, 38, 211, 0.15));
+            }
+            
+            .emoji-reaccion {
+                font-size: 1.2rem;
+                line-height: 1;
+            }
+            
+            .contador-reaccion {
+                font-weight: 600;
+                min-width: 20px;
+                text-align: center;
+            }
+            
+            .btn-reaccion.activa .contador-reaccion {
+                color: #EC4899;
+            }
+        `;
+        
+        document.head.appendChild(style);
     }
 };
 
