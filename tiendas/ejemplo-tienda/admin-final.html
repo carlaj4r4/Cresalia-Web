@@ -13512,6 +13512,19 @@ Precio: $${precio.toLocaleString('es-AR')} ARS/mes
         // Cargar datos al iniciar
         document.addEventListener('DOMContentLoaded', () => {
             esperarInitSupabaseAdmin(cargarDatosTienda);
+            
+            // Escuchar cambios de sesión para recargar avatar cuando el usuario inicia sesión
+            (async () => {
+                const supabase = await esperarInitSupabaseAdmin();
+                if (supabase) {
+                    supabase.auth.onAuthStateChange((event, session) => {
+                        if (event === 'SIGNED_IN' || event === 'TOKEN_REFRESHED') {
+                            console.log('✅ Sesión detectada, recargando avatar de tienda...');
+                            setTimeout(cargarDatosTienda, 500);
+                        }
+                    });
+                }
+            })();
         });
         
         // Hacer funciones globales

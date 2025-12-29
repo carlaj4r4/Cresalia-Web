@@ -4164,9 +4164,37 @@
                     }
                 }
                 
-                // Cargar avatar guardado
-                const avatarUrl = localStorage.getItem('cresalia_avatar_url');
-                if (avatarUrl) {
+                // Cargar avatar desde Supabase primero, luego localStorage como fallback
+                let avatarUrl = null;
+                
+                // 1. Intentar cargar desde Supabase (compradores)
+                if (tipoUsuario === 'comprador') {
+                    try {
+                        const { data: comprador } = await supabase
+                            .from('compradores')
+                            .select('avatar_url')
+                            .eq('user_id', user.id)
+                            .single();
+                        
+                        if (comprador && comprador.avatar_url) {
+                            avatarUrl = comprador.avatar_url;
+                            console.log('✅ Avatar cargado desde Supabase (comprador)');
+                        }
+                    } catch (error) {
+                        console.log('No se encontró avatar en Supabase para comprador');
+                    }
+                }
+                
+                // 2. Si no hay en Supabase, intentar desde localStorage
+                if (!avatarUrl) {
+                    avatarUrl = localStorage.getItem('cresalia_avatar_url');
+                    if (avatarUrl) {
+                        console.log('✅ Avatar cargado desde localStorage');
+                    }
+                }
+                
+                // 3. Si hay avatar, mostrarlo
+                if (avatarUrl && !avatarUrl.includes('data:image/svg')) {
                     document.getElementById('avatar-usuario').src = avatarUrl;
                 } else {
                     // Avatar por defecto con iniciales
@@ -4198,15 +4226,33 @@
             try {
                 // Crear preview
                 const reader = new FileReader();
-                reader.onload = function(e) {
+                reader.onload = async function(e) {
                     const avatarImg = document.getElementById('avatar-usuario');
-                    avatarImg.src = e.target.result;
+                    avatarImg.src = e.target.result; // Preview inmediato
                     
-                    // Guardar en localStorage
+                    // Guardar en localStorage como backup inmediato
                     localStorage.setItem('cresalia_avatar_url', e.target.result);
                     
-                    // Opcional: Subir a Supabase Storage
-                    subirAvatarASupabase(file);
+                    // Subir a Supabase Storage y guardar URL en BD
+                    await subirAvatarASupabase(file);
+                    
+                    // Si se subió correctamente, actualizar con URL pública
+                    const supabase = await esperarInitSupabase();
+                    if (supabase) {
+                        const { data: { user } } = await supabase.auth.getUser();
+                        if (user) {
+                            const { data: comprador } = await supabase
+                                .from('compradores')
+                                .select('avatar_url')
+                                .eq('user_id', user.id)
+                                .single();
+                            
+                            if (comprador && comprador.avatar_url) {
+                                avatarImg.src = comprador.avatar_url;
+                                localStorage.setItem('cresalia_avatar_url', comprador.avatar_url);
+                            }
+                        }
+                    }
                 };
                 reader.readAsDataURL(file);
                 
@@ -4218,22 +4264,83 @@
         
         async function subirAvatarASupabase(file) {
             try {
-                const supabase = initSupabase();
-                if (!supabase) return;
+                const supabase = await esperarInitSupabase();
+                if (!supabase) {
+                    console.warn('⚠️ Supabase no disponible, guardado solo localmente');
+                    return;
+                }
                 
-                const { data: { user } } = await supabase.auth.getUser();
-                if (!user) return;
+                const { data: { user }, error: userError } = await supabase.auth.getUser();
+                if (userError || !user) {
+                    console.warn('⚠️ Usuario no autenticado, guardado solo localmente');
+                    return;
+                }
                 
                 // Crear nombre único para el archivo
-                const fileName = `avatars/${user.id}/${Date.now()}_${file.name}`;
+                const fileExt = file.name.split('.').pop();
+                const fileName = `${user.id}/avatar-${Date.now()}.${fileExt}`;
+                const filePath = `compradores/${fileName}`;
                 
-                // Subir a Supabase Storage (si tenés un bucket configurado)
-                // const { data, error } = await supabase.storage
-                //     .from('avatars')
-                //     .upload(fileName, file, { upsert: true });
+                // Subir a Supabase Storage
+                const { data: uploadData, error: uploadError } = await supabase.storage
+                    .from('avatars')
+                    .upload(filePath, file, {
+                        cacheControl: '3600',
+                        upsert: true
+                    });
                 
-                // Por ahora solo guardamos en localStorage
-                console.log('✅ Avatar guardado localmente');
+                if (uploadError) {
+                    console.error('Error subiendo avatar a Storage:', uploadError);
+                    // Si falla Storage, al menos está guardado en localStorage
+                    return;
+                }
+                
+                // Obtener URL pública
+                const { data: { publicUrl } } = supabase.storage
+                    .from('avatars')
+                    .getPublicUrl(filePath);
+                
+                // Actualizar en la tabla compradores
+                const { data: compradorExistente } = await supabase
+                    .from('compradores')
+                    .select('id')
+                    .eq('user_id', user.id)
+                    .single();
+                
+                if (compradorExistente) {
+                    // Actualizar comprador existente
+                    const { error: updateError } = await supabase
+                        .from('compradores')
+                        .update({ avatar_url: publicUrl })
+                        .eq('user_id', user.id);
+                    
+                    if (updateError) {
+                        console.error('Error actualizando avatar en BD:', updateError);
+                        // Intentar agregar el campo si no existe
+                        console.log('⚠️ El campo avatar_url puede no existir en la tabla compradores');
+                    } else {
+                        console.log('✅ Avatar guardado en Supabase:', publicUrl);
+                        // Actualizar localStorage con la URL pública
+                        localStorage.setItem('cresalia_avatar_url', publicUrl);
+                    }
+                } else {
+                    // Si no existe el comprador, crear registro básico
+                    const { error: insertError } = await supabase
+                        .from('compradores')
+                        .insert([{
+                            user_id: user.id,
+                            nombre_completo: user.user_metadata?.nombre || user.email?.split('@')[0] || 'Usuario',
+                            email: user.email,
+                            avatar_url: publicUrl
+                        }]);
+                    
+                    if (insertError) {
+                        console.error('Error creando registro de comprador:', insertError);
+                    } else {
+                        console.log('✅ Avatar guardado en Supabase (nuevo comprador):', publicUrl);
+                        localStorage.setItem('cresalia_avatar_url', publicUrl);
+                    }
+                }
                 
             } catch (error) {
                 console.warn('⚠️ No se pudo subir a Supabase, guardado solo localmente:', error);
@@ -4254,6 +4361,19 @@
             }
             
             setTimeout(cargarDatosUsuario, 1000);
+            
+            // Escuchar cambios de sesión para recargar avatar cuando el usuario inicia sesión
+            (async () => {
+                const supabase = await esperarInitSupabase();
+                if (supabase) {
+                    supabase.auth.onAuthStateChange((event, session) => {
+                        if (event === 'SIGNED_IN' || event === 'TOKEN_REFRESHED') {
+                            console.log('✅ Sesión detectada, recargando avatar...');
+                            setTimeout(cargarDatosUsuario, 500);
+                        }
+                    });
+                }
+            })();
         });
         
         // Hacer funciones globales
