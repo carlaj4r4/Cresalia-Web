@@ -1916,9 +1916,14 @@ class SistemaForoComunidades {
         
         // Badge de "leído por admin" - mostrar SOLO para:
         // 1. Admins en paneles de verificación
-        // 2. Autores de los posts EN COMUNIDADES QUE REQUIEREN VERIFICACIÓN (donación de materiales y urgente)
+        // 2. Autores de los posts EN COMUNIDADES QUE REQUIEREN VERIFICACIÓN
         // Las demás comunidades NO deben mostrar este badge para permitir desahogo libre
-        const comunidadesRequierenVerificacion = ['cresalia-solidario', 'cresalia-solidario-emergencias'];
+        const comunidadesRequierenVerificacion = [
+            'cresalia-jobs',
+            'cresalia-solidario',
+            'cresalia-solidario-emergencias',
+            'cresalia-animales'
+        ];
         const requiereVerificacion = comunidadesRequierenVerificacion.includes(this.comunidadSlug);
         const mostrarBadgeLeido = esPanelVerificacion || (esAutor && requiereVerificacion);
         
