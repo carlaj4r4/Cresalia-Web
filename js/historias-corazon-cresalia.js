@@ -3,9 +3,21 @@
 
 const HistoriasCorazon = {
     historias: [],
+    supabase: null,
     
     async init() {
         console.log('💜 Inicializando sistema de Historias con Corazón Cresalia');
+        
+        // Intentar inicializar Supabase si está disponible
+        if (typeof initSupabase === 'function') {
+            try {
+                this.supabase = initSupabase();
+                console.log('✅ Supabase disponible para reacciones');
+            } catch (error) {
+                console.warn('⚠️ Supabase no disponible, usando localStorage:', error);
+            }
+        }
+        
         await this.cargarHistorias();
     },
     
@@ -37,7 +49,7 @@ const HistoriasCorazon = {
         }
     },
     
-    renderizarHistorias() {
+    async renderizarHistorias() {
         const grid = document.getElementById('historiasGrid');
         const sinHistorias = document.getElementById('sinHistorias');
         const seccion = document.getElementById('historias-corazon');
@@ -61,9 +73,18 @@ const HistoriasCorazon = {
         }
         sinHistorias.style.display = 'none';
         
-        grid.innerHTML = this.historias.map(historia => {
-            const historiaId = historia.id || `historia-${Date.now()}-${Math.random()}`;
-            const reacciones = this.obtenerReacciones(historiaId);
+        // Cargar reacciones para todas las historias (async)
+        const historiasConReacciones = await Promise.all(
+            this.historias.map(async (historia) => {
+                const historiaId = historia.id || `historia-${Date.now()}-${Math.random()}`;
+                const reacciones = await this.obtenerReacciones(historiaId);
+                return { ...historia, historiaId, reacciones };
+            })
+        );
+        
+        grid.innerHTML = historiasConReacciones.map((historia) => {
+            const historiaId = historia.historiaId;
+            const reacciones = historia.reacciones;
             
             return `
             <div class="historia-card" data-historia-id="${historiaId}">
@@ -101,31 +122,31 @@ const HistoriasCorazon = {
                 <!-- Sistema de Reacciones -->
                 <div class="historia-reacciones" style="margin-top: 20px; padding-top: 15px; border-top: 1px solid #E5E7EB; display: flex; align-items: center; gap: 10px; flex-wrap: wrap;">
                     <div class="reacciones-botones" style="display: flex; gap: 8px; flex-wrap: wrap;">
-                        <button class="btn-reaccion ${reacciones.meGusta ? 'activa' : ''}" 
+                        <button class="btn-reaccion ${reacciones._meGusta_activa ? 'activa' : ''}" 
                                 onclick="HistoriasCorazon.reaccionar('${historiaId}', 'meGusta')"
                                 title="Me gusta">
                             <span class="emoji-reaccion">👍</span>
                             <span class="contador-reaccion" data-tipo="meGusta">${reacciones.meGusta || 0}</span>
                         </button>
-                        <button class="btn-reaccion ${reacciones.corazon ? 'activa' : ''}" 
+                        <button class="btn-reaccion ${reacciones._corazon_activa ? 'activa' : ''}" 
                                 onclick="HistoriasCorazon.reaccionar('${historiaId}', 'corazon')"
                                 title="Me encanta">
                             <span class="emoji-reaccion">💜</span>
                             <span class="contador-reaccion" data-tipo="corazon">${reacciones.corazon || 0}</span>
                         </button>
-                        <button class="btn-reaccion ${reacciones.aplausos ? 'activa' : ''}" 
+                        <button class="btn-reaccion ${reacciones._aplausos_activa ? 'activa' : ''}" 
                                 onclick="HistoriasCorazon.reaccionar('${historiaId}', 'aplausos')"
                                 title="Aplausos">
                             <span class="emoji-reaccion">👏</span>
                             <span class="contador-reaccion" data-tipo="aplausos">${reacciones.aplausos || 0}</span>
                         </button>
-                        <button class="btn-reaccion ${reacciones.inspirador ? 'activa' : ''}" 
+                        <button class="btn-reaccion ${reacciones._inspirador_activa ? 'activa' : ''}" 
                                 onclick="HistoriasCorazon.reaccionar('${historiaId}', 'inspirador')"
                                 title="Inspirador">
                             <span class="emoji-reaccion">✨</span>
                             <span class="contador-reaccion" data-tipo="inspirador">${reacciones.inspirador || 0}</span>
                         </button>
-                        <button class="btn-reaccion ${reacciones.fuerza ? 'activa' : ''}" 
+                        <button class="btn-reaccion ${reacciones._fuerza_activa ? 'activa' : ''}" 
                                 onclick="HistoriasCorazon.reaccionar('${historiaId}', 'fuerza')"
                                 title="Mucha fuerza">
                             <span class="emoji-reaccion">💪</span>
@@ -169,7 +190,57 @@ const HistoriasCorazon = {
         return div.innerHTML;
     },
     
-    obtenerReacciones(historiaId) {
+    async obtenerReacciones(historiaId) {
+        // Si Supabase está disponible, intentar cargar desde ahí
+        if (this.supabase) {
+            try {
+                // Obtener contadores desde Supabase
+                const { data: reaccionesData, error } = await this.supabase
+                    .from('historias_corazon_reacciones')
+                    .select('tipo_reaccion')
+                    .eq('historia_id', historiaId);
+                
+                if (!error && reaccionesData) {
+                    // Contar reacciones por tipo
+                    const contadores = {
+                        meGusta: 0,
+                        corazon: 0,
+                        aplausos: 0,
+                        inspirador: 0,
+                        fuerza: 0
+                    };
+                    
+                    reaccionesData.forEach(reaccion => {
+                        if (contadores.hasOwnProperty(reaccion.tipo_reaccion)) {
+                            contadores[reaccion.tipo_reaccion]++;
+                        }
+                    });
+                    
+                    // Verificar si el usuario actual ya reaccionó
+                    const { data: { user } } = await this.supabase.auth.getUser();
+                    if (user) {
+                        const { data: misReacciones } = await this.supabase
+                            .from('historias_corazon_reacciones')
+                            .select('tipo_reaccion')
+                            .eq('historia_id', historiaId)
+                            .eq('usuario_id', user.id);
+                        
+                        // Marcar las reacciones del usuario como activas
+                        if (misReacciones) {
+                            misReacciones.forEach(reaccion => {
+                                contadores[`_${reaccion.tipo_reaccion}_activa`] = true;
+                            });
+                        }
+                    }
+                    
+                    return contadores;
+                }
+            } catch (error) {
+                console.warn('Error cargando reacciones desde Supabase, usando localStorage:', error);
+            }
+        }
+        
+        // Fallback a localStorage
         try {
             const todasReacciones = JSON.parse(localStorage.getItem('historiasCorazonReacciones') || '{}');
             return todasReacciones[historiaId] || {
@@ -201,11 +272,10 @@ const HistoriasCorazon = {
         }
     },
     
-    reaccionar(historiaId, tipo) {
+    async reaccionar(historiaId, tipo) {
         const card = document.querySelector(`[data-historia-id="${historiaId}"]`);
         if (!card) return;
         
-        const reacciones = this.obtenerReacciones(historiaId);
         const boton = card.querySelector(`[onclick*="'${tipo}'"]`);
         const contador = card.querySelector(`[data-tipo="${tipo}"]`);
         
@@ -214,13 +284,78 @@ const HistoriasCorazon = {
         // Verificar si el usuario ya reaccionó con este tipo
         const yaReacciono = boton.classList.contains('activa');
         
+        // Si Supabase está disponible, usar Supabase
+        if (this.supabase) {
+            try {
+                const { data: { user } } = await this.supabase.auth.getUser();
+                
+                if (!user) {
+                    alert('💜 Por favor, iniciá sesión para reaccionar a las historias');
+                    return;
+                }
+                
+                if (yaReacciono) {
+                    // Eliminar reacción de Supabase
+                    const { error } = await this.supabase
+                        .from('historias_corazon_reacciones')
+                        .delete()
+                        .eq('historia_id', historiaId)
+                        .eq('usuario_id', user.id)
+                        .eq('tipo_reaccion', tipo);
+                    
+                    if (error) throw error;
+                    
+                    boton.classList.remove('activa');
+                } else {
+                    // Agregar reacción en Supabase
+                    const { error } = await this.supabase
+                        .from('historias_corazon_reacciones')
+                        .insert({
+                            historia_id: historiaId,
+                            usuario_id: user.id,
+                            tipo_reaccion: tipo
+                        });
+                    
+                    if (error) {
+                        // Si es error de duplicado, intentar eliminar primero
+                        if (error.code === '23505') {
+                            await this.supabase
+                                .from('historias_corazon_reacciones')
+                                .delete()
+                                .eq('historia_id', historiaId)
+                                .eq('usuario_id', user.id)
+                                .eq('tipo_reaccion', tipo);
+                        } else {
+                            throw error;
+                        }
+                    }
+                    
+                    boton.classList.add('activa');
+                }
+                
+                // Recargar contadores desde Supabase
+                const nuevasReacciones = await this.obtenerReacciones(historiaId);
+                this.actualizarContadores(card, nuevasReacciones);
+                
+                return;
+            } catch (error) {
+                console.warn('Error con Supabase, usando localStorage:', error);
+                // Continuar con localStorage como fallback
+            }
+        }
+        
+        // Fallback a localStorage
+        const reacciones = await this.obtenerReacciones(historiaId);
+        
         if (yaReacciono) {
             // Quitar reacción
             reacciones[tipo] = Math.max(0, (reacciones[tipo] || 0) - 1);
+            delete reacciones[`_${tipo}_activa`];
             boton.classList.remove('activa');
         } else {
             // Agregar reacción
             reacciones[tipo] = (reacciones[tipo] || 0) + 1;
+            reacciones[`_${tipo}_activa`] = true;
             boton.classList.add('activa');
         }
         
@@ -229,35 +364,27 @@ const HistoriasCorazon = {
         
         // Guardar reacciones
         this.guardarReacciones(historiaId, reacciones);
-        
-        // Intentar guardar en el servidor (opcional, no bloquea si falla)
-        this.enviarReaccionAlServidor(historiaId, tipo, !yaReacciono).catch(err => {
-            console.warn('No se pudo guardar reacción en servidor (continuando con localStorage):', err);
+    },
+    
+    actualizarContadores(card, reacciones) {
+        ['meGusta', 'corazon', 'aplausos', 'inspirador', 'fuerza'].forEach(tipo => {
+            const contador = card.querySelector(`[data-tipo="${tipo}"]`);
+            const boton = card.querySelector(`[onclick*="'${tipo}'"]`);
+            
+            if (contador) {
+                contador.textContent = reacciones[tipo] || 0;
+            }
+            
+            if (boton) {
+                if (reacciones[`_${tipo}_activa`]) {
+                    boton.classList.add('activa');
+                } else {
+                    boton.classList.remove('activa');
+                }
+            }
         });
     },
     
-    async enviarReaccionAlServidor(historiaId, tipo, agregar) {
-        try {
-            const response = await fetch('/api/historias-corazon/reacciones', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({
-                    historia_id: historiaId,
-                    tipo: tipo,
-                    accion: agregar ? 'agregar' : 'quitar'
-                })
-            });
-            
-            if (!response.ok) {
-                throw new Error('Error en servidor');
-            }
-        } catch (error) {
-            // No es crítico si falla, las reacciones se guardan en localStorage
-            throw error;
-        }
-    },
     
     agregarEstilosReacciones() {
         // Verificar si los estilos ya existen
