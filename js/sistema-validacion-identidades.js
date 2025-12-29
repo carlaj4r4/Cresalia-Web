@@ -1,14 +1,5 @@
 // ===== SISTEMA DE VALIDACIÓN DE IDENTIDADES =====
 // Sistema para verificar identidades en comunidades sensibles y prevenir trolls
-// SOLO se activa en comunidades que requieren verificación: donación de materiales y urgente
-
-// Lista de comunidades que REQUIEREN verificación de identidad
-// SOLO estas comunidades deben mostrar el botón de verificación
-const COMUNIDADES_REQUIEREN_VERIFICACION = [
-    'cresalia-solidario',
-    'cresalia-solidario-emergencias',
-    'donar-materiales' // Página de donación de materiales dentro de solidario-emergencias
-];
 
 class SistemaValidacionIdentidades {
     constructor(comunidadSlug) {
@@ -16,22 +7,7 @@ class SistemaValidacionIdentidades {
         this.supabase = null;
         this.autorHash = null;
         this.estaVerificado = false;
-        
-        // Verificar si esta comunidad requiere verificación
-        if (!this.requiereVerificacion()) {
-            console.log(`ℹ️ La comunidad "${comunidadSlug}" no requiere verificación de identidad. Sistema desactivado.`);
-            return; // No inicializar si no requiere verificación
-        }
-        
         this.init();
-    }
-    
-    requiereVerificacion() {
-        // Verificar si el slug de la comunidad está en la lista de comunidades que requieren verificación
-        return COMUNIDADES_REQUIEREN_VERIFICACION.some(slug => 
-            this.comunidadSlug.includes(slug) || 
-            this.comunidadSlug === slug
-        );
     }
     
     async init() {
@@ -116,11 +92,6 @@ class SistemaValidacionIdentidades {
     }
     
     crearBotonSolicitud() {
-        // Verificar si esta comunidad requiere verificación
-        if (!this.requiereVerificacion()) {
-            return; // No crear botón si no requiere verificación
-        }
-        
         // Verificar si ya existe
         if (document.getElementById('btn-solicitar-verificacion')) return;
         
