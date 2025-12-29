@@ -13498,20 +13498,34 @@ Precio: $${precio.toLocaleString('es-AR')} ARS/mes
             }
         }
         
-        // Función para esperar a que initSupabase esté disponible
-        function esperarInitSupabaseAdmin(callback, maxIntentos = 10, intento = 0) {
-            if (typeof initSupabase !== 'undefined' && typeof initSupabase === 'function') {
-                callback();
-            } else if (intento < maxIntentos) {
-                setTimeout(() => esperarInitSupabaseAdmin(callback, maxIntentos, intento + 1), 500);
-            } else {
-                console.warn('⚠️ initSupabase no está disponible para cargar datos de tienda');
+        // Función para esperar a que initSupabase esté disponible (retorna promesa)
+        async function esperarInitSupabaseAdmin(maxIntentos = 10, intervalo = 500) {
+            for (let i = 0; i < maxIntentos; i++) {
+                if (typeof initSupabase === 'function') {
+                    try {
+                        const supabase = initSupabase();
+                        if (supabase) return supabase;
+                    } catch (error) {
+                        console.warn('Error al llamar initSupabase:', error);
+                    }
+                }
+                if (i < maxIntentos - 1) {
+                    await new Promise(resolve => setTimeout(resolve, intervalo));
+                }
             }
+            console.error('❌ initSupabase no disponible después de varios intentos');
+            return null;
         }
         
         // Cargar datos al iniciar
         document.addEventListener('DOMContentLoaded', () => {
-            esperarInitSupabaseAdmin(cargarDatosTienda);
+            // Cargar datos inicialmente
+            (async () => {
+                const supabase = await esperarInitSupabaseAdmin();
+                if (supabase) {
+                    cargarDatosTienda();
+                }
+            })();
             
             // Escuchar cambios de sesión para recargar avatar cuando el usuario inicia sesión
             (async () => {
