@@ -1011,6 +1011,31 @@
                 max-width: 350px !important;
                 height: 450px !important;
             }
+            
+            /* Carrito flotante - lado izquierdo para no superponerse con chatbots */
+            .floating-cart {
+                bottom: 10px !important;
+                left: 10px !important;
+                right: auto !important;
+                min-width: 80px !important;
+                max-width: 100px !important;
+                padding: 8px 10px !important;
+                z-index: 9998 !important;
+            }
+            
+            .floating-cart-icon {
+                width: 24px !important;
+                height: 24px !important;
+                font-size: 0.8rem !important;
+            }
+            
+            .floating-cart-text {
+                font-size: 0.6rem !important;
+            }
+            
+            .floating-cart-total {
+                font-size: 0.65rem !important;
+            }
         }
         
         /* Asegurar que los contenedores siempre estén visibles */
@@ -2340,6 +2365,7 @@
                                     </div>
                                 </div>
                             `).join('')}
+                            `}
                         </div>
                         
                         <div style="border-top: 2px solid #E5E7EB; padding-top: 20px;">
