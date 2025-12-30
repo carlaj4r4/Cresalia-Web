@@ -2301,8 +2301,126 @@
         }
         
         // Funciones auxiliares
-        function irATienda(slug) {
+        async function irATienda(slug) {
+            // Cargar ubicación de la tienda automáticamente
+            await cargarUbicacionTienda(slug);
+            // Abrir tienda en nueva pestaña
             window.open(`tiendas/${slug}/index.html`, '_blank');
+        }
+        
+        // Función para cargar ubicación de la tienda en el mapa
+        async function cargarUbicacionTienda(slug) {
+            try {
+                // Esperar a que Supabase esté disponible
+                if (typeof initSupabase === 'undefined' || typeof initSupabase !== 'function') {
+                    console.log('ℹ️ Supabase aún no disponible para cargar ubicación');
+                    return;
+                }
+                
+                const supabase = initSupabase();
+                if (!supabase) {
+                    console.log('ℹ️ Supabase no inicializado');
+                    return;
+                }
+                
+                // Buscar la tienda por slug o subdomain
+                const { data: tienda, error: errorTienda } = await supabase
+                    .from('tiendas')
+                    .select('configuracion, nombre_tienda')
+                    .or(`subdomain.eq.${slug},configuracion->>slug.eq.${slug}`)
+                    .eq('activa', true)
+                    .maybeSingle();
+                
+                if (errorTienda || !tienda) {
+                    console.log('ℹ️ No se encontró la tienda o no tiene ubicación configurada');
+                    return;
+                }
+                
+                // Obtener ubicación desde configuracion o desde tabla ubicaciones_tiendas
+                let ubicacion = null;
+                
+                // Intentar desde configuracion primero
+                if (tienda.configuracion?.ubicacion) {
+                    ubicacion = tienda.configuracion.ubicacion;
+                } else {
+                    // Buscar en tabla ubicaciones_tiendas
+                    const { data: ubicaciones, error: errorUbicaciones } = await supabase
+                        .from('ubicaciones_tiendas')
+                        .select('*')
+                        .eq('tienda_id', slug)
+                        .eq('estado', 'activo')
+                        .limit(1)
+                        .maybeSingle();
+                    
+                    if (!errorUbicaciones && ubicaciones) {
+                        ubicacion = {
+                            direccion: ubicaciones.direccion,
+                            ciudad: ubicaciones.nombre_ubicacion || '',
+                            lat: ubicaciones.latitud,
+                            lng: ubicaciones.longitud
+                        };
+                    }
+                }
+                
+                if (!ubicacion || !ubicacion.direccion) {
+                    console.log('ℹ️ La tienda no tiene ubicación configurada');
+                    return;
+                }
+                
+                // Actualizar el mapa en index-cresalia.html
+                actualizarMapaTienda(ubicacion, tienda.nombre_tienda);
+                
+            } catch (error) {
+                console.error('❌ Error cargando ubicación de tienda:', error);
+            }
+        }
+        
+        // Función para actualizar el mapa con la ubicación de la tienda
+        function actualizarMapaTienda(ubicacion, nombreTienda) {
+            const mapaContainer = document.getElementById('mapa-tienda');
+            const mapaInfo = mapaContainer?.parentElement?.querySelector('.mapa-info');
+            
+            if (!mapaContainer) return;
+            
+            // Actualizar el placeholder con la información de la tienda
+            const placeholder = mapaContainer.querySelector('.mapa-placeholder');
+            if (placeholder) {
+                placeholder.innerHTML = `
+                    <i class="fas fa-map-marker-alt" style="font-size: 3rem; color: #7C3AED; margin-bottom: 15px;"></i>
+                    <h4>${nombreTienda || 'Tienda'}</h4>
+                    <p><strong>${ubicacion.direccion}</strong></p>
+                    ${ubicacion.ciudad ? `<p>${ubicacion.ciudad}</p>` : ''}
+                    ${ubicacion.lat && ubicacion.lng ? `
+                        <p style="margin-top: 10px; color: #6B7280; font-size: 0.9rem;">
+                            <i class="fas fa-map"></i> Coordenadas: ${ubicacion.lat}, ${ubicacion.lng}
+                        </p>
+                    ` : ''}
+                `;
+            }
+            
+            // Actualizar información del mapa
+            if (mapaInfo) {
+                const direccionP = mapaInfo.querySelector('p');
+                if (direccionP) {
+                    direccionP.innerHTML = `<strong>Dirección:</strong> ${ubicacion.direccion}${ubicacion.ciudad ? `, ${ubicacion.ciudad}` : ''}`;
+                }
+                
+                // Mostrar botón de obtener ruta si hay coordenadas
+                const btnRuta = mapaInfo.querySelector('button[onclick="obtenerRuta()"]');
+                if (btnRuta && ubicacion.lat && ubicacion.lng) {
+                    btnRuta.style.display = 'inline-block';
+                    btnRuta.onclick = () => {
+                        const url = `https://www.google.com/maps/dir/?api=1&destination=${ubicacion.lat},${ubicacion.lng}`;
+                        window.open(url, '_blank');
+                    };
+                }
+            }
+            
+            // Scroll suave a la sección de contacto
+            const contactoSection = document.getElementById('contacto');
+            if (contactoSection) {
+                contactoSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            }
         }
         
         function irAMiCuenta(id) {

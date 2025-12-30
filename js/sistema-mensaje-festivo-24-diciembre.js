@@ -17,12 +17,18 @@ class SistemaMensajeFestivo24Diciembre {
         return fechaUltimoEnvio.getFullYear() === añoActual;
     }
 
-    // Verificar si es 24 de diciembre
+    // Verificar si es 24 de diciembre (funciona año tras año)
     es24DeDiciembre() {
         const ahora = new Date();
         const mes = ahora.getMonth(); // 0-11 (11 = diciembre)
         const dia = ahora.getDate();
         return mes === 11 && dia === 24;
+    }
+    
+    // Verificar si estamos en diciembre (para activar el sistema solo en diciembre)
+    esDiciembre() {
+        const ahora = new Date();
+        return ahora.getMonth() === 11; // 11 = diciembre
     }
 
     // Obtener todos los usuarios registrados
@@ -332,10 +338,24 @@ class SistemaMensajeFestivo24Diciembre {
         }
     }
 
-    // Inicializar verificación automática
+    // Inicializar verificación automática (solo en diciembre)
     inicializar() {
+        // Solo inicializar si estamos en diciembre
+        if (!this.esDiciembre()) {
+            console.log('ℹ️ Sistema de mensaje festivo: No es diciembre, sistema desactivado hasta diciembre');
+            return;
+        }
+        
+        console.log('🎄 Sistema de mensaje festivo activado para diciembre');
+        
         // Verificar cada 15 minutos si es 24 de diciembre (más frecuente para asegurar ejecución)
         setInterval(() => {
+            // Verificar que sigamos en diciembre
+            if (!this.esDiciembre()) {
+                console.log('ℹ️ Ya no es diciembre, sistema desactivado');
+                return;
+            }
+            
             if (this.es24DeDiciembre() && !this.yaEnviado) {
                 console.log('🎄 Es 24 de diciembre, iniciando envío de mensajes festivos...');
                 this.procesarEnvioMasivo();
@@ -353,7 +373,7 @@ class SistemaMensajeFestivo24Diciembre {
 
         // También verificar cuando la página se vuelve visible (usuario vuelve a la pestaña)
         document.addEventListener('visibilitychange', () => {
-            if (!document.hidden && this.es24DeDiciembre() && !this.yaEnviado) {
+            if (!document.hidden && this.esDiciembre() && this.es24DeDiciembre() && !this.yaEnviado) {
                 console.log('🎄 Página visible en 24 de diciembre, verificando envío...');
                 setTimeout(() => {
                     this.procesarEnvioMasivo();
@@ -372,15 +392,25 @@ if (typeof window !== 'undefined') {
     window.enviarMensajeFestivo24 = () => sistemaMensajeFestivo24.procesarEnvioMasivo();
 }
 
-// Inicializar automáticamente
+// Inicializar automáticamente (solo si es diciembre)
 if (typeof document !== 'undefined') {
     if (document.readyState === 'loading') {
         document.addEventListener('DOMContentLoaded', () => {
-            sistemaMensajeFestivo24.inicializar();
+            // Solo inicializar si es diciembre
+            if (sistemaMensajeFestivo24.esDiciembre()) {
+                sistemaMensajeFestivo24.inicializar();
+            } else {
+                console.log('ℹ️ Sistema de mensaje festivo cargado pero desactivado (no es diciembre)');
+            }
         });
     } else {
-        sistemaMensajeFestivo24.inicializar();
+        // Solo inicializar si es diciembre
+        if (sistemaMensajeFestivo24.esDiciembre()) {
+            sistemaMensajeFestivo24.inicializar();
+        } else {
+            console.log('ℹ️ Sistema de mensaje festivo cargado pero desactivado (no es diciembre)');
+        }
     }
 }
 
-console.log('🎄 Sistema de Mensaje Festivo 24 de Diciembre cargado');
+console.log('🎄 Sistema de Mensaje Festivo 24 de Diciembre cargado (se activará automáticamente en diciembre)');
