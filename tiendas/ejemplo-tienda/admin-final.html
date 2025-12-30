@@ -9974,6 +9974,9 @@
         }
         
         function mostrarFormularioNuevoTurno(fechaSeleccionada) {
+            // Cerrar el modal principal de turnos primero
+            cerrarModalTurnos();
+            
             const servicios = sistemaServicios.cargarServicios();
             const modal = document.createElement('div');
             modal.id = 'modalNuevoTurno';
@@ -10046,9 +10049,19 @@
             turnos.push(nuevoTurno);
             localStorage.setItem('turnos_reservados', JSON.stringify(turnos));
             mostrarNotificacion('✅ Turno creado exitosamente', 'success');
+            
+            // Cerrar ambos modales
             cerrarModalNuevoTurno();
-            cerrarModalTurnos();
-            setTimeout(() => abrirSistemaTurnos(), 500);
+            // Asegurarse de que el modal principal también esté cerrado
+            const modalPrincipal = document.getElementById('modalTurnos');
+            if (modalPrincipal) modalPrincipal.remove();
+            
+            // Recargar el sistema de turnos después de un breve delay
+            setTimeout(() => {
+                if (typeof abrirSistemaTurnos === 'function') {
+                    abrirSistemaTurnos();
+                }
+            }, 500);
         }
         
         function cerrarModalNuevoTurno() {
