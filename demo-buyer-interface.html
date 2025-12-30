@@ -3915,6 +3915,22 @@
     <!-- Sistema de Check-in Automático de Emergencias -->
     <script src="/js/sistema-checkin-emergencias.js"></script>
     <script>
+        // Asegurar que el chatbot IA sea visible desde el inicio en escritorio
+        document.addEventListener('DOMContentLoaded', () => {
+            const aiChatbotContainer = document.querySelector('.ai-chatbot-container');
+            if (aiChatbotContainer && window.innerWidth >= 769) {
+                aiChatbotContainer.style.display = 'block';
+                aiChatbotContainer.style.visibility = 'visible';
+                aiChatbotContainer.style.opacity = '1';
+                const toggle = aiChatbotContainer.querySelector('.ai-chatbot-toggle');
+                if (toggle) {
+                    toggle.style.display = 'flex';
+                    toggle.style.visibility = 'visible';
+                    toggle.style.opacity = '1';
+                }
+            }
+        });
+        
         document.addEventListener('DOMContentLoaded', () => {
             setTimeout(() => {
                 if (typeof SistemaAlertasComunidades !== 'undefined') {
