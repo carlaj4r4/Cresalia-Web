@@ -882,7 +882,7 @@
         /* ESTILOS CHATBOTS IA Y SOPORTE */
         /* =============================================== */
         
-        /* Chatbot IA Container - MEJOR ESPACIADO */
+        /* Chatbot IA Container - MEJOR ESPACIADO - VISIBLE DESDE INICIO EN ESCRITORIO */
         .ai-chatbot-container {
             position: fixed !important;
             bottom: 20px !important;
@@ -891,6 +891,22 @@
             display: block !important;
             visibility: visible !important;
             opacity: 1 !important;
+        }
+        
+        /* Asegurar visibilidad en escritorio (sin depender de scroll) */
+        @media (min-width: 769px) {
+            .ai-chatbot-container {
+                display: block !important;
+                visibility: visible !important;
+                opacity: 1 !important;
+                position: fixed !important;
+            }
+            
+            .ai-chatbot-toggle {
+                display: flex !important;
+                visibility: visible !important;
+                opacity: 1 !important;
+            }
         }
         
         .ai-chatbot-toggle {
@@ -1012,9 +1028,9 @@
                 height: 450px !important;
             }
             
-            /* Carrito flotante - lado izquierdo para no superponerse con chatbots */
+            /* Carrito flotante - lado izquierdo, más arriba para no superponerse con calculadora */
             .floating-cart {
-                bottom: 10px !important;
+                bottom: 70px !important; /* Más arriba que la calculadora (10px) */
                 left: 10px !important;
                 right: auto !important;
                 min-width: 80px !important;
