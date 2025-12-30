@@ -635,14 +635,19 @@
                 overflow-x: hidden;
             }
             
-            /* Botón "Ir al Inicio" responsive */
+            /* Botón "Ir al Inicio" responsive - MÁS VISIBLE */
             .demo-nav ul li:first-child a {
-                padding: 8px 12px !important;
-                font-size: 0.85rem !important;
+                padding: 10px 18px !important;
+                font-size: 0.9rem !important;
+                box-shadow: 0 4px 15px rgba(124, 58, 237, 0.4) !important;
             }
             
             .demo-nav ul li:first-child a span {
-                display: none; /* Ocultar texto en móvil, solo icono */
+                display: inline !important; /* Mostrar texto también en móvil */
+            }
+            
+            .demo-nav ul li:first-child a i {
+                font-size: 1rem !important;
             }
             
             /* Widget de perfil responsive */
@@ -654,16 +659,6 @@
             .widget-perfil-usuario > div > div:last-child {
                 width: 100%;
                 justify-content: center;
-            }
-            
-            /* Botón "Ir al Inicio" responsive */
-            .demo-nav ul li:first-child a {
-                padding: 8px 12px !important;
-                font-size: 0.85rem !important;
-            }
-            
-            .demo-nav ul li:first-child a span {
-                display: none; /* Ocultar texto en móvil, solo icono */
             }
             
             /* Widget de perfil responsive */
