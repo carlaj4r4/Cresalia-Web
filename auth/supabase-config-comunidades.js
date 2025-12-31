@@ -3,9 +3,33 @@
 // Usa el proyecto SEPARADO de Supabase para comunidades
 
 // CONFIGURACIÓN SEGURA - NO EXPONER CLAVES REALES
-// Intentar leer desde localStorage (permite setear la anon key en consola una vez)
-const storedUrlComunidades = (typeof localStorage !== 'undefined') ? localStorage.getItem('SUPABASE_URL_COMUNIDADES') : null;
-const storedAnonComunidades = (typeof localStorage !== 'undefined') ? localStorage.getItem('SUPABASE_ANON_KEY_COMUNIDADES') : null;
+// Permitir setear vía querystring (ej: ?supabaseUrlComunidades=...&supabaseAnonComunidades=...)
+let storedUrlComunidades = null;
+let storedAnonComunidades = null;
+
+try {
+    if (typeof window !== 'undefined') {
+        const params = new URLSearchParams(window.location.search);
+        const qsUrl = params.get('supabaseUrlComunidades');
+        const qsAnon = params.get('supabaseAnonComunidades');
+        if (qsUrl) {
+            localStorage.setItem('SUPABASE_URL_COMUNIDADES', qsUrl);
+            storedUrlComunidades = qsUrl;
+        }
+        if (qsAnon) {
+            localStorage.setItem('SUPABASE_ANON_KEY_COMUNIDADES', qsAnon);
+            storedAnonComunidades = qsAnon;
+        }
+    }
+} catch (e) {
+    console.warn('No se pudo leer parámetros de la URL para Supabase Comunidades', e);
+}
+
+// Intentar leer desde localStorage (permite setear sin consola si ya se guardó)
+if (typeof localStorage !== 'undefined') {
+    storedUrlComunidades = storedUrlComunidades || localStorage.getItem('SUPABASE_URL_COMUNIDADES');
+    storedAnonComunidades = storedAnonComunidades || localStorage.getItem('SUPABASE_ANON_KEY_COMUNIDADES');
+}
 
 const SUPABASE_CONFIG_COMUNIDADES = {
     // 🔗 URL del proyecto de Comunidades (se puede inyectar vía env en Vercel)
