@@ -5,13 +5,13 @@
 // CONFIGURACIÓN SEGURA - NO EXPONER CLAVES REALES
 const SUPABASE_CONFIG_COMUNIDADES = {
     // 🔗 URL del proyecto de Comunidades (se puede inyectar vía env en Vercel)
-    url: (typeof window !== 'undefined' && window.__SUPABASE_URL_COMUNIDADES__) ||
-         (typeof process !== 'undefined' && process.env && process.env.SUPABASE_URL_COMUNIDADES) ||
+    url: (typeof window !== 'undefined' && (window.__SUPABASE_URL_COMUNIDADES__ || window.NEXT_PUBLIC_SUPABASE_URL_COMUNIDADES)) ||
+         (typeof process !== 'undefined' && process.env && (process.env.SUPABASE_URL_COMUNIDADES || process.env.NEXT_PUBLIC_SUPABASE_URL_COMUNIDADES)) ||
          'https://zbomxayytvwjbdzbegcw.supabase.co',
     
     // 🔑 Clave anónima (pública). Se espera que venga de env; sin fallback para evitar exponerla.
-    anonKey: (typeof window !== 'undefined' && window.__SUPABASE_ANON_KEY_COMUNIDADES__) ||
-             (typeof process !== 'undefined' && process.env && process.env.SUPABASE_ANON_KEY_COMUNIDADES) ||
+    anonKey: (typeof window !== 'undefined' && (window.__SUPABASE_ANON_KEY_COMUNIDADES__ || window.NEXT_PUBLIC_SUPABASE_ANON_KEY_COMUNIDADES)) ||
+             (typeof process !== 'undefined' && process.env && (process.env.SUPABASE_ANON_KEY_COMUNIDADES || process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY_COMUNIDADES)) ||
              '',
     
     // Configuración de autenticación
