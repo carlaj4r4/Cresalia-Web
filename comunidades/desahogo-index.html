@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Comunidades de Desahogo - Cresalia</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <style>
+        :root {
+            --primario: #7C3AED;
+            --acento: #EC4899;
+            --gris: #6B7280;
+            --fondo: #F9FAFB;
+        }
+        * { box-sizing: border-box; }
+        body {
+            margin: 0;
+            font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: var(--fondo);
+            color: #111827;
+        }
+        header {
+            background: linear-gradient(135deg, var(--primario), var(--acento));
+            color: white;
+            padding: 28px 16px;
+            text-align: center;
+            box-shadow: 0 10px 30px rgba(124, 58, 237, 0.25);
+        }
+        header h1 {
+            margin: 0 0 8px 0;
+            font-size: 26px;
+            font-weight: 700;
+        }
+        header p {
+            margin: 0;
+            font-size: 15px;
+            opacity: 0.95;
+        }
+        .container {
+            max-width: 1100px;
+            margin: 32px auto;
+            padding: 0 16px;
+        }
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+            gap: 16px;
+        }
+        .card {
+            background: white;
+            border-radius: 14px;
+            padding: 16px;
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.06);
+            border: 1px solid #E5E7EB;
+            display: flex;
+            gap: 12px;
+            align-items: center;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+            text-decoration: none;
+            color: #111827;
+        }
+        .card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 24px rgba(124, 58, 237, 0.14);
+        }
+        .icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 12px;
+            display: grid;
+            place-items: center;
+            font-size: 18px;
+        }
+        .title {
+            font-weight: 700;
+            margin-bottom: 4px;
+            font-size: 15px;
+        }
+        .desc {
+            margin: 0;
+            color: var(--gris);
+            font-size: 13px;
+            line-height: 1.4;
+        }
+        @media (max-width: 640px) {
+            header h1 { font-size: 22px; }
+            .card { padding: 14px; }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>Comunidades de Desahogo</h1>
+        <p>Accesos directos a todos nuestros espacios de desahogo y acompañamiento.</p>
+    </header>
+
+    <main class="container">
+        <div class="grid">
+            <a class="card" href="desahogo-libre/">
+                <div class="icon" style="background:#F3F4F6; color:#374151;">💭</div>
+                <div>
+                    <div class="title">Desahogo Libre</div>
+                    <p class="desc">Comparte anónimamente lo que sientes, sin juicios.</p>
+                </div>
+            </a>
+            <a class="card" href="libertad-emocional/">
+                <div class="icon" style="background:#F5F3FF; color:#6B21A8;">💜</div>
+                <div>
+                    <div class="title">Libertad Emocional</div>
+                    <p class="desc">Espacio seguro para procesar emociones y recibir apoyo.</p>
+                </div>
+            </a>
+            <a class="card" href="sanando-abandonos/">
+                <div class="icon" style="background:#E0F2FE; color:#0369A1;">🤗</div>
+                <div>
+                    <div class="title">Sanando Abandonos</div>
+                    <p class="desc">Acompañamiento para quienes atraviesan duelos y pérdidas.</p>
+                </div>
+            </a>
+            <a class="card" href="injusticias-vividas/">
+                <div class="icon" style="background:#F3F4F6; color:#111827;">⚖️</div>
+                <div>
+                    <div class="title">Injusticias Vividas</div>
+                    <p class="desc">Un espacio para ser escuchado y validar experiencias difíciles.</p>
+                </div>
+            </a>
+            <a class="card" href="caminando-juntos/">
+                <div class="icon" style="background:#ECFDF3; color:#166534;">🚶</div>
+                <div>
+                    <div class="title">Caminando Juntos</div>
+                    <p class="desc">Acompañamiento mutuo en procesos largos y retadores.</p>
+                </div>
+            </a>
+            <a class="card" href="estres-laboral/">
+                <div class="icon" style="background:#EEF2FF; color:#4338CA;">💼</div>
+                <div>
+                    <div class="title">Estrés Laboral</div>
+                    <p class="desc">Comparte burnout, presión y experiencias en el trabajo.</p>
+                </div>
+            </a>
+            <a class="card" href="estres/">
+                <div class="icon" style="background:#F5F3FF; color:#7C3AED;">😰</div>
+                <div>
+                    <div class="title">Estrés</div>
+                    <p class="desc">Para estrés general, ansiedad y sobrecarga diaria.</p>
+                </div>
+            </a>
+            <a class="card" href="desempleos/">
+                <div class="icon" style="background:#FFF7ED; color:#C2410C;">💼</div>
+                <div>
+                    <div class="title">Desempleos</div>
+                    <p class="desc">Apoyo emocional ante búsquedas laborales y despidos.</p>
+                </div>
+            </a>
+            <a class="card" href="mujeres-sobrevivientes/">
+                <div class="icon" style="background:#FFF1F2; color:#BE185D;">💜</div>
+                <div>
+                    <div class="title">Mujeres Sobrevivientes</div>
+                    <p class="desc">Espacio seguro para mujeres que han atravesado violencia.</p>
+                </div>
+            </a>
+            <a class="card" href="hombres-sobrevivientes/">
+                <div class="icon" style="background:#E0F2FE; color:#1D4ED8;">💙</div>
+                <div>
+                    <div class="title">Hombres Sobrevivientes</div>
+                    <p class="desc">Apoyo entre hombres que han vivido situaciones difíciles.</p>
+                </div>
+            </a>
+        </div>
+    </main>
+</body>
+</html>
+
