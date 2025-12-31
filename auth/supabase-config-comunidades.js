@@ -3,14 +3,20 @@
 // Usa el proyecto SEPARADO de Supabase para comunidades
 
 // CONFIGURACIÓN SEGURA - NO EXPONER CLAVES REALES
+// Intentar leer desde localStorage (permite setear la anon key en consola una vez)
+const storedUrlComunidades = (typeof localStorage !== 'undefined') ? localStorage.getItem('SUPABASE_URL_COMUNIDADES') : null;
+const storedAnonComunidades = (typeof localStorage !== 'undefined') ? localStorage.getItem('SUPABASE_ANON_KEY_COMUNIDADES') : null;
+
 const SUPABASE_CONFIG_COMUNIDADES = {
     // 🔗 URL del proyecto de Comunidades (se puede inyectar vía env en Vercel)
-    url: (typeof window !== 'undefined' && (window.__SUPABASE_URL_COMUNIDADES__ || window.NEXT_PUBLIC_SUPABASE_URL_COMUNIDADES)) ||
+    url: storedUrlComunidades ||
+         (typeof window !== 'undefined' && (window.__SUPABASE_URL_COMUNIDADES__ || window.NEXT_PUBLIC_SUPABASE_URL_COMUNIDADES)) ||
          (typeof process !== 'undefined' && process.env && (process.env.SUPABASE_URL_COMUNIDADES || process.env.NEXT_PUBLIC_SUPABASE_URL_COMUNIDADES)) ||
          'https://zbomxayytvwjbdzbegcw.supabase.co',
     
     // 🔑 Clave anónima (pública). Se espera que venga de env; sin fallback para evitar exponerla.
-    anonKey: (typeof window !== 'undefined' && (window.__SUPABASE_ANON_KEY_COMUNIDADES__ || window.NEXT_PUBLIC_SUPABASE_ANON_KEY_COMUNIDADES)) ||
+    anonKey: storedAnonComunidades ||
+             (typeof window !== 'undefined' && (window.__SUPABASE_ANON_KEY_COMUNIDADES__ || window.NEXT_PUBLIC_SUPABASE_ANON_KEY_COMUNIDADES)) ||
              (typeof process !== 'undefined' && process.env && (process.env.SUPABASE_ANON_KEY_COMUNIDADES || process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY_COMUNIDADES)) ||
              '',
     
