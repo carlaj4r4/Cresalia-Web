@@ -3746,3 +3746,43 @@ window.eliminarPostForo = function(postId) {
 // Hacer disponible globalmente
 window.SistemaForoComunidades = SistemaForoComunidades;
 
+// ===== Soporte general de pestañas y fallback de historias (todas las comunidades) =====
+document.addEventListener('DOMContentLoaded', () => {
+    try {
+        const tabs = document.querySelectorAll('.tab');
+        const contents = document.querySelectorAll('.tab-content');
+
+        if (tabs.length && contents.length) {
+            tabs.forEach(tab => {
+                tab.addEventListener('click', () => {
+                    tabs.forEach(t => t.classList.remove('active'));
+                    contents.forEach(c => c.classList.remove('active'));
+                    tab.classList.add('active');
+                    const target = document.getElementById(tab.dataset.tab);
+                    if (target) {
+                        target.classList.add('active');
+                        target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                    }
+                });
+            });
+        }
+
+        // Fallback para evitar spinners infinitos si no llegan historias
+        const historiasLista = document.getElementById('historias-lista');
+        if (historiasLista) {
+            setTimeout(() => {
+                if (historiasLista.textContent && historiasLista.textContent.includes('Cargando historias')) {
+                    historiasLista.innerHTML = `
+                        <div class="empty-state">
+                            <i class="fas fa-book-open"></i>
+                            <p>Aún no hay historias en esta comunidad.</p>
+                        </div>
+                    `;
+                }
+            }, 1500);
+        }
+    } catch (error) {
+        console.warn('⚠️ Error en manejador de pestañas/fallback:', error);
+    }
+});
+
