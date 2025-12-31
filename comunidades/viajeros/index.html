@@ -707,6 +707,40 @@
     <!-- Tema Festivo Temporal (20 dic - 7 ene) -->
     <script src="../../js/tema-festivo-temporada.js"></script>
 
+    <script>
+        // Manejo de tabs local (sin depender de Supabase)
+        document.addEventListener('DOMContentLoaded', () => {
+            const tabs = document.querySelectorAll('.tab');
+            const contents = document.querySelectorAll('.tab-content');
+
+            tabs.forEach(tab => {
+                tab.addEventListener('click', () => {
+                    tabs.forEach(t => t.classList.remove('active'));
+                    contents.forEach(c => c.classList.remove('active'));
+                    tab.classList.add('active');
+                    const target = document.getElementById(tab.dataset.tab);
+                    if (target) {
+                        target.classList.add('active');
+                        target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                    }
+                });
+            });
+
+            // Fallback: si no se cargan historias, mostrar estado vacío en vez de spinner infinito
+            const historiasLista = document.getElementById('historias-lista');
+            setTimeout(() => {
+                if (historiasLista && historiasLista.textContent.includes('Cargando historias')) {
+                    historiasLista.innerHTML = `
+                        <div class="empty-state">
+                            <i class="fas fa-book-open"></i>
+                            <p>Aún no hay historias en esta comunidad.</p>
+                        </div>
+                    `;
+                }
+            }, 1500);
+        });
+    </script>
+
 </body>
 </html>
 
