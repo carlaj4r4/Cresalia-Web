@@ -3,6 +3,24 @@
 // Usa el proyecto SEPARADO de Supabase para comunidades
 
 // CONFIGURACIÓN SEGURA - NO EXPONER CLAVES REALES
+// Intentar cargar automáticamente el archivo local (si existe) sin tocar el HTML
+(async () => {
+    try {
+        const resp = await fetch('/auth/supabase-env-comunidades.js', { cache: 'no-store' });
+        if (resp.ok) {
+            const code = await resp.text();
+            try {
+                new Function(code)(); // inyecta window.__SUPABASE_*
+                console.log('🌐 supabase-env-comunidades.js cargado');
+            } catch (e) {
+                console.warn('⚠️ No se pudo evaluar supabase-env-comunidades.js', e);
+            }
+        }
+    } catch (e) {
+        // Silenciar si no existe (404) o está en local
+    }
+})();
+
 // Permitir setear vía querystring (ej: ?supabaseUrlComunidades=...&supabaseAnonComunidades=...)
 let storedUrlComunidades = null;
 let storedAnonComunidades = null;
@@ -134,7 +152,7 @@ if (typeof document !== 'undefined') {
             setTimeout(() => initSupabaseComunidades(), 100);
         });
     } else {
-        setTimeout(() => initSupabaseComunidades(), 100);
+        setTimeout(() => initSupabaseComunidades(), 200); // pequeño margen para cargar env si existe
     }
 }
 

@@ -168,7 +168,7 @@ class SistemaMensajeFestivo24Diciembre {
             <p>En este día especial, queremos agradecerte por ser parte de nuestra comunidad. Tu confianza en Cresalia significa todo para nosotros.</p>
             <div style="background: linear-gradient(135deg, rgba(124, 58, 237, 0.1), rgba(236, 72, 153, 0.1)); padding: 20px; border-radius: 12px; margin: 20px 0; border-left: 4px solid #7C3AED;">
                 <p style="margin: 0; font-size: 16px; font-weight: 600; color: #7C3AED;">🎉 Te deseamos un año lleno de buenas noticias</p>
-                <p style="margin: 10px 0 0 0; color: #4B5563;">Que el 2025 te traiga oportunidades increíbles, crecimiento personal y profesional, y momentos especiales que recordarás siempre.</p>
+            <p style="margin: 10px 0 0 0; color: #4B5563;">Que el 2026 te traiga oportunidades increíbles, crecimiento personal y profesional, y momentos especiales que recordarás siempre.</p>
             </div>
             ${esVendedor ? `
             <p>Como parte de nuestra comunidad de emprendedores, sabemos que cada día es una oportunidad para crecer. Que este nuevo año esté lleno de ventas exitosas, clientes satisfechos y logros que superen tus expectativas.</p>
