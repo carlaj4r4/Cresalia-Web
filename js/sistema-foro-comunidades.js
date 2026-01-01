@@ -3786,3 +3786,60 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 });
 
+// Mensaje de bienvenida general (todas las comunidades)
+document.addEventListener('DOMContentLoaded', () => {
+    try {
+        // Evitar duplicados
+        if (document.getElementById('banner-bienvenida-comunidad')) return;
+        const banner = document.createElement('div');
+        banner.id = 'banner-bienvenida-comunidad';
+        banner.style.position = 'fixed';
+        banner.style.bottom = '20px';
+        banner.style.left = '20px';
+        banner.style.zIndex = '9999';
+        banner.style.maxWidth = '360px';
+        banner.style.background = 'linear-gradient(135deg, #7C3AED, #EC4899)';
+        banner.style.color = 'white';
+        banner.style.padding = '16px 18px';
+        banner.style.borderRadius = '14px';
+        banner.style.boxShadow = '0 10px 30px rgba(0,0,0,0.25)';
+        banner.style.display = 'flex';
+        banner.style.gap = '12px';
+        banner.style.alignItems = 'flex-start';
+
+        banner.innerHTML = `
+            <div style="font-size: 22px;">👋</div>
+            <div style="flex: 1; line-height: 1.4;">
+                <div style="font-weight: 700; font-size: 15px; margin-bottom: 6px;">
+                    Bienvenida/o a la comunidad
+                </div>
+                <div style="font-size: 13px; opacity: 0.95;">
+                    Este es un espacio seguro y de apoyo. Gracias por compartir con respeto y cuidado mutuo.
+                </div>
+            </div>
+            <button aria-label="Cerrar" style="
+                background: rgba(255,255,255,0.12);
+                border: none;
+                color: white;
+                width: 30px;
+                height: 30px;
+                border-radius: 50%;
+                cursor: pointer;
+                font-size: 16px;
+            ">&times;</button>
+        `;
+
+        const closeBtn = banner.querySelector('button');
+        closeBtn.addEventListener('click', () => banner.remove());
+
+        document.body.appendChild(banner);
+
+        // Autocerrar a los 15s para no molestar
+        setTimeout(() => {
+            if (banner.parentNode) banner.remove();
+        }, 15000);
+    } catch (e) {
+        console.warn('⚠️ No se pudo mostrar el mensaje de bienvenida:', e);
+    }
+});
+
