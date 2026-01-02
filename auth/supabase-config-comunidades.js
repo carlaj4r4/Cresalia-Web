@@ -6,15 +6,32 @@
 // Intentar cargar automáticamente el archivo local (si existe) sin tocar el HTML
 (async () => {
     try {
-        const resp = await fetch('/auth/supabase-env-comunidades.js', { cache: 'no-store' });
-        if (resp.ok) {
-            const code = await resp.text();
-            try {
-                new Function(code)(); // inyecta window.__SUPABASE_*
-                console.log('🌐 supabase-env-comunidades.js cargado');
-            } catch (e) {
-                console.warn('⚠️ No se pudo evaluar supabase-env-comunidades.js', e);
+        // Intentar ruta absoluta
+        const tryLoad = async (url) => {
+            const resp = await fetch(url, { cache: 'no-store' });
+            if (resp.ok) {
+                const code = await resp.text();
+                try {
+                    new Function(code)(); // inyecta window.__SUPABASE_*
+                    console.log(`🌐 supabase-env-comunidades.js cargado desde ${url}`);
+                    return true;
+                } catch (e) {
+                    console.warn('⚠️ No se pudo evaluar supabase-env-comunidades.js', e);
+                }
             }
+            return false;
+        };
+
+        const intentos = [
+            '/auth/supabase-env-comunidades.js',
+            (typeof window !== 'undefined' && window.location && window.location.pathname.includes('/comunidades/'))
+                ? '../../auth/supabase-env-comunidades.js'
+                : null
+        ].filter(Boolean);
+
+        for (const url of intentos) {
+            const ok = await tryLoad(url);
+            if (ok) break;
         }
     } catch (e) {
         // Silenciar si no existe (404) o está en local
