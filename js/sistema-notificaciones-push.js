@@ -8,6 +8,7 @@ class SistemaNotificacionesPush {
         this.configuracion = this.cargarConfiguracion();
         this.serviceWorkerRegistration = null;
         this.vapidPublicKey = null;
+        this.isMobile = /Mobi|Android/i.test(navigator.userAgent || '');
         this.inicializar();
     }
 
@@ -18,6 +19,12 @@ class SistemaNotificacionesPush {
         // Verificar soporte del navegador
         if (!('Notification' in window)) {
             console.warn('⚠️ Este navegador no soporta notificaciones');
+            return;
+        }
+
+        // En móvil, evitar pedir permisos automáticamente para no mostrar errores/diálogos molestos
+        if (this.isMobile && Notification.permission === 'default') {
+            console.log('ℹ️ Móvil detectado: no se solicitarán notificaciones automáticamente');
             return;
         }
 
@@ -66,6 +73,12 @@ class SistemaNotificacionesPush {
 
     // Solicitar permisos de notificación (solo una vez, centralizado)
     async solicitarPermisos() {
+        // En móvil, no solicitar automáticamente (se hace bajo acción del usuario)
+        if (this.isMobile && Notification.permission === 'default') {
+            console.log('ℹ️ Móvil detectado: se omite solicitud automática de permisos de notificación');
+            return;
+        }
+
         // Verificar si el permiso ya está concedido o denegado (persiste entre sesiones)
         if (Notification.permission !== 'default') {
             console.log(`ℹ️ Permiso de notificaciones: ${Notification.permission}`);
