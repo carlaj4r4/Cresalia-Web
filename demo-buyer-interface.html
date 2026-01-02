@@ -1128,6 +1128,81 @@
             box-shadow: 0 6px 30px rgba(124, 58, 237, 0.6);
         }
         
+        /* Tarjeta de pago (preview) */
+        .tarjeta-preview {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 12px;
+            margin-top: 14px;
+            max-width: 360px;
+            width: 100%;
+        }
+        .tarjeta-front, .tarjeta-back {
+            border-radius: 12px;
+            padding: 14px;
+            color: white;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            min-height: 140px;
+        }
+        .tarjeta-front {
+            background: linear-gradient(135deg, #7C3AED, #EC4899);
+        }
+        .tarjeta-back {
+            background: linear-gradient(135deg, #111827, #1F2937);
+        }
+        .tarjeta-chip {
+            width: 42px;
+            height: 32px;
+            background: linear-gradient(135deg, #FACC15, #F97316);
+            border-radius: 6px;
+            margin-bottom: 16px;
+        }
+        .tarjeta-numero {
+            font-size: 1.1rem;
+            letter-spacing: 2px;
+            margin-bottom: 12px;
+        }
+        .tarjeta-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 0.9rem;
+        }
+        .tarjeta-label {
+            font-size: 0.7rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            opacity: 0.8;
+        }
+        .tarjeta-strip {
+            height: 38px;
+            background: #0f172a;
+            margin-bottom: 12px;
+        }
+        .tarjeta-cvv {
+            background: white;
+            color: #0f172a;
+            padding: 8px 10px;
+            border-radius: 6px;
+            font-weight: 700;
+            display: inline-block;
+            min-width: 64px;
+            text-align: center;
+        }
+        @media (max-width: 768px) {
+            .tarjeta-preview {
+                max-width: 100%;
+            }
+            .tarjeta-front, .tarjeta-back {
+                min-height: 120px;
+            }
+            .tarjeta-numero {
+                font-size: 1rem;
+            }
+        }
+
         .support-panel {
             position: absolute;
             bottom: 80px;

@@ -390,6 +390,33 @@ function mostrarModalPagoProducto(producto, cantidad, precioTotal) {
                             </label>
                         </div>
                         
+                        <!-- Preview de tarjeta -->
+                        <div class="tarjeta-preview" id="previewTarjetaProducto" style="display: none;">
+                            <div class="tarjeta-front">
+                                <div class="tarjeta-chip"></div>
+                                <div class="tarjeta-numero" id="prev-numero-Producto">•••• •••• •••• ••••</div>
+                                <div class="tarjeta-row">
+                                    <div>
+                                        <div class="tarjeta-label">Titular</div>
+                                        <div id="prev-titular-Producto">TU NOMBRE</div>
+                                    </div>
+                                    <div>
+                                        <div class="tarjeta-label">Vence</div>
+                                        <div id="prev-venc-Producto">MM/AA</div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="tarjeta-back">
+                                <div class="tarjeta-strip"></div>
+                                <div class="tarjeta-row" style="justify-content: flex-end;">
+                                    <div>
+                                        <div class="tarjeta-label" style="color:#e2e8f0;">CVV</div>
+                                        <div class="tarjeta-cvv" id="prev-cvv-Producto">•••</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
                         <!-- Campos de tarjeta (condicionales) -->
                         <div id="camposTarjetaProducto" class="campos-tarjeta" style="display: none;">
                             <div class="campos-tarjeta-fila">
@@ -468,6 +495,12 @@ function mostrarModalPagoProducto(producto, cantidad, precioTotal) {
             radio.addEventListener('change', function() {
                 manejarCamposTarjeta(this.value, 'Producto');
             });
+        });
+        ['numeroTarjetaProducto','vencimientoTarjetaProducto','cvvTarjetaProducto','titularTarjetaProducto'].forEach(id => {
+            const field = document.getElementById(id);
+            if (field) {
+                field.addEventListener('input', () => actualizarPreviewTarjeta('Producto'));
+            }
         });
     }, 100);
     
@@ -1007,6 +1040,33 @@ function mostrarModalPagoCarrito() {
                             </label>
                         </div>
                         
+                        <!-- Preview de tarjeta -->
+                        <div class="tarjeta-preview" id="previewTarjetaCarrito" style="display: none;">
+                            <div class="tarjeta-front">
+                                <div class="tarjeta-chip"></div>
+                                <div class="tarjeta-numero" id="prev-numero-Carrito">•••• •••• •••• ••••</div>
+                                <div class="tarjeta-row">
+                                    <div>
+                                        <div class="tarjeta-label">Titular</div>
+                                        <div id="prev-titular-Carrito">TU NOMBRE</div>
+                                    </div>
+                                    <div>
+                                        <div class="tarjeta-label">Vence</div>
+                                        <div id="prev-venc-Carrito">MM/AA</div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="tarjeta-back">
+                                <div class="tarjeta-strip"></div>
+                                <div class="tarjeta-row" style="justify-content: flex-end;">
+                                    <div>
+                                        <div class="tarjeta-label" style="color:#e2e8f0;">CVV</div>
+                                        <div class="tarjeta-cvv" id="prev-cvv-Carrito">•••</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
                         <!-- Campos de tarjeta (condicionales) -->
                         <div id="camposTarjetaCarrito" class="campos-tarjeta" style="display: none;">
                             <div class="campos-tarjeta-fila">
@@ -1081,18 +1141,19 @@ function mostrarModalPagoCarrito() {
     modal.style.display = 'flex';
     
     // Event listener para mostrar/ocultar campos de tarjeta
-    document.querySelectorAll('input[name="metodoPago"]').forEach(radio => {
-        radio.addEventListener('change', function() {
-            const camposTarjeta = document.getElementById('camposTarjetaCarrito');
-            if (camposTarjeta) {
-                if (this.value === 'credito' || this.value === 'debito') {
-                    camposTarjeta.style.display = 'block';
-                } else {
-                    camposTarjeta.style.display = 'none';
-                }
+    setTimeout(() => {
+        document.querySelectorAll('input[name="metodoPago"]').forEach(radio => {
+            radio.addEventListener('change', function() {
+                manejarCamposTarjeta(this.value, 'Carrito');
+            });
+        });
+        ['numeroTarjetaCarrito','vencimientoTarjetaCarrito','cvvTarjetaCarrito','titularTarjetaCarrito'].forEach(id => {
+            const field = document.getElementById(id);
+            if (field) {
+                field.addEventListener('input', () => actualizarPreviewTarjeta('Carrito'));
             }
         });
-    });
+    }, 100);
     
     // Agregar campo de cupón después de crear el formulario
     setTimeout(() => {
@@ -2170,6 +2231,7 @@ function manejarCamposTarjeta(metodoPago, tipoFormulario) {
     
     const sufijo = tipoFormulario === 'Producto' ? 'Producto' : 'Carrito';
     const camposTarjeta = document.getElementById(`camposTarjeta${sufijo}`);
+    const preview = document.getElementById(`previewTarjeta${sufijo}`);
     
     if (!camposTarjeta) {
         console.error(`No se encontró el contenedor de campos de tarjeta para ${tipoFormulario}`);
@@ -2185,6 +2247,7 @@ function manejarCamposTarjeta(metodoPago, tipoFormulario) {
     if (metodoPago === 'credito' || metodoPago === 'debito') {
         // Mostrar campos de tarjeta
         camposTarjeta.style.display = 'block';
+        if (preview) preview.style.display = 'grid';
         
         // Hacer campos requeridos
         if (numeroTarjeta) numeroTarjeta.required = true;
@@ -2196,6 +2259,7 @@ function manejarCamposTarjeta(metodoPago, tipoFormulario) {
     } else {
         // Ocultar campos de tarjeta
         camposTarjeta.style.display = 'none';
+        if (preview) preview.style.display = 'none';
         
         // Quitar requerimiento
         if (numeroTarjeta) numeroTarjeta.required = false;
@@ -2211,6 +2275,28 @@ function manejarCamposTarjeta(metodoPago, tipoFormulario) {
         
         console.log('Campos de tarjeta ocultos y limpiados');
     }
+}
+
+// Actualizar preview de tarjeta en vivo
+function actualizarPreviewTarjeta(tipoFormulario) {
+    const sufijo = tipoFormulario === 'Producto' ? 'Producto' : 'Carrito';
+    const numero = document.getElementById(`numeroTarjeta${sufijo}`)?.value || '';
+    const venc = document.getElementById(`vencimientoTarjeta${sufijo}`)?.value || '';
+    const cvv = document.getElementById(`cvvTarjeta${sufijo}`)?.value || '';
+    const titular = document.getElementById(`titularTarjeta${sufijo}`)?.value || '';
+
+    const numeroPrev = document.getElementById(`prev-numero-${sufijo}`);
+    const vencPrev = document.getElementById(`prev-venc-${sufijo}`);
+    const cvvPrev = document.getElementById(`prev-cvv-${sufijo}`);
+    const titularPrev = document.getElementById(`prev-titular-${sufijo}`);
+
+    if (numeroPrev) {
+        const limpio = numero.replace(/\D/g, '').padEnd(16, '•').slice(0,16).replace(/(.{4})/g, '$1 ').trim();
+        numeroPrev.textContent = limpio || '•••• •••• •••• ••••';
+    }
+    if (vencPrev) vencPrev.textContent = venc || 'MM/AA';
+    if (cvvPrev) cvvPrev.textContent = (cvv || '•••').padEnd(3, '•');
+    if (titularPrev) titularPrev.textContent = titular || 'TU NOMBRE';
 }
 
 // ===== FUNCIONES DE CHATBOT =====
