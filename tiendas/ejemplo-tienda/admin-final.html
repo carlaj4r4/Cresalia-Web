@@ -13808,4 +13808,29 @@ Precio: $${precio.toLocaleString('es-AR')} ARS/mes
         });
       });
     </script>
+
+    <!-- Honeypot simple para formularios (mitigar bots) -->
+    <script>
+      document.addEventListener('DOMContentLoaded', () => {
+        document.querySelectorAll('form').forEach(form => {
+          if (form.querySelector('input[name="hp_field"]')) return;
+          const hp = document.createElement('input');
+          hp.type = 'text';
+          hp.name = 'hp_field';
+          hp.autocomplete = 'off';
+          hp.tabIndex = -1;
+          hp.style.position = 'absolute';
+          hp.style.left = '-9999px';
+          hp.style.opacity = '0';
+          hp.style.height = '1px';
+          form.appendChild(hp);
+          form.addEventListener('submit', (e) => {
+            if (hp.value && hp.value.trim() !== '') {
+              e.preventDefault();
+              console.warn('Bloqueado por honeypot');
+            }
+          }, { passive: false });
+        });
+      });
+    </script>
 </html>
