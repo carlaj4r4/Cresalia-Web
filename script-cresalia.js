@@ -422,21 +422,21 @@ function mostrarModalPagoProducto(producto, cantidad, precioTotal) {
                             <div class="campos-tarjeta-fila">
                                 <div class="campo-grupo">
                                     <label for="numeroTarjetaProducto">Número de Tarjeta:</label>
-                                    <input type="text" id="numeroTarjetaProducto" name="numeroTarjeta" maxlength="16">
+                                    <input type="text" id="numeroTarjetaProducto" name="numeroTarjeta" maxlength="16" inputmode="numeric" autocomplete="off">
                                 </div>
                                 <div class="campo-grupo">
                                     <label for="vencimientoTarjetaProducto">Vencimiento (MM/AA):</label>
-                                    <input type="text" id="vencimientoTarjetaProducto" name="vencimientoTarjeta" placeholder="MM/AA">
+                                    <input type="text" id="vencimientoTarjetaProducto" name="vencimientoTarjeta" placeholder="MM/AA" inputmode="numeric" autocomplete="off">
                                 </div>
                             </div>
                             <div class="campos-tarjeta-fila">
                                 <div class="campo-grupo">
                                     <label for="cvvTarjetaProducto">CVV:</label>
-                                    <input type="text" id="cvvTarjetaProducto" name="cvvTarjeta" maxlength="4">
+                                    <input type="text" id="cvvTarjetaProducto" name="cvvTarjeta" maxlength="4" inputmode="numeric" autocomplete="off">
                                 </div>
                                 <div class="campo-grupo">
                                     <label for="titularTarjetaProducto">Titular:</label>
-                                    <input type="text" id="titularTarjetaProducto" name="titularTarjeta">
+                                    <input type="text" id="titularTarjetaProducto" name="titularTarjeta" autocomplete="off">
                                 </div>
                             </div>
                         </div>
@@ -512,6 +512,8 @@ function cerrarModalPago() {
     if (modal) {
         modal.style.display = 'none';
     }
+    limpiarCamposTarjeta('Producto');
+    limpiarCamposTarjeta('Carrito');
 }
 
 // Notificación NO intrusiva (según preferencia de Carla)
@@ -1072,21 +1074,21 @@ function mostrarModalPagoCarrito() {
                             <div class="campos-tarjeta-fila">
                                 <div class="campo-grupo">
                                     <label for="numeroTarjetaCarrito">Número de Tarjeta:</label>
-                                    <input type="text" id="numeroTarjetaCarrito" name="numeroTarjeta" maxlength="16">
+                                    <input type="text" id="numeroTarjetaCarrito" name="numeroTarjeta" maxlength="16" inputmode="numeric" autocomplete="off">
                                 </div>
                                 <div class="campo-grupo">
                                     <label for="vencimientoTarjetaCarrito">Vencimiento (MM/AA):</label>
-                                    <input type="text" id="vencimientoTarjetaCarrito" name="vencimientoTarjeta" placeholder="MM/AA">
+                                    <input type="text" id="vencimientoTarjetaCarrito" name="vencimientoTarjeta" placeholder="MM/AA" inputmode="numeric" autocomplete="off">
                                 </div>
                             </div>
                             <div class="campos-tarjeta-fila">
                                 <div class="campo-grupo">
                                     <label for="cvvTarjetaCarrito">CVV:</label>
-                                    <input type="text" id="cvvTarjetaCarrito" name="cvvTarjeta" maxlength="4">
+                                    <input type="text" id="cvvTarjetaCarrito" name="cvvTarjeta" maxlength="4" inputmode="numeric" autocomplete="off">
                                 </div>
                                 <div class="campo-grupo">
                                     <label for="titularTarjetaCarrito">Titular:</label>
-                                    <input type="text" id="titularTarjetaCarrito" name="titularTarjeta">
+                                    <input type="text" id="titularTarjetaCarrito" name="titularTarjeta" autocomplete="off">
                                 </div>
                             </div>
                         </div>
@@ -1356,6 +1358,12 @@ function mostrarModalPagoCarrito() {
         radio.addEventListener('change', function() {
             manejarCamposTarjeta(this.value, 'Carrito');
         });
+    });
+    ['numeroTarjetaCarrito','vencimientoTarjetaCarrito','cvvTarjetaCarrito','titularTarjetaCarrito'].forEach(id => {
+        const field = document.getElementById(id);
+        if (field) {
+            field.addEventListener('input', () => actualizarPreviewTarjeta('Carrito'));
+        }
     });
     
     // Agregar campo de cupón si SistemaCupones está disponible
