@@ -13797,9 +13797,12 @@ Precio: $${precio.toLocaleString('es-AR')} ARS/mes
         */
     </script>
 </body>
-    <!-- Lazyload genérico para imágenes no críticas -->
+    <!-- Lazyload genérico para imágenes no críticas + eager para logos/hero -->
     <script>
       document.addEventListener('DOMContentLoaded', () => {
+        document.querySelectorAll('header img, .hero img, img[alt*="Cresalia"]').forEach(img => {
+          img.setAttribute('loading', 'eager');
+        });
         document.querySelectorAll('img:not([loading])').forEach(img => {
           img.setAttribute('loading', 'lazy');
         });

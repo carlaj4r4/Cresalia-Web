@@ -5196,9 +5196,14 @@
     <!-- Tema Festivo Temporal (20 dic - 7 ene) -->
     <script src="/js/tema-festivo-temporada.js"></script>
 </body>
-    <!-- Lazyload genérico para imágenes no críticas -->
+    <!-- Lazyload genérico para imágenes no críticas + eager para logos/hero -->
     <script>
       document.addEventListener('DOMContentLoaded', () => {
+        // Marcar como eager imágenes críticas (logos/hero)
+        document.querySelectorAll('header img, .hero img, img[alt*="Cresalia"]').forEach(img => {
+          img.setAttribute('loading', 'eager');
+        });
+        // Lazy para el resto que no tengan loading definido
         document.querySelectorAll('img:not([loading])').forEach(img => {
           img.setAttribute('loading', 'lazy');
         });
