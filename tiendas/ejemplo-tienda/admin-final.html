@@ -22,6 +22,9 @@
     <meta http-equiv="X-XSS-Protection" content="1; mode=block">
     <meta name="referrer" content="strict-origin-when-cross-origin">
     
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
     <!-- Favicon -->
     <link rel="icon" type="image/x-icon" href="../../assets/logo/logo-cresalia.png">
     <link rel="icon" type="image/png" href="../../assets/logo/logo-cresalia.png">
@@ -13792,4 +13795,12 @@ Precio: $${precio.toLocaleString('es-AR')} ARS/mes
         */
     </script>
 </body>
+    <!-- Lazyload genérico para imágenes no críticas -->
+    <script>
+      document.addEventListener('DOMContentLoaded', () => {
+        document.querySelectorAll('img:not([loading])').forEach(img => {
+          img.setAttribute('loading', 'lazy');
+        });
+      });
+    </script>
 </html>

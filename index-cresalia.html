@@ -40,6 +40,9 @@
     <meta http-equiv="X-XSS-Protection" content="1; mode=block">
     <meta name="referrer" content="strict-origin-when-cross-origin">
     
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
     <!-- Favicon - Usando logo completo de Cresalia -->
     <!-- Rutas absolutas y relativas para mejor compatibilidad -->
     <link rel="icon" type="image/png" sizes="32x32" href="assets/logo/logo-cresalia.png?v=6.0">
@@ -5191,4 +5194,12 @@
     <!-- Tema Festivo Temporal (20 dic - 7 ene) -->
     <script src="/js/tema-festivo-temporada.js"></script>
 </body>
+    <!-- Lazyload genérico para imágenes no críticas -->
+    <script>
+      document.addEventListener('DOMContentLoaded', () => {
+        document.querySelectorAll('img:not([loading])').forEach(img => {
+          img.setAttribute('loading', 'lazy');
+        });
+      });
+    </script>
 </html>
