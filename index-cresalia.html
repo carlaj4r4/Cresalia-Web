@@ -86,6 +86,22 @@
     <meta name="application-name" content="Cresalia">
     <meta name="msapplication-tap-highlight" content="no">
     
+    <!-- Inyección opcional de variables públicas (no subir env reales a git) -->
+    <script>
+      (async () => {
+        try {
+          const resp = await fetch('/env-public.js', { cache: 'no-store' });
+          if (resp.ok) {
+            const code = await resp.text();
+            new Function(code)(); // inyecta window.NEXT_PUBLIC_*
+            console.log('🌐 env-public.js cargado');
+          }
+        } catch (e) {
+          // Silencio si no existe
+        }
+      })();
+    </script>
+
     <!-- Iconos adicionales para escritorio (Windows, macOS, Linux) -->
     <link rel="icon" type="image/png" sizes="192x192" href="/assets/logo/logo-cresalia.png?v=6.0">
     <link rel="icon" type="image/png" sizes="512x512" href="/assets/logo/logo-cresalia.png?v=6.0">

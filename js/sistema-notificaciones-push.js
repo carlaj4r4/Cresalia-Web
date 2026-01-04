@@ -35,8 +35,8 @@ class SistemaNotificacionesPush {
             return;
         }
 
-        // Cargar VAPID public key
-        this.vapidPublicKey = window.__VAPID_PUBLIC_KEY__ || null;
+        // Cargar VAPID public key (acepta NEXT_PUBLIC_)
+        this.vapidPublicKey = window.__VAPID_PUBLIC_KEY__ || window.NEXT_PUBLIC_VAPID_PUBLIC_KEY || null;
         if (!this.vapidPublicKey) {
             console.warn('⚠️ VAPID_PUBLIC_KEY no configurada. Las notificaciones push no funcionarán cuando la página esté cerrada.');
         }

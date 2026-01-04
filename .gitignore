@@ -58,6 +58,8 @@ config-mercado-pago.prod.js
 config-supabase-seguro.js
 documentacion-mercado-pago.md
 auth/supabase-env-comunidades.js
+env-public.js
+env-public.local
 
 # Archivos con credenciales reales (NUNCA subir a GitHub)
 *.real.js

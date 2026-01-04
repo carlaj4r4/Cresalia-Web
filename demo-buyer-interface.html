@@ -28,6 +28,20 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" onload="this.onload=null;this.rel='stylesheet'">
     <link rel="preconnect" href="https://conversations-widget.brevo.com">
+    <script>
+      (async () => {
+        try {
+          const resp = await fetch('/env-public.js', { cache: 'no-store' });
+          if (resp.ok) {
+            const code = await resp.text();
+            new Function(code)();
+            console.log('🌐 env-public.js cargado');
+          }
+        } catch (e) {
+          // Silencio si no existe
+        }
+      })();
+    </script>
 
     <!-- Favicon -->
     <link rel="icon" type="image/x-icon" href="favicon.ico">
