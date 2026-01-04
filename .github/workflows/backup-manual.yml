@@ -26,16 +26,7 @@ jobs:
           cd scripts
           if [ ! -f "package.json" ]; then
             echo "📝 Creando package.json..."
-            cat > package.json << 'EOF'
-{
-  "name": "backup-supabase-script",
-  "version": "1.0.0",
-  "private": true,
-  "dependencies": {
-    "@supabase/supabase-js": "^2.39.0"
-  }
-}
-EOF
+            echo '{"name":"backup-supabase-script","version":"1.0.0","private":true,"dependencies":{"@supabase/supabase-js":"^2.39.0"}}' > package.json
           fi
           echo "📥 Instalando @supabase/supabase-js..."
           npm install --no-save @supabase/supabase-js@^2.39.0
@@ -113,16 +104,7 @@ EOF
           cd scripts
           if [ ! -f "package.json" ]; then
             echo "📝 Creando package.json..."
-            cat > package.json << 'EOF'
-{
-  "name": "backup-supabase-script",
-  "version": "1.0.0",
-  "private": true,
-  "dependencies": {
-    "@supabase/supabase-js": "^2.39.0"
-  }
-}
-EOF
+            echo '{"name":"backup-supabase-script","version":"1.0.0","private":true,"dependencies":{"@supabase/supabase-js":"^2.39.0"}}' > package.json
           fi
           echo "📥 Instalando @supabase/supabase-js..."
           npm install --no-save @supabase/supabase-js@^2.39.0
