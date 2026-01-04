@@ -167,13 +167,16 @@ http://localhost:3001/demo-store
 
 ### Credenciales de Prueba
 
+> ⚠️ **IMPORTANTE**: Las credenciales de prueba no deben estar en el README público por seguridad.  
+> Contacta al equipo de desarrollo para obtener credenciales de prueba.
+
 #### Panel de Administración
 - **URL**: `admin-cresalia.html`
-- **Contraseña**: `FRIOCAS2025!` (puede cambiarse desde el panel)
+- **Credenciales**: Contactar al equipo de desarrollo
 
 #### Sistema de Soporte Carla
 - **URL**: `atencion-cliente-carla.html`
-- **Contraseña**: `carla2024`
+- **Credenciales**: Contactar al equipo de desarrollo
 
 #### Tienda Demo
 - **Slug**: `demo-store`

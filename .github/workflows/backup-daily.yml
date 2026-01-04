@@ -177,15 +177,119 @@ jobs:
     if: always()
     
     steps:
-      - name: ✅ Notificar éxito
+      - name: 📥 Checkout del código
+        uses: actions/checkout@v4
+      
+      - name: 📦 Configurar Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+      
+      - name: ✅ Enviar notificación de éxito
+        if: success()
+        env:
+          BREVO_API_KEY: ${{ secrets.BREVO_API_KEY }}
+          ADMIN_EMAIL: ${{ secrets.ADMIN_EMAIL || 'cresalia25@gmail.com' }}
+        run: |
+          echo "📧 Enviando notificación de éxito..."
+          node -e "
+          const https = require('https');
+          const data = JSON.stringify({
+            to: process.env.ADMIN_EMAIL,
+            to_name: 'Equipo Cresalia',
+            subject: '✅ Backup Diario Completado - Cresalia',
+            html_content: \`
+              <div style=\"font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;\">
+                <h2 style=\"color: #10B981;\">✅ Backup Diario Completado</h2>
+                <p>Los backups de ambos proyectos se completaron exitosamente:</p>
+                <ul>
+                  <li>✅ <strong>Cresalia-Tiendas</strong> - Backup completado</li>
+                  <li>✅ <strong>Cresalia-Comunidades</strong> - Backup completado</li>
+                </ul>
+                <p><strong>Fecha:</strong> $(date)</p>
+                <p><strong>Workflow:</strong> <a href=\"https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}\">Ver en GitHub Actions</a></p>
+                <p>Los backups están disponibles en la sección 'Artifacts' del workflow.</p>
+              </div>
+            \`
+          });
+          const options = {
+            hostname: 'cresalia-web.vercel.app',
+            port: 443,
+            path: '/api/enviar-email-brevo',
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              'Content-Length': data.length
+            }
+          };
+          const req = https.request(options, (res) => {
+            console.log('Status:', res.statusCode);
+            if (res.statusCode === 200) {
+              console.log('✅ Notificación enviada exitosamente');
+            }
+          });
+          req.on('error', (e) => {
+            console.warn('⚠️ Error enviando notificación:', e.message);
+          });
+          req.write(data);
+          req.end();
+          "
+        continue-on-error: true
+      
+      - name: ❌ Enviar notificación de error
+        if: failure()
+        env:
+          BREVO_API_KEY: ${{ secrets.BREVO_API_KEY }}
+          ADMIN_EMAIL: ${{ secrets.ADMIN_EMAIL || 'cresalia25@gmail.com' }}
+        run: |
+          echo "📧 Enviando notificación de error..."
+          node -e "
+          const https = require('https');
+          const data = JSON.stringify({
+            to: process.env.ADMIN_EMAIL,
+            to_name: 'Equipo Cresalia',
+            subject: '❌ ERROR: Backup Diario Falló - Cresalia',
+            html_content: \`
+              <div style=\"font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;\">
+                <h2 style=\"color: #DC2626;\">❌ Error en Backup Diario</h2>
+                <p>Uno o ambos backups fallaron. Por favor, revisa los logs.</p>
+                <p><strong>Fecha:</strong> $(date)</p>
+                <p><strong>Workflow:</strong> <a href=\"https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}\">Ver logs en GitHub Actions</a></p>
+                <p><strong>Acción requerida:</strong> Revisa los logs y verifica las credenciales en GitHub Secrets.</p>
+              </div>
+            \`
+          });
+          const options = {
+            hostname: 'cresalia-web.vercel.app',
+            port: 443,
+            path: '/api/enviar-email-brevo',
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              'Content-Length': data.length
+            }
+          };
+          const req = https.request(options, (res) => {
+            console.log('Status:', res.statusCode);
+          });
+          req.on('error', (e) => {
+            console.warn('⚠️ Error enviando notificación:', e.message);
+          });
+          req.write(data);
+          req.end();
+          "
+        continue-on-error: true
+      
+      - name: ✅ Mostrar mensaje de éxito
         if: success()
         run: |
           echo "✅ Ambos backups completados exitosamente"
           echo "📁 Backups disponibles en la sección 'Artifacts' de este workflow"
+          echo "📧 Notificación de éxito enviada por email"
       
-      - name: ❌ Notificar error
+      - name: ❌ Mostrar mensaje de error
         if: failure()
         run: |
           echo "❌ ERROR: Uno o ambos backups fallaron"
           echo "Por favor, revisa los logs y verifica las credenciales en GitHub Secrets"
-          exit 1
+          echo "📧 Notificación de error enviada por email"
