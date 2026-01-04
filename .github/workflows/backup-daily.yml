@@ -1,4 +1,4 @@
-name: Backup Diario de Supabase
+name: Backup Diario de Supabase (Tiendas + Comunidades)
 
 on:
   schedule:
@@ -10,16 +10,10 @@ on:
   
   # Permitir ejecución manual desde GitHub Actions
   workflow_dispatch:
-  
-  # También ejecutar en push a main (opcional, para testing)
-  # Descomenta la siguiente línea si quieres probarlo con cada push:
-  # push:
-  #   branches:
-  #     - main
 
 jobs:
-  backup:
-    name: Crear Backup de Supabase
+  backup-tiendas:
+    name: Backup Cresalia-Tiendas
     runs-on: ubuntu-latest
     
     steps:
@@ -34,90 +28,182 @@ jobs:
       
       - name: 📚 Instalar dependencias
         run: |
-          # Instalar desde la raíz si existe package.json, sino crear uno en scripts
-          if [ -f "package.json" ]; then
-            echo "📦 Instalando dependencias desde package.json raíz..."
-            npm ci || npm install
-          else
-            echo "📦 Creando package.json en scripts..."
-            cd scripts
-            if [ ! -f "package.json" ]; then
-              cat > package.json << 'EOF'
-          {
-            "name": "backup-supabase-script",
-            "version": "1.0.0",
-            "private": true,
-            "dependencies": {
-              "@supabase/supabase-js": "^2.39.0"
-            }
-          }
-          EOF
-            fi
-            npm install
-            cd ..
+          echo "📦 Instalando dependencias de Supabase..."
+          cd scripts
+          if [ ! -f "package.json" ]; then
+            echo "📝 Creando package.json..."
+            cat > package.json << 'EOF'
+{
+  "name": "backup-supabase-script",
+  "version": "1.0.0",
+  "private": true,
+  "dependencies": {
+    "@supabase/supabase-js": "^2.39.0"
+  }
+}
+EOF
           fi
+          echo "📥 Instalando @supabase/supabase-js..."
+          npm install --no-save @supabase/supabase-js@^2.39.0
+          cd ..
+          echo "✅ Dependencias instaladas"
       
       - name: 🔍 Verificar secrets (debug)
         run: |
           if [ -z "${{ secrets.SUPABASE_URL }}" ]; then
             echo "❌ Error: SUPABASE_URL secret no está configurado"
             echo "💡 Ve a Settings → Secrets and variables → Actions"
-            echo "💡 Crea un secret con name: SUPABASE_URL"
+            echo "💡 Crea un secret con name: SUPABASE_URL (para Tiendas)"
             exit 1
           else
-            echo "✅ SUPABASE_URL está configurado"
+            echo "✅ SUPABASE_URL está configurado (Tiendas)"
           fi
           
           if [ -z "${{ secrets.SUPABASE_SERVICE_KEY }}" ]; then
             echo "❌ Error: SUPABASE_SERVICE_KEY secret no está configurado"
             echo "💡 Ve a Settings → Secrets and variables → Actions"
-            echo "💡 Crea un secret con name: SUPABASE_SERVICE_KEY"
+            echo "💡 Crea un secret con name: SUPABASE_SERVICE_KEY (para Tiendas)"
             exit 1
           else
-            echo "✅ SUPABASE_SERVICE_KEY está configurado"
+            echo "✅ SUPABASE_SERVICE_KEY está configurado (Tiendas)"
           fi
       
-      - name: 💾 Ejecutar Backup
+      - name: 💾 Ejecutar Backup de Tiendas
         env:
           SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
           SUPABASE_SERVICE_KEY: ${{ secrets.SUPABASE_SERVICE_KEY }}
         run: |
-          if [ -f "scripts/backup-supabase.js" ]; then
-            cd scripts
-            node backup-supabase.js
-          else
+          echo "🔍 Verificando que el script existe..."
+          if [ ! -f "scripts/backup-supabase.js" ]; then
             echo "❌ Error: No se encontró scripts/backup-supabase.js"
             exit 1
           fi
-      
-      - name: 📦 Comprimir backups
-        if: success()
-        run: |
-          cd backups
-          tar -czf ../backups-$(date +%Y%m%d-%H%M%S).tar.gz *.json
+          
+          echo "📁 Creando directorio backups/tiendas si no existe..."
+          mkdir -p backups/tiendas
+          
+          echo "🚀 Ejecutando backup de TIENDAS..."
+          cd scripts
+          node backup-supabase.js
           cd ..
+          
+          echo "✅ Backup de Tiendas ejecutado, verificando archivos creados..."
+          ls -la backups/tiendas/ || echo "⚠️ No se encontraron archivos en backups/tiendas/"
       
-      - name: 📤 Subir backups como artefacto
+      - name: 📤 Subir backups de Tiendas como artefacto
         if: success()
         uses: actions/upload-artifact@v4
         with:
-          name: supabase-backup-${{ github.run_number }}
+          name: supabase-backup-tiendas-${{ github.run_number }}
           path: |
-            backups/*.json
-            backups-*.tar.gz
+            backups/tiendas/*.json
           retention-days: 30
           if-no-files-found: warn
+
+  backup-comunidades:
+    name: Backup Cresalia-Comunidades
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: 📥 Checkout del código
+        uses: actions/checkout@v4
       
-      - name: 📧 Notificar éxito (opcional)
+      - name: 📦 Configurar Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+          cache: 'npm'
+      
+      - name: 📚 Instalar dependencias
+        run: |
+          echo "📦 Instalando dependencias de Supabase..."
+          cd scripts
+          if [ ! -f "package.json" ]; then
+            echo "📝 Creando package.json..."
+            cat > package.json << 'EOF'
+{
+  "name": "backup-supabase-script",
+  "version": "1.0.0",
+  "private": true,
+  "dependencies": {
+    "@supabase/supabase-js": "^2.39.0"
+  }
+}
+EOF
+          fi
+          echo "📥 Instalando @supabase/supabase-js..."
+          npm install --no-save @supabase/supabase-js@^2.39.0
+          cd ..
+          echo "✅ Dependencias instaladas"
+      
+      - name: 🔍 Verificar secrets (debug)
+        run: |
+          if [ -z "${{ secrets.SUPABASE_URL_COMUNIDADES }}" ]; then
+            echo "❌ Error: SUPABASE_URL_COMUNIDADES secret no está configurado"
+            echo "💡 Ve a Settings → Secrets and variables → Actions"
+            echo "💡 Crea un secret con name: SUPABASE_URL_COMUNIDADES"
+            exit 1
+          else
+            echo "✅ SUPABASE_URL_COMUNIDADES está configurado"
+          fi
+          
+          if [ -z "${{ secrets.SUPABASE_SERVICE_KEY_COMUNIDADES }}" ]; then
+            echo "❌ Error: SUPABASE_SERVICE_KEY_COMUNIDADES secret no está configurado"
+            echo "💡 Ve a Settings → Secrets and variables → Actions"
+            echo "💡 Crea un secret con name: SUPABASE_SERVICE_KEY_COMUNIDADES"
+            exit 1
+          else
+            echo "✅ SUPABASE_SERVICE_KEY_COMUNIDADES está configurado"
+          fi
+      
+      - name: 💾 Ejecutar Backup de Comunidades
+        env:
+          SUPABASE_URL_COMUNIDADES: ${{ secrets.SUPABASE_URL_COMUNIDADES }}
+          SUPABASE_SERVICE_KEY_COMUNIDADES: ${{ secrets.SUPABASE_SERVICE_KEY_COMUNIDADES }}
+        run: |
+          echo "🔍 Verificando que el script existe..."
+          if [ ! -f "scripts/backup-supabase-comunidades.js" ]; then
+            echo "❌ Error: No se encontró scripts/backup-supabase-comunidades.js"
+            exit 1
+          fi
+          
+          echo "📁 Creando directorio backups/comunidades si no existe..."
+          mkdir -p backups/comunidades
+          
+          echo "🚀 Ejecutando backup de COMUNIDADES..."
+          cd scripts
+          node backup-supabase-comunidades.js
+          cd ..
+          
+          echo "✅ Backup de Comunidades ejecutado, verificando archivos creados..."
+          ls -la backups/comunidades/ || echo "⚠️ No se encontraron archivos en backups/comunidades/"
+      
+      - name: 📤 Subir backups de Comunidades como artefacto
+        if: success()
+        uses: actions/upload-artifact@v4
+        with:
+          name: supabase-backup-comunidades-${{ github.run_number }}
+          path: |
+            backups/comunidades/*.json
+          retention-days: 30
+          if-no-files-found: warn
+
+  notificar:
+    name: Notificar resultado
+    runs-on: ubuntu-latest
+    needs: [backup-tiendas, backup-comunidades]
+    if: always()
+    
+    steps:
+      - name: ✅ Notificar éxito
         if: success()
         run: |
-          echo "✅ Backup completado exitosamente"
+          echo "✅ Ambos backups completados exitosamente"
           echo "📁 Backups disponibles en la sección 'Artifacts' de este workflow"
       
       - name: ❌ Notificar error
         if: failure()
         run: |
-          echo "❌ ERROR: El backup falló"
+          echo "❌ ERROR: Uno o ambos backups fallaron"
           echo "Por favor, revisa los logs y verifica las credenciales en GitHub Secrets"
           exit 1
-

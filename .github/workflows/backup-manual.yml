@@ -1,4 +1,4 @@
-name: Backup Manual de Supabase
+name: Backup Manual de Supabase (Tiendas + Comunidades)
 
 # Este workflow puede ejecutarse manualmente desde GitHub Actions
 # Útil para crear backups on-demand o para testing
@@ -7,8 +7,8 @@ on:
   workflow_dispatch:
 
 jobs:
-  backup:
-    name: Crear Backup Manual
+  backup-tiendas:
+    name: Backup Manual Cresalia-Tiendas
     runs-on: ubuntu-latest
     
     steps:
@@ -22,76 +22,174 @@ jobs:
       
       - name: 📚 Instalar dependencias
         run: |
+          echo "📦 Instalando dependencias de Supabase..."
           cd scripts
           if [ ! -f "package.json" ]; then
-            cat > package.json << EOF
-          {
-            "name": "backup-supabase-script",
-            "version": "1.0.0",
-            "private": true,
-            "dependencies": {
-              "@supabase/supabase-js": "^2.39.0"
-            }
-          }
-          EOF
+            echo "📝 Creando package.json..."
+            cat > package.json << 'EOF'
+{
+  "name": "backup-supabase-script",
+  "version": "1.0.0",
+  "private": true,
+  "dependencies": {
+    "@supabase/supabase-js": "^2.39.0"
+  }
+}
+EOF
           fi
-          npm install
+          echo "📥 Instalando @supabase/supabase-js..."
+          npm install --no-save @supabase/supabase-js@^2.39.0
+          cd ..
+          echo "✅ Dependencias instaladas"
       
       - name: 🔍 Verificar secrets (debug)
         run: |
           if [ -z "${{ secrets.SUPABASE_URL }}" ]; then
             echo "❌ Error: SUPABASE_URL secret no está configurado"
             echo "💡 Ve a Settings → Secrets and variables → Actions"
-            echo "💡 Crea un secret con name: SUPABASE_URL"
+            echo "💡 Crea un secret con name: SUPABASE_URL (para Tiendas)"
             exit 1
           else
-            echo "✅ SUPABASE_URL está configurado (longitud: ${#SUPABASE_URL} caracteres)"
-            # Mostrar solo los primeros caracteres para debug (sin exponer el secreto completo)
-            echo "   Primeros caracteres: $(echo '${{ secrets.SUPABASE_URL }}' | head -c 30)..."
+            echo "✅ SUPABASE_URL está configurado (Tiendas)"
           fi
           
           if [ -z "${{ secrets.SUPABASE_SERVICE_KEY }}" ]; then
             echo "❌ Error: SUPABASE_SERVICE_KEY secret no está configurado"
             echo "💡 Ve a Settings → Secrets and variables → Actions"
-            echo "💡 Crea un secret con name: SUPABASE_SERVICE_KEY"
+            echo "💡 Crea un secret con name: SUPABASE_SERVICE_KEY (para Tiendas)"
             exit 1
           else
-            echo "✅ SUPABASE_SERVICE_KEY está configurado (longitud: ${#SUPABASE_SERVICE_KEY} caracteres)"
+            echo "✅ SUPABASE_SERVICE_KEY está configurado (Tiendas)"
           fi
       
-      - name: 💾 Ejecutar Backup
+      - name: 💾 Ejecutar Backup de Tiendas
         env:
           SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
           SUPABASE_SERVICE_KEY: ${{ secrets.SUPABASE_SERVICE_KEY }}
         run: |
-          if [ -f "scripts/backup-supabase.js" ]; then
-            cd scripts
-            node backup-supabase.js
-          else
+          echo "🔍 Verificando que el script existe..."
+          if [ ! -f "scripts/backup-supabase.js" ]; then
             echo "❌ Error: No se encontró scripts/backup-supabase.js"
             exit 1
           fi
-      
-      - name: 📦 Comprimir backups
-        if: success()
-        run: |
-          cd backups
-          tar -czf ../backup-manual-$(date +%Y%m%d-%H%M%S).tar.gz *.json
+          
+          echo "📁 Creando directorio backups/tiendas si no existe..."
+          mkdir -p backups/tiendas
+          
+          echo "🚀 Ejecutando backup de TIENDAS..."
+          cd scripts
+          node backup-supabase.js
           cd ..
+          
+          echo "✅ Backup de Tiendas ejecutado, verificando archivos creados..."
+          ls -la backups/tiendas/ || echo "⚠️ No se encontraron archivos en backups/tiendas/"
       
-      - name: 📤 Subir backups como artefacto
+      - name: 📤 Subir backups de Tiendas como artefacto
         if: success()
         uses: actions/upload-artifact@v4
         with:
-          name: supabase-backup-manual-${{ github.run_number }}
+          name: supabase-backup-tiendas-manual-${{ github.run_number }}
           path: |
-            backups/*.json
-            backup-manual-*.tar.gz
+            backups/tiendas/*.json
           retention-days: 90
           if-no-files-found: warn
+
+  backup-comunidades:
+    name: Backup Manual Cresalia-Comunidades
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: 📥 Checkout del código
+        uses: actions/checkout@v4
       
-      - name: ✅ Backup completado
+      - name: 📦 Configurar Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+      
+      - name: 📚 Instalar dependencias
+        run: |
+          echo "📦 Instalando dependencias de Supabase..."
+          cd scripts
+          if [ ! -f "package.json" ]; then
+            echo "📝 Creando package.json..."
+            cat > package.json << 'EOF'
+{
+  "name": "backup-supabase-script",
+  "version": "1.0.0",
+  "private": true,
+  "dependencies": {
+    "@supabase/supabase-js": "^2.39.0"
+  }
+}
+EOF
+          fi
+          echo "📥 Instalando @supabase/supabase-js..."
+          npm install --no-save @supabase/supabase-js@^2.39.0
+          cd ..
+          echo "✅ Dependencias instaladas"
+      
+      - name: 🔍 Verificar secrets (debug)
+        run: |
+          if [ -z "${{ secrets.SUPABASE_URL_COMUNIDADES }}" ]; then
+            echo "❌ Error: SUPABASE_URL_COMUNIDADES secret no está configurado"
+            echo "💡 Ve a Settings → Secrets and variables → Actions"
+            echo "💡 Crea un secret con name: SUPABASE_URL_COMUNIDADES"
+            exit 1
+          else
+            echo "✅ SUPABASE_URL_COMUNIDADES está configurado"
+          fi
+          
+          if [ -z "${{ secrets.SUPABASE_SERVICE_KEY_COMUNIDADES }}" ]; then
+            echo "❌ Error: SUPABASE_SERVICE_KEY_COMUNIDADES secret no está configurado"
+            echo "💡 Ve a Settings → Secrets and variables → Actions"
+            echo "💡 Crea un secret con name: SUPABASE_SERVICE_KEY_COMUNIDADES"
+            exit 1
+          else
+            echo "✅ SUPABASE_SERVICE_KEY_COMUNIDADES está configurado"
+          fi
+      
+      - name: 💾 Ejecutar Backup de Comunidades
+        env:
+          SUPABASE_URL_COMUNIDADES: ${{ secrets.SUPABASE_URL_COMUNIDADES }}
+          SUPABASE_SERVICE_KEY_COMUNIDADES: ${{ secrets.SUPABASE_SERVICE_KEY_COMUNIDADES }}
+        run: |
+          echo "🔍 Verificando que el script existe..."
+          if [ ! -f "scripts/backup-supabase-comunidades.js" ]; then
+            echo "❌ Error: No se encontró scripts/backup-supabase-comunidades.js"
+            exit 1
+          fi
+          
+          echo "📁 Creando directorio backups/comunidades si no existe..."
+          mkdir -p backups/comunidades
+          
+          echo "🚀 Ejecutando backup de COMUNIDADES..."
+          cd scripts
+          node backup-supabase-comunidades.js
+          cd ..
+          
+          echo "✅ Backup de Comunidades ejecutado, verificando archivos creados..."
+          ls -la backups/comunidades/ || echo "⚠️ No se encontraron archivos en backups/comunidades/"
+      
+      - name: 📤 Subir backups de Comunidades como artefacto
+        if: success()
+        uses: actions/upload-artifact@v4
+        with:
+          name: supabase-backup-comunidades-manual-${{ github.run_number }}
+          path: |
+            backups/comunidades/*.json
+          retention-days: 90
+          if-no-files-found: warn
+
+  notificar:
+    name: Notificar resultado
+    runs-on: ubuntu-latest
+    needs: [backup-tiendas, backup-comunidades]
+    if: always()
+    
+    steps:
+      - name: ✅ Backup manual completado
         if: success()
         run: |
-          echo "✅ Backup manual completado exitosamente"
-
+          echo "✅ Ambos backups manuales completados exitosamente"
+          echo "📁 Backups disponibles en la sección 'Artifacts' de este workflow"

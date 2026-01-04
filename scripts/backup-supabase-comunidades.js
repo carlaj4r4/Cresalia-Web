@@ -1,56 +1,48 @@
-// ===== SCRIPT DE BACKUP AUTOMÁTICO PARA SUPABASE =====
-// Ejecutar con: node scripts/backup-supabase.js
+// ===== SCRIPT DE BACKUP AUTOMÁTICO PARA SUPABASE COMUNIDADES =====
+// Ejecutar con: node scripts/backup-supabase-comunidades.js
 // Requiere: @supabase/supabase-js
+// Este script respalda SOLO el proyecto de Comunidades
 
 const { createClient } = require('@supabase/supabase-js');
 const fs = require('fs');
 const path = require('path');
 
-// Configuración - Leer desde variables de entorno o archivo de config
-const SUPABASE_URL = (process.env.SUPABASE_URL || '').trim();
-const SUPABASE_SERVICE_KEY = (process.env.SUPABASE_SERVICE_KEY || '').trim(); // Necesitas service key (no anon key)
+// Configuración - Leer desde variables de entorno
+const SUPABASE_URL_COMUNIDADES = (process.env.SUPABASE_URL_COMUNIDADES || '').trim();
+const SUPABASE_SERVICE_KEY_COMUNIDADES = (process.env.SUPABASE_SERVICE_KEY_COMUNIDADES || '').trim();
 
-// Validación mejorada
-if (!SUPABASE_URL) {
-    console.error('❌ Error: SUPABASE_URL no está configurado');
-    console.error('💡 Verifica que hayas creado el secret "SUPABASE_URL" en GitHub:');
+// Validación
+if (!SUPABASE_URL_COMUNIDADES) {
+    console.error('❌ Error: SUPABASE_URL_COMUNIDADES no está configurado');
+    console.error('💡 Verifica que hayas creado el secret "SUPABASE_URL_COMUNIDADES" en GitHub:');
     console.error('   1. Ve a Settings → Secrets and variables → Actions');
     console.error('   2. Click en "New repository secret"');
-    console.error('   3. Name: SUPABASE_URL');
-    console.error('   4. Value: https://tu-proyecto.supabase.co');
+    console.error('   3. Name: SUPABASE_URL_COMUNIDADES');
+    console.error('   4. Value: https://tu-proyecto-comunidades.supabase.co');
     process.exit(1);
 }
 
-if (!SUPABASE_SERVICE_KEY) {
-    console.error('❌ Error: SUPABASE_SERVICE_KEY no está configurado');
-    console.error('💡 Verifica que hayas creado el secret "SUPABASE_SERVICE_KEY" en GitHub:');
+if (!SUPABASE_SERVICE_KEY_COMUNIDADES) {
+    console.error('❌ Error: SUPABASE_SERVICE_KEY_COMUNIDADES no está configurado');
+    console.error('💡 Verifica que hayas creado el secret "SUPABASE_SERVICE_KEY_COMUNIDADES" en GitHub:');
     console.error('   1. Ve a Settings → Secrets and variables → Actions');
     console.error('   2. Click en "New repository secret"');
-    console.error('   3. Name: SUPABASE_SERVICE_KEY');
-    console.error('   4. Value: tu-service-role-key-aqui');
+    console.error('   3. Name: SUPABASE_SERVICE_KEY_COMUNIDADES');
+    console.error('   4. Value: tu-service-role-key-comunidades-aqui');
     process.exit(1);
 }
 
 // Validar formato de URL
-if (!SUPABASE_URL.startsWith('http://') && !SUPABASE_URL.startsWith('https://')) {
-    console.error('❌ Error: SUPABASE_URL debe ser una URL válida (debe empezar con http:// o https://)');
-    console.error('💡 URL recibida:', SUPABASE_URL || '(vacío)');
-    console.error('💡 Ejemplo correcto: https://zbomxayytvwjbdzbegcw.supabase.co');
+if (!SUPABASE_URL_COMUNIDADES.startsWith('http://') && !SUPABASE_URL_COMUNIDADES.startsWith('https://')) {
+    console.error('❌ Error: SUPABASE_URL_COMUNIDADES debe ser una URL válida');
     process.exit(1);
 }
 
-// Validar que la service key tenga el formato correcto
-if (SUPABASE_SERVICE_KEY.length < 100) {
-    console.warn('⚠️  Advertencia: SUPABASE_SERVICE_KEY parece ser muy corta');
-    console.warn('💡 Asegúrate de usar la service_role key (no la anon key)');
-    console.warn('💡 La service_role key es mucho más larga (generalmente más de 200 caracteres)');
-}
+const supabase = createClient(SUPABASE_URL_COMUNIDADES, SUPABASE_SERVICE_KEY_COMUNIDADES);
 
-const supabase = createClient(SUPABASE_URL, SUPABASE_SERVICE_KEY);
-
-class BackupSupabase {
+class BackupSupabaseComunidades {
     constructor() {
-        this.backupDir = path.join(__dirname, '../backups/tiendas');
+        this.backupDir = path.join(__dirname, '../backups/comunidades');
         this.timestamp = new Date().toISOString().replace(/[:.]/g, '-');
         this.crearDirectorio();
     }
@@ -84,29 +76,30 @@ class BackupSupabase {
     }
     
     async hacerBackupCompleto() {
-        console.log('💾 Iniciando backup completo de Supabase TIENDAS...\n');
+        console.log('💾 Iniciando backup completo de Supabase COMUNIDADES...\n');
         
-        // Lista de tablas importantes (ajusta según tu esquema)
+        // Lista de tablas de COMUNIDADES
         const tablas = [
-            // ===== TIENDAS Y E-COMMERCE =====
-            'tenants',
-            'tiendas',
-            'productos',
-            'ordenes',
-            'orden_items',
-            'usuarios',
-            'feedbacks',
-            'tickets_soporte',
+            // ===== COMUNIDADES - CATÁLOGO Y FOROS =====
+            'comunidades',                    // Catálogo de comunidades
+            'posts_comunidades',              // Posts anónimos de cada comunidad
+            'comentarios_comunidades',        // Comentarios de los posts
+            'reacciones_comunidades',         // Reacciones (likes, abrazos, etc.)
             
-            // NOTA: Las tablas de comunidades están en un proyecto SEPARADO
-            // Se respaldan con scripts/backup-supabase-comunidades.js
+            // ===== COMUNIDADES - VENDEDORES Y COMPRADORES =====
+            'comunidad_vendedores',           // Comunidad de vendedores
+            'comunidad_compradores',          // Comunidad de compradores
+            'reportes_comunidad',             // Reportes entre usuarios
             
-            // Agrega más tablas de TIENDAS según necesites
+            // ===== COMUNIDADES - FUNCIONALIDADES ADICIONALES =====
+            'cumpleanos_historial',           // Historial de cumpleaños
+            'mentor_sesiones',                // Sesiones de mentoría (si existe)
+            'mentor_metricas_resumen',        // Métricas de mentoría (si existe)
         ];
         
         const resultados = [];
         const backupInfo = {
-            proyecto: 'Cresalia-Tiendas',
+            proyecto: 'Cresalia-Comunidades',
             timestamp: new Date().toISOString(),
             version: '1.0',
             tablas: []
@@ -129,12 +122,12 @@ class BackupSupabase {
         }
         
         // Guardar información del backup
-        const infoPath = path.join(this.backupDir, `backup-info-tiendas_${this.timestamp}.json`);
+        const infoPath = path.join(this.backupDir, `backup-info-comunidades_${this.timestamp}.json`);
         fs.writeFileSync(infoPath, JSON.stringify(backupInfo, null, 2));
         
-        console.log('\n✅ Backup de TIENDAS completado');
+        console.log('\n✅ Backup de COMUNIDADES completado');
         console.log(`📁 Ubicación: ${this.backupDir}`);
-        console.log(`📄 Info guardada en: backup-info-tiendas_${this.timestamp}.json`);
+        console.log(`📄 Info guardada en: backup-info-comunidades_${this.timestamp}.json`);
         
         // Resumen
         const exitosos = resultados.filter(r => r.registros !== undefined).length;
@@ -169,13 +162,13 @@ class BackupSupabase {
 
 // Ejecutar si se llama directamente
 if (require.main === module) {
-    const backup = new BackupSupabase();
+    const backup = new BackupSupabaseComunidades();
     
     backup.hacerBackupCompleto()
         .then(() => {
             // Limpiar backups antiguos después de crear uno nuevo
             backup.limpiarBackupsAntiguos(30);
-            console.log('\n✨ Proceso de backup completado');
+            console.log('\n✨ Proceso de backup de COMUNIDADES completado');
             process.exit(0);
         })
         .catch(error => {
@@ -184,5 +177,5 @@ if (require.main === module) {
         });
 }
 
-module.exports = { BackupSupabase };
+module.exports = { BackupSupabaseComunidades };
 
