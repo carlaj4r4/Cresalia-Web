@@ -3322,7 +3322,7 @@
         
         // Configuración de Mercado Pago (Usar configuración global o variables de entorno)
         const MERCADOPAGO_CONFIG = window.CONFIG_MERCADO_PAGO?.production || {
-            publicKey: window?.MERCADOPAGO_PUBLIC_KEY || 'CONFIGURAR_EN_VERCEL',
+            publicKey: window?.NEXT_PUBLIC_MERCADOPAGO_PUBLIC_KEY || window?.MERCADOPAGO_PUBLIC_KEY || 'CONFIGURAR_EN_VERCEL',
             accessToken: window?.MERCADOPAGO_ACCESS_TOKEN || 'CONFIGURAR_EN_VERCEL'
         };
         
@@ -13840,11 +13840,11 @@ Precio: $${precio.toLocaleString('es-AR')} ARS/mes
     <script>
       (function verificarEnvPublicas() {
         const vars = {
-          NEXT_PUBLIC_MERCADOPAGO_PUBLIC_KEY: window.NEXT_PUBLIC_MERCADOPAGO_PUBLIC_KEY,
-          NEXT_PUBLIC_VAPID_PUBLIC_KEY: window.NEXT_PUBLIC_VAPID_PUBLIC_KEY,
-          NEXT_PUBLIC_SUPABASE_URL_COMUNIDADES: window.NEXT_PUBLIC_SUPABASE_URL_COMUNIDADES,
-          NEXT_PUBLIC_SUPABASE_ANON_KEY_COMUNIDADES: window.NEXT_PUBLIC_SUPABASE_ANON_KEY_COMUNIDADES,
-          NEXT_PUBLIC_CRESALIA_PAYMENT_EMAIL: window.NEXT_PUBLIC_CRESALIA_PAYMENT_EMAIL
+          NEXT_PUBLIC_MERCADOPAGO_PUBLIC_KEY: window.NEXT_PUBLIC_MERCADOPAGO_PUBLIC_KEY || window.MERCADOPAGO_PUBLIC_KEY,
+          NEXT_PUBLIC_VAPID_PUBLIC_KEY: window.NEXT_PUBLIC_VAPID_PUBLIC_KEY || window.VAPID_PUBLIC_KEY,
+          NEXT_PUBLIC_SUPABASE_URL_COMUNIDADES: window.NEXT_PUBLIC_SUPABASE_URL_COMUNIDADES || window.SUPABASE_URL_COMUNIDADES,
+          NEXT_PUBLIC_SUPABASE_ANON_KEY_COMUNIDADES: window.NEXT_PUBLIC_SUPABASE_ANON_KEY_COMUNIDADES || window.SUPABASE_ANON_KEY_COMUNIDADES,
+          NEXT_PUBLIC_CRESALIA_PAYMENT_EMAIL: window.NEXT_PUBLIC_CRESALIA_PAYMENT_EMAIL || window.CRESALIA_PAYMENT_EMAIL
         };
         const faltantes = Object.entries(vars)
           .filter(([, v]) => !v || (typeof v === 'string' && v.trim() === ''))
