@@ -61,6 +61,9 @@
     <script src="../../js/configuracion-notificaciones-panel.js"></script>
     <script src="../../js/inyectar-tab-notificaciones.js"></script>
     
+    <!-- Sistema de Onboarding (Tutorial Interactivo) -->
+    <script src="../../core/onboarding-system.js"></script>
+    
     <!-- CSS Principal de Cresalia -->
     <link rel="stylesheet" href="../../styles-cresalia.css?v=2.0">
     <link rel="stylesheet" href="../../styles-admin-cresalia.css?v=2.0">
@@ -13634,6 +13637,41 @@ Precio: $${precio.toLocaleString('es-AR')} ARS/mes
                     });
                 }
             })();
+            
+            // ===== INICIALIZAR ONBOARDING (Tutorial Interactivo) =====
+            // Solo se muestra la primera vez que un usuario entra al panel
+            (async () => {
+                // Esperar a que el script de onboarding esté cargado
+                if (typeof window.initOnboarding === 'function') {
+                    // Obtener slug de la tienda desde la URL o usar 'ejemplo-tienda' por defecto
+                    const urlPath = window.location.pathname;
+                    const slugMatch = urlPath.match(/tiendas\/([^\/]+)/);
+                    const tenantSlug = slugMatch ? slugMatch[1] : 'ejemplo-tienda';
+                    
+                    // Obtener plan del usuario (por defecto 'free', se puede obtener de la base de datos)
+                    // Por ahora usamos 'free', pero puedes obtenerlo de la configuración de la tienda
+                    const plan = 'free'; // TODO: Obtener del perfil de la tienda
+                    
+                    // Configuración del tenant para el onboarding
+                    const tenantConfig = {
+                        tenant: {
+                            slug: tenantSlug,
+                            nombre: tenantSlug.replace(/-/g, ' ').replace(/\b\w/g, l => l.toUpperCase())
+                        },
+                        plan: plan
+                    };
+                    
+                    // Inicializar onboarding (solo se mostrará si el usuario no lo ha completado)
+                    try {
+                        window.initOnboarding(tenantConfig);
+                        console.log('✅ Sistema de onboarding inicializado');
+                    } catch (error) {
+                        console.warn('⚠️ Error inicializando onboarding:', error);
+                    }
+                } else {
+                    console.warn('⚠️ Script de onboarding no encontrado');
+                }
+            })();
         });
         
         // Hacer funciones globales
@@ -13812,6 +13850,10 @@ Precio: $${precio.toLocaleString('es-AR')} ARS/mes
         };
         */
     </script>
+
+    <!-- Centro de Ayuda Interactivo -->
+    <link rel="stylesheet" href="../../css/centro-ayuda.css">
+    <script src="../../js/centro-ayuda-widget.js"></script>
 </body>
     <!-- Lazyload genérico para imágenes no críticas + eager para logos/hero -->
     <script>
