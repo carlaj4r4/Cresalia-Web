@@ -1768,7 +1768,7 @@
             </div>
             
             <div class="card" style="max-width: 800px; margin: 0 auto; padding: 30px;">
-                <form id="form-editar-perfil" onsubmit="guardarPerfil(event)">
+                <form id="form-editar-perfil" onsubmit="guardarPerfil(event)" autocomplete="off">
                     <!-- Correo Electrónico -->
                     <div style="margin-bottom: 25px;">
                         <label style="display: block; margin-bottom: 8px; font-weight: 600; color: #374151;">
@@ -1974,7 +1974,7 @@
                 <h2>🎂 Preferencias de cumpleaños</h2>
                 <p>Elegí si querés aparecer en “Cumpleañeros del Mes”, recibir sorpresas y personalizar el mensaje que verá la comunidad.</p>
             </div>
-            <form id="formCumplePreferencias" class="cumple-form">
+            <form id="formCumplePreferencias" class="cumple-form" autocomplete="off">
                 <div class="cumple-form-grid">
                     <div class="cumple-form-group">
                         <label for="preferenciasEmail">Email asociado a tu cuenta</label>
@@ -2115,7 +2115,7 @@
                 <p style="color: #666; margin: 0;">Ayúdanos a mejorar Cresalia con tus sugerencias y comentarios</p>
             </div>
             
-            <form id="feedbackFormCompradores" onsubmit="enviarFeedbackCompradores(event)">
+            <form id="feedbackFormCompradores" onsubmit="enviarFeedbackCompradores(event)" autocomplete="off">
                 <div style="margin-bottom: 20px;">
                     <label style="display: block; margin-bottom: 8px; font-weight: 600; color: #333;">Tipo de Feedback:</label>
                     <select id="tipoFeedback" required style="width: 100%; padding: 12px; border: 2px solid #E5E7EB; border-radius: 10px; font-size: 1rem;">
@@ -2177,7 +2177,7 @@
                 <p id="nombreTiendaCalificacion" style="color: #666; margin: 0; font-weight: 600; font-size: 1.1rem;"></p>
             </div>
             
-            <form id="calificacionFormTienda" onsubmit="enviarCalificacionTienda(event)">
+            <form id="calificacionFormTienda" onsubmit="enviarCalificacionTienda(event)" autocomplete="off">
                 <div style="margin-bottom: 25px;">
                     <label style="display: block; margin-bottom: 15px; font-weight: 600; color: #333; text-align: center;">Tu Calificación:</label>
                     <div id="estrellas-tienda" style="display: flex; gap: 8px; justify-content: center; margin-bottom: 15px;">
@@ -2313,7 +2313,7 @@
                             </div>
                         </div>
                         
-                        <form id="formReservaServicio" style="display: grid; gap: 20px;">
+                        <form id="formReservaServicio" style="display: grid; gap: 20px;" autocomplete="off">
                             <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
                                 <div>
                                     <label style="display: block; margin-bottom: 8px; font-weight: 600; color: #374151;">Nombre</label>
@@ -3804,7 +3804,7 @@
                             </div>
                         </div>
                         
-                        <form id="formRepetirServicio" style="display: grid; gap: 20px;">
+                        <form id="formRepetirServicio" style="display: grid; gap: 20px;" autocomplete="off">
                             <div>
                                 <label style="display: block; margin-bottom: 8px; font-weight: 600; color: #374151;">Lugar Preferido</label>
                                 <select id="lugarRepetir" required style="width: 100%; padding: 12px; border: 2px solid #E5E7EB; border-radius: 8px; font-size: 1rem;">

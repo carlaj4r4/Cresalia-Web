@@ -2245,7 +2245,7 @@
                 <button class="close-btn" onclick="cerrarModal('modalAgregarProducto')">×</button>
                 <h2><i class="fas fa-box"></i> Agregar Nuevo Producto</h2>
             </div>
-            <form id="formAgregarProducto" name="formAgregarProducto">
+            <form id="formAgregarProducto" name="formAgregarProducto" autocomplete="off">
                 <div class="form-grid-2">
                 <div class="mb-3">
                     <label for="nombreProducto" class="form-label">Nombre del Producto</label>
@@ -2308,7 +2308,7 @@
                 <button class="close-btn" onclick="cerrarModal('modalAgregarServicio')">×</button>
                 <h2><i class="fas fa-briefcase"></i> Agregar Nuevo Servicio</h2>
             </div>
-            <form id="formAgregarServicio" name="formAgregarServicio">
+            <form id="formAgregarServicio" name="formAgregarServicio" autocomplete="off">
                 <div class="form-grid-2">
                 <div class="mb-3">
                     <label for="nombreServicio" class="form-label">Nombre del Servicio</label>
@@ -2360,7 +2360,7 @@
                 <button class="close-btn" onclick="cerrarModal('modalTurnos')">×</button>
                 <h2><i class="fas fa-calendar-plus"></i> Gestión de Turnos</h2>
             </div>
-            <form id="formTurnos" name="formTurnos">
+            <form id="formTurnos" name="formTurnos" autocomplete="off">
                 <div class="form-grid-2">
                 <div class="mb-3">
                     <label for="clienteTurno" class="form-label">Cliente</label>
@@ -2404,7 +2404,7 @@
                 <button class="close-btn" onclick="cerrarModal('modalSistemaPagos')">×</button>
                 <h2><i class="fas fa-credit-card"></i> Sistema de Pagos</h2>
             </div>
-            <form id="formSistemaPagos" name="formSistemaPagos">
+            <form id="formSistemaPagos" name="formSistemaPagos" autocomplete="off">
                 <div class="form-grid-2">
                 <div class="mb-3">
                     <label for="metodoPago" class="form-label">Método de Pago Principal</label>
@@ -2442,7 +2442,7 @@
         <div class="modal-content">
             <button class="close-btn" onclick="cerrarModal('modalConfiguracionAgradecimiento')">×</button>
             <h2>Configuración de Agradecimientos</h2>
-            <form id="formConfiguracionAgradecimiento" name="formConfiguracionAgradecimiento">
+            <form id="formConfiguracionAgradecimiento" name="formConfiguracionAgradecimiento" autocomplete="off">
                 <div class="mb-3">
                     <label for="mensajeAgradecimiento" class="form-label">Mensaje de Agradecimiento</label>
                     <textarea id="mensajeAgradecimiento" name="mensajeAgradecimiento" class="form-control" rows="4" placeholder="¡Gracias por tu compra! Tu apoyo significa mucho para nosotros." required></textarea>
@@ -2470,7 +2470,7 @@
                 <button class="close-btn" onclick="cerrarModal('modalMediosPago')">×</button>
                 <h2><i class="fas fa-wallet"></i> Configuración de Medios de Pago</h2>
             </div>
-            <form id="formMediosPago" name="formMediosPago">
+            <form id="formMediosPago" name="formMediosPago" autocomplete="off">
                 <div class="mb-3">
                     <div class="form-check">
                         <input type="checkbox" id="aceptarEfectivo" name="aceptarEfectivo" class="form-check-input">
@@ -2517,7 +2517,7 @@
         <div class="modal-content">
             <button class="close-btn" onclick="cerrarModal('modalGestionFeedbacks')">×</button>
             <h2>Gestión de Feedbacks de Tienda</h2>
-            <form id="formGestionFeedbacks" name="formGestionFeedbacks">
+            <form id="formGestionFeedbacks" name="formGestionFeedbacks" autocomplete="off">
                 <div class="mb-3">
                     <label for="habilitarFeedbacks" class="form-label">Habilitar Sistema de Feedbacks</label>
                     <select id="habilitarFeedbacks" name="habilitarFeedbacks" class="form-control" required>
@@ -2546,7 +2546,7 @@
         <div class="modal-content">
             <button class="close-btn" onclick="cerrarModal('modalResponderFeedback')">×</button>
             <h2>Responder Feedback</h2>
-            <form id="formResponderFeedback" name="formResponderFeedback">
+            <form id="formResponderFeedback" name="formResponderFeedback" autocomplete="off">
                 <div class="mb-3">
                     <label for="clienteFeedback" class="form-label">Cliente</label>
                     <input type="text" id="clienteFeedback" name="clienteFeedback" class="form-control" readonly>
@@ -2572,7 +2572,7 @@
         <div class="modal-content">
             <button class="close-btn" onclick="cerrarModal('modalPuntosComunes')">×</button>
             <h2>Gestión de Puntos Comunes</h2>
-            <form id="formPuntosComunes" name="formPuntosComunes">
+            <form id="formPuntosComunes" name="formPuntosComunes" autocomplete="off">
                 <div class="mb-3">
                     <label for="habilitarPuntos" class="form-label">Habilitar Sistema de Puntos</label>
                     <select id="habilitarPuntos" name="habilitarPuntos" class="form-control" required>
@@ -2601,7 +2601,7 @@
         <div class="modal-content">
             <button class="close-btn" onclick="cerrarModal('modalEnviosDomicilio')">×</button>
             <h2>Configuración de Envíos a Domicilio</h2>
-            <form id="formEnviosDomicilio" name="formEnviosDomicilio">
+            <form id="formEnviosDomicilio" name="formEnviosDomicilio" autocomplete="off">
                 <div class="mb-3">
                     <label for="habilitarEnvios" class="form-label">Habilitar Envíos a Domicilio</label>
                     <select id="habilitarEnvios" name="habilitarEnvios" class="form-control" required>
@@ -5684,7 +5684,7 @@
             modal.innerHTML = `
                 <div style="background: white; border-radius: 16px; max-width: 600px; width: 90%; padding: 30px;">
                     <h3 style="margin: 0 0 20px; color: #374151;">👥 Registrar Nuevo Remisero</h3>
-                    <form id="formularioRemisero">
+                    <form id="formularioRemisero" autocomplete="off">
                         <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 15px; margin-bottom: 20px;">
                             <div><label style="display: block; margin-bottom: 5px; font-weight: 600; color: #374151;">Nombre Completo</label><input type="text" id="nombreRemisero" required style="width: 100%; padding: 10px; border: 1px solid #D1D5DB; border-radius: 8px;"></div>
                             <div><label style="display: block; margin-bottom: 5px; font-weight: 600; color: #374151;">Teléfono</label><input type="tel" id="telefonoRemisero" required style="width: 100%; padding: 10px; border: 1px solid #D1D5DB; border-radius: 8px;"></div>
@@ -6399,7 +6399,7 @@
                         <h3 style="margin: 0;">🏷️ Crear Nueva Oferta</h3>
                     </div>
                     <div style="padding: 24px;">
-                        <form id="formularioOferta" onsubmit="guardarOferta(event); return false;">
+                        <form id="formularioOferta" onsubmit="guardarOferta(event); return false;" autocomplete="off">
                             <div style="margin-bottom: 20px;"><label style="display: block; margin-bottom: 8px; font-weight: 600; color: #374151;">Nombre</label><input type="text" id="nombreOferta" required style="width: 100%; padding: 12px; border: 1px solid #D1D5DB; border-radius: 8px;"></div>
                             <div style="margin-bottom: 20px;"><label style="display: block; margin-bottom: 8px; font-weight: 600; color: #374151;">Descripción</label><textarea id="descripcionOferta" rows="3" style="width: 100%; padding: 12px; border: 1px solid #D1D5DB; border-radius: 8px;"></textarea></div>
                             
@@ -6523,7 +6523,7 @@
                         <h3 style="margin: 0;">📦 Crear Nuevo Combo</h3>
                     </div>
                     <div style="padding: 24px;">
-                        <form id="formularioCombo" onsubmit="guardarCombo(event); return false;">
+                        <form id="formularioCombo" onsubmit="guardarCombo(event); return false;" autocomplete="off">
                             <div style="margin-bottom: 20px;"><label style="display: block; margin-bottom: 8px; font-weight: 600; color: #374151;">Nombre</label><input type="text" id="nombreCombo" required style="width: 100%; padding: 12px; border: 1px solid #D1D5DB; border-radius: 8px;"></div>
                             <div style="margin-bottom: 20px;"><label style="display: block; margin-bottom: 8px; font-weight: 600; color: #374151;">Descripción</label><textarea id="descripcionCombo" rows="3" style="width: 100%; padding: 12px; border: 1px solid #D1D5DB; border-radius: 8px;"></textarea></div>
                             <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 20px;">
@@ -6860,7 +6860,7 @@
                             <div id="contenidoMensajeria">
                                 <div id="tabContenidoMensajeriaNuevo" style="display: block;">
                                     <h3 style="margin: 0 0 20px; color: #374151;">✉️ Enviar Mensaje a Crisla</h3>
-                                    <form id="formularioMensajeCrisla" onsubmit="enviarMensajeCrisla(event); return false;">
+                                    <form id="formularioMensajeCrisla" onsubmit="enviarMensajeCrisla(event); return false;" autocomplete="off">
                                         <div style="margin-bottom: 20px;"><label style="display: block; margin-bottom: 8px; font-weight: 600; color: #374151;">Tipo de Mensaje</label><select id="tipoMensaje" required style="width: 100%; padding: 12px; border: 1px solid #D1D5DB; border-radius: 8px;"><option value="">Seleccionar...</option><option value="problema">🐛 Problema</option><option value="sugerencia">💡 Sugerencia</option><option value="urgencia">🚨 Urgencia</option><option value="consulta">❓ Consulta</option></select></div>
                                         <div style="margin-bottom: 20px;"><label style="display: block; margin-bottom: 8px; font-weight: 600; color: #374151;">Asunto</label><input type="text" id="asuntoMensaje" required style="width: 100%; padding: 12px; border: 1px solid #D1D5DB; border-radius: 8px;" placeholder="Resume tu mensaje"></div>
                                         <div style="margin-bottom: 20px;"><label style="display: block; margin-bottom: 8px; font-weight: 600; color: #374151;">Mensaje</label><textarea id="contenidoMensaje" rows="6" required style="width: 100%; padding: 12px; border: 1px solid #D1D5DB; border-radius: 8px;" placeholder="Describe tu consulta..."></textarea></div>
@@ -7183,7 +7183,7 @@
                                 </div>
                                 <div id="tabContenidoSoporteConfiguracion" style="display: none;">
                                     <h3 style="margin: 0 0 20px; color: #374151;">⚙️ Configuración</h3>
-                                    <form id="formularioConfiguracionSoporte" onsubmit="guardarConfiguracionSoporte(event); return false;">
+                                    <form id="formularioConfiguracionSoporte" onsubmit="guardarConfiguracionSoporte(event); return false;" autocomplete="off">
                                         <div style="margin-bottom: 24px;">
                                             <h4 style="color: #374151; margin-bottom: 16px;">📞 Información de Contacto</h4>
                                             <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px;">
@@ -7610,7 +7610,7 @@
                         <h3 style="margin: 0;">📍 Agregar Nueva Ubicación</h3>
                     </div>
                     <div style="padding: 24px;">
-                        <form id="formularioUbicacion" onsubmit="guardarUbicacion(event); return false;">
+                        <form id="formularioUbicacion" onsubmit="guardarUbicacion(event); return false;" autocomplete="off">
                             <div style="margin-bottom: 20px;"><label style="display: block; margin-bottom: 8px; font-weight: 600; color: #374151;">Nombre</label><input type="text" id="nombreUbicacion" required style="width: 100%; padding: 12px; border: 1px solid #D1D5DB; border-radius: 8px;" placeholder="Ej: Tienda Central"></div>
                             <div style="margin-bottom: 20px;"><label style="display: block; margin-bottom: 8px; font-weight: 600; color: #374151;">Tipo</label><select id="tipoUbicacion" required style="width: 100%; padding: 12px; border: 1px solid #D1D5DB; border-radius: 8px;"><option value="">Seleccionar...</option><option value="tienda">🏪 Tienda</option><option value="sucursal">🏢 Sucursal</option><option value="deposito">📦 Depósito</option></select></div>
                             <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 20px;">
@@ -7953,7 +7953,7 @@
                         <h3 style="margin: 0;">🤖 Crear Bot</h3>
                     </div>
                     <div style="padding: 24px;">
-                        <form id="formularioBot" onsubmit="guardarBot(event); return false;">
+                        <form id="formularioBot" onsubmit="guardarBot(event); return false;" autocomplete="off">
                             <div style="margin-bottom: 20px;"><label style="display: block; margin-bottom: 8px; font-weight: 600; color: #374151;">Nombre</label><input type="text" id="nombreBot" required style="width: 100%; padding: 12px; border: 1px solid #D1D5DB; border-radius: 8px;" placeholder="Bot de Soporte"></div>
                             <div style="margin-bottom: 20px;"><label style="display: block; margin-bottom: 8px; font-weight: 600; color: #374151;">Descripción</label><textarea id="descripcionBot" rows="3" style="width: 100%; padding: 12px; border: 1px solid #D1D5DB; border-radius: 8px;" placeholder="Describe tu bot"></textarea></div>
                             <div style="margin-bottom: 20px;"><label style="display: block; margin-bottom: 8px; font-weight: 600; color: #374151;">Saludo</label><input type="text" id="saludoBot" style="width: 100%; padding: 12px; border: 1px solid #D1D5DB; border-radius: 8px;" placeholder="¡Hola! ¿En qué puedo ayudarte?"></div>
@@ -8552,7 +8552,7 @@
                         <h3 style="margin: 0;">👨‍💼 Agregar Remisero</h3>
                     </div>
                     <div style="padding: 24px;">
-                        <form id="formularioRemisero" onsubmit="guardarRemisero(event); return false;">
+                        <form id="formularioRemisero" onsubmit="guardarRemisero(event); return false;" autocomplete="off">
                             <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 20px;">
                                 <div><label style="display: block; margin-bottom: 8px; font-weight: 600; color: #374151;">Nombre</label><input type="text" id="nombreRemisero" required style="width: 100%; padding: 12px; border: 1px solid #D1D5DB; border-radius: 8px;"></div>
                                 <div><label style="display: block; margin-bottom: 8px; font-weight: 600; color: #374151;">Apellido</label><input type="text" id="apellidoRemisero" required style="width: 100%; padding: 12px; border: 1px solid #D1D5DB; border-radius: 8px;"></div>
